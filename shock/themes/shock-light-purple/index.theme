@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=shock-light-purple
+Comment=The Shock OS light purple theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+Name=shock-light-purple
+GtkTheme=shock-light-purple
+IconTheme=shock-light-purple
+MetacityTheme=shock-light-purple

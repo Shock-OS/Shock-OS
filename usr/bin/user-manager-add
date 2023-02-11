@@ -1,0 +1,47 @@
+#!/bin/bash
+
+cuc="n"
+
+times=0
+
+until [[ $cuc != "n" ]]
+do
+
+    ((times++))
+
+    if [[ $times > 1 ]]
+    then
+
+        sudo deluser --remove-home $x
+
+    fi
+
+    clear
+
+    echo "Now you must create a user. NOTE: Only letters or numbers, NO SPACES OR SYMBOLS!
+
+Please enter the desired username below:"
+
+    read x
+
+    x=$(echo "$x" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+
+    x=$(echo ${x//[[:blank:]]/}) #this command removes all spaces
+
+    x=$(echo "$x" | tr -cd '[:alnum:]._-') #this command removes all numbers
+
+    echo $x
+
+    sudo adduser $x #the user has been created
+
+    clear
+
+    echo "If the user creation did not complete successfully or you would like to make some changes, you can redo the previous step by typing 'n' followed by 'ENTER'. Otherwise, press any other key followed by 'ENTER' to continue.
+
+Are you satisfied with the user you have created? [Y/n]:"
+
+    read cuc
+
+    cuc=$(echo "$cuc" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+
+done

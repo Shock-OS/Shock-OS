@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=shock-dark-yellow
+Comment=The Shock OS dark yellow theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+Name=shock-dark-yellow
+GtkTheme=shock-dark-yellow
+IconTheme=shock-dark-yellow
+MetacityTheme=shock-dark-yellow

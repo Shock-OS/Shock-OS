@@ -1,0 +1,108 @@
+#!/bin/bash
+
+#this program is designed to add/remove users in Shock OS
+
+users=$(ls /home)
+
+yad --center --window-icon=system-users --title="Users" --text="The following users are currently on your system:
+$users
+
+Would you like to add or remove users?" --button="Add" --button="Remove" --button="Advanced" --button="Cancel" --buttons-layout=center
+
+var=$?
+
+echo "$var"
+
+if [[ "$var" == "0" ]]
+then
+
+    x-terminal-emulator -e user-manager-add
+
+    echo $ev2
+
+    if [[ "$ev2" == "0" ]]
+    then
+
+        yad --center --window-icon=emblem-default --title="User Successfully Added" --text="Congratulations! The new user has successfully been created." --button=OK
+
+    elif [[ "$ev2" == "1" ]]
+    then
+
+        yad --center --window-icon=emblem-important --title="User Already Exists" --text="The username '$x' is already taken." --button=OK
+
+    else
+
+        yad --center --window-icon=emblem-unreadable --title="Operation Aborted" --text="No changes were made to the system." --button=OK
+
+    fi
+
+elif [[ "$var" == "1" ]]
+then
+
+    users=$(ls /home)
+
+    utd=$(yad --center --window-icon=system-users --entry --title="Remove User" --text="The following users are currently on your system:
+$users
+
+Which user would you like to remove? (Please enter their username below.)")
+
+    var2=$?
+
+    echo "$var2"
+
+    if [[ "$var2" == "0" ]] 
+    then
+
+        li=" $(users) "
+
+        echo "$li"
+
+        echo $utd
+
+        if [[ "$li" == *" $utd "* ]]
+        then
+
+            yad --center --window-icon=emblem-important --title="Cannot Remove User" --text="You cannot remove the user '$utd' because they are currently logged in."
+
+        else
+
+            if [[ -d /home/$utd ]]
+            then
+
+                sudo deluser --remove-home $utd
+
+            else
+
+                yad --center --window-icon=emblem-important --title="Cannot Remove User" --text="The user '$utd' does not exist."
+
+                exit
+
+            fi
+
+            ev=$?
+
+            echo "$ev"
+
+            if [[ "$ev" == "0" ]]
+            then
+
+                yad --center --window-icon=emblem-default --title="User Successfully Removed" --text="Congratulations! The user '$utd' has successfully been removed." --button=OK
+
+            else
+
+                yad --center --window-icon=emblem-unreadable --title="Operation Aborted" --text="No changes were made to the system." --button=OK
+
+            fi
+
+        fi       
+
+    fi
+
+elif [[ "$var" == "2" ]]
+then
+
+    users-admin
+
+fi
+
+    

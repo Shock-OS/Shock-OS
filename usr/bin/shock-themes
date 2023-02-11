@@ -1,0 +1,90 @@
+#!/bin/bash
+
+yad --center --window-icon=preferences-desktop-theme --title="Themes" --text="Please choose either the light or dark theme." --button="Light" --button="Dark"
+
+lod=$?
+
+if [[ "$lod" == "0" ]]
+then
+
+    lod="light"
+
+elif [[ "$lod" == "1" ]]
+then
+
+    lod="dark"
+
+else
+
+    exit
+
+fi
+
+yad --center --window-icon=preferences-desktop-theme --title="Themes" --text="Please choose an accent color." --button="Red" --button="Orange" --button="Yellow" --button="Green" --button="Blue" --button="Purple" --button="Pink"
+
+color=$?
+
+if [[ "$color" == "0" ]]
+then
+
+    color="red"
+
+elif [[ "$color" == "1" ]]
+then
+
+    color="orange"
+
+elif [[ "$color" == "2" ]]
+then
+
+    color="yellow"
+
+elif [[ "$color" == "3" ]]
+then
+
+    color="green"
+
+elif [[ "$color" == "4" ]]
+then
+
+    color="blue"
+
+elif [[ "$color" == "5" ]]
+then
+
+    color="purple"
+
+elif [[ "$color" == "6" ]]
+then
+
+    color="pink"
+
+else
+
+    exit
+
+fi
+
+theme="'shock-$lod-$color'"
+
+dconf write /org/mate/desktop/interface/gtk-theme "$theme"
+
+dconf write /org/mate/marco/general/theme "$theme"
+
+dconf write /org/mate/desktop/interface/icon-theme "$theme"
+
+dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
+
+echo "[Greeter]
+theme-name=shock-dark-$color
+icon-theme-name=shock-dark-$color
+show-hostname=false
+show-power=false
+show-keyboard=false
+show-clock=false" > /etc/lightdm/slick-greeter.conf
+
+yad --window-icon=preferences-desktop-theme --center --width=300 --title="Themes" --text="Enjoy your new theme!" --button="Dismiss"
+
+
+
+

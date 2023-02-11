@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1
+Name=Themes
+GenericName=Themes
+Comment=Change the desktop theme
+Exec=shock-themes
+TryExec=shock-themes
+Icon=preferences-desktop-theme
+Terminal=false
+Type=Application
+Categories=Settings;DesktopSettings;
+Keywords=theme;accent;color;dark;light;desktop;
+Name[en_US]=Themes

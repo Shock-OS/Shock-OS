@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#the computer will now check for updates...
+
+case "$(curl -s --max-time 2 -I http://google.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
+  [23])     echo "we have connectivity"
+
+    x=$(apt list --upgradable)
+
+    if [[ "$x" == *"upgradable"* ]]
+    then
+
+        yad --notification --image=emblem-package --text="Updates are available"
+
+        pi-gpk-update-viewer
+
+    fi;;
+  5) echo "The web proxy won't let us through";;
+  *) echo "The network is down or very slow";;
+esac
+
+
+
+
+
+
+
+
+
+
+
+

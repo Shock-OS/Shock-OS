@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=shock-light-orange
+Comment=The Shock OS light orange theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+Name=shock-light-orange
+GtkTheme=shock-light-orange
+IconTheme=shock-light-orange
+MetacityTheme=shock-light-orange

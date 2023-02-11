@@ -1,0 +1,127 @@
+#!/bin/bash
+
+file1=$(cat /shock/setupvalue)
+
+echo $file1
+
+if [[ "$file1" == "1" ]]
+then
+
+    dconf write /org/mate/desktop/interface/gtk-theme "'shock-light-blue'"
+
+    dconf write /org/mate/marco/general/theme "'shock-light-blue'"
+
+    dconf write /org/mate/desktop/interface/icon-theme "'shock-light-blue'"
+
+    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
+
+    dconf write /org/onboard/theme "'/usr/share/onboard/themes/Nightshade.theme'"
+
+    #the above command sets the onboard theme to Nightshade
+
+    dconf write /org/mate/panel/objects/dockapplet/prefs/win-from-cur-workspace-only "'true'"
+
+    dconf write /org/mate/panel/objects/dockapplet/prefs/pinned-apps "'chromium-browser.desktop', 'caja-browser.desktop', 'mate-terminal.desktop'"
+
+    #the above set of commands sets the mate-dock-applet defaults
+
+    #the above set of commands sets the 'Shock OS' system theme
+
+    sudo deluser --remove-home shock #the 'shock' user has been removed
+
+    #the splash screen patch begins
+
+    echo "quiet splash plymouth.ignore-serial-consoles" | sudo tee -a /boot/config.txt
+
+    sudo plymouth-set-default-theme spinner
+
+    #the default .bashrc file restoration patch begins
+
+    sudo rm ~/.bashrc
+
+    sudo cp /etc/skel/.bashrc ~/
+
+    # the default .bashrc file restoration patch ends
+
+    sudo systemctl set-default graphical
+
+    sudo cp /shock/sudoers /etc #this command removes elevated privilages as they are no longer required.
+
+    echo "2" > /shock/setupvalue
+
+    echo "Finalizing setup..."
+
+    reboot
+
+elif [[ "$file1" == "2" ]]
+then
+
+    echo "5555" > /shock/setupvalue
+
+    echo "5555" > ~/.local/userlogstat
+
+    panel-layout-changer
+    
+    shock-themes
+
+    yad --center --width=600 --title="Select Volume Output" --text="By default, Shock OS outputs audio through the headphone jack. If you would like to continue using the headphone jack as the primary audio output device, click 'Skip'.
+
+However, if you would like to output audio through HDMI instead, click 'Manage' below and select 'Built-in Audio Digital Stereo (HDMI)'. Then click 'Close'." --button="Skip" --button="Manage"
+
+    cao=$?
+
+    if [[ $cao == "1" ]]
+    then
+
+        mate-volume-control --page=output
+
+    fi
+
+    yad --info --center --title="Thank You" --window-icon=emblem-default --width 300 --button="Dismiss" --text "Thank you for choosing Shock OS. Enjoy your experience.
+
+Luke 1:37"
+
+fi
+
+file2=$(cat ~/.local/userlogstat)
+
+echo $file2
+
+if [[ "$file2" == "0" ]]
+then
+
+    dconf write /org/mate/desktop/interface/gtk-theme "'shock-light-blue'"
+
+    dconf write /org/mate/marco/general/theme "'shock-light-blue'"
+
+    dconf write /org/mate/desktop/interface/icon-theme "'shock-light-blue'"
+
+    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
+
+    dconf write /org/onboard/theme "'/usr/share/onboard/themes/Nightshade.theme'"
+
+    #the above command sets the onboard theme to Nightshade
+
+    dconf write /org/mate/panel/objects/dockapplet/prefs/win-from-cur-workspace-only "'true'"
+
+    dconf write /org/mate/panel/objects/dockapplet/prefs/pinned-apps "'chromium-browser.desktop', 'caja-browser.desktop', 'mate-terminal.desktop'"
+
+    #the above set of commands sets the mate-dock-applet defaults
+
+    cp -r /shock/chromium ~/.config
+
+    echo "5555" > ~/.local/userlogstat
+
+    panel-layout-changer
+    
+    shock-themes
+
+fi
+
+mpg123 /shock/startup-sound.mp3 #this command plays the startup sound
+
+
+
+
+
+
