@@ -21,11 +21,11 @@
     <linearGradient
        id="linearGradient4816">
       <stop
-         style="stop-color:#68345b;stop-opacity:1.0000000"
+         style="stop-color:#7e0074;stop-opacity:1.0000000"
          offset="0.0000000"
          id="stop4818" />
       <stop
-         style="stop-color:#68345b;stop-opacity:0.0000000"
+         style="stop-color:#7e0074;stop-opacity:0.0000000"
          offset="1.0000000"
          id="stop4820" />
     </linearGradient>
@@ -203,22 +203,22 @@
        style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:1.00000143;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.47878789;visibility:visible;display:inline;overflow:visible"
        id="rect4962" />
     <path
-       style="opacity:1;fill:#cf72b7;fill-opacity:1;fill-rule:evenodd;stroke:#68345b;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       style="opacity:1;fill:#ff1eec;fill-opacity:1;fill-rule:evenodd;stroke:#7e0074;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 39.500495,21.22173 L 39.500495,28.777291 L 45.062994,24.999511 L 39.500495,21.22173 z"
        id="path2886"
        sodipodi:nodetypes="cccc" />
     <path
        id="path2888"
        d="M 9.5004991,21.22173 L 9.5004991,28.777291 L 3.9380001,24.999511 L 9.5004991,21.22173 z"
-       style="opacity:1;fill:#cf72b7;fill-opacity:1;fill-rule:evenodd;stroke:#68345b;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       style="opacity:1;fill:#ff1eec;fill-opacity:1;fill-rule:evenodd;stroke:#7e0074;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        sodipodi:nodetypes="cccc" />
     <path
        id="path2890"
        d="M 28.278279,38.499501 L 20.722718,38.499501 L 24.500498,44.062 L 28.278279,38.499501 z"
-       style="opacity:1;fill:#cf72b7;fill-opacity:1;fill-rule:evenodd;stroke:#68345b;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       style="opacity:1;fill:#ff1eec;fill-opacity:1;fill-rule:evenodd;stroke:#7e0074;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        sodipodi:nodetypes="cccc" />
     <path
-       style="opacity:1;fill:#cf72b7;fill-opacity:1;fill-rule:evenodd;stroke:#68345b;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       style="opacity:1;fill:#ff1eec;fill-opacity:1;fill-rule:evenodd;stroke:#7e0074;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 28.278279,10.499501 L 20.722718,10.499501 L 24.500498,4.9370021 L 28.278279,10.499501 z"
        id="path2892"
        sodipodi:nodetypes="cccc" />

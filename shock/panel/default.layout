@@ -20,7 +20,7 @@ object-type=separator
 
 [Object clockapplet]
 locked=true
-position=126
+position=72
 panel-right-stick=true
 toplevel-id=toplevel-0
 applet-iid=ClockAppletFactory::ClockApplet
@@ -28,18 +28,10 @@ object-type=applet
 
 [Object notificationarea]
 locked=true
-position=238
+position=184
 panel-right-stick=true
 toplevel-id=toplevel-0
 applet-iid=NotificationAreaAppletFactory::NotificationArea
-object-type=applet
-
-[Object workspaceswitcherapplet]
-locked=true
-position=465
-panel-right-stick=true
-toplevel-id=toplevel-0
-applet-iid=WnckletFactory::WorkspaceSwitcherApplet
 object-type=applet
 
 [Object showdesktopapplet]

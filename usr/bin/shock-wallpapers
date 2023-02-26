@@ -1,0 +1,281 @@
+#!/bin/bash
+
+#this script is the applicaton that sets wallpapers (both single image and slideshow)
+
+# NORMAL (SINGLE IMAGE) WALLPAPER config file lines in order
+#1: wallpaper image path
+#2: style
+
+# SLIDESHOW WALLPAPER config file lines in order
+#1: $directory
+#2: $delay
+#3: $random_inorder
+#4: style
+
+if [[ -f ~/.config/shock_slideshow_wallpaper ]]
+then
+
+    current_directory=$(sed -n 1p ~/.config/shock_slideshow_wallpaper)
+
+    current_delay=$(sed -n 2p ~/.config/shock_slideshow_wallpaper)
+
+    current_random_inorder=$(sed -n 3p ~/.config/shock_slideshow_wallpaper)
+
+    current_style=$(sed -n 4p ~/.config/shock_slideshow_wallpaper)
+
+elif [[ -f ~/.config/shock-wallpaper ]]
+then
+
+    current_wallpaper=$(sed -n 1p ~/.config/shock-wallpaper)
+
+    current_style_siw=$(sed -n 2p ~/.config/shock-wallpaper)
+
+fi
+
+if [[ "$current_style" == "zoom" ]]
+then
+
+    style_input='^Zoom!Tile!Centered!Scaled!Stretched!Spanned'
+
+elif [[ "$current_style" == "wallpaper" ]]
+then
+
+    style_input='Zoom!^Tile!Centered!Scaled!Stretched!Spanned'
+
+elif [[ "$current_style" == "centered" ]]
+then
+
+    style_input='Zoom!Tile!^Centered!Scaled!Stretched!Spanned'
+
+elif [[ "$current_style" == "scaled" ]]
+then
+
+    style_input='Zoom!Tile!Centered!^Scaled!Stretched!Spanned'
+
+elif [[ "$current_style" == "stretched" ]]
+then
+
+    style_input='Zoom!Tile!Centered!Scaled!^Stretched!Spanned'
+
+elif [[ "$current_style" == "spanned" ]]
+then
+
+    style_input='Zoom!Tile!Centered!Scaled!Stretched!^Spanned'
+
+else
+
+    style_input='Zoom!Tile!Centered!Scaled!Stretched!Spanned'
+
+fi
+
+if [[ "$current_style_siw" == "zoom" ]]
+then
+
+    style_input_siw='^Zoom!Tile!Centered!Scaled!Stretched!Spanned'
+
+elif [[ "$current_style_siw" == "wallpaper" ]]
+then
+
+    style_input_siw='Zoom!^Tile!Centered!Scaled!Stretched!Spanned'
+
+elif [[ "$current_style_siw" == "centered" ]]
+then
+
+    style_input_siw='Zoom!Tile!^Centered!Scaled!Stretched!Spanned'
+
+elif [[ "$current_style_siw" == "scaled" ]]
+then
+
+    style_input_siw='Zoom!Tile!Centered!^Scaled!Stretched!Spanned'
+
+elif [[ "$current_style_siw" == "stretched" ]]
+then
+
+    style_input_siw='Zoom!Tile!Centered!Scaled!^Stretched!Spanned'
+
+elif [[ "$current_style_siw" == "spanned" ]]
+then
+
+    style_input_siw='Zoom!Tile!Centered!Scaled!Stretched!^Spanned'
+
+else
+
+    style_input_siw='Zoom!Tile!Centered!Scaled!Stretched!Spanned'
+
+fi
+
+yad --width=320 --text-align=center --buttons-layout=center --title="Desktop Background" --window-icon="background" --text="Please choose a background style:" --button="Single Image" --button="Slideshow"
+
+wt=$?
+
+if [[ "$wt" == "0" ]]
+then
+
+    wallpaper_is_image="no"
+
+    until [[ "$wallpaper_is_image" == "yes" ]]
+    do
+    
+        choose=$(yad --width=300 --title="Select an Image" --window-icon="background" --form --field="Image:":FL "$current_wallpaper" --field="Style:":CB "$style_input_siw" --button="Reset to Default":1 --button="OK":0)
+
+        ex=$?
+
+        if [[ "$ex" == "1" ]]
+        then
+
+            killall shock-slideshow-wallpaper
+
+            rm ~/.config/shock_slideshow_wallpaper
+
+            rm ~/.config/shock-wallpaper
+
+            dconf reset /org/mate/desktop/background/picture-options
+
+            dconf reset /org/mate/desktop/background/picture-filename
+
+            exit
+
+        elif [[ "$ex" == "0" ]]
+        then
+
+            siw=$(echo "$choose" | cut -d '|' -f1)
+
+            wallpaper_is_image="$(file "$siw")"
+
+            if [[ "$wallpaper_is_image" == *"image"* ]]
+            then
+
+                wallpaper_is_image="yes"
+
+                style=$(echo "$choose" | awk -F'|' '{print $2}')
+
+                style=$(echo "$style" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+
+                if [[ "$style" == "tile" ]]
+                then
+
+                    style="wallpaper"
+
+                fi
+
+                killall shock-slideshow-wallpaper
+
+                rm ~/.config/shock_slideshow_wallpaper
+
+                touch ~/.config/shock-wallpaper
+
+                echo "$siw" | tee ~/.config/shock-wallpaper
+
+                echo "$style" | tee -a ~/.config/shock-wallpaper
+
+                dconf write /org/mate/desktop/background/picture-options "'$style'"
+
+                dconf write /org/mate/desktop/background/picture-filename "'$siw'"
+
+            else
+
+                yad --window-icon="background" --title="Not an Image" --text="The file you selected does not appear to be an image." --button="Dismiss"
+
+            fi
+
+        else
+
+            exit
+
+        fi
+
+    done
+
+elif [[ "$wt" == "1" ]]
+then
+
+    dc=0
+
+    until (( $dc > 1 )) && [[ "$dci" == *"image"* ]]
+    do
+
+        choose=$(yad --form --width=400 --height=200 --window-icon=background --title="Slideshow Background" --field="Folder containing images:":DIR "$current_directory" --field="Delay (minutes):":NUM "$current_delay"'!1..100!1' --field="Style:":CB "$style_input" --field="Play images in random order":CHK "$current_random_inorder")
+
+        ex=$?
+
+        if [[ "$ex" != "0" ]]
+        then
+
+            exit
+
+        fi
+
+        directory=$(echo "$choose" | cut -d '|' -f1)
+
+        delay=$(echo "$choose" | awk -F'|' '{print $2}')
+
+        style=$(echo "$choose" | awk -F'|' '{print $3}')
+
+        style=$(echo "$style" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+
+        if [[ "$style" == "tile" ]]
+        then
+
+            style="wallpaper"
+
+        fi
+
+        random_inorder=$(echo "$choose" | awk -F'|' '{print $4}')
+
+        dc=$(ls "$directory" | wc -l)
+
+        cd "$directory"
+
+        dci=$(file *)
+
+        cd /
+
+        if [[ "$dci" != *"image"* ]]
+        then
+
+            yad --window-icon="background" --title="No Images Found" --text="The directory you selected does not appear to contain images. The directory must contain at least two images for a slideshow background." --button="OK"
+
+        elif (( $dc <= 1 ))
+        then
+
+            yad --window-icon="background" --title="Not Enough Images" --text="The directory you selected does not contain enough images. The directory must contain at least two images for a slideshow background." --button="OK"
+
+        fi
+
+    done
+
+    rm ~/.config/shock-wallpaper
+
+    touch ~/.config/shock_slideshow_wallpaper
+
+    echo "$directory" | tee ~/.config/shock_slideshow_wallpaper
+
+    echo "$delay" | tee -a ~/.config/shock_slideshow_wallpaper
+
+    echo "$random_inorder" | tee -a ~/.config/shock_slideshow_wallpaper
+
+    echo "$style" | tee -a ~/.config/shock_slideshow_wallpaper
+
+    if [[ "$random_inorder" == 'TRUE' ]] #random
+    then
+
+        ws="$directory/$(ls "$directory" | shuf -n 1)"
+
+    elif [[ "$random_inorder" == 'FALSE' ]] #in order
+    then
+
+        xfile=("$directory"/*)
+
+        ws=${xfile[0]}
+
+    fi
+
+    dconf write /org/mate/desktop/background/picture-options "'$style'"
+
+    dconf write /org/mate/desktop/background/picture-filename "'$ws'"
+
+    killall shock-slideshow-wallpaper
+
+    shock-slideshow-wallpaper
+
+fi

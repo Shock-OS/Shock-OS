@@ -1,23 +1,127 @@
 #!/bin/bash
 
+shopt -s huponexit
+
+if [[ -f ~/.shock_kidprofile ]] #if kid profile
+then
+
+    exit
+
+fi
+
+killpid=""
+
+yad --notification --image=/shock/updates-refreshing.svg --icon-size=48 --text="Checking for updates..." --command="" & killpid=$!
+
+sleep 30
+
 #the computer will now check for updates...
 
-case "$(curl -s --max-time 2 -I http://google.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
-  [23])     echo "we have connectivity"
+while true
+do
 
-    x=$(apt list --upgradable)
+    kill -9 $killpid
 
-    if [[ "$x" == *"upgradable"* ]]
+    yad --notification --image=/shock/updates-refreshing.svg --icon-size=48 --text="Checking for updates..." --command="" & killpid=$!
+
+    ping -c 3 google.com
+
+    nc=$?
+
+    if [[ "$nc" == "0" ]]
     then
 
-        yad --notification --image=emblem-package --text="Updates are available"
+        x=$(sudo shock-os-update-manager-refresh)
 
-        pi-gpk-update-viewer
+        if [[ "$x" != *"All packages are up to date."* ]]
+        then
 
-    fi;;
-  5) echo "The web proxy won't let us through";;
-  *) echo "The network is down or very slow";;
-esac
+            if [[ -f /etc/sudoers.d/shock_automatic_updates ]]
+            then
+
+                kill -9 $killpid
+
+                shock-auto-updates-kickstart
+
+                y=$(sudo shock-os-update-manager-refresh)
+
+                if [[ "$y" != *"All packages are up to date."* ]] || [[ "$y" == *"Err:"* ]] || [[ "$y" == *"E:"* ]]
+                then
+
+                    ping -c 3 google.com
+
+                    nc=$?
+
+                    if [[ "$nc" != "0" ]]
+                    then
+
+                        kill -9 $killpid
+
+                        yad --notification --image=/shock/update-error.svg --icon-size=48 --text="Automatic updates failed to install. Please ensure that you have a reliable internet connection." --command="" & killpid=$!
+
+                    else
+
+                        remaining_updates=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep  ^Inst | wc -l)
+
+                        if [[ "$remaining_updates" == "1" ]]
+                        then
+
+                            kill -9 $killpid
+
+                            yad --notification --image=/shock/update-error.svg --icon-size=48 --text="1 package needs to be upgraded manually. Please run 'sudo apt upgrade -y' in a terminal window to manually upgrade the package." --command="" & killpid=$!
+
+                        else
+
+
+                            kill -9 $killpid
+
+                            yad --notification --image=/shock/update-error.svg --icon-size=48 --text="$remaining_updates packages need to be upgraded manually. Please run 'sudo apt upgrade -y' in a terminal window to manually upgrade them." --command="" & killpid=$!
+
+                        fi
+
+                    fi
+
+                fi
+
+            else
+
+                until [[ "$x" == *"All packages are up to date."* ]]
+                do
+
+                    kill -9 $killpid
+
+                    yad --notification --image=system-software-update --text="$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep  ^Inst | wc -l) updates are available."
+
+                    pi-gpk-update-viewer
+
+                    x=$(sudo shock-os-update-manager-refresh)
+
+                done
+
+            fi
+
+        elif [[ "$x" == *"All packages are up to date."* ]]
+        then
+
+            shock-version-upgrader
+
+            kill -9 $killpid
+
+            yad --notification --image=/shock/system-up-to-date.svg --icon-size=48 --text="Your system is up to date." --command="" & killpid=$!
+
+        fi  
+
+    else
+
+        kill -9 $killpid
+
+        yad --notification --image=/shock/update-no-internet.svg --icon-size=48 --text="You must be connected to the internet to install updates." --command="" & killpid=$!
+
+    fi
+
+    sleep 900
+
+done
 
 
 

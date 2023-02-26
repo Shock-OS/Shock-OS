@@ -1,8 +1,8 @@
 Package: Shock-OS-Metapackage
-Version: 6.0
+Version: 7.0
 Architecture: all
 Essential: no
 Priority: optional
-Depends: mate-desktop-environment-extras,slick-greeter,pi-package,git,gdebi,rsync,chromium-browser,rhythmbox,celluloid,libreoffice,crudini,timeshift,zenity,fbi,yad,mpg123,btrfs-progs,libreoffice-gnome,gnome-calendar,network-manager-gnome,thunderbird,cups,system-config-printer,synaptic,onboard,orca
+Depends: mate-desktop-environment-extras,slick-greeter,pi-package,git,rsync,chromium-browser,rhythmbox,celluloid,libreoffice,crudini,zenity,fbi,yad,mpg123,btrfs-progs,libreoffice-gnome,gnome-calendar,network-manager-gnome,cups,system-config-printer,onboard,orca,dosfstools,mtools,gnote,ntp,xscreensaver-data-extra,wget,xz-utils,gnome-weather
 Maintainer: Carson Grover
-Description: This package will install the Shock OS desktop environment based on MATE. This package is designed to install Shock OS 6.0 Finlay on top of the Raspberry Pi OS Lite Bullseye kernel.
+Description: This package installs Shock OS 7.0 Garrett on top of Raspberry Pi OS Lite.

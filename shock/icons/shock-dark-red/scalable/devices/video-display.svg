@@ -93,7 +93,7 @@
          offset="0"
          id="stop2701" />
       <stop
-         style="stop-color:#641c1c;stop-opacity:1"
+         style="stop-color:#601919;stop-opacity:1"
          offset="1"
          id="stop2703" />
     </linearGradient>
@@ -449,7 +449,7 @@
          d="M 337.50563,86.002816 C 337.50563,86.002816 337.49963,85.5 337.49963,85.5 C 337.49963,84.946 337.94563,84.5 338.49963,84.5 C 339.05363,84.5 339.49963,84.946 339.49963,85.5 C 339.49963,85.5 339.51523,85.998552 339.51523,85.998552"
          style="fill:#888a85;fill-opacity:1;stroke:#555753;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dashoffset:0.50000001;stroke-opacity:1" />
       <rect
-         style="fill:url(#radialGradient10739);fill-opacity:1;fill-rule:evenodd;stroke:#641c1c;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
+         style="fill:url(#radialGradient10739);fill-opacity:1;fill-rule:evenodd;stroke:#601919;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
          id="rect2716"
          width="41"
          height="24"

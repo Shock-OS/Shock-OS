@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1
+Name=Parental Controls
+GenericName=Parental Controls
+Comment=Manage the privilages of child profiles
+Exec=shock-parental-controls
+TryExec=shock-parental-controls
+Icon=/shock/parental-controls.png
+Terminal=false
+Type=Application
+Categories=System;Settings;
+Keywords=parent;parental;controls;limit;screen;time;privilages;restrictions;
+Name[en_US]=Parental Controls

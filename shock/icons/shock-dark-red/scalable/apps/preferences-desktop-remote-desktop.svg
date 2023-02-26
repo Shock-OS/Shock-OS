@@ -213,7 +213,7 @@
          offset="0"
          id="stop2701" />
       <stop
-         style="stop-color:#641c1c;stop-opacity:1"
+         style="stop-color:#601919;stop-opacity:1"
          offset="1"
          id="stop2703" />
     </linearGradient>
@@ -369,7 +369,7 @@
          id="rect5043"
          style="opacity:0.15;fill:none;stroke:#ffffff;stroke-width:1.00000012;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0.50000001;stroke-opacity:1;display:inline;enable-background:new" />
       <rect
-         style="fill:url(#radialGradient8412);fill-opacity:1;fill-rule:evenodd;stroke:#641c1c;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
+         style="fill:url(#radialGradient8412);fill-opacity:1;fill-rule:evenodd;stroke:#601919;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
          id="rect2716"
          width="41"
          height="24"

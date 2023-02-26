@@ -1,6 +1,6 @@
 [Icon Theme]
 Name=shock-light-orange
-Comment=The Shock OS light orange icon set
+Comment=The Shock OS light orange icon theme
 Inherits=gnome-colors-common,gnome,Adwaita,breeze,oxygen,hicolor
 Example=folder
 

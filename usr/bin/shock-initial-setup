@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#this is the initial setup program for Bullseye-based versions of Shock OS and Raspberry Fli
+#this is the initial setup program for Bullseye-based versions of Shock OS and VanillaPi
 
 #the default target should be set to 'multi-user.target'
 
@@ -20,29 +20,48 @@ sudo setupcon
 
 sleep 1
 
-cuc="n"
+#the whiptail user creation patch begins
 
-times=0
+ic="no"
 
-until [[ $cuc != "n" ]]
+until [[ "$ic" == "0" ]]
 do
 
-    ((times++))
+    ua="no"
 
-    if [[ $times > 1 ]]
-    then
+    until [[ "$ua" == "y" ]]
+    do
 
-        sudo deluser --remove-home $x
+        x=""
 
-    fi
+        until [[ ! -z "$x" ]] && [[ "$x" != *" "* ]]
+        do
 
-    clear
+            x=$(whiptail --title "Create a Username" --inputbox "Please enter your desired username:" 8 40 3>&1 1>&2 2>&3)
 
-    echo "Now you must create a user. NOTE: Only letters or numbers, NO SPACES OR SYMBOLS!
+            if [[ -z "$x" ]] || [[ "$x" == *" "* ]]
+            then
 
-Please enter the desired username below:"
+                whiptail --title "Invalid Username" --msgbox "Your username cannot be empty or contain spaces. Please try again." 10 50
 
-    read x
+            fi
+
+        done
+
+        if [[ -d /home/$x ]]
+        then
+
+            whiptail --title "User Already Exists" --msgbox "The username '$x' is already taken. Please choose a different one." 10 50
+
+            ua="no"
+
+        else
+
+            ua="y"
+
+        fi
+
+    done
 
     x=$(echo "$x" | awk '{print tolower($0)}') #this command makes all the letters lowercase
 
@@ -52,25 +71,89 @@ Please enter the desired username below:"
 
     echo $x
 
-    sudo adduser $x #the user has been created
+    full_name=""
 
-    clear
+    until [[ ! -z "$full_name" ]] && [[ $full_name = *[!\ ]* ]]
+    do
 
-    echo "If the user creation did not complete successfully or you would like to make some changes, you can redo the previous step by typing 'n' followed by 'ENTER'. Otherwise, press any other key followed by 'ENTER' to continue with the setup.
+        full_name=$(whiptail --title "Full Name" --inputbox "Please enter your full name:" 10 50 3>&1 1>&2 2>&3)
 
-Are you satisfied with the user you have created? Would you like to continue the setup? [Y/n]:"
+        if [[ -z "$full_name" ]] || ! [[ $full_name = *[!\ ]* ]]
+        then
 
-    read cuc
+            whiptail --title "Invalid Full Name" --msgbox "Your full name cannot be empty or only consist of spaces. Please try again." 10 50
 
-    cuc=$(echo "$cuc" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+        fi
+
+    done
+
+    whiptail --title "Final Check" --yesno "Is this information correct?
+
+    Username: $x
+
+    Full Name: $full_name" 11 50
+
+    ic=$?
 
 done
 
+passv="no"
+
+until [[ "$passv" == "y" ]]
+do
+
+    pa1=""
+
+    until [[ ! -z "$pa1" && "$pa1" != *" "* ]] #makes sure the string is not just spaces or empty
+    do
+
+        pa1=$(whiptail --title "Create a Password" --passwordbox "For security reasons, a strong password is highly recommended. Strong passwords consist of:
+- at least eight characters
+- both lower and upper case letters
+- numbers
+- special characters
+
+Please create a password:" 15 50 3>&1 1>&2 2>&3)
+
+        if [[ -z "$pa1" || "$pa1" == *" "* ]]
+        then
+
+            whiptail --title "Invalid Password" --msgbox "Your password cannot be empty or contain spaces. Please try again." 10 50
+
+        fi
+
+    done
+
+    pa2=$(whiptail --title "Verify Password" --passwordbox "Please verify the password:" 10 50 3>&1 1>&2 2>&3)
+
+    if [[ "$pa1" == "$pa2" ]]
+    then
+
+        passv="y"
+
+        password="$pa1"
+
+    else
+
+        whiptail --title "Passwords Did Not Match" --msgbox "Oops! The passwords did not match. Please try again." 10 50
+
+        passv="no"
+
+    fi
+
+done
+
+sudo adduser --disabled-password --gecos "$full_name" $x #the user has been created
+
+echo "$x:$password" | sudo chpasswd
+
 sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $x #the user has been added to the required groups
 
-sudo cp /etc/sudoers /shock #makes a backup of the sudoers file
+whiptail --title "User Created Successfully" --msgbox "Congratulations! You have successfully created a user." 10 50
 
-echo "%$x ALL=(ALL:ALL) NOPASSWD:ALL" | sudo EDITOR='tee -a' visudo #enables the user to run all commands without a password (temporarily)
+#the whiptail user creation patch begins
+
+echo "%$x ALL=(ALL:ALL) NOPASSWD:ALL" | sudo sudo EDITOR='tee' visudo -f /etc/sudoers.d/initsetup_rootpriv #enables the user to run all commands without a password (temporarily)
 
 sudo systemctl set-default multi-user
 
@@ -111,19 +194,13 @@ echo $file1
 
 echo "1" > setupvalue
 
-sleep 3
-
 file1=`cat setupvalue`
 
 echo $file1
 
 clear
 
-echo "The system will now perform a series of reboots.
-
-Press 'ENTER' to continue."
-
-read a
+whiptail --title "Rebooting..." --msgbox "The system will now perform a series of reboots." 10 50
 
 sudo reboot
 

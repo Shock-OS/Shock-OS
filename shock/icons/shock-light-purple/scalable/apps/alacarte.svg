@@ -362,7 +362,7 @@
        d="M 8,11 C 6.9174206,11 6.03125,11.886171 6.03125,12.96875 L 6.03125,17.03125 C 6.03125,18.113829 6.9174206,19 8,19 L 31.03125,19 C 32.113829,19 32.999999,18.113829 33,17.03125 L 33,12.96875 C 33,11.88617 32.113829,11 31.03125,11 L 8,11 z"
        transform="translate(2.0004952,0.9999411)" />
     <rect
-       style="fill:#8600bc;fill-opacity:1;stroke:#65038c;stroke-width:1.0000006;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#8d1eff;fill-opacity:1;stroke:#6b00d8;stroke-width:1.0000006;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect3592"
        width="27"
        height="6.9999986"

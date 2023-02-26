@@ -1,0 +1,118 @@
+#!/bin/bash
+
+rm /shock/latest-version
+
+rm -r /shock/upgrade-packages/*
+
+wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/latest-version -P /shock
+
+latver=$(cat /shock/latest-version)
+
+sysver=$(cat /usr/lib/os-release | cut -c 22-)
+
+sysver=$(echo ${sysver:0:2})
+
+upgrto="$sysver"
+
+if [[ $latver > $sysver ]]
+then
+
+    yad --notification --image='/shock/shock-version-upgrade.svg' --icon-size=32 --text="A new version of Shock OS is available."
+
+    let upgrto++
+
+    wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/"$upgrto"cn -P /shock/upgrade-packages
+
+    upgrcn=$(cat /shock/upgrade-packages/"$upgrto"cn)
+
+    yad --window-icon='/shock/shock-version-upgrade.svg' --title="Upgrade Shock OS" --text="The upgrade to Shock OS $upgrto.0 $upgrcn is available. Would you like to upgrade?" --button="Yes" --button="No"
+
+    ynu=$?
+
+    if [[ "$ynu" != "0" ]]
+    then
+
+        exit
+
+    fi
+
+    wget https://sourceforge.net/projects/shock-os-upgrade-repo/files/shockos-$upgrto.0-all.zip -P /shock/upgrade-packages | yad --window-icon=/shock/shock-version-upgrade.svg --progress --title="Downloading Upgrade Package..." --width=310 --text="Downloading the Shock OS $upgrto.0 $upgrcn upgrade package. This may take a while..." --no-buttons --auto-close --auto-kill
+
+    wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/"$sysver"to"$upgrto"upgradescript -P /shock/upgrade-packages | yad --window-icon=/shock/shock-version-upgrade.svg --progress --title="Downloading Upgrade Instructions..." --width=310 --text="Downloading the Shock OS $upgrto.0 $upgrcn upgrade instructions. This may take a while..." --no-buttons --auto-close --auto-kill
+
+    #the password detector elements begins
+
+    pc="5555"
+
+    attempts=1
+
+    until [[ "$pc" == "0" ]]        
+    do
+
+        if [[ $attempts == 1 ]]
+        then
+
+            password=$(yad --center --fixed --window-icon=changes-prevent --title="Authentication" --text="Please enter your password" --entry --undecorated --hide-text --text-align=center --width=400)
+        
+        else
+
+            password=$(yad --center --fixed --window-icon=changes-prevent --title="Authentication" --text="The password you entered was incorrect. Please try again." --entry --undecorated --hide-text --text-align=center --width=400)
+
+        fi
+        
+        quit=$?
+
+    if [[ "$quit" == "1" ]]
+    then
+
+        exit
+
+    fi
+
+        echo "$password" | sudo -S chmod +x /shock/upgrade-packages/"$sysver"to"$upgrto"upgradescript 
+
+        pc=$?
+
+        let attempts++
+
+    done
+
+    #the password detector element ends
+
+    unzip /shock/upgrade-packages/shockos-$upgrto.0-all.zip -d /shock/upgrade-packages | zenity --window-icon=/shock/shock-version-upgrade.svg --title="Preparing the Files..." --text="Unpacking the Shock OS $upgrto.0 $upgrcn upgrade package." --progress --pulsate --auto-close --no-cancel
+
+    echo "$password" | sudo -S chmod --recursive 755 /shock/upgrade-packages/shockos-$upgrto.0-all/DEBIAN
+
+    dpkg-deb --build -Zxz /shock/upgrade-packages/shockos-$upgrto.0-all | zenity --window-icon=/shock/shock-version-upgrade.svg --title="Building the Upgrade Package..." --text="Building the Shock OS $upgrto.0 $upgrcn upgrade package." --progress --pulsate --auto-close --no-cancel
+
+    echo "$password" | sudo -S /shock/upgrade-packages/"$sysver"to"$upgrto"upgradescript | zenity --window-icon=/shock/shock-version-upgrade.svg --title="Upgrading..." --text="Upgrading to Shock OS $upgrto.0 $upgrcn..." --progress --pulsate --auto-close --no-cancel
+
+    sysver=$(cat /usr/lib/os-release | cut -c 22-)
+
+    sysver=$(echo ${sysver:0:2})
+
+    if [[ "$sysver" != "$upgrto" ]]
+    then
+
+        yad --window-icon=emblem-important --title="Upgrade Failed" --text="The upgrade to Shock OS $upgrto.0 failed. Please ensure that your internet connection is reliable and try again later." --button="Dismiss"
+
+        exit
+
+    else
+
+        yad --window-icon='/shock/shock-version-upgrade.svg' --title="Upgrade Complete" --text="The system has successfully been upgraded to Shock OS $upgrto.0 $upgrcn. Please reboot for changes to take full effect." --button="Reboot Now" --button="Reboot Later"
+
+    fi
+
+    rnol=$?
+
+    if [[ "$rnol" == "0" ]]
+    then
+
+        echo "$password" | sudo -S reboot
+
+    fi
+
+fi
+
+    

@@ -23,15 +23,15 @@
       <stop
          id="stop7279"
          offset="0"
-         style="stop-color:#25b526;stop-opacity:1" />
+         style="stop-color:#2ea52a;stop-opacity:1" />
       <stop
-         style="stop-color:#25b526;stop-opacity:1"
+         style="stop-color:#2ea52a;stop-opacity:1"
          offset="0.60000002"
          id="stop7281" />
       <stop
          id="stop7283"
          offset="1"
-         style="stop-color:#25b526;stop-opacity:0" />
+         style="stop-color:#2ea52a;stop-opacity:0" />
     </linearGradient>
     <radialGradient
        inkscape:collect="always"
@@ -571,7 +571,7 @@
        d="M 21.5,13.5 A 1,1 0 1 1 19.5,13.5 A 1,1 0 1 1 21.5,13.5 z"
        transform="translate(-5.000213,-1.8750003)" />
     <g
-       style="stroke:#25b526;stroke-width:1.00019324;stroke-miterlimit:4;stroke-dasharray:none;display:inline"
+       style="stroke:#2ea52a;stroke-width:1.00019324;stroke-miterlimit:4;stroke-dasharray:none;display:inline"
        id="g28807"
        transform="matrix(0.3535062,0,0,1.2242975,13.435464,-3.8006057)">
       <path

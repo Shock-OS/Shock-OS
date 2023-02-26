@@ -496,11 +496,11 @@
     <linearGradient
        id="linearGradient2711">
       <stop
-         style="stop-color:#ff6200;stop-opacity:1"
+         style="stop-color:#ff5d00;stop-opacity:1"
          offset="0"
          id="stop2713" />
       <stop
-         style="stop-color:#a34307;stop-opacity:1"
+         style="stop-color:#8d3a0a;stop-opacity:1"
          offset="1"
          id="stop2715" />
     </linearGradient>
@@ -813,7 +813,7 @@
          transform="matrix(1,0,0,0.6949046,-1,3.7461739)"
          id="g7148">
         <path
-           style="fill:none;fill-rule:evenodd;stroke:#ff6200;stroke-width:3.59880781;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           style="fill:none;fill-rule:evenodd;stroke:#ff5d00;stroke-width:3.59880781;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            d="M 12.5,12.5 L 23.5,12.5 C 41.603159,12.5 8.4867447,38.499999 26.5,38.499999 L 36.5,38.499999"
            id="path7146"
            sodipodi:nodetypes="cccc" />
@@ -838,16 +838,16 @@
        d="M 22.500003,45.499997 L 18.500003,45.499997 L 16.500003,42.499997"
        id="path6036" />
     <path
-       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff6200;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff5d00;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
        d="M 13.035901,43.499994 C 11.931902,41.58781 12.587817,39.139895 14.500001,38.035896 C 15.137395,37.667896 15.764001,37.499997 16.500001,37.499997"
        id="path7025"
        sodipodi:nodetypes="csc" />
     <path
-       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff6200;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff5d00;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
        d="M 10.437821,44.999998 C 8.5058211,41.653673 9.6536731,37.36982 12.999998,35.437819 C 14.115439,34.793819 15.211999,34.499995 16.5,34.499995"
        id="path7027" />
     <path
-       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff6200;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff5d00;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
        d="M 7.8397461,47.499999 C 5.0797451,42.719535 6.7195341,36.599745 11.499998,33.839744 C 13.093484,32.919744 14.659999,32.499995 16.5,32.499995"
        id="path7029"
        sodipodi:nodetypes="csc" />
@@ -964,7 +964,7 @@
         <g
            id="g10942">
           <rect
-             style="fill:url(#radialGradient3368);fill-opacity:1;fill-rule:evenodd;stroke:#a34307;stroke-width:1.19568527px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
+             style="fill:url(#radialGradient3368);fill-opacity:1;fill-rule:evenodd;stroke:#8d3a0a;stroke-width:1.19568527px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
              id="rect10944"
              width="17.041948"
              height="10"
@@ -1213,7 +1213,7 @@
         <g
            id="g11149">
           <rect
-             style="fill:url(#radialGradient11201);fill-opacity:1;fill-rule:evenodd;stroke:#a34307;stroke-width:1.19568527px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
+             style="fill:url(#radialGradient11201);fill-opacity:1;fill-rule:evenodd;stroke:#8d3a0a;stroke-width:1.19568527px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
              id="rect11151"
              width="17.041948"
              height="10"

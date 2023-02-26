@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [[ -f ~/.shock_kidprofile ]] && [[ -f ~/.shock_screen_time_limit ]]
+then
+
+    yad --notification --image=/shock/parental-controls.png --text='Screen time limit is enabled for this user.' --icon-size=48 --command='' --menu='More Info!shock-pcstl-timeleft' &
+
+    sudo shock-$(whoami)-pcstl
+
+    mate-session-save --force-logout
+
+    #the following commands will log out if using a different desktop environment
+
+    gnome-session-quit --force --logout #GNOME
+
+    qdbus org.kde.ksmserver /KSMServer logout 0 0 2 #KDE
+
+    cinnamon-session-quit --no-prompt --force #Cinnamon
+
+    xfce4-session-logout --logout --fast #XFCE4
+
+    pkill -9 -f lxsession #LXDE
+
+    openbox --exit #openbox
+
+fi

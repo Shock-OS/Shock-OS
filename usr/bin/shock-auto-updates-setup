@@ -1,0 +1,84 @@
+#!/bin/bash
+
+#the password detector elements begins
+
+pc="5555"
+
+attempts=1
+
+until [[ "$pc" == "0" ]]        
+do
+
+    if [[ $attempts == 1 ]]
+    then
+
+        password=$(yad --center --fixed --window-icon=changes-prevent --title="Authentication" --text="Please enter your password" --entry --undecorated --hide-text --text-align=center --width=400)
+    
+    else
+
+        password=$(yad --center --fixed --window-icon=changes-prevent --title="Authentication" --text="The password you entered was incorrect. Please try again." --entry --undecorated --hide-text --text-align=center --width=400)
+
+    fi
+    
+    quit=$?
+
+    if [[ "$quit" == "1" ]]
+    then
+
+        exit
+
+    fi
+
+    echo "$password" | sudo -S echo "Permission Granted"
+
+    pc=$?
+
+    let attempts++
+
+done
+
+#the password detector element ends
+
+if [[ -f /etc/sudoers.d/shock_automatic_updates ]]
+then
+
+    yad --window-icon=emblem-synchronizing --title="Automatic Updates" --text="Automatic updates are already enabled. Would you like to disable automatic updates?" --button="Disable Automatic Updates" --button="Cancel"
+
+    dau=$?
+
+    if [[ "$dau" == "0" ]]
+    then
+
+        echo "$password" | sudo -S rm /etc/sudoers.d/shock_automatic_updates
+
+        yad --window-icon=emblem-synchronizing --title="Automatic Updates" --text="Automatic updates have been disabled." --button="Dismiss"
+
+    fi
+
+else
+
+    yad --window-icon=emblem-synchronizing --width=700 --title="Automatic Updates" --text="Automatic updates are run as root daily if the internet connection is stable. You will not be able to install or remove APT packages while automatic updates are being applied. You will also not be able to shutdown or logout while automatic updates are being applied. Would you like to enable automatic updates?" --button="Enable Automatic Updates" --button="Cancel"
+
+    eau=$?
+
+    if [[ "$eau" != "0" ]]
+    then
+
+        exit
+
+    fi
+
+    echo "$password" | sudo -S echo '# Allow any user to run automatic updates without requiring a password
+
+%sudo ALL = NOPASSWD:/usr/bin/shock-auto-updates' | sudo EDITOR='tee' visudo -f /etc/sudoers.d/shock_automatic_updates
+
+    yad --window-icon=emblem-synchronizing --title="Automatic Updates" --text="Automatic updates are now enabled and will be run as root on a daily basis." --button="Dismiss"
+
+fi
+
+
+
+
+
+
+    

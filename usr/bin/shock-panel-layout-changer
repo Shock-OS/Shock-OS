@@ -1,0 +1,36 @@
+#!/bin/bash
+
+theme=$(dconf read /org/mate/desktop/interface/gtk-theme)
+
+if [[ "$theme" == *"dark"* ]]
+then
+
+    picture='/shock/panel-layouts-dark.svg'
+
+else
+
+    picture='/shock/panel-layouts-light.svg'
+
+fi
+
+yad --picture --window-icon=mate-panel --title="Panel Layouts" --button-layout=center --filename="$picture" --size=fit --height=300 --width=600 --button="Modern" --button="Traditional" --text="Please choose a panel layout."
+
+r=$?
+
+cf=$(dconf read /org/mate/panel/objects/clockapplet/prefs/format)
+
+if [[ "$r" == "0" ]]
+then
+
+    mate-panel --reset --layout=default
+
+elif [[ "$r" == "1" ]]
+then
+
+    mate-panel --reset --layout=fedora
+
+fi
+
+sleep 5
+
+dconf write /org/mate/panel/objects/clockapplet/prefs/format "$cf"

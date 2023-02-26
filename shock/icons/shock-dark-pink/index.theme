@@ -1,6 +1,6 @@
 [Icon Theme]
 Name=shock-dark-pink
-Comment=The Shock OS dark pink icon set
+Comment=The Shock OS dark pink icon theme
 Inherits=gnome-colors-common,gnome,Adwaita,breeze,oxygen,hicolor
 Example=folder
 

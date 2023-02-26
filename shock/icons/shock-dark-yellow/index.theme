@@ -1,6 +1,6 @@
 [Icon Theme]
 Name=shock-dark-yellow
-Comment=The Shock OS dark yellow icon set
+Comment=The Shock OS dark yellow icon theme
 Inherits=gnome-colors-common,gnome,Adwaita,breeze,oxygen,hicolor
 Example=folder
 

@@ -373,11 +373,11 @@
       <stop
          id="stop10227"
          offset="0"
-         style="stop-color:#ff6200;stop-opacity:1" />
+         style="stop-color:#ff5d00;stop-opacity:1" />
       <stop
          id="stop10229"
          offset="1"
-         style="stop-color:#cf5609;stop-opacity:1" />
+         style="stop-color:#ce5109;stop-opacity:1" />
     </linearGradient>
     <radialGradient
        inkscape:collect="always"
@@ -965,11 +965,11 @@
       <stop
          id="stop10448"
          offset="0"
-         style="stop-color:#cf5609;stop-opacity:1" />
+         style="stop-color:#ce5109;stop-opacity:1" />
       <stop
          id="stop10450"
          offset="1"
-         style="stop-color:#a34307;stop-opacity:1" />
+         style="stop-color:#8d3a0a;stop-opacity:1" />
     </linearGradient>
     <radialGradient
        inkscape:collect="always"
@@ -1365,7 +1365,7 @@
            height="14"
            width="27"
            id="rect10263"
-           style="fill:url(#radialGradient10367);fill-opacity:1;fill-rule:evenodd;stroke:#a34307;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new" />
+           style="fill:url(#radialGradient10367);fill-opacity:1;fill-rule:evenodd;stroke:#8d3a0a;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new" />
         <rect
            style="opacity:0.15;fill:url(#linearGradient10369);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.19827586px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
            id="rect10265"
@@ -1796,7 +1796,7 @@
            height="14"
            width="27"
            id="rect2688"
-           style="fill:url(#radialGradient10036);fill-opacity:1;fill-rule:evenodd;stroke:#cf5609;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new" />
+           style="fill:url(#radialGradient10036);fill-opacity:1;fill-rule:evenodd;stroke:#ce5109;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new" />
         <rect
            style="opacity:0.15;fill:url(#linearGradient10038);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.19827586px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
            id="rect3470"

@@ -69,15 +69,15 @@
        id="radialGradient7288">
       <stop
          id="stop7290"
-         style="stop-color:#25b526;stop-opacity:1"
+         style="stop-color:#2ef72e;stop-opacity:1"
          offset="0.2604" />
       <stop
          id="stop7292"
-         style="stop-color:#25b526;stop-opacity:1"
+         style="stop-color:#2ea52a;stop-opacity:1"
          offset="0.7988" />
       <stop
          id="stop7294"
-         style="stop-color:#108311;stop-opacity:1"
+         style="stop-color:#04a504;stop-opacity:1"
          offset="1" />
     </radialGradient>
     <radialGradient
@@ -144,15 +144,15 @@
        gradientUnits="userSpaceOnUse">
       <stop
          offset="0.2604"
-         style="stop-color:#25b526;stop-opacity:1"
+         style="stop-color:#2ef72e;stop-opacity:1"
          id="stop75" />
       <stop
          offset="0.7988"
-         style="stop-color:#25b526;stop-opacity:1"
+         style="stop-color:#2ea52a;stop-opacity:1"
          id="stop77" />
       <stop
          offset="1"
-         style="stop-color:#108311;stop-opacity:1"
+         style="stop-color:#04a504;stop-opacity:1"
          id="stop79" />
     </radialGradient>
     <radialGradient

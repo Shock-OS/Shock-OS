@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=shock-slideshow-wallpaper.desktop
+Exec=shock-slideshow-wallpaper
+Name[en_US]=shock-slideshow-wallpaper.desktop
+X-GNOME-Autostart-Phase=Desktop
+Type=Application
+Terminal=false

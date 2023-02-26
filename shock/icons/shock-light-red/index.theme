@@ -1,6 +1,6 @@
 [Icon Theme]
 Name=shock-light-red
-Comment=The Shock OS light red icon set
+Comment=The Shock OS light red icon theme
 Inherits=gnome-colors-common,gnome,Adwaita,breeze,oxygen,hicolor
 Example=folder
 

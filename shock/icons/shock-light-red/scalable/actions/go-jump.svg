@@ -47,7 +47,7 @@
          offset="0"
          id="stop3165" />
       <stop
-         style="stop-color:#7f2323;stop-opacity:1;"
+         style="stop-color:#812626;stop-opacity:1;"
          offset="1"
          id="stop3167" />
     </linearGradient>
@@ -132,7 +132,7 @@
        sodipodi:nodetypes="ccccssszcc"
        id="path4972"
        d="M 42.499979,24.52548 L 30.464729,38.5 L 18.489799,24.52548 L 24.581589,24.52548 C 26.628889,19.03951 22.424889,15.54768 17.550519,15.54768 C 14.086759,15.54768 9.3872892,17.45264 7.7998392,22.18908 C 6.9741792,24.6526 5.5198992,23.5734 5.5760992,21.43234 C 5.7936292,13.17053 11.918979,6.5633302 21.063119,6.5633302 C 30.207259,6.5633302 36.999979,13.66192 36.486889,24.52548 L 42.499979,24.52548 z"
-       style="fill:url(#linearGradient3169);fill-opacity:1;fill-rule:nonzero;stroke:#641c1c;stroke-width:0.99999964;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
+       style="fill:url(#linearGradient3169);fill-opacity:1;fill-rule:nonzero;stroke:#601919;stroke-width:0.99999964;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
     <path
        style="opacity:0.35400008;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:url(#linearGradient5862);stroke-width:0.99999958;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        d="M 40.382129,25.52548 L 30.464729,37.06788 L 20.607659,25.52548 L 25.306609,25.52548 C 27.784369,20 24.207889,14.62862 17.999979,14.52859 C 14.100729,14.46576 12.053029,15.76164 9.3375792,18 C 7.8495692,19.22658 7.0898592,21.63896 6.7393592,22.51309 C 6.2587992,22.53771 6.5413392,19.83259 6.9999792,18.15015 C 8.6718892,12.01699 13.846599,7.4993702 21.183859,7.4856702 C 28.521119,7.4719702 36.485229,12.51017 35.486889,25.52548 L 40.382129,25.52548 z"

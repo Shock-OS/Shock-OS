@@ -93,11 +93,11 @@
       <stop
          id="stop7299"
          offset="0"
-         style="stop-color:#8600bc;stop-opacity:1" />
+         style="stop-color:#8d1eff;stop-opacity:1" />
       <stop
          id="stop7301"
          offset="1"
-         style="stop-color:#8600bc;stop-opacity:0" />
+         style="stop-color:#8d1eff;stop-opacity:0" />
     </linearGradient>
     <radialGradient
        inkscape:collect="always"
@@ -114,11 +114,11 @@
        inkscape:collect="always"
        id="linearGradient6969">
       <stop
-         style="stop-color:#410758;stop-opacity:1"
+         style="stop-color:#5200a6;stop-opacity:1"
          offset="0"
          id="stop6971" />
       <stop
-         style="stop-color:#8600bc;stop-opacity:1"
+         style="stop-color:#8d1eff;stop-opacity:1"
          offset="1"
          id="stop6973" />
     </linearGradient>
@@ -457,9 +457,9 @@
          height="1.00291"
          width="25.00001"
          id="rect7075"
-         style="opacity:1;fill:#410758;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible" />
+         style="opacity:1;fill:#5200a6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible" />
       <rect
-         style="opacity:1;fill:#410758;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible"
+         style="opacity:1;fill:#5200a6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible"
          id="rect7079"
          width="21"
          height="0.99999964"
@@ -470,7 +470,7 @@
          rx="0.49999982"
          ry="0.49999982" />
       <rect
-         style="opacity:1;fill:#410758;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible"
+         style="opacity:1;fill:#5200a6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible"
          id="rect7081"
          width="16.771515"
          height="0.9375"
@@ -490,9 +490,9 @@
          height="0.9375"
          width="27"
          id="rect7083"
-         style="opacity:1;fill:#410758;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible" />
+         style="opacity:1;fill:#5200a6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible" />
       <rect
-         style="opacity:1;fill:#410758;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible"
+         style="opacity:1;fill:#5200a6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible"
          id="rect7085"
          width="27"
          height="0.9375"
@@ -512,9 +512,9 @@
          height="0.9375"
          width="9.999999"
          id="rect7087"
-         style="opacity:1;fill:#410758;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible" />
+         style="opacity:1;fill:#5200a6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible" />
       <rect
-         style="opacity:1;fill:#410758;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible"
+         style="opacity:1;fill:#5200a6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible"
          id="rect7091"
          width="5.0312486"
          height="0.9375"
@@ -534,7 +534,7 @@
          height="0.9375"
          width="7.9999986"
          id="rect7093"
-         style="opacity:1;fill:#410758;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible" />
+         style="opacity:1;fill:#5200a6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible" />
       <rect
          ry="0.46875"
          rx="0.46875006"
@@ -545,9 +545,9 @@
          height="0.9375"
          width="7.9999986"
          id="rect7095"
-         style="opacity:1;fill:#410758;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible" />
+         style="opacity:1;fill:#5200a6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible" />
       <rect
-         style="opacity:1;fill:#410758;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible"
+         style="opacity:1;fill:#5200a6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible"
          id="rect7097"
          width="7.9999986"
          height="0.9375"
@@ -558,7 +558,7 @@
          rx="0.46875006"
          ry="0.46875" />
       <rect
-         style="opacity:1;fill:#410758;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible"
+         style="opacity:1;fill:#5200a6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible"
          id="rect7099"
          width="7.9999986"
          height="0.9375"
@@ -578,7 +578,7 @@
          height="0.9375"
          width="3.9288881"
          id="rect7101"
-         style="opacity:1;fill:#410758;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible" />
+         style="opacity:1;fill:#5200a6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible" />
     </g>
     <g
        style="display:inline"
@@ -635,7 +635,7 @@
          inkscape:r_cy="true" />
     </g>
     <path
-       style="opacity:0.5;fill:#8600bc;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0.3612;stroke-opacity:1;display:inline"
+       style="opacity:0.5;fill:#8d1eff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0.3612;stroke-opacity:1;display:inline"
        d="M 7.999941,10.000092 L 7.999941,24.000092 L 7.999941,29.000092 L 7.999941,31.000092 L 7.999941,33.968842 L 7.999941,35.000092 L 7.999941,36.000092 L 7.999941,37.968842 L 26.999941,37.968842 L 26.999941,36.000092 L 30.999941,36.000092 L 30.999941,33.968842 L 34.999941,33.968842 L 34.999941,31.000092 L 19.999941,31.000092 L 19.999941,29.000092 L 36.999941,29.000092 L 36.999941,24.000092 L 26.999941,24.000092 L 26.999941,23.000092 L 32.999941,23.000092 L 32.999941,21.000092 L 36.999941,21.000092 L 36.999941,12.000092 L 33.999941,12.000092 L 33.999941,10.000092 L 26.999941,10.000092 L 7.999941,10.000092 z"
        id="rect7329" />
     <g

@@ -47,7 +47,7 @@
          offset="0"
          id="stop3164" />
       <stop
-         style="stop-color:#7f2323;stop-opacity:1;"
+         style="stop-color:#812626;stop-opacity:1;"
          offset="1"
          id="stop3166" />
     </linearGradient>
@@ -129,7 +129,7 @@
        d="M 19.3125,19.03125 A 8.0625,2.28125 0 1 1 3.1875,19.03125 A 8.0625,2.28125 0 1 1 19.3125,19.03125 z"
        transform="matrix(2.48062,0,0,2.410961,-3.9069763,-5.3836063)" />
     <path
-       style="opacity:1;fill:url(#linearGradient3168);fill-opacity:1;fill-rule:nonzero;stroke:#641c1c;stroke-width:0.99999958;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+       style="opacity:1;fill:url(#linearGradient3168);fill-opacity:1;fill-rule:nonzero;stroke:#601919;stroke-width:0.99999958;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        d="M 22.502204,9.5398098 L 41.506348,26.045834 L 22.502204,42.469125 L 22.502204,34.59929 L 7.5063647,34.59929 L 7.5063647,17.544158 L 22.502204,17.544158 L 22.502204,9.5398098 z"
        id="path4348"
        sodipodi:nodetypes="cccccccc" />

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <metacity_theme>
 <info>
-	<name>oomox-shock-dark-blue</name>
+	<name>oomox-shock-classic-dark-blue</name>
 	<author>Satyajit Sahoo</author>
 	<copyright>GPL-3.0+</copyright>
 	<date>11 December 2013</date>
@@ -10,15 +10,15 @@
 
 <!-- ::: CONSTANTS ::: -->
 <constant name="C_titlebar_focused" value="#3c3c3c" />
-<constant name="C_titlebar_unfocused" value="#2c2c2c" />
+<constant name="C_titlebar_unfocused" value="#3e3e3e" />
 <constant name="C_border_focused" value="#729fcf" />
 <constant name="C_border_unfocused" value="#3c3c3c" />
 <constant name="C_title_focused" value="#e6e6e6" />
-<constant name="C_title_unfocused" value="blend/#ececec/#2c2c2c/0.4" />
+<constant name="C_title_unfocused" value="blend/#ffffff/#3e3e3e/0.4" />
 <constant name="C_icons_focused" value="#e6e6e6" />
 <constant name="C_icons_focused_prelight" value="gtk:bg[SELECTED])" />
 <constant name="C_icons_focused_pressed" value="shade/gtk:bg[SELECTED]/0.8" />
-<constant name="C_icons_unfocused" value="blend/#ececec/#2c2c2c/0.4" />
+<constant name="C_icons_unfocused" value="blend/#ffffff/#3e3e3e/0.4" />
 <constant name="C_icons_unfocused_prelight" value="gtk:bg[SELECTED])" />
 <constant name="C_icons_unfocused_pressed" value="shade/gtk:bg[SELECTED]/0.8" />
 

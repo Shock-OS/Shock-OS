@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Installing automatic updates
+
+yad --notification --image=/shock/auto-updates.svg --icon-size=48 --text="Automatic updates are being installed. Please do not turn off your computer." --command="" & killpid=$! &&
+
+success="no"
+
+until [[ "$success" == "yes" ]]
+do
+
+output=$(sudo apt-get update && sudo apt-get upgrade -y)
+
+success="yes"
+
+if [[ "$output" == *"'sudo dpkg --configure -a'"* ]] #if packages need to be reconfigured
+then
+
+    success="no"
+
+    sudo dpkg --configure -a
+
+fi
+
+done
+
+sudo kill -9 $killpid
+

@@ -114,6 +114,8 @@ sudo rm /usr/share/applications/users.desktop
 
 sudo rm /usr/share/applications/mate-font-viewer.desktop
 
+sudo rm /usr/share/applications/mate-appearance-properties.desktop
+
 #removes the shortcuts for unwanted apps in the applications directory
 
 #the home directory building begins
@@ -138,6 +140,12 @@ sudo mkdir /etc/skel/.config
 
 sudo mkdir /etc/skel/.config/menus
 
+sudo touch /etc/skel/.config/shock-welcome-indicator
+
+sudo touch /etc/skel/.config/userlogstat
+
+sudo cp -r /shock/chromium /etc/skel/.config
+
 sudo mkdir /etc/skel/.cache
 
 sudo mkdir /etc/skel/.local
@@ -146,21 +154,77 @@ sudo mkdir /etc/skel/.local/share
 
 sudo mkdir /etc/skel/.local/share/applications
 
-sudo cp /shock/userlogstat /etc/skel/.local
-
 sudo cp /shock/mate_dock_applet.conf /etc/skel/.config
 
 #the home directory building ends
+
+sudo cp -r /shock/applications/* /etc/skel/.local/share/applications
 
 sudo cp -r /shock/applications/* /usr/share/applications
 
 #the above command renames the apps to Shock OS friendly names
 
-#the menu patch begins
+#the XScreenSaver imperfect screensaver removal patch begins
 
-sudo cp -r /shock/local-applications/* /etc/skel/.local/share/applications
+sudo rm /usr/share/applications/screensavers/binaryring.desktop
 
-#the menu patch ends
+sudo rm /usr/share/applications/screensavers/deluxe.desktop
+
+sudo rm /usr/share/applications/screensavers/fireworkx.desktop
+
+sudo rm /usr/share/applications/screensavers/fluidballs.desktop
+
+sudo rm /usr/share/applications/screensavers/fontglide.desktop
+
+sudo rm /usr/share/applications/screensavers/fuzzyflakes.desktop
+
+sudo rm /usr/share/applications/screensavers/glitchpeg.desktop
+
+sudo rm /usr/share/applications/screensavers/goop.desktop
+
+sudo rm /usr/share/applications/screensavers/interference.desktop
+
+sudo rm /usr/share/applications/screensavers/kumppa.desktop
+
+sudo rm /usr/share/applications/screensavers/metaballs.desktop
+
+sudo rm /usr/share/applications/screensavers/qix.desktop
+
+sudo rm /usr/share/applications/screensavers/rd-bomb.desktop
+
+sudo rm /usr/share/applications/screensavers/rocks.desktop
+
+sudo rm /usr/share/applications/screensavers/spotlight.desktop
+
+sudo rm /usr/share/applications/screensavers/strange.desktop
+
+sudo rm /usr/share/applications/screensavers/vidwhacker.desktop
+
+#the XScreenSaver imperfect screensaver removal patch ends
+
+sudo cp /usr/bin/mate-appearance-properties /usr/bin/mate-appearance-properties-old
+
+sudo rm /usr/bin/mate-appearance-properties
+
+sudo touch /usr/bin/mate-appearance-properties
+
+echo '#!/bin/bash
+
+shock-wallpapers' | sudo tee /usr/bin/mate-appearance-properties
+
+sudo chmod +x /usr/bin/mate-appearance-properties
+
+#the above set of commands replaces the mate-appearance-properties program with a link to shock-wallpapers (for the desktop context menu)
+
+echo '# Allow any user to check for new system updates upon startup without requiring a password
+
+%sudo ALL = NOPASSWD:/usr/bin/shock-os-update-manager-refresh' | sudo EDITOR='tee' visudo -f /etc/sudoers.d/shock-os-update-manager-refresh
+
+#the above command allows anyone in the sudo group to run shock-os-update-manager-refresh without a password
+
+setfacl -m g:shock-child:--- /usr/bin/pkexec
+
+#prohibits child users from using pkexec
 
 #Wi-Fi patch begins
 

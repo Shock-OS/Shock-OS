@@ -82,11 +82,11 @@
        inkscape:collect="always"
        id="linearGradient9087">
       <stop
-         style="stop-color:#7f2323;stop-opacity:1"
+         style="stop-color:#812626;stop-opacity:1"
          offset="0"
          id="stop9089" />
       <stop
-         style="stop-color:#641c1c;stop-opacity:1"
+         style="stop-color:#601919;stop-opacity:1"
          offset="1"
          id="stop9091" />
     </linearGradient>
@@ -105,11 +105,11 @@
       <stop
          id="stop9075"
          offset="0"
-         style="stop-color:#a52a2a;stop-opacity:1" />
+         style="stop-color:#ff0000;stop-opacity:1" />
       <stop
          id="stop9077"
          offset="1"
-         style="stop-color:#7f2323;stop-opacity:1" />
+         style="stop-color:#812626;stop-opacity:1" />
     </linearGradient>
     <linearGradient
        inkscape:collect="always"
@@ -135,7 +135,7 @@
          offset="0.25" />
       <stop
          id="stop9105"
-         style="stop-color:#7f2323;stop-opacity:1"
+         style="stop-color:#812626;stop-opacity:1"
          offset="1" />
     </linearGradient>
     <linearGradient

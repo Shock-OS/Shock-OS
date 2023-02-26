@@ -772,11 +772,11 @@
     <linearGradient
        id="linearGradient2699">
       <stop
-         style="stop-color:#cf72b7;stop-opacity:1"
+         style="stop-color:#ff1eec;stop-opacity:1"
          offset="0"
          id="stop2701" />
       <stop
-         style="stop-color:#68345b;stop-opacity:1"
+         style="stop-color:#7e0074;stop-opacity:1"
          offset="1"
          id="stop2703" />
     </linearGradient>
@@ -1207,7 +1207,7 @@
            height="24"
            width="41"
            id="rect2716"
-           style="fill:url(#radialGradient8969);fill-opacity:1;fill-rule:evenodd;stroke:#68345b;stroke-width:0.99715501px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new" />
+           style="fill:url(#radialGradient8969);fill-opacity:1;fill-rule:evenodd;stroke:#7e0074;stroke-width:0.99715501px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new" />
         <path
            style="opacity:0.24497992;fill:url(#radialGradient8971);fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dashoffset:0.50000001;stroke-opacity:1"
            d="M 330,59 L 340,59 L 340,82 L 318,82 L 330,59 z"

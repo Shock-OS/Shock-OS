@@ -163,11 +163,11 @@
     <linearGradient
        id="linearGradient2699">
       <stop
-         style="stop-color:#cdba00;stop-opacity:1"
+         style="stop-color:#a5992a;stop-opacity:1"
          offset="0"
          id="stop2701" />
       <stop
-         style="stop-color:#7a6f03;stop-opacity:1"
+         style="stop-color:#514b13;stop-opacity:1"
          offset="1"
          id="stop2703" />
     </linearGradient>
@@ -326,7 +326,7 @@
        height="26.000345"
        width="37.000343"
        id="rect2716"
-       style="fill:url(#radialGradient13337);fill-opacity:1;fill-rule:evenodd;stroke:#7a6f03;stroke-width:0.99965488999999996;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline;enable-background:new" />
+       style="fill:url(#radialGradient13337);fill-opacity:1;fill-rule:evenodd;stroke:#514b13;stroke-width:0.99965488999999996;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline;enable-background:new" />
     <path
        style="opacity:0.24497992;fill:url(#radialGradient13334);fill-opacity:1;stroke:none;display:inline;enable-background:new"
        d="M 33.027045,13.036442 L 42.05409,13.036442 L 42.05409,37.963545 L 22.19459,37.963545 L 33.027045,13.036442 z"

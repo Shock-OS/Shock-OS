@@ -1,10 +1,6 @@
 #!/bin/bash
 
-file1=$(cat /shock/setupvalue)
-
-echo $file1
-
-if [[ "$file1" == "1" ]]
+if [[ -f ~/.config/userlogstat ]]
 then
 
     dconf write /org/mate/desktop/interface/gtk-theme "'shock-light-blue'"
@@ -25,7 +21,42 @@ then
 
     #the above set of commands sets the mate-dock-applet defaults
 
-    #the above set of commands sets the 'Shock OS' system theme
+    dconf write /org/mate/screensaver/themes "['screensavers-gnomelogo-floaters']"
+
+    #the above command sets Lightning Bolt as the default screensaver
+
+    dconf write /org/mate/marco/general/center-new-windows "true"
+        
+    #the above command sets the new window placement to the center
+
+    dconf write /org/mate/desktop/background/show-desktop-icons "true"
+
+    dconf write /org/mate/caja/desktop/computer-icon-visible "false"
+
+    dconf write /org/mate/caja/desktop/home-icon-visible "true"
+
+    dconf write /org/mate/caja/desktop/trash-icon-visible "true"
+
+    dconf write /org/mate/caja/desktop/network-icon-visible "false"
+
+    dconf write /org/mate/caja/desktop/volumes-visible "true"
+
+    #the above set of commands sets the default Shock OS desktop icons
+
+    dconf write /org/mate/desktop/session/idle-delay 15
+
+    #sets the computer to regard the session as idle after 15 minutes (screensaver starts after 15 minutes)
+
+    rm ~/.config/userlogstat
+
+fi
+
+file1=$(cat /shock/setupvalue)
+
+echo $file1
+
+if [[ "$file1" == "1" ]]
+then
 
     sudo deluser --remove-home shock #the 'shock' user has been removed
 
@@ -45,80 +76,31 @@ then
 
     sudo systemctl set-default graphical
 
-    sudo cp /shock/sudoers /etc #this command removes elevated privilages as they are no longer required.
+    #the silent splash patch begins
 
-    echo "2" > /shock/setupvalue
+    echo 'disable_splash=1' | sudo tee -a /boot/config.txt
+
+    paste /boot/cmdline.txt <(echo "consoleblank=1 logo.nologo quiet loglevel=0 plymouth.enable=0 vt.global_cursor_default=0 plymouth.ignore-serial-consoles splash fastboot noatime nodiratime noram") | sudo tee /boot/cmdline.txt
+
+    #the silent splash patch ends
+
+    sudo rm /etc/sudoers.d/initsetup_rootpriv #this command removes elevated privilages as they are no longer required.
+
+    echo "5555" > /shock/setupvalue
 
     echo "Finalizing setup..."
 
     reboot
 
-elif [[ "$file1" == "2" ]]
-then
-
-    echo "5555" > /shock/setupvalue
-
-    echo "5555" > ~/.local/userlogstat
-
-    panel-layout-changer
-    
-    shock-themes
-
-    yad --center --width=600 --title="Select Volume Output" --text="By default, Shock OS outputs audio through the headphone jack. If you would like to continue using the headphone jack as the primary audio output device, click 'Skip'.
-
-However, if you would like to output audio through HDMI instead, click 'Manage' below and select 'Built-in Audio Digital Stereo (HDMI)'. Then click 'Close'." --button="Skip" --button="Manage"
-
-    cao=$?
-
-    if [[ $cao == "1" ]]
-    then
-
-        mate-volume-control --page=output
-
-    fi
-
-    yad --info --center --title="Thank You" --window-icon=emblem-default --width 300 --button="Dismiss" --text "Thank you for choosing Shock OS. Enjoy your experience.
-
-Luke 1:37"
-
 fi
 
-file2=$(cat ~/.local/userlogstat)
+dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" #ensures that the user can logout and shutdown (fixes the shutdown menu being locked if the system crashed during automatic updates)
 
-echo $file2
+mpg123 /shock/startup-sound/* #this command plays the startup sound
 
-if [[ "$file2" == "0" ]]
-then
+shock-welcome
 
-    dconf write /org/mate/desktop/interface/gtk-theme "'shock-light-blue'"
 
-    dconf write /org/mate/marco/general/theme "'shock-light-blue'"
-
-    dconf write /org/mate/desktop/interface/icon-theme "'shock-light-blue'"
-
-    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
-
-    dconf write /org/onboard/theme "'/usr/share/onboard/themes/Nightshade.theme'"
-
-    #the above command sets the onboard theme to Nightshade
-
-    dconf write /org/mate/panel/objects/dockapplet/prefs/win-from-cur-workspace-only "'true'"
-
-    dconf write /org/mate/panel/objects/dockapplet/prefs/pinned-apps "'chromium-browser.desktop', 'caja-browser.desktop', 'mate-terminal.desktop'"
-
-    #the above set of commands sets the mate-dock-applet defaults
-
-    cp -r /shock/chromium ~/.config
-
-    echo "5555" > ~/.local/userlogstat
-
-    panel-layout-changer
-    
-    shock-themes
-
-fi
-
-mpg123 /shock/startup-sound.mp3 #this command plays the startup sound
 
 
 

@@ -1,6 +1,6 @@
 [Icon Theme]
 Name=shock-light-green
-Comment=The Shock OS light green icon set
+Comment=The Shock OS light green icon theme
 Inherits=gnome-colors-common,gnome,Adwaita,breeze,oxygen,hicolor
 Example=folder
 

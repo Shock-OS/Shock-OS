@@ -1,6 +1,6 @@
 [Icon Theme]
 Name=shock-dark-purple
-Comment=The Shock OS dark purple icon set
+Comment=The Shock OS dark purple icon theme
 Inherits=gnome-colors-common,gnome,Adwaita,breeze,oxygen,hicolor
 Example=folder
 

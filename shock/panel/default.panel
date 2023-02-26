@@ -1,6 +1,6 @@
 [general]
 default-layout='default'
-object-id-list=['briskmenu', 'separator', 'clockapplet', 'notificationarea', 'workspaceswitcherapplet', 'showdesktopapplet', 'dockapplet']
+object-id-list=['briskmenu', 'separator', 'clockapplet', 'notificationarea', 'showdesktopapplet', 'dockapplet']
 toplevel-id-list=['toplevel-0']
 
 [toplevels/toplevel-0]
@@ -30,7 +30,7 @@ panel-right-stick=false
 applet-iid='ClockAppletFactory::ClockApplet'
 locked=true
 toplevel-id='toplevel-0'
-position=126
+position=72
 object-type='applet'
 panel-right-stick=true
 
@@ -58,14 +58,6 @@ panel-right-stick=false
 applet-iid='NotificationAreaAppletFactory::NotificationArea'
 locked=true
 toplevel-id='toplevel-0'
-position=238
-object-type='applet'
-panel-right-stick=true
-
-[objects/workspaceswitcherapplet]
-applet-iid='WnckletFactory::WorkspaceSwitcherApplet'
-locked=true
-toplevel-id='toplevel-0'
-position=465
+position=184
 object-type='applet'
 panel-right-stick=true

@@ -500,7 +500,7 @@
          offset="0"
          id="stop2713" />
       <stop
-         style="stop-color:#641c1c;stop-opacity:1"
+         style="stop-color:#601919;stop-opacity:1"
          offset="1"
          id="stop2715" />
     </linearGradient>
@@ -964,7 +964,7 @@
         <g
            id="g10942">
           <rect
-             style="fill:url(#radialGradient3368);fill-opacity:1;fill-rule:evenodd;stroke:#641c1c;stroke-width:1.19568527px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
+             style="fill:url(#radialGradient3368);fill-opacity:1;fill-rule:evenodd;stroke:#601919;stroke-width:1.19568527px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
              id="rect10944"
              width="17.041948"
              height="10"
@@ -1213,7 +1213,7 @@
         <g
            id="g11149">
           <rect
-             style="fill:url(#radialGradient11201);fill-opacity:1;fill-rule:evenodd;stroke:#641c1c;stroke-width:1.19568527px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
+             style="fill:url(#radialGradient11201);fill-opacity:1;fill-rule:evenodd;stroke:#601919;stroke-width:1.19568527px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
              id="rect11151"
              width="17.041948"
              height="10"

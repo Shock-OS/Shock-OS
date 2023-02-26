@@ -22,11 +22,11 @@
        inkscape:collect="always"
        id="linearGradient3104">
       <stop
-         style="stop-color:#ff6200"
+         style="stop-color:#ff5d00"
          offset="0"
          id="stop3106" />
       <stop
-         style="stop-color:#cf5609"
+         style="stop-color:#ce5109"
          offset="1"
          id="stop3108" />
     </linearGradient>
@@ -46,7 +46,7 @@
       <stop
          id="stop1351"
          offset="0"
-         style="stop-color:#ff6200" />
+         style="stop-color:#ff5d00" />
       <stop
          id="stop1353"
          offset="1"
@@ -264,21 +264,21 @@
        id="rect1355"
        sodipodi:nodetypes="cccc" />
     <rect
-       style="opacity:1;fill:#d3d7cf;fill-opacity:1;stroke:#a34307;stroke-width:0.99999934;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#d3d7cf;fill-opacity:1;stroke:#8d3a0a;stroke-width:0.99999934;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect1906"
        width="9.9999895"
        height="7.0000014"
        x="5.500011"
        y="7.5000157" />
     <rect
-       style="opacity:1;fill:#d3d7cf;fill-opacity:1;stroke:#a34307;stroke-width:0.99999946;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#d3d7cf;fill-opacity:1;stroke:#8d3a0a;stroke-width:0.99999946;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect1890"
        width="7.0000019"
        height="4.9999981"
        x="6.499999"
        y="16.500025" />
     <rect
-       style="opacity:1;fill:#cf5609;fill-opacity:1;stroke:#d3d7cf;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#ce5109;fill-opacity:1;stroke:#d3d7cf;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect2796"
        width="12"
        height="8"
