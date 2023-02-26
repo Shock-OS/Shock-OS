@@ -1,0 +1,134 @@
+#!/bin/bash
+
+current_version="$(apt version shock-os-metapackage)"
+
+rm /shock/codenames
+
+wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/codenames -P /shock
+
+latest_version="$(echo "$(wc /shock/codenames)" | cut -f1 -d" ")"
+
+if ((latest_version>current_version))
+then
+
+    upgrto_version="$latest_version"
+
+    let upgrto_version++
+
+    upgrto_codename="$(sed -n "$upgrto_version"p /shock/codenames)"
+
+    if ((upgrto_version<10))
+    then
+
+        upgrto_version="$upgrto_version.0"
+
+    fi
+
+    yad --notification --window-icon=/shock/shock-release-upgrader.svg --title="Shock OS Release Upgrader" --text="The upgrade to Shock OS $upgrto_version $upgrto_codename is available."
+
+    #the password detector elements begins
+
+    pc="5555"
+
+    attempts=1
+
+    until [[ "$pc" == "0" ]]        
+    do
+
+        if [[ $attempts == 1 ]]
+        then
+
+            password=$(yad --fixed --center --window-icon=changes-prevent --title="Authentication" --text="Please enter your password" --entry --undecorated --hide-text --text-align=center --width=400)
+        
+        else
+
+            password=$(yad --fixed --center --window-icon=changes-prevent --title="Authentication" --text="The password you entered was incorrect. Please try again." --entry --undecorated --hide-text --text-align=center --width=400)
+
+        fi
+        
+        quit=$?
+
+    if [[ "$quit" == "1" ]]
+    then
+
+        exit
+
+    fi
+
+        echo "$password" | sudo -S echo "PERMISSION GRANTED" #replace apt update with desired command
+
+        pc=$?
+
+        let attempts++
+
+    done
+
+    #the password detector element ends
+
+    until [[ "$(apt version shock-os-metapackage)" == "$upgrto_version" ]]
+    do
+
+        zenity --window-icon=/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version $upgrto_codename" --text="Please sit tight. The upgrade may take a few minutes to complete." --progress --pulsate --no-cancel & killpid=$!
+
+        echo "$password" | sudo -S rm -R /usr/share/shock-release-upgrader/*
+
+        echo "$password" | sudo -S wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader
+
+        echo "$password" | sudo -S wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/$upgrto_version.zip -P /usr/share/shock-release-upgrader
+
+        echo "$password" | sudo -S unzip /usr/share/shock-release-upgrader/$upgrto_version.zip -d /usr/share/shock-release-upgrader
+
+        echo "$password" | sudo -S chmod --recursive 755 /usr/share/shock-release-upgrader/$upgrto_version/DEBIAN
+
+        echo "$password" | sudo -S dpkg-deb --build -Zxz /usr/share/shock-release-upgrader/$upgrto_version
+
+        echo "$password" | sudo -S apt install /usr/share/shock-release-upgrader/$upgrto_version.deb
+
+        if [[ "$(apt version shock-os-metapackage)" != "$upgrto_version" ]]
+        then
+
+            yad --window-icon=/shock/shock-release-upgrader.svg --title="Shock OS Release Upgrader" --image=emblem-important --text="The upgrade to Shock OS $upgrto_version $upgrto_codename failed. Please make sure of the following before retrying:
+
+- The internet connection is stable.
+
+- No packages are being installed, removed or upgraded (APT must not be running)." --button="Retry"
+
+        else
+
+            yad --window-icon=/shock/shock-release-upgrader.svg --title="Shock OS Release Upgrader" --image=emblem-default --text="The upgrade to Shock OS $upgrto_version $upgrto_codename completed successfully! Changes will take full effect upon reboot." --button="Reboot Later":1 --button="Reboot Now":0
+
+            rb=$?
+
+            if [[ "$rb" == "0" ]]
+            then
+
+                reboot
+
+            fi
+
+        fi
+
+    done
+
+fi
+
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

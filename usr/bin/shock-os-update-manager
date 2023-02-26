@@ -103,7 +103,7 @@ do
         elif [[ "$x" == *"All packages are up to date."* ]]
         then
 
-            shock-version-upgrader
+            shock-release-upgrader
 
             kill -9 $killpid
 

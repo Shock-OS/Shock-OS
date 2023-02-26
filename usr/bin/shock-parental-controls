@@ -173,13 +173,6 @@ then
     if [[ -f /home/$utr/.shock_screen_time_limit ]] #screen time limit
     then
 
-        if [[ "'$(ps aux | grep '"shock-$utr-pcstl) == *'root'* ]]
-        then
-
-            sudo killall shock-$utr-pcstl
-
-        fi
-
         "'minutes=$(cat '"/home/$utr/.shock_screen_time_limit)
 
         if [[ -f /home/$utr/.shock_pcstl/"'"$(date "+%F")" ]]
@@ -189,6 +182,8 @@ then
 
             if [[ "$minutes" == "TIME IS UP" ]]
             then
+
+                sudo killall -u '"$utr"'
 
                 exit
 
@@ -228,6 +223,8 @@ then
 
                 sudo chattr -R +i '"/home/$utr/.shock_pcstl"'
 
+                sudo killall -u '"$utr"'
+
                 exit
 
             fi
@@ -259,6 +256,8 @@ then
         echo "TIME IS UP" | tee '"/home/$utr/.shock_pcstl/"'"$(date "+%F")"
 
         sudo chattr -R +i '"/home/$utr/.shock_pcstl  
+
+        sudo killall -u $utr
 
         exit
 
