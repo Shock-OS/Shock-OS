@@ -175,15 +175,17 @@ then
 
         "'minutes=$(cat '"/home/$utr/.shock_screen_time_limit)
 
-        if [[ -f /home/$utr/.shock_pcstl/"'"$(date "+%F")" ]]
+        if [[ -f /home/$utr/.shock_pcstl/"'$(date +%F) ]]
         then
 
-            minutes=$(cat '"/home/$utr/.shock_pcstl/"'"$(date "+%F")")
+            minutes=$(cat '"/home/$utr/.shock_pcstl/"'$(date +%F))
 
-            if [[ "$minutes" == "TIME IS UP" ]]
+            if [[ $minutes == "TIME IS UP" ]]
             then
 
-                sudo killall -u '"$utr"'
+                '"sudo killall -15 -u $utr
+
+                sudo killall -9 -u $utr
 
                 exit
 
@@ -191,58 +193,60 @@ then
 
         else
 
-            sudo chattr -R -i '"/home/$utr/.shock_pcstl
+            sudo chattr -R -i /home/$utr/.shock_pcstl
 
             rm -r /home/$utr/.shock_pcstl
 
             mkdir /home/$utr/.shock_pcstl
 
-            touch /home/$utr/.shock_pcstl/"'"$(date "+%F")"
+            touch /home/$utr/.shock_pcstl/"'$(date +%F)
 
-            sudo chattr -R +i '"/home/$utr/.shock_pcstl
+            '"sudo chattr -R +i /home/$utr/.shock_pcstl
 
         fi
 
-        sudo chattr -R -i /home/$utr/.shock_pcstl"'
+        sudo chattr -R -i /home/$utr/.shock_pcstl
 
-        echo "$minutes" | tee '"/home/$utr/.shock_pcstl/"'"$(date "+%F")"
+        "'echo $minutes | tee '"/home/$utr/.shock_pcstl/"'$(date +%F)
 
-        sudo chattr -R +i '"/home/$utr/.shock_pcstl"'
+        '"sudo chattr -R +i /home/$utr/.shock_pcstl
 
-        while (($minutes>0))
+        "'while (($minutes>0))
         do
 
             sleep 60
 
-            if ! [[ -f '"/home/$utr/.shock_pcstl/"'"$(date "+%F")" ]]
+            '"if ! [[ -f /home/$utr/.shock_pcstl/"'$(date +%F) ]]
             then
 
-                sudo chattr -R -i '"/home/$utr/.shock_pcstl"'
+                '"sudo chattr -R -i /home/$utr/.shock_pcstl
 
-                echo "TIME IS UP" | tee '"/home/$utr/.shock_pcstl/"'"$(date "+%F")"
+                "'echo "TIME IS UP" | tee '"/home/$utr/.shock_pcstl/"'$(date +%F)
 
-                sudo chattr -R +i '"/home/$utr/.shock_pcstl"'
+                '"sudo chattr -R +i /home/$utr/.shock_pcstl
 
-                sudo killall -u '"$utr"'
+                sudo killall -15 -u $utr
+
+                sudo killall -9 -u $utr
 
                 exit
 
             fi
 
-            if [[ $(python3 /usr/bin/shock-view-current-user.py)'" == "$utr" ]]
+            "'if [[ $(python3 /usr/bin/shock-view-current-user.py) == ''"'"$utr"'"'' ]] || [[ $(python3 /usr/bin/shock-view-current-user.py) == *''"'" $utr "'"''* ]] || [[ $(python3 /usr/bin/shock-view-current-user.py) == *''"'" $utr"'"'' ]] || [[ $(python3 /usr/bin/shock-view-current-user.py) == ''"'"$utr "'"'"* ]]
             then
 
                 let minutes--
 
-                sudo chattr -R -i ""/home/$utr/.shock_pcstl"'
+                sudo chattr -R -i /home/$utr/.shock_pcstl
 
-                echo "$minutes" | tee '"/home/$utr/.shock_pcstl/"'"$(date "+%F")"
+                "'echo $minutes | tee '"/home/$utr/.shock_pcstl/"'$(date +%F)
 
-                sudo chattr -R +i '"/home/$utr/.shock_pcstl"'
+                '"sudo chattr -R +i /home/$utr/.shock_pcstl
 
             fi
 
-            if (($minutes<6))
+            "'if (($minutes<6))
             then
 
                 zenity --notification --text="Your screen time is almost up. You have $minutes minutes of screen time left. You may want to find a stopping point and save your work."
@@ -251,13 +255,15 @@ then
 
         done
 
-        sudo chattr -R -i '"/home/$utr/.shock_pcstl"'
+        '"sudo chattr -R -i /home/$utr/.shock_pcstl
 
-        echo "TIME IS UP" | tee '"/home/$utr/.shock_pcstl/"'"$(date "+%F")"
+        echo TIME IS UP | tee /home/$utr/.shock_pcstl/"'$(date +%F)
 
-        sudo chattr -R +i '"/home/$utr/.shock_pcstl  
+        '"sudo chattr -R +i /home/$utr/.shock_pcstl  
 
-        sudo killall -u $utr
+        sudo killall -15 -u $utr
+
+        sudo killall -9 -u $utr
 
         exit
 
