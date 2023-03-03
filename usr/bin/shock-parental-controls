@@ -173,7 +173,9 @@ then
     if [[ -f /home/$utr/.shock_screen_time_limit ]] #screen time limit
     then
 
-        "'minutes=$(cat '"/home/$utr/.shock_screen_time_limit)
+        "'start_date="$(date +%F)"
+
+        minutes=$(cat '"/home/$utr/.shock_screen_time_limit)
 
         if [[ -f /home/$utr/.shock_pcstl/"'$(date +%F) ]]
         then
@@ -219,26 +221,58 @@ then
             '"if ! [[ -f /home/$utr/.shock_pcstl/"'$(date +%F) ]]
             then
 
-                '"sudo chattr -R -i /home/$utr/.shock_pcstl
+                if [[ "$start_date" != "$(date +%F)" ]] #if different date
+                then
 
-                "'echo "TIME IS UP" | tee '"/home/$utr/.shock_pcstl/"'$(date +%F)
+                    start_date="$(date +%F)"
 
-                '"sudo chattr -R +i /home/$utr/.shock_pcstl
+                    minutes=$(cat '"/home/$utr/.shock_screen_time_limit)
 
-                sudo killall -15 -u $utr
+                    sudo chattr -R -i /home/$utr/.shock_pcstl
 
-                sudo killall -9 -u $utr
+                    rm -r /home/$utr/.shock_pcstl
 
-                exit
+                    mkdir /home/$utr/.shock_pcstl
+
+                    touch /home/$utr/.shock_pcstl/"'$(date +%F)
+
+                    '"sudo chattr -R +i /home/$utr/.shock_pcstl
+
+                else
+
+                    sudo chattr -R -i /home/$utr/.shock_pcstl
+
+                    touch /home/$utr/.shock_pcstl/"'$(date +%F)
+
+                    echo "TIME IS UP" | tee '"/home/$utr/.shock_pcstl/"'$(date +%F)
+
+                    '"sudo chattr -R +i /home/$utr/.shock_pcstl
+
+                    sudo killall -15 -u $utr
+
+                    sudo killall -9 -u $utr
+
+                    exit
+
+                fi
 
             fi
 
-            "'if [[ $(python3 /usr/bin/shock-view-current-user.py) == ''"'"$utr"'"'' ]] || [[ $(python3 /usr/bin/shock-view-current-user.py) == *''"'" $utr "'"''* ]] || [[ $(python3 /usr/bin/shock-view-current-user.py) == *''"'" $utr"'"'' ]] || [[ $(python3 /usr/bin/shock-view-current-user.py) == ''"'"$utr "'"'"* ]]
+            "'current_user=$(python3 /usr/bin/shock-view-current-user.py)
+
+            if [[ -z $current_user ]]
+            then
+
+                current_user=$(python3 /usr/bin/shock-view-current-user-wayland.py)
+
+            fi
+
+            if [[ $current_user == ''"'"$utr"'"'' ]] || [[ $current_user == *''"'" $utr "'"''* ]] || [[ $current_user == *''"'" $utr"'"'' ]] || [[ $current_user == ''"'"$utr "*'"'' ]]
             then
 
                 let minutes--
 
-                sudo chattr -R -i /home/$utr/.shock_pcstl
+                '"sudo chattr -R -i /home/$utr/.shock_pcstl
 
                 "'echo $minutes | tee '"/home/$utr/.shock_pcstl/"'$(date +%F)
 
@@ -257,7 +291,7 @@ then
 
         '"sudo chattr -R -i /home/$utr/.shock_pcstl
 
-        echo TIME IS UP | tee /home/$utr/.shock_pcstl/"'$(date +%F)
+        "'echo "TIME IS UP" | tee '"/home/$utr/.shock_pcstl/"'$(date +%F)
 
         '"sudo chattr -R +i /home/$utr/.shock_pcstl  
 

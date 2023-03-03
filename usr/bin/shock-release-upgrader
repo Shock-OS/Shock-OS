@@ -6,7 +6,7 @@ rm /shock/codenames
 
 wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/codenames -P /shock
 
-latest_version="$(echo "$(wc /shock/codenames)" | cut -f1 -d" ")"
+latest_version="$(echo "$(wc -l /shock/codenames)" | cut -f1 -d" ")"
 
 if ((latest_version>current_version))
 then
