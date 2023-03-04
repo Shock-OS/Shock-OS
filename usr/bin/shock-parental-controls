@@ -258,16 +258,9 @@ then
 
             fi
 
-            "'current_user=$(python3 /usr/bin/shock-view-current-user.py)
+            "'current_user=$(sudo shock-view-current-user)
 
-            if [[ -z $current_user ]]
-            then
-
-                current_user=$(python3 /usr/bin/shock-view-current-user-wayland.py)
-
-            fi
-
-            if [[ $current_user == ''"'"$utr"'"'' ]] || [[ $current_user == *''"'" $utr "'"''* ]] || [[ $current_user == *''"'" $utr"'"'' ]] || [[ $current_user == ''"'"$utr "*'"'' ]]
+            if [[ $current_user == ''*"'"CURRENT USER:$utr"'"*'' ]]
             then
 
                 let minutes--

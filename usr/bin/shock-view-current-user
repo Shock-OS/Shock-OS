@@ -1,0 +1,44 @@
+#!/bin/bash
+
+rm /usr/share/shock-view-current-user/*
+
+loginctl --no-legend list-sessions | tee /usr/share/shock-view-current-user/sessions
+
+counter=1
+
+success="no"
+
+while ((counter<=$(wc -l /usr/share/shock-view-current-user/sessions | cut -f1 -d" "))) && [[ "$success" == "no" ]]
+do
+
+    session="$(sed -n "$counter"p /usr/share/shock-view-current-user/sessions)"
+
+    if [[ "${session:0:1}" == " " ]]
+    then
+
+        session="${session:1}"
+
+    fi
+
+    session="$(echo "$session" | cut -f1 -d" ")"
+
+    session_info="$(loginctl show-session $session)"
+
+    session_info=$(echo "$session_info" | sed 's/ //g')
+
+    eval "$session_info"
+
+    if [[ "$Active" == "yes" ]] && [[ "$Type" == "x11" ]] || [[ "$Type" == "wayland" ]] && [[ -d /home/"$Name" ]]
+    then
+
+        echo "CURRENT USER:$Name"
+
+        success="yes"
+
+    fi
+
+    let counter++
+
+done
+
+    
