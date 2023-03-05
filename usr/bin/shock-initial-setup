@@ -34,7 +34,7 @@ do
 
         x=""
 
-        until [[ ! -z "$x" ]] && [[ "$x" != *" "* ]]
+        until [[ ! -z "$x" ]] && [[ "$x" != *" "* ]] && [[ "$(expr "$x" : "^[a-z][-a-z0-9_]*\$" )" != "0" ]]
         do
 
             x=$(whiptail --title "Create a Username" --inputbox "Please enter your desired username:" 8 40 3>&1 1>&2 2>&3)
@@ -43,6 +43,11 @@ do
             then
 
                 whiptail --title "Invalid Username" --msgbox "Your username cannot be empty or contain spaces. Please try again." 10 50
+
+            elif [[ "$(expr "$x" : "^[a-z][-a-z0-9_]*\$" )" == "0" ]] #if username doesn't match the regular expression configured via the NAME_REGEX variable
+            then
+
+                whiptail --title "Invalid Username" --msgbox "That username does not meet the necessary requirements. Please try again." 10 50
 
             fi
 

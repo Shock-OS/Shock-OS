@@ -104,6 +104,15 @@ then
 
                 focus_field="1"
 
+            elif [[ "$(expr "$x" : "^[a-z][-a-z0-9_]*\$" )" == "0" ]] #if username doesn't match the regular expression configured via the NAME_REGEX variable
+            then
+
+                yad --window-icon=system-users --title="Invalid Username" --text="That username does not meet the necessary requirements. Please try again." --button="Retry"
+
+                success="no"
+
+                focus_field="1"
+
             elif [[ -z "$full_name" ]] || ! [[ $full_name = *[!\ ]* ]]
             then
 
