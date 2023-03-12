@@ -60,7 +60,7 @@ then
 
 fi
 
-output=$(yad --width=300 --window-icon=emblem-art --title="Themes & Colors" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection")
+output=$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes & Colors" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Choose Third Party Themes/Icons/Cursors":1 --button="Apply":0)
 
 ex=$?
 
@@ -94,6 +94,11 @@ then
     show-clock=false" > /etc/lightdm/slick-greeter.conf
 
     echo "$theme" | tee ~/.config/shock_themes
+
+elif [[ "$ex" == "1" ]]
+then
+
+    shock-third-party-themes-selector
 
 fi
 
