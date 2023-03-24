@@ -3,6 +3,6 @@ Version: 7.0
 Architecture: all
 Essential: no
 Priority: optional
-Depends: mate-desktop-environment-extras,slick-greeter,pi-package,git,rsync,chromium-browser,rhythmbox,celluloid,libreoffice,crudini,zenity,fbi,yad,mpg123,btrfs-progs,libreoffice-gnome,gnome-calendar,network-manager-gnome,cups,system-config-printer,onboard,orca,dosfstools,mtools,gnote,ntp,xscreensaver-data-extra,wget,xz-utils,gnome-weather
+Depends: mate-desktop-environment-extras,slick-greeter,pi-package,git,rsync,chromium-browser,rhythmbox,celluloid,libreoffice,crudini,zenity,fbi,yad,mpg123,btrfs-progs,libreoffice-gnome,gnome-calendar,network-manager-gnome,cups,system-config-printer,onboard,orca,dosfstools,mtools,gnote,ntp,xscreensaver-data-extra,wget,xz-utils,gnome-weather,gnome-disk-utility,apt-show-versions
 Maintainer: Carson Grover
 Description: This package installs Shock OS 7.0 Garrett on top of Raspberry Pi OS Lite.

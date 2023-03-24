@@ -1,6 +1,15 @@
 #!/bin/bash
 
-current_version="$(apt version shock-os-metapackage)"
+current_version="$(echo "$(apt-show-versions shock-os-metapackage)" | cut -d" " -f2-2)"
+
+current_version_nodecimal="$(echo "$(apt-show-versions shock-os-metapackage)" | cut -d" " -f2-2)"
+
+if [[ "$current_version" == *"."* ]]
+then
+
+    current_version_nodecimal=$(sed 's/[.].*//' <<< "$current_version")
+
+fi
 
 rm /shock/codenames
 
@@ -8,10 +17,10 @@ wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/codenames 
 
 latest_version="$(echo "$(wc -l /shock/codenames)" | cut -f1 -d" ")"
 
-if ((latest_version>current_version))
+if ((latest_version>current_version_nodecimal))
 then
 
-    upgrto_version="$latest_version"
+    upgrto_version="$current_version_nodecimal"
 
     let upgrto_version++
 
@@ -24,7 +33,7 @@ then
 
     fi
 
-    yad --notification --window-icon=/shock/shock-release-upgrader.svg --title="Shock OS Release Upgrader" --text="The upgrade to Shock OS $upgrto_version $upgrto_codename is available."
+    yad --notification --image=/shock/shock-release-upgrader.svg --icon-size=48 --title="Shock OS Release Upgrader" --text="The upgrade to Shock OS $upgrto_version $upgrto_codename is available."
 
     #the password detector elements begins
 
@@ -65,7 +74,7 @@ then
 
     #the password detector element ends
 
-    until [[ "$(apt version shock-os-metapackage)" == "$upgrto_version" ]]
+    until [[ "$current_version_nodecimal" == "$upgrto_version" ]]
     do
 
         zenity --window-icon=/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version $upgrto_codename" --text="Please sit tight. The upgrade may take a few minutes to complete." --progress --pulsate --no-cancel & killpid=$!
@@ -74,9 +83,20 @@ then
 
         echo "$password" | sudo -S wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader
 
-        echo "$password" | sudo -S wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/$upgrto_version.zip -P /usr/share/shock-release-upgrader
+        if [[ -f /usr/share/shock-release-upgrader/$upgrto_version-preupgr-script ]]
+        then
 
-        echo "$password" | sudo -S unzip /usr/share/shock-release-upgrader/$upgrto_version.zip -d /usr/share/shock-release-upgrader
+            echo "$password" | sudo -S chmod +x /usr/share/shock-release-upgrader/$upgrto_version-preupgr-script
+
+            echo "$password" | sudo -S /usr/share/shock-release-upgrader/$upgrto_version-preupgr-script
+
+        fi
+
+        echo "$password" | sudo -S wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/$upgrto_version.zip -P /usr/share/shock-release-upgrader 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/shock/shock-release-upgrader.svg --progress --title="Downloading Upgrade Pack..." --width=310 --text="Downloading the Shock OS $upgrto_version $upgrto_codename upgrade pack. This may take a while..." --no-buttons --auto-close
+
+        echo "$password" | sudo -S mkdir /usr/share/shock-release-upgrader/$upgrto_version
+
+        echo "$password" | sudo -S unzip /usr/share/shock-release-upgrader/$upgrto_version.zip -d /usr/share/shock-release-upgrader/$upgrto_version
 
         echo "$password" | sudo -S chmod --recursive 755 /usr/share/shock-release-upgrader/$upgrto_version/DEBIAN
 
@@ -84,7 +104,18 @@ then
 
         echo "$password" | sudo -S apt install /usr/share/shock-release-upgrader/$upgrto_version.deb
 
-        if [[ "$(apt version shock-os-metapackage)" != "$upgrto_version" ]]
+        echo "$password" | sudo -S wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader
+
+        if [[ -f /usr/share/shock-release-upgrader/$upgrto_version-postupgr-script ]]
+        then
+
+            echo "$password" | sudo -S chmod +x /usr/share/shock-release-upgrader/$upgrto_version-postupgr-script
+
+            echo "$password" | sudo -S /usr/share/shock-release-upgrader/$upgrto_version-postupgr-script
+
+        fi
+
+        if [[ "$(echo "$(apt-show-versions shock-os-metapackage)" | cut -d" " -f2-2)" != "$upgrto_version" ]]
         then
 
             yad --window-icon=/shock/shock-release-upgrader.svg --title="Shock OS Release Upgrader" --image=emblem-important --text="The upgrade to Shock OS $upgrto_version $upgrto_codename failed. Please make sure of the following before retrying:
@@ -105,6 +136,17 @@ then
                 reboot
 
             fi
+
+        fi
+
+        current_version="$(echo "$(apt-show-versions shock-os-metapackage)" | cut -d" " -f2-2)"
+
+        current_version_nodecimal="$(echo "$(apt-show-versions shock-os-metapackage)" | cut -d" " -f2-2)"
+
+        if [[ "$current_version" == *"."* ]]
+        then
+
+            current_version_nodecimal=$(sed 's/[.].*//' <<< "$current_version")
 
         fi
 
