@@ -77,7 +77,26 @@ then
     until [[ "$current_version_nodecimal" == "$upgrto_version" ]]
     do
 
-        zenity --window-icon=/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version $upgrto_codename" --text="Please sit tight. The upgrade may take a few minutes to complete." --progress --pulsate --no-cancel & killpid=$!
+        yad --window-icon=/shock/shock-release-upgrader.svg --title="Prepare to Upgrade" --text="Before upgrading, please make sure of the following:
+
+1. The system is connected to a constant power supply.
+
+2. The internet connection is stable and reliable.
+
+3. No APT packages are being installed, removed or upgraded.
+
+NOTE: The logout and power options in the start menu will be temporarily disabled while upgrading because powering off the machine during the upgrade process is highly discouraged and may render your system unusable." --width=500
+
+        ex=$?
+
+        if [[ "$ex" != "0" ]]
+        then
+
+            exit
+
+        fi
+
+        dconf write /org/mate/desktop/lockdown/disable-log-out "true" # Stops the user from accessing the shutdown menu while the system is being upgraded.
 
         echo "$password" | sudo -S rm -R /usr/share/shock-release-upgrader/*
 
@@ -92,17 +111,17 @@ then
 
         fi
 
-        echo "$password" | sudo -S wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/$upgrto_version.zip -P /usr/share/shock-release-upgrader 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/shock/shock-release-upgrader.svg --progress --title="Downloading Upgrade Pack..." --width=310 --text="Downloading the Shock OS $upgrto_version $upgrto_codename upgrade pack. This may take a while..." --no-buttons --auto-close
+        echo "$password" | sudo -S wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/$upgrto_version.zip -P /usr/share/shock-release-upgrader 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/shock/shock-release-upgrader.svg --progress --title="Downloading Upgrade Pack..." --width=310 --text="Downloading the Shock OS $upgrto_version $upgrto_codename upgrade pack. This may take a while..." --no-buttons --auto-close --no-escape --undecorated
 
         echo "$password" | sudo -S mkdir /usr/share/shock-release-upgrader/$upgrto_version
 
-        echo "$password" | sudo -S unzip /usr/share/shock-release-upgrader/$upgrto_version.zip -d /usr/share/shock-release-upgrader/$upgrto_version
+        echo "$password" | sudo -S unzip /usr/share/shock-release-upgrader/$upgrto_version.zip -d /usr/share/shock-release-upgrader/$upgrto_version 2>&1 | yad --progress --pulsate --auto-close --window-icon=/shock/shock-release-upgrader.svg --title="Unpacking Upgrade Pack..." --text="Unpacking the Shock OS $upgrto_version $upgrto_codename upgrade pack. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
 
         echo "$password" | sudo -S chmod --recursive 755 /usr/share/shock-release-upgrader/$upgrto_version/DEBIAN
 
-        echo "$password" | sudo -S dpkg-deb --build -Zxz /usr/share/shock-release-upgrader/$upgrto_version
+        echo "$password" | sudo -S dpkg-deb --build -Zxz /usr/share/shock-release-upgrader/$upgrto_version 2>&1 | yad --window-icon=/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version $upgrto_codename. Please sit tight, this may take a while..." -no-buttons --no-escape --undecorated --auto-close --progress --pulsate --progress-text="" --no-buttons
 
-        echo "$password" | sudo -S apt install /usr/share/shock-release-upgrader/$upgrto_version.deb
+        echo "$password" | sudo -S apt install /usr/share/shock-release-upgrader/$upgrto_version.deb 2>&1 | yad --progress --pulsate --auto-close --window-icon=/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version $upgrto_codename..." --text="Upgrading to Shock OS $upgrto_version $upgrto_codename. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
 
         echo "$password" | sudo -S wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader
 
@@ -114,6 +133,8 @@ then
             echo "$password" | sudo -S /usr/share/shock-release-upgrader/$upgrto_version-postupgr-script
 
         fi
+
+        dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" # Allows the user to access the shutdown menu.
 
         if [[ "$(echo "$(apt-show-versions shock-os-metapackage)" | cut -d" " -f2-2)" != "$upgrto_version" ]]
         then
@@ -133,7 +154,7 @@ then
             if [[ "$rb" == "0" ]]
             then
 
-                reboot
+                echo "$password" | sudo -S reboot
 
             fi
 

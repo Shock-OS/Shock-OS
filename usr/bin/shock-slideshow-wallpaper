@@ -50,6 +50,14 @@ then
     while true
     do
 
+        #the automatic directory refresher patch begins
+
+        xfile=("$directory"/*) #detect added wallpapers without requiring a reboot
+
+        amount=$(ls "$directory" | wc -l) #recounts amount of wallpapers (for in order)
+
+        #the automatic directory refresher patch ends
+
         if [[ "$random_inorder" == 'TRUE' ]] #random
         then
 
