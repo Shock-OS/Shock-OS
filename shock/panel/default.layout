@@ -11,13 +11,6 @@ toplevel-id=toplevel-0
 applet-iid=BriskMenuFactory::BriskMenu
 object-type=applet
 
-[Object separator]
-locked=true
-position=121
-panel-right-stick=false
-toplevel-id=toplevel-0
-object-type=separator
-
 [Object clockapplet]
 locked=true
 position=72
@@ -36,7 +29,7 @@ object-type=applet
 
 [Object showdesktopapplet]
 locked=true
-position=89
+position=96
 panel-right-stick=false
 toplevel-id=toplevel-0
 applet-iid=WnckletFactory::ShowDesktopApplet
@@ -44,7 +37,7 @@ object-type=applet
 
 [Object dockapplet]
 locked=true
-position=131
+position=138
 panel-right-stick=false
 toplevel-id=toplevel-0
 applet-iid=DockAppletFactory::DockApplet

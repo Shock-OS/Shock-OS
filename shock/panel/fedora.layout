@@ -13,7 +13,7 @@ object-type=applet
 
 [Object windowlistapplet]
 locked=true
-position=131
+position=121
 panel-right-stick=false
 toplevel-id=toplevel-0
 applet-iid=WnckletFactory::WindowListApplet
@@ -21,7 +21,7 @@ object-type=applet
 
 [Object clockapplet]
 locked=true
-position=116
+position=113
 panel-right-stick=true
 toplevel-id=toplevel-0
 applet-iid=ClockAppletFactory::ClockApplet
@@ -29,31 +29,17 @@ object-type=applet
 
 [Object notificationarea]
 locked=true
-position=228
+position=225
 panel-right-stick=true
 toplevel-id=toplevel-0
 applet-iid=NotificationAreaAppletFactory::NotificationArea
 object-type=applet
 
-[Object separator]
-locked=true
-position=79
-panel-right-stick=false
-toplevel-id=toplevel-0
-object-type=separator
-
 [Object showdesktopapplet]
 locked=true
-position=89
+position=86
 panel-right-stick=false
 toplevel-id=toplevel-0
 applet-iid=WnckletFactory::ShowDesktopApplet
 object-type=applet
-
-[Object separator]
-locked=true
-position=121
-panel-right-stick=false
-toplevel-id=toplevel-0
-object-type=separator
 

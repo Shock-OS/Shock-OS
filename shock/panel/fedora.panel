@@ -1,6 +1,6 @@
 [general]
 default-layout='fedora'
-object-id-list=['briskmenu', 'windowlistapplet', 'clockapplet', 'notificationarea', 'object-0', 'object-1', 'object-2']
+object-id-list=['briskmenu', 'windowlistapplet', 'clockapplet', 'notificationarea', 'object-0']
 toplevel-id-list=['toplevel-0']
 
 [toplevels/toplevel-0]
@@ -11,26 +11,11 @@ y-bottom=0
 size=33
 y=1046
 
-[objects/windowlistapplet]
-applet-iid='WnckletFactory::WindowListApplet'
-locked=true
-toplevel-id='toplevel-0'
-position=131
-object-type='applet'
-panel-right-stick=false
-
-[objects/object-2]
-locked=true
-toplevel-id='toplevel-0'
-position=121
-object-type='separator'
-panel-right-stick=false
-
 [objects/clockapplet]
 applet-iid='ClockAppletFactory::ClockApplet'
 locked=true
 toplevel-id='toplevel-0'
-position=116
+position=113
 object-type='applet'
 panel-right-stick=true
 
@@ -42,7 +27,7 @@ custom-format=''
 applet-iid='NotificationAreaAppletFactory::NotificationArea'
 locked=true
 toplevel-id='toplevel-0'
-position=228
+position=225
 object-type='applet'
 panel-right-stick=true
 
@@ -55,16 +40,17 @@ object-type='applet'
 panel-right-stick=false
 
 [objects/object-0]
-locked=true
-toplevel-id='toplevel-0'
-position=79
-object-type='separator'
-panel-right-stick=false
-
-[objects/object-1]
 applet-iid='WnckletFactory::ShowDesktopApplet'
 locked=true
 toplevel-id='toplevel-0'
-position=89
+position=86
+object-type='applet'
+panel-right-stick=false
+
+[objects/windowlistapplet]
+applet-iid='WnckletFactory::WindowListApplet'
+locked=true
+toplevel-id='toplevel-0'
+position=121
 object-type='applet'
 panel-right-stick=false

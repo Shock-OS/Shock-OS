@@ -1,6 +1,6 @@
 [general]
 default-layout='default'
-object-id-list=['briskmenu', 'separator', 'clockapplet', 'notificationarea', 'showdesktopapplet', 'dockapplet']
+object-id-list=['briskmenu', 'clockapplet', 'notificationarea', 'showdesktopapplet', 'dockapplet']
 toplevel-id-list=['toplevel-0']
 
 [toplevels/toplevel-0]
@@ -15,15 +15,8 @@ y=1039
 applet-iid='WnckletFactory::ShowDesktopApplet'
 locked=true
 toplevel-id='toplevel-0'
-position=89
+position=96
 object-type='applet'
-panel-right-stick=false
-
-[objects/separator]
-locked=true
-toplevel-id='toplevel-0'
-position=121
-object-type='separator'
 panel-right-stick=false
 
 [objects/clockapplet]
@@ -42,7 +35,7 @@ custom-format=''
 applet-iid='DockAppletFactory::DockApplet'
 locked=true
 toplevel-id='toplevel-0'
-position=131
+position=138
 object-type='applet'
 panel-right-stick=false
 
