@@ -74,10 +74,10 @@ then
 
     #the password detector element ends
 
-    until [[ "$current_version_nodecimal" == "$upgrto_version" ]]
+    until [[ "$current_version" == "$upgrto_version" ]]
     do
 
-        yad --window-icon=/shock/shock-release-upgrader.svg --title="Prepare to Upgrade" --text="Before upgrading, please make sure of the following:
+        zenity --info --window-icon=/shock/shock-release-upgrader.svg --title="Prepare to Upgrade" --text="Before upgrading, please make sure of the following:
 
 1. The system is connected to a constant power supply.
 
@@ -121,7 +121,7 @@ NOTE: The logout and power options in the start menu will be temporarily disable
 
         echo "$password" | sudo -S dpkg-deb --build -Zxz /usr/share/shock-release-upgrader/$upgrto_version 2>&1 | yad --window-icon=/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version $upgrto_codename. Please sit tight, this may take a while..." -no-buttons --no-escape --undecorated --auto-close --progress --pulsate --progress-text="" --no-buttons
 
-        echo "$password" | sudo -S apt install /usr/share/shock-release-upgrader/$upgrto_version.deb 2>&1 | yad --progress --pulsate --auto-close --window-icon=/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version $upgrto_codename..." --text="Upgrading to Shock OS $upgrto_version $upgrto_codename. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
+        echo "$password" | sudo -S apt install -y /usr/share/shock-release-upgrader/$upgrto_version.deb 2>&1 | yad --progress --pulsate --auto-close --window-icon=/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version $upgrto_codename..." --text="Upgrading to Shock OS $upgrto_version $upgrto_codename. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
 
         echo "$password" | sudo -S wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader
 
