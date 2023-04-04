@@ -75,13 +75,13 @@ then
 
     color=$(echo "$color" | awk '{print tolower($0)}') #this command makes all the letters lowercase
 
-    theme="'shock-$lod-$color'"
+    theme="shock-$lod-$color"
 
-    dconf write /org/mate/desktop/interface/gtk-theme "$theme"
+    dconf write /org/mate/desktop/interface/gtk-theme "'$theme'"
 
-    dconf write /org/mate/marco/general/theme "$theme"
+    dconf write /org/mate/marco/general/theme "'$theme'"
 
-    dconf write /org/mate/desktop/interface/icon-theme "$theme"
+    dconf write /org/mate/desktop/interface/icon-theme "'$theme'"
 
     dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
 
