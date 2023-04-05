@@ -130,15 +130,6 @@ then
 
                 focus_field="1"
 
-            elif [[ "$x" == *"x-session-manager"* ]]
-            then
-
-                yad --window-icon=system-users --title="Invalid Username" --text="Usernames cannot consist of 'x-session-manager'. Please try again." --button="Retry"
-
-                success="no"
-
-                focus_field="1"
-
             elif [[ -z "$full_name" ]] || ! [[ $full_name = *[!\ ]* ]]
             then
 
@@ -264,7 +255,7 @@ then
 
         urs="yes"
 
-        if [[ " $(w | grep x-session-manager) " == *" $user_to_remove "* ]]
+        if [[ "$(w | grep x-session-manager | awk '{print " "$1" "}')" == *" $user_to_remove "* ]]
         then
 
             yad --window-icon=system-users --title="Cannot Remove User" --text="You cannot remove the user '$user_to_remove' because they are currently logged in." --button="Dismiss"
