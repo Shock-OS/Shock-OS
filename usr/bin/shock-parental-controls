@@ -9,44 +9,46 @@ then
 
 fi
 
-#the password detector elements begins
+#the authentication element begins
 
-pc="5555"
+SAE_PC="5555"
 
-attempts=1
+SAE_ATTEMPTS=1
 
-until [[ "$pc" == "0" ]]        
+SAE_PROGRAM_NAME="Parental Controls"
+
+until [[ "$SAE_PC" == "0" ]]        
 do
 
-    if [[ $attempts == 1 ]]
+    if [[ $SAE_ATTEMPTS == 1 ]]
     then
 
-        password=$(yad --fixed --center --window-icon=changes-prevent --title="Authentication" --text="Please enter your password" --entry --undecorated --hide-text --text-align=center --width=400)
+        SAE_PASSWORD=$(yad --window-icon=changes-prevent --title="Authentication" --text="$SAE_PROGRAM_NAME requires your password to continue." --entry --hide-text --text-align=center --width=400 --button="Cancel":1 --button="Authenticate":0)
     
     else
 
-        password=$(yad --fixed --center --window-icon=changes-prevent --title="Authentication" --text="The password you entered was incorrect. Please try again." --entry --undecorated --hide-text --text-align=center --width=400)
+        SAE_PASSWORD=$(yad --window-icon=changes-prevent --title="Authentication" --text="The password you entered was incorrect. Please try again." --entry --hide-text --text-align=center --width=400 --button="Cancel":1 --button="Authenticate":0)
 
     fi
     
-    quit=$?
+    SAE_QUIT=$?
 
-if [[ "$quit" == "1" ]]
-then
+    if [[ "$SAE_QUIT" != "0" ]]
+    then
 
-    exit
+        exit
 
-fi
+    fi
 
-    echo "$password" | sudo -S echo "PERMISSION GRANTED" #replace apt update with desired command
+    echo "$SAE_PASSWORD" | sudo -S echo "PERMISSION GRANTED" #replace apt update with desired command
 
-    pc=$?
+    SAE_PC=$?
 
-    let attempts++
+    let SAE_ATTEMPTS++
 
 done
 
-#the password detector element ends
+#the authentication element ends
 
 userlist=""
 
@@ -94,7 +96,7 @@ then
 
 fi
 
-output=$(yad --window-icon=/shock/parental-controls.png --title="Parental Controls" --text="You can manage the limits and restrictions of chile profiles." --form --field="Child Profile:":CB "$userlist" --field="Restriction:":CB 'Screen Time Limit')
+output=$(yad --window-icon=/shock/parental-controls.png --title="Parental Controls" --text="You can manage the limits and restrictions of child profiles." --form --field="Child Profile:":CB "$userlist" --field="Restriction:":CB 'Screen Time Limit' --button="Next")
 
 utr=$(echo "$output" | awk -F'|' '{print $1}')
 
@@ -128,7 +130,7 @@ then
 
             echo "$password" | sudo -S rm -r /home/$utr/.shock_pcstl
 
-            yad --window-icon=/shock/parental-controls.png --title="Parental Controls" --text="The scree time limit for the user '$utr' was removed successfully."
+            yad --window-icon=/shock/parental-controls.png --title="Parental Controls" --text="The scree time limit for the user '$utr' was removed successfully." --button="Dismiss"
 
             exit
 
@@ -138,7 +140,7 @@ then
 
     #the time limit patch begins
 
-    minutes=$(yad --window-icon=/shock/parental-controls.png --title="Screen Time Limit" --text="You can set a daily screen time limit for $utr." --form --field="Daily screen time limit (in minutes):":NUM '120!10..1440')
+    minutes=$(yad --window-icon=/shock/parental-controls.png --title="Screen Time Limit" --text="You can set a daily screen time limit for $utr." --form --field="Daily screen time limit (in minutes):":NUM '120!10..1440' --button="Apply")
 
     ex4=$?
 

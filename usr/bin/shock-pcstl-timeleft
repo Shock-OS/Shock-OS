@@ -2,12 +2,26 @@
 
 #check how much screen time is left
 
-minutes=$(cat /home/$(whoami)/.shock_screen_time_limit)
+while true
+do
 
-tau=$(cat /home/$(whoami)/.shock_pcstl/"$(date "+%F")")
+    minutes=$(cat /home/$(whoami)/.shock_screen_time_limit)
 
-yad --window-icon=/shock/parental-controls.png --title="Screen Time Limit" --text="Your parent/guardian/administrator has set a daily screen time limit on your profile.
+    tau=$(cat /home/$(whoami)/.shock_pcstl/"$(date "+%F")")
 
-Total daily limit: $minutes minutes
+    yad --window-icon=/shock/parental-controls.png --title="Screen Time Limit" --text="Your parent/guardian/administrator has set a daily screen time limit on your profile.
 
-Time remaining: $tau minutes" --button="Dismiss"
+    Total daily limit: $minutes minutes
+
+    Time remaining: $tau minutes" --buttons-layout=edge --button="Refresh" --button="Dismiss"
+
+    ex=$?
+
+    if [[ "$ex" != "0" ]]
+    then
+
+        exit
+
+    fi
+
+done

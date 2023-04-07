@@ -108,7 +108,7 @@ yad --width=320 --text-align=center --buttons-layout=center --title="Desktop Bac
 
 wt=$?
 
-if [[ "$wt" == "0" ]]
+if [[ "$wt" == "0" ]] #single image
 then
 
     wallpaper_is_image="no"
@@ -116,7 +116,7 @@ then
     until [[ "$wallpaper_is_image" == "yes" ]]
     do
     
-        choose=$(yad --width=300 --title="Select an Image" --window-icon="background" --form --field="Image:":FL "$current_wallpaper" --field="Style:":CB "$style_input_siw" --button="Reset to Default":1 --button="OK":0)
+        choose=$(yad --width=300 --title="Single Image Background" --window-icon="background" --form --field="Image:":FL "$current_wallpaper" --field="Style:":CB "$style_input_siw" --button="Reset to Default":1 --button="Apply":0)
 
         ex=$?
 
@@ -186,7 +186,7 @@ then
 
     done
 
-elif [[ "$wt" == "1" ]]
+elif [[ "$wt" == "1" ]] #slideshow
 then
 
     dc=0
@@ -194,7 +194,7 @@ then
     until (( $dc > 1 )) && [[ "$dci" == *"image"* ]]
     do
 
-        choose=$(yad --form --width=400 --height=200 --window-icon=background --title="Slideshow Background" --field="Folder containing images:":DIR "$current_directory" --field="Delay (minutes):":NUM "$current_delay"'!1..100!1' --field="Style:":CB "$style_input" --field="Play images in random order":CHK "$current_random_inorder")
+        choose=$(yad --form --width=400 --height=200 --window-icon=background --title="Slideshow Background" --field="Folder containing images:":DIR "$current_directory" --field="Delay (minutes):":NUM "$current_delay"'!1..100!1' --field="Style:":CB "$style_input" --field="Play images in random order":CHK "$current_random_inorder" --button="Apply")
 
         ex=$?
 
@@ -233,12 +233,12 @@ then
         if [[ "$dci" != *"image"* ]]
         then
 
-            yad --window-icon="background" --title="No Images Found" --text="The directory you selected does not appear to contain images. The directory must contain at least two images for a slideshow background." --button="OK"
+            yad --window-icon="background" --title="No Images Found" --text="The directory you selected does not appear to contain images. The directory must contain at least two images for a slideshow background." --button="Retry"
 
         elif (( $dc <= 1 ))
         then
 
-            yad --window-icon="background" --title="Not Enough Images" --text="The directory you selected does not contain enough images. The directory must contain at least two images for a slideshow background." --button="OK"
+            yad --window-icon="background" --title="Not Enough Images" --text="The directory you selected does not contain enough images. The directory must contain at least two images for a slideshow background." --button="Retry"
 
         fi
 

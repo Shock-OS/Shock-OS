@@ -1,43 +1,45 @@
 #!/bin/bash
 
-#the password detector elements begins
+#the authentication element begins
 
-pc="5555"
+SAE_PC="5555"
 
-attempts=1
+SAE_ATTEMPTS=1
 
-until [[ "$pc" == "0" ]]        
+SAE_PROGRAM_NAME="Users"
+
+until [[ "$SAE_PC" == "0" ]]        
 do
 
-    if [[ $attempts == 1 ]]
+    if [[ $SAE_ATTEMPTS == 1 ]]
     then
 
-        password=$(yad --fixed --center --window-icon=changes-prevent --title="Authentication" --text="Please enter your password" --entry --undecorated --hide-text --text-align=center --width=400)
+        SAE_PASSWORD=$(yad --window-icon=changes-prevent --title="Authentication" --text="$SAE_PROGRAM_NAME requires your password to continue." --entry --hide-text --text-align=center --width=400 --button="Cancel":1 --button="Authenticate":0)
     
     else
 
-        password=$(yad --fixed --center --window-icon=changes-prevent --title="Authentication" --text="The password you entered was incorrect. Please try again." --entry --undecorated --hide-text --text-align=center --width=400)
+        SAE_PASSWORD=$(yad --window-icon=changes-prevent --title="Authentication" --text="The password you entered was incorrect. Please try again." --entry --hide-text --text-align=center --width=400 --button="Cancel":1 --button="Authenticate":0)
 
     fi
     
-    quit=$?
+    SAE_QUIT=$?
 
-if [[ "$quit" == "1" ]]
-then
+    if [[ "$SAE_QUIT" != "0" ]]
+    then
 
-    exit
+        exit
 
-fi
+    fi
 
-    echo "$password" | sudo -S echo "PERMISSION GRANTED" #replace apt update with desired command
+    echo "$SAE_PASSWORD" | sudo -S echo "PERMISSION GRANTED" #replace apt update with desired command
 
-    pc=$?
+    SAE_PC=$?
 
-    let attempts++
+    let SAE_ATTEMPTS++
 
 done
 
-#the password detector element ends
+#the authentication element ends
 
 yad --window-icon=system-users --title="Users" --text="Would you like to add or remove users?" --button="Add" --button="Remove" --button="Advanced" --button="Cancel" --buttons-layout=center
 
@@ -65,7 +67,7 @@ then
         - at least eight characters
         - both lower and upper case letters
         - numbers
-        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --field="":LBL "" --field="The privilages of child profiles can be managed in the 'Parental Controls' app. Screen time limits can be imposed on child profiles. Child profiles cannot gain root access or use the 'sudo' command.":LBL "" --field="Child Profile":CHK "$kidprofile" --separator='`')
+        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --field="":LBL "" --field="The privilages of child profiles can be managed in the 'Parental Controls' app. Screen time limits can be imposed on child profiles. Child profiles cannot gain root access or use the 'sudo' command.":LBL "" --field="Child Profile":CHK "$kidprofile" --separator='`' --button="Create User")
 
         cnu=$?
 
@@ -210,13 +212,22 @@ then
     while (( $current_user < $users_num ))
     do
 
-          newbutton="${users_on_sys[$current_user]}"
+        newbutton="${users_on_sys[$current_user]}"
 
-          newbutton="${newbutton##*/}"
+        newbutton="${newbutton##*/}"
 
-          userlist="$userlist --button=$newbutton"
+        if [[ -z $userlist ]]
+        then
 
-          let current_user++
+            userlist="$newbutton"
+
+        else
+
+            userlist="$userlist!$newbutton"
+
+        fi
+
+        let current_user++
 
     done
 
@@ -225,22 +236,20 @@ then
     until [[ "$urs" == "yes" ]]
     do
 
-        yad --window-icon=system-users --title="Remove User" --buttons-layout=center --text="Please select the user you would like to remove below:" $userlist
+        output=$(yad --window-icon=system-users --title="Remove User" --buttons-layout=center --text="Please select the user you would like to remove below:" --form --field="":CB "$userlist" --button="Next")
 
-        cow=$?
+        ex=$?
 
-        if [[ "$cow" == "252" ]]
+        if [[ "$ex" != "0" ]]
         then
 
             exit
 
         fi
 
-        user_to_remove="${users_on_sys[$cow]}"
+        user_to_remove=$(echo "$output" | awk -F'|' '{print $1}')
 
-        user_to_remove="${user_to_remove##*/}"
-
-        yad --window-icon=system-users --title="Remove User" --text="You are about to remove the user '$user_to_remove'. THIS ACTION IS IRREVERSABLE AND WILL ERASE ALL THEIR DATA. Are you sure you would like to delete '$user_to_remove'?" --button="Yes, Delete User" --button="Cancel"
+        yad --window-icon=system-users --title="Remove User" --text="You are about to remove the user '$user_to_remove'. THIS ACTION IS IRREVERSABLE AND WILL ERASE ALL THEIR DATA. Are you sure you would like to delete '$user_to_remove'?" --button="DELETE USER" --button="Cancel"
 
         rdu=$?
 
@@ -311,18 +320,5 @@ then
 
 fi
             
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
