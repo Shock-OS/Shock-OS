@@ -6,7 +6,7 @@ SAE_PC="5555"
 
 SAE_ATTEMPTS=1
 
-SAE_PROGRAM_NAME="Users"
+SAE_PROGRAM_NAME="Automatic Updates"
 
 until [[ "$SAE_PC" == "0" ]]        
 do
@@ -31,9 +31,11 @@ do
 
     fi
 
-    echo "$SAE_PASSWORD" | sudo -S echo "PERMISSION GRANTED" #replace apt update with desired command
+    echo "$SAE_PASSWORD" | sudo -S echo "PERMISSION GRANTED"
 
     SAE_PC=$?
+
+    SAE_PASSWORD=""
 
     let SAE_ATTEMPTS++
 
@@ -169,30 +171,32 @@ then
 
     done
 
-        password2="$pa1"
-
         x=$(echo "$x" | awk '{print tolower($0)}') #this command makes all the letters lowercase
 
         x=$(echo ${x//[[:blank:]]/}) #this command removes all spaces
 
         x=$(echo "$x" | tr -cd '[:alnum:]._-') #this command removes all numbers
 
-        echo "$password" | sudo -S adduser --disabled-password --gecos "$full_name" $x #the user has been created
+        sudo adduser --disabled-password --gecos "$full_name" $x #the user has been created
 
-        echo "$password" | sudo -S echo "$x:$password2" | sudo chpasswd
+        sudo echo "$x:$pa1" | sudo chpasswd
+
+        pa1=""
+
+        pa2=""
 
         if [[ "$kidprofile" == "TRUE" ]]
         then
 
-            echo "$password" | sudo -S usermod -a -G adm,dialout,cdrom,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $x #the user has been added to the required groups (excluding sudo)
+            sudo usermod -a -G adm,dialout,cdrom,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $x #the user has been added to the required groups (excluding sudo)
 
-            echo "$password" | sudo -S touch /home/$x/.shock_kidprofile
+            sudo touch /home/$x/.shock_kidprofile
 
-            echo "$password" | sudo -S chattr +i /home/$x/.shock_kidprofile
+            sudo chattr +i /home/$x/.shock_kidprofile
 
         else
 
-            echo "$password" | sudo -S usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $x #the user has been added to the required groups
+            sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $x #the user has been added to the required groups
 
         fi
 
@@ -291,25 +295,25 @@ then
 
     #removing restricting child profile files if they exist... (ignore errors from these lines if user being removed is not a child profile)
 
-    echo "$password" | sudo -S chattr -i /home/$user_to_remove/.shock_kidprofile
+    sudo chattr -i /home/$user_to_remove/.shock_kidprofile
 
-    echo "$password" | sudo -S chattr -i /home/$utr/.shock_screen_time_limit
+    sudo chattr -i /home/$utr/.shock_screen_time_limit
 
-    echo "$password" | sudo -S rm /home/$user_to_remove/.shock_kidprofile
+    sudo rm /home/$user_to_remove/.shock_kidprofile
 
-    echo "$password" | sudo -S rm /home/$utr/.shock_screen_time_limit
+    sudo rm /home/$utr/.shock_screen_time_limit
 
-    echo "$password" | sudo -S rm /usr/bin/shock-$utr-pcstl
+    sudo rm /usr/bin/shock-$utr-pcstl
 
-    echo "$password" | sudo -S rm /etc/sudoers.d/shock-$utr-pcstl
+    sudo rm /etc/sudoers.d/shock-$utr-pcstl
 
-    echo "$password" | sudo -S chattr -R -i /home/$utr/.shock_pcstl
+    sudo chattr -R -i /home/$utr/.shock_pcstl
 
-    echo "$password" | sudo -S rm -r /home/$utr/.shock_pcstl
+    sudo rm -r /home/$utr/.shock_pcstl
 
     #child profile files removed
 
-    echo "$password" | sudo -S deluser --remove-home $user_to_remove
+    sudo deluser --remove-home $user_to_remove
 
     yad --window-icon=system-users --title="User Successfully Removed" --text="Congratulations! The user '$user_to_remove' has successfully been removed." --button="Dismiss"
 

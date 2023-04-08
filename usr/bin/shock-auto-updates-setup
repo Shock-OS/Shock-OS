@@ -31,9 +31,11 @@ do
 
     fi
 
-    echo "$SAE_PASSWORD" | sudo -S echo "PERMISSION GRANTED" #replace apt update with desired command
+    echo "$SAE_PASSWORD" | sudo -S echo "PERMISSION GRANTED"
 
     SAE_PC=$?
+
+    SAE_PASSWORD=""
 
     let SAE_ATTEMPTS++
 
@@ -51,7 +53,7 @@ then
     if [[ "$dau" == "0" ]]
     then
 
-        echo "$password" | sudo -S rm /etc/sudoers.d/shock_automatic_updates
+        sudo rm /etc/sudoers.d/shock_automatic_updates
 
         yad --window-icon=emblem-synchronizing --title="Automatic Updates" --text="Automatic updates have been disabled." --button="Dismiss"
 
@@ -70,7 +72,7 @@ else
 
     fi
 
-    echo "$password" | sudo -S echo '# Allow any user to run automatic updates without requiring a password
+    sudo echo '# Allow any user to run automatic updates without requiring a password
 
 %sudo ALL = NOPASSWD:/usr/bin/shock-auto-updates' | sudo EDITOR='tee' visudo -f /etc/sudoers.d/shock_automatic_updates
 

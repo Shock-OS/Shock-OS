@@ -41,7 +41,7 @@ then
 
     SAE_ATTEMPTS=1
 
-    SAE_PROGRAM_NAME="Shock OS Release Upgrader"
+    SAE_PROGRAM_NAME="Automatic Updates"
 
     until [[ "$SAE_PC" == "0" ]]        
     do
@@ -66,9 +66,11 @@ then
 
         fi
 
-        echo "$SAE_PASSWORD" | sudo -S echo "PERMISSION GRANTED" #replace apt update with desired command
+        echo "$SAE_PASSWORD" | sudo -S echo "PERMISSION GRANTED"
 
         SAE_PC=$?
+
+        SAE_PASSWORD=""
 
         let SAE_ATTEMPTS++
 
@@ -100,39 +102,39 @@ NOTE: The logout and power options in the start menu will be temporarily disable
 
         dconf write /org/mate/desktop/lockdown/disable-log-out "true" # Stops the user from accessing the shutdown menu while the system is being upgraded.
 
-        echo "$password" | sudo -S rm -R /usr/share/shock-release-upgrader/*
+        sudo -S rm -R /usr/share/shock-release-upgrader/*
 
-        echo "$password" | sudo -S wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader
+        sudo -S wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader
 
         if [[ -f /usr/share/shock-release-upgrader/$upgrto_version-preupgr-script ]]
         then
 
-            echo "$password" | sudo -S chmod +x /usr/share/shock-release-upgrader/$upgrto_version-preupgr-script
+            sudo -S chmod +x /usr/share/shock-release-upgrader/$upgrto_version-preupgr-script
 
-            echo "$password" | sudo -S /usr/share/shock-release-upgrader/$upgrto_version-preupgr-script
+            sudo -S /usr/share/shock-release-upgrader/$upgrto_version-preupgr-script
 
         fi
 
-        echo "$password" | sudo -S wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/$upgrto_version.zip -P /usr/share/shock-release-upgrader 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/shock/shock-release-upgrader.svg --progress --title="Downloading Upgrade Pack..." --width=310 --text="Downloading the Shock OS $upgrto_version $upgrto_codename upgrade pack. This may take a while..." --no-buttons --auto-close --no-escape --undecorated
+        sudo -S wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/$upgrto_version.zip -P /usr/share/shock-release-upgrader 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/shock/shock-release-upgrader.svg --progress --title="Downloading Upgrade Pack..." --width=310 --text="Downloading the Shock OS $upgrto_version $upgrto_codename upgrade pack. This may take a while..." --no-buttons --auto-close --no-escape --undecorated
 
-        echo "$password" | sudo -S mkdir /usr/share/shock-release-upgrader/$upgrto_version
+        sudo -S mkdir /usr/share/shock-release-upgrader/$upgrto_version
 
-        echo "$password" | sudo -S unzip /usr/share/shock-release-upgrader/$upgrto_version.zip -d /usr/share/shock-release-upgrader/$upgrto_version 2>&1 | yad --progress --pulsate --auto-close --window-icon=/shock/shock-release-upgrader.svg --title="Unpacking Upgrade Pack..." --text="Unpacking the Shock OS $upgrto_version $upgrto_codename upgrade pack. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
+        sudo -S unzip /usr/share/shock-release-upgrader/$upgrto_version.zip -d /usr/share/shock-release-upgrader/$upgrto_version 2>&1 | yad --progress --pulsate --auto-close --window-icon=/shock/shock-release-upgrader.svg --title="Unpacking Upgrade Pack..." --text="Unpacking the Shock OS $upgrto_version $upgrto_codename upgrade pack. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
 
-        echo "$password" | sudo -S chmod --recursive 755 /usr/share/shock-release-upgrader/$upgrto_version/DEBIAN
+        sudo -S chmod --recursive 755 /usr/share/shock-release-upgrader/$upgrto_version/DEBIAN
 
-        echo "$password" | sudo -S dpkg-deb --build -Zxz /usr/share/shock-release-upgrader/$upgrto_version 2>&1 | yad --window-icon=/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version $upgrto_codename. Please sit tight, this may take a while..." -no-buttons --no-escape --undecorated --auto-close --progress --pulsate --progress-text="" --no-buttons
+        sudo -S dpkg-deb --build -Zxz /usr/share/shock-release-upgrader/$upgrto_version 2>&1 | yad --window-icon=/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version $upgrto_codename. Please sit tight, this may take a while..." -no-buttons --no-escape --undecorated --auto-close --progress --pulsate --progress-text="" --no-buttons
 
-        echo "$password" | sudo -S apt install -y /usr/share/shock-release-upgrader/$upgrto_version.deb 2>&1 | yad --progress --pulsate --auto-close --window-icon=/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version $upgrto_codename..." --text="Upgrading to Shock OS $upgrto_version $upgrto_codename. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
+        sudo -S apt install -y /usr/share/shock-release-upgrader/$upgrto_version.deb 2>&1 | yad --progress --pulsate --auto-close --window-icon=/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version $upgrto_codename..." --text="Upgrading to Shock OS $upgrto_version $upgrto_codename. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
 
-        echo "$password" | sudo -S wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader
+        sudo -S wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader
 
         if [[ -f /usr/share/shock-release-upgrader/$upgrto_version-postupgr-script ]]
         then
 
-            echo "$password" | sudo -S chmod +x /usr/share/shock-release-upgrader/$upgrto_version-postupgr-script
+            sudo -S chmod +x /usr/share/shock-release-upgrader/$upgrto_version-postupgr-script
 
-            echo "$password" | sudo -S /usr/share/shock-release-upgrader/$upgrto_version-postupgr-script
+            sudo -S /usr/share/shock-release-upgrader/$upgrto_version-postupgr-script
 
         fi
 
@@ -156,7 +158,7 @@ NOTE: The logout and power options in the start menu will be temporarily disable
             if [[ "$rb" == "0" ]]
             then
 
-                echo "$password" | sudo -S reboot
+                sudo -S reboot
 
             fi
 

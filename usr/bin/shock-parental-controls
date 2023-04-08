@@ -15,7 +15,7 @@ SAE_PC="5555"
 
 SAE_ATTEMPTS=1
 
-SAE_PROGRAM_NAME="Parental Controls"
+SAE_PROGRAM_NAME="Automatic Updates"
 
 until [[ "$SAE_PC" == "0" ]]        
 do
@@ -40,9 +40,11 @@ do
 
     fi
 
-    echo "$SAE_PASSWORD" | sudo -S echo "PERMISSION GRANTED" #replace apt update with desired command
+    echo "$SAE_PASSWORD" | sudo -S echo "PERMISSION GRANTED"
 
     SAE_PC=$?
+
+    SAE_PASSWORD=""
 
     let SAE_ATTEMPTS++
 
@@ -122,13 +124,13 @@ then
         elif [[ "$ex3" == "1" ]]
         then
 
-            echo "$password" | sudo -S chattr -i /home/$utr/.shock_screen_time_limit
+            sudo chattr -i /home/$utr/.shock_screen_time_limit
 
-            echo "$password" | sudo -S rm /home/$utr/.shock_screen_time_limit
+            sudo rm /home/$utr/.shock_screen_time_limit
 
-            echo "$password" | sudo -S chattr -R -i /home/$utr/.shock_pcstl
+            sudo chattr -R -i /home/$utr/.shock_pcstl
 
-            echo "$password" | sudo -S rm -r /home/$utr/.shock_pcstl
+            sudo rm -r /home/$utr/.shock_pcstl
 
             yad --window-icon=/shock/parental-controls.png --title="Parental Controls" --text="The scree time limit for the user '$utr' was removed successfully." --button="Dismiss"
 
@@ -155,19 +157,19 @@ then
 
     minutes=$(echo "$minutes" | sed 's/|//')
 
-    echo "$password" | sudo -S chattr -i /home/$utr/.shock_screen_time_limit
+    sudo chattr -i /home/$utr/.shock_screen_time_limit
 
-    echo "$password" | sudo -S rm /home/$utr/.shock_screen_time_limit
+    sudo rm /home/$utr/.shock_screen_time_limit
 
-    echo "$password" | sudo -S touch /home/$utr/.shock_screen_time_limit
+    sudo touch /home/$utr/.shock_screen_time_limit
 
-    echo "$password" | sudo -S echo "$minutes" | sudo tee /home/$utr/.shock_screen_time_limit
+    sudo echo "$minutes" | sudo tee /home/$utr/.shock_screen_time_limit
 
-    echo "$password" | sudo -S chattr +i /home/$utr/.shock_screen_time_limit
+    sudo chattr +i /home/$utr/.shock_screen_time_limit
 
-    echo "$password" | sudo -S touch /usr/bin/shock-$utr-pcstl
+    sudo touch /usr/bin/shock-$utr-pcstl
 
-    echo "$password" | sudo -S echo '#!/bin/bash
+    sudo echo '#!/bin/bash
 
 '"if [[ -f /home/$utr/.shock_kidprofile ]] #if kid profile
 then
@@ -300,9 +302,9 @@ then
 
 fi" | sudo tee /usr/bin/shock-$utr-pcstl
 
-    echo "$password" | sudo -S chmod +x /usr/bin/shock-$utr-pcstl
+    sudo chmod +x /usr/bin/shock-$utr-pcstl
 
-    echo "$password" | sudo -S echo "# Allow $utr to run screen time limit upon startup without requiring a password
+    sudo echo "# Allow $utr to run screen time limit upon startup without requiring a password
 
 $utr ALL = NOPASSWD:/usr/bin/shock-$utr-pcstl" | sudo EDITOR='tee' visudo -f /etc/sudoers.d/shock-$utr-pcstl
 

@@ -152,6 +152,12 @@ sudo adduser --disabled-password --gecos "$full_name" $x #the user has been crea
 
 echo "$x:$password" | sudo chpasswd
 
+pa1=""
+
+pa2=""
+
+password=""
+
 sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $x #the user has been added to the required groups
 
 whiptail --title "User Created Successfully" --msgbox "Congratulations! You have successfully created a user." 10 50

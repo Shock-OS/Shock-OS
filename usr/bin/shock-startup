@@ -64,8 +64,6 @@ then
 
     echo "quiet splash plymouth.ignore-serial-consoles" | sudo tee -a /boot/config.txt
 
-    sudo plymouth-set-default-theme spinner
-
     #the default .bashrc file restoration patch begins
 
     sudo rm ~/.bashrc
