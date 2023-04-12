@@ -1,5 +1,16 @@
 #!/bin/bash
 
+#the root check element begins
+
+if [[ "$(id -u)" != "0" ]]
+then
+
+    echo "Script must be run as root. Exiting..."
+
+fi
+
+#the root check element ends
+
 yad --window-icon=system-users --title="Users" --text="Would you like to add or remove users?" --button="Add" --button="Remove" --button="Advanced" --button="Cancel" --buttons-layout=center
 
 action=$?

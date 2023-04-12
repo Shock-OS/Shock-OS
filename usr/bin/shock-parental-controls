@@ -1,13 +1,15 @@
 #!/bin/bash
 
-if [[ -f ~/.shock_kidprofile ]]
+#the root check element begins
+
+if [[ "$(id -u)" != "0" ]]
 then
 
-    yad --window-icon=/shock/parental-controls.png --center --fixed --undecorated --title="Parental Controls" --text="You cannot access Parental Controls because you are logged in as a child profile." --button="Dismiss"
-
-    exit
+    echo "Script must be run as root. Exiting..."
 
 fi
+
+#the root check element ends
 
 userlist=""
 

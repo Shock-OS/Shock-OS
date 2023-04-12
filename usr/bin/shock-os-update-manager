@@ -47,7 +47,7 @@ do
 
                     yad --notification --image=/shock/shock-release-upgrader.svg --icon-size=48 --title="Shock OS Release Upgrader" --text="The upgrade to Shock OS $upgrto_version $upgrto_codename is available."
 
-                    shock-authenticator shock-release-upgrader "Shock Release Upgrader"
+                    pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shock-release-upgrader
 
                 fi
 
