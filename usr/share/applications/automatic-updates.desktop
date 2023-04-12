@@ -3,7 +3,7 @@ Version=1
 Name=Automatic Updates
 GenericName=Automatic Updates
 Comment=Enable/disable automatic updates
-Exec=shock-auth shock-auto-updates-setup "Automatic Updates"
+Exec=pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shock-auto-updates-setup
 Icon=/shock/auto-updates.svg
 Terminal=false
 Type=Application

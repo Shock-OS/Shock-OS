@@ -222,7 +222,7 @@ echo '# Allow any user to check for new system updates upon startup without requ
 
 #the above command allows anyone in the sudo group to run shock-os-update-manager-refresh without a password
 
-setfacl -m g:shock-child:--- /usr/bin/pkexec
+#setfacl -m g:shock-child:--- /usr/bin/pkexec
 
 #prohibits child users from using pkexec
 
