@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1
+Name=Backup & Restore
+GenericName=Backup & Restore
+Comment=Backup/Restore your home directory or software selection.
+Exec=shock-backup-and-restore
+TryExec=shock-backup-and-restore
+Icon=package
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=backup;restore;personal;files;safe;software;selection;home;directory

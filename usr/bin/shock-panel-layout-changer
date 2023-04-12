@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "DCONF READ HERE" ]]
+if [[ "$(cat ~/.config/shock-panel)" == "Traditional|" ]]
 then
 
     panel_layouts='Modern!^Traditional'
@@ -26,6 +26,8 @@ then
     mate-panel --reset --layout=fedora
 
 fi
+
+echo "$output" | tee ~/.config/shock-panel
 
 sleep 5
 

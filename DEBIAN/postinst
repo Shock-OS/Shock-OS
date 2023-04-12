@@ -243,9 +243,7 @@ sudo systemctl enable NetworkManager
 
 sudo echo '
 
-cd /shock
-
-file1=$(cat setupvalue)
+file1=$(cat /shock/setupvalue)
 
 echo $file1
 

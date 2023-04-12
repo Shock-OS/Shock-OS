@@ -25,7 +25,31 @@ do
             if [[ "$(apt list --upgradable)" != *"upgradable"* ]]
             then
 
-                shock-release-upgrader
+                current_version="$(echo "$(apt-show-versions shock-os-metapackage)" | cut -d" " -f2-2)"
+
+                current_version_nodecimal="$(echo "$(apt-show-versions shock-os-metapackage)" | cut -d" " -f2-2)"
+
+                if [[ "$current_version" == *"."* ]]
+                then
+
+                    current_version_nodecimal=$(sed 's/[.].*//' <<< "$current_version")
+
+                fi
+
+                rm /shock/codenames
+
+                wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/codenames -P /shock
+
+                latest_version="$(echo "$(wc -l /shock/codenames)" | cut -f1 -d" ")"
+
+                if ((latest_version>current_version_nodecimal))
+                then
+
+                    yad --notification --image=/shock/shock-release-upgrader.svg --icon-size=48 --title="Shock OS Release Upgrader" --text="The upgrade to Shock OS $upgrto_version $upgrto_codename is available."
+
+                    shock-authenticator shock-release-upgrader "Shock Release Upgrader"
+
+                fi
 
             fi
 

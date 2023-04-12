@@ -9,49 +9,6 @@ then
 
 fi
 
-#the authentication element begins
-
-SAE_PC="5555"
-
-SAE_ATTEMPTS=1
-
-SAE_PROGRAM_NAME="Automatic Updates"
-
-until [[ "$SAE_PC" == "0" ]]        
-do
-
-    if [[ $SAE_ATTEMPTS == 1 ]]
-    then
-
-        SAE_PASSWORD=$(yad --window-icon=changes-prevent --title="Authentication" --text="$SAE_PROGRAM_NAME requires your password to continue." --entry --hide-text --text-align=center --width=400 --button="Cancel":1 --button="Authenticate":0)
-    
-    else
-
-        SAE_PASSWORD=$(yad --window-icon=changes-prevent --title="Authentication" --text="The password you entered was incorrect. Please try again." --entry --hide-text --text-align=center --width=400 --button="Cancel":1 --button="Authenticate":0)
-
-    fi
-    
-    SAE_QUIT=$?
-
-    if [[ "$SAE_QUIT" != "0" ]]
-    then
-
-        exit
-
-    fi
-
-    echo "$SAE_PASSWORD" | sudo -S echo "PERMISSION GRANTED"
-
-    SAE_PC=$?
-
-    SAE_PASSWORD=""
-
-    let SAE_ATTEMPTS++
-
-done
-
-#the authentication element ends
-
 userlist=""
 
 users_on_sys=(/home/*)

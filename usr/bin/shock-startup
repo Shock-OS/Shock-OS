@@ -51,44 +51,37 @@ then
 
 fi
 
-file1=$(cat /shock/setupvalue)
-
-echo $file1
-
-if [[ "$file1" == "1" ]]
+if [[ -f /shock/setupvalue ]]
 then
 
-    sudo deluser --remove-home shock #the 'shock' user has been removed
+    file1=$(cat /shock/setupvalue)
 
-    #the splash screen patch begins
+    echo $file1
 
-    echo "quiet splash plymouth.ignore-serial-consoles" | sudo tee -a /boot/config.txt
+    if [[ "$file1" == "1" ]]
+    then
 
-    #the default .bashrc file restoration patch begins
+        sudo deluser --remove-home shock #the 'shock' user has been removed
 
-    sudo rm ~/.bashrc
+        #the default .bashrc file restoration patch begins
 
-    sudo cp /etc/skel/.bashrc ~/
+        sudo rm ~/.bashrc
 
-    # the default .bashrc file restoration patch ends
+        sudo cp /etc/skel/.bashrc ~/
 
-    sudo systemctl set-default graphical
+        # the default .bashrc file restoration patch ends
 
-    #the silent splash patch begins
+        sudo systemctl set-default graphical
 
-    echo 'disable_splash=1' | sudo tee -a /boot/config.txt
+        sudo rm /etc/sudoers.d/initsetup_rootpriv #this command removes elevated privilages as they are no longer required.
 
-    paste /boot/cmdline.txt <(echo "consoleblank=1 logo.nologo quiet loglevel=0 plymouth.enable=0 vt.global_cursor_default=0 plymouth.ignore-serial-consoles splash fastboot noatime nodiratime noram") | sudo tee /boot/cmdline.txt
+        rm /shock/setupvalue
 
-    #the silent splash patch ends
+        echo "Finalizing setup..."
 
-    sudo rm /etc/sudoers.d/initsetup_rootpriv #this command removes elevated privilages as they are no longer required.
+        reboot
 
-    echo "5555" > /shock/setupvalue
-
-    echo "Finalizing setup..."
-
-    reboot
+    fi
 
 fi
 
