@@ -120,39 +120,33 @@ sudo rm /usr/share/applications/mate-appearance-properties.desktop
 
 #the home directory building begins
 
-sudo mkdir /etc/skel/Desktop
+sudo mkdir -p /etc/skel/Desktop
 
-sudo mkdir /etc/skel/Documents
+sudo mkdir -p /etc/skel/Documents
 
-sudo mkdir /etc/skel/Downloads
+sudo mkdir -p /etc/skel/Downloads
 
-sudo mkdir /etc/skel/Music
+sudo mkdir -p /etc/skel/Music
 
-sudo mkdir /etc/skel/Pictures
+sudo mkdir -p /etc/skel/Pictures
 
-sudo mkdir /etc/skel/Public
+sudo mkdir -p /etc/skel/Public
 
-sudo mkdir /etc/skel/Templates
+sudo mkdir -p /etc/skel/Templates
 
-sudo mkdir /etc/skel/Videos
+sudo mkdir -p /etc/skel/Videos
 
-sudo mkdir /etc/skel/.config
+sudo mkdir -p /etc/skel/.config/menus
 
-sudo mkdir /etc/skel/.config/menus
+sudo touch -p /etc/skel/.config/shock-welcome-indicator
 
-sudo touch /etc/skel/.config/shock-welcome-indicator
-
-sudo touch /etc/skel/.config/userlogstat
+sudo touch -p /etc/skel/.config/userlogstat
 
 sudo cp -r /shock/chromium /etc/skel/.config
 
-sudo mkdir /etc/skel/.cache
+sudo mkdir -p /etc/skel/.cache
 
-sudo mkdir /etc/skel/.local
-
-sudo mkdir /etc/skel/.local/share
-
-sudo mkdir /etc/skel/.local/share/applications
+sudo mkdir -p /etc/skel/.local/share/applications
 
 sudo cp /shock/mate_dock_applet.conf /etc/skel/.config
 
@@ -241,18 +235,7 @@ sudo systemctl enable NetworkManager
 
 #Wi-Fi patch ends
 
-sudo echo '
-
-file1=$(cat /shock/setupvalue)
-
-echo $file1
-
-if [[ $file1 == 0 ]]
-then
-
-    sudo shock-initial-setup
-
-fi' >> /home/shock/.bashrc
+sudo echo 'sudo shock-initial-setup' >> /home/shock/.bashrc
 
 #the above set of commands sets the initial setup program to run on first boot
 

@@ -1,10 +1,17 @@
 #!/bin/bash
 
-#this is the initial setup program for Bullseye-based versions of Shock OS and VanillaPi
+#this is the initial setup program for Bullseye-based versions of Shock OS
 
 #the default target should be set to 'multi-user.target'
 
 #the 'shock' user should be set to autologin
+
+if [[ "$(cat /shock/setupvalue)" != "0" ]]
+then
+
+    exit
+
+fi
 
 clear
 
@@ -182,32 +189,13 @@ sudo systemctl enable getty@tty1.service
 
 sudo systemctl daemon-reload
 
-sudo echo '
-
-file3=$(cat /shock/setupvalue)
-
-echo $file3
-
-if [[ $file3 == 1 ]]
-then
-
-    shock-startup
-
-fi' >> "/home/$x/.bashrc"
+sudo echo 'shock-startup' >> "/home/$x/.bashrc"
 
 #the setup finalizer temporary autologin patch ends
 
 clear
 
-file1=`cat setupvalue`
-
-echo $file1
-
 echo "1" > setupvalue
-
-file1=`cat setupvalue`
-
-echo $file1
 
 clear
 

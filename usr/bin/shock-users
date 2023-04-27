@@ -7,9 +7,24 @@ then
 
     echo "Script must be run as root. Exiting..."
 
+    exit
+
 fi
 
 #the root check element ends
+
+function detect_exit() {
+
+ex=$?
+
+if [[ "$ex" != "0" ]]
+then
+
+    exit
+
+fi
+
+}
 
 yad --window-icon=system-users --title="Users" --text="Would you like to add or remove users?" --button="Add" --button="Remove" --button="Advanced" --button="Cancel" --buttons-layout=center
 
@@ -63,22 +78,26 @@ then
 
                 yad --window-icon=system-users --title="Unsupported Character" --text='You cannot use the "`" character in any field. Please try again.' --button="Retry"
 
-                    success="no"
+                detect_exit
 
-                    x=""
+                success="no"
 
-                    full_name=""
+                x=""
 
-                    pa1=""
+                full_name=""
 
-                    pa2=""
+                pa1=""
 
-                    focus_field="1"
+                pa2=""
+
+                focus_field="1"
 
             elif [[ -z "$x" ]] || [[ "$x" == *" "* ]]
             then
 
                 yad --window-icon=system-users --title="Invalid Username" --text="Your username cannot be empty or contain spaces. Please try again." --button="Retry"
+
+                detect_exit
 
                 success="no"
 
@@ -89,6 +108,8 @@ then
 
                 yad --window-icon=system-users --title="User Already Exists" --text="The username '$x' is already taken. Please choose a different one." --button="Retry"
 
+                detect_exit
+
                 success="no"
 
                 focus_field="1"
@@ -97,6 +118,8 @@ then
             then
 
                 yad --window-icon=system-users --title="Invalid Username" --text="That username does not meet the necessary requirements. Usernames must start with a lowercase letter and can only contain lowercase letters, digits, hyphens and underscores." --button="Retry"
+
+                detect_exit
 
                 success="no"
 
@@ -107,6 +130,8 @@ then
 
                 yad --window-icon=system-users --title="Invalid Full Name" --text="Your full name cannot be empty or only consist of spaces. Please try again." --button="Retry"
 
+                detect_exit
+
                 success="no"
 
                 focus_field="2"
@@ -116,6 +141,8 @@ then
 
                 yad --window-icon=system-users --title="Invalid Password" --text="Your password cannot be empty or contain spaces. Please try again." --button="Retry"
 
+                detect_exit
+
                 success="no"
 
                 focus_field="5"
@@ -124,6 +151,8 @@ then
             then
 
                 yad --window-icon=system-users --title="Passwords Did Not Match" --text="Oops! The passwords did not match. Please try again." --button="Retry"
+
+                detect_exit
 
                 success="no"
 
@@ -210,14 +239,7 @@ then
 
         output=$(yad --window-icon=system-users --title="Remove User" --buttons-layout=center --text="Please select the user you would like to remove below:" --form --field="":CB "$userlist" --button="Next")
 
-        ex=$?
-
-        if [[ "$ex" != "0" ]]
-        then
-
-            exit
-
-        fi
+        detect_exit
 
         user_to_remove=$(echo "$output" | awk -F'|' '{print $1}')
 
@@ -239,7 +261,9 @@ then
         if [[ "$(w | grep x-session-manager | awk '{print " "$1" "}')" == *" $user_to_remove "* ]]
         then
 
-            yad --window-icon=system-users --title="Cannot Remove User" --text="You cannot remove the user '$user_to_remove' because they are currently logged in." --button="Dismiss"
+            yad --window-icon=system-users --title="Cannot Remove User" --text="You cannot remove the user '$user_to_remove' because they are currently logged in." --button="Retry"
+
+            detect_exit
 
             urs="no"
 
@@ -248,12 +272,14 @@ then
 
             yad --window-icon=system-users --title="Cannot Remove User" --text="The user '$user_to_remove' cannot be removed because they have been logged in and are still occupied by some system processes. To delete this user, reboot the system (without loggin in as '$user_to_remove') and try again." --button="Dismiss"
 
-            urs="no"
+            exit
 
         elif ! [[ -d /home/$utd ]]
         then
 
-            yad --window-icon=system-users --title="Cannot Remove User" --text="The user '$user_to_remove' does not exist." --button="Dismiss"
+            yad --window-icon=system-users --title="Cannot Remove User" --text="The user '$user_to_remove' does not exist." --button="Retry"
+
+            detect_exit
 
             urs="no"
 

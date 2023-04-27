@@ -51,37 +51,30 @@ then
 
 fi
 
-if [[ -f /shock/setupvalue ]]
+if [[ "$(cat /shock/setupvalue)" == "1" ]]
 then
 
-    file1=$(cat /shock/setupvalue)
+    sudo deluser --remove-home shock #the 'shock' user has been removed
 
-    echo $file1
+    #the default .bashrc file restoration patch begins
 
-    if [[ "$file1" == "1" ]]
-    then
+    sudo rm ~/.bashrc
 
-        sudo deluser --remove-home shock #the 'shock' user has been removed
+    sudo cp /etc/skel/.bashrc ~/
 
-        #the default .bashrc file restoration patch begins
+    sudo chown $(whoami) ~/.bashrc
 
-        sudo rm ~/.bashrc
+    # the default .bashrc file restoration patch ends
 
-        sudo cp /etc/skel/.bashrc ~/
+    sudo systemctl set-default graphical
 
-        # the default .bashrc file restoration patch ends
+    sudo rm /etc/sudoers.d/initsetup_rootpriv #this command removes elevated privilages as they are no longer required.
 
-        sudo systemctl set-default graphical
+    rm /shock/setupvalue
 
-        sudo rm /etc/sudoers.d/initsetup_rootpriv #this command removes elevated privilages as they are no longer required.
+    echo "Finalizing setup..."
 
-        rm /shock/setupvalue
-
-        echo "Finalizing setup..."
-
-        reboot
-
-    fi
+    reboot
 
 fi
 

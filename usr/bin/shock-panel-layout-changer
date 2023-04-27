@@ -13,6 +13,15 @@ fi
 
 output=$(yad --picture --window-icon=mate-panel --title="Panel Layouts" --text="Please choose a panel layout." --form --field="Panel Layout:":CB "$panel_layouts" --button="Apply")
 
+ex=$?
+
+if [[ "$ex" != "0" ]]
+then
+
+    exit
+
+fi
+
 cf=$(dconf read /org/mate/panel/objects/clockapplet/prefs/format)
 
 if [[ "$output" == "Modern|" ]]

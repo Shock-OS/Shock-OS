@@ -5,6 +5,8 @@ then
 
     echo "Script must be run as root. Exiting..."
 
+    exit
+
 fi
 
 runuser=$1
@@ -248,7 +250,14 @@ do
 
             url="${!shock_os_image}"
 
-            echo "$password" | sudo -S exit_code=$(wget "$url" -P /usr/share/shock-os-imager/cached-images 2>&1 >/dev/null; echo $?) | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-os-imager/icon.svg --progress --title="Downloading Image..." --width=310 --text="Downloading $shock_os_image_display_name. This may take a while..." --no-buttons --auto-close --auto-kill
+            until [[ ! -f "$imgddir" ]] && [[ ! -z "$imgddir" ]]
+            do
+
+                imgddir="/tmp/shock-os-imager-$runuser-$(openssl rand -base64 15 | tr -dc 'a-zA-Z0-9' | head -c 10)"
+
+            done
+
+            echo "$password" | sudo -S exit_code=$(wget "$url" -P "$imgddir" 2>&1 >/dev/null; echo $?) | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-os-imager/icon.svg --progress --title="Downloading Image..." --width=310 --text="Downloading $shock_os_image_display_name. This may take a while..." --no-buttons --auto-close --auto-kill
 
             ex3=$?
 
@@ -261,7 +270,7 @@ do
 
             fi
 
-            mv /usr/share/shock-os-imager/cached-images/download /usr/share/shock-os-imager/cached-images/$shock_os_image.img.xz
+            mv "$imgddir"/download /usr/share/shock-os-imager/cached-images/$shock_os_image.img.xz
 
         else
 

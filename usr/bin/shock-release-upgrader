@@ -7,6 +7,8 @@ then
 
     echo "Script must be run as root. Exiting..."
 
+    exit
+
 fi
 
 #the root check element ends

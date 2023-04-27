@@ -1,5 +1,18 @@
 #!/bin/bash
 
+function detect_exit() {
+
+ex=$?
+
+if [[ "$ex" != "0" ]]
+then
+
+    exit
+
+fi
+
+}
+
 yad --window-icon=package --title="Backup & Restore" --text="Welcome to Backup & Restore. Using this app, you can backup/restore your apps, games, personal files, savedata, and configuration files." --button="Backup":0 --button="Restore":1
 
 ex=$?
@@ -24,14 +37,7 @@ then
 
         output=$(yad --window-icon=package --title="Backup & Restore" --text="Which of the following would you like to backup?" --form --field="Backup personal files and settings":CHK "$backup_personal_data" --field="Backup list of installed apps and games":CHK "$backup_apps_list"  --field="":LBL '' --field="Your backup will be stored in a .shb archive. Choose the name and location for the archive below:":LBL '' --field="Backup .shb archive name":'' "$backup_archive_name" --field="Folder to place the backup .shb archive in":DIR "$backup_archive_directory" --button="Next")
 
-        ex=$?
-
-        if [[ "$ex" != "0" ]]
-        then
-
-            exit
-
-        fi
+        detect_exit
 
         backup_personal_data=$(echo "$output" | awk -F'|' '{print $1}')
 
@@ -145,14 +151,7 @@ then
 
         restore=$(yad --window-icon=package --title="Backup & Restore" --form $yadstuff --button="Restore")
 
-        ex=$?
-
-        if [[ "$ex" != "0" ]]
-        then
-
-            exit
-
-        fi
+        detect_exit
 
         restore_personal_data=$(echo "$restore" | awk -F'|' '{print $1}')
 
