@@ -425,19 +425,19 @@ else #if at least one package is selected for installation or removal
 
         fi
 
-    fi
+        flatpak_install_list=()
 
-    flatpak_install_list=()
+        flatpak_install_list_for_page=()
 
-    flatpak_install_list_for_page=()
+        flatpak_removal_list=()
 
-    flatpak_removal_list=()
+        flatpak_removal_list_for_page=()
 
-    flatpak_removal_list_for_page=()
+        apt_install_list=()
 
-    apt_install_list=()
+        apt_removal_list=()
 
-    apt_removal_list=()
+    fi    
 
 fi
 
@@ -823,6 +823,10 @@ do
 
         page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50' 
 
+    else
+
+        page_buttons=""
+
     fi
 
     if (("${#packages[@]}">0)) #if at least 1 search result
@@ -895,7 +899,7 @@ do
 
         ex=$?
 
-        end_loading
+        start_loading
 
         if [[ "$ex" == "0" ]]
         then
