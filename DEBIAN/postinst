@@ -259,6 +259,8 @@ sudo systemctl daemon-reload
 
 sudo sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/config.txt #this command enables the two front USB ports on the DeskPi Lite
 
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo #sets up the FlatHub repository
+
 
 
 

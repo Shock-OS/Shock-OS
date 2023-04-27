@@ -453,13 +453,54 @@ rm "/tmp/shockware-center-$runuser-$file"
 
 function read_settings() {
 
-view_mode_setting=$(sed -n 1p "/home/$runuser/.config/shockware-center")
+if [[ -f "/home/$runuser/.config/shockware-center" ]] #if config file exists
+then
 
-rows_per_page=$(sed -n 2p "/home/$runuser/.config/shockware-center")
+    view_mode_setting=$(sed -n 1p "/home/$runuser/.config/shockware-center")
 
-show_apt_packages=$(sed -n 3p "/home/$runuser/.config/shockware-center")
+    rows_per_page=$(sed -n 2p "/home/$runuser/.config/shockware-center")
 
-show_flatpaks=$(sed -n 4p "/home/$runuser/.config/shockware-center")
+    show_apt_packages=$(sed -n 3p "/home/$runuser/.config/shockware-center")
+
+    if [[ "$(aptitude show flatpak | grep State:)" == "State: installed" ]] #if flatpak is installed
+    then
+
+        show_flatpaks=$(sed -n 4p "/home/$runuser/.config/shockware-center")
+
+    else #if flatpak is not installed
+
+        show_flatpaks="FALSE"
+
+    fi
+
+else #if no config file exists
+
+    if [[ "$(aptitude show flatpak | grep State:)" == "State: installed" ]] #if flatpak is installed
+    then
+
+        show_flatpaks="TRUE"
+
+    else #if flatpak is not installed
+
+        show_flatpaks="FALSE"
+
+    fi
+
+    view_mode_setting="Large"
+
+    rows_per_page="100"
+
+    show_apt_packages="TRUE"
+
+    echo "$view_mode_setting" | tee "/home/$runuser/.config/shockware-center"
+
+    echo "$rows_per_page" | tee -a "/home/$runuser/.config/shockware-center"
+
+    echo "$show_apt_packages" | tee -a "/home/$runuser/.config/shockware-center"
+
+    echo "$show_flatpaks" | tee -a "/home/$runuser/.config/shockware-center"
+
+fi
 
 }
 
