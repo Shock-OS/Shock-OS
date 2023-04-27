@@ -367,7 +367,7 @@ else #if at least one package is selected for installation or removal
             for i in "${apt_install_list_no_quotes[@]}"
             do
 
-                yad --notification --image=size=48 --image=emblem-package --command="" --text="Installing ${apt_install_list_no_quotes[i]}..." & local apply_killpid=$!
+                yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Installing ${apt_install_list_no_quotes[i]}..." & local apply_killpid=$!
 
                 sudo apt install -y "${apt_install_list_no_quotes[i]}" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Installing ${apt_install_list_no_quotes[i]}..." --no-cancel --auto-close --width=300 --height=50
 
@@ -383,7 +383,7 @@ else #if at least one package is selected for installation or removal
             for i in "${apt_removal_list_no_quotes[@]}"
             do
 
-                yad --notification --image=size=48 --image=emblem-package --command="" --text="Removing ${apt_removal_list_no_quotes[i]}..." & local apply_killpid=$!
+                yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Removing ${apt_removal_list_no_quotes[i]}..." & local apply_killpid=$!
 
                 sudo apt remove -y "${apt_removal_list_no_quotes[i]}" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Removing ${apt_removal_list_no_quotes[i]}..." --no-cancel --auto-close --width=300 --height=50
 
@@ -399,7 +399,7 @@ else #if at least one package is selected for installation or removal
             for element in "${flatpak_install_list[@]}"
             do
 
-                yad --notification --image=size=48 --image=emblem-package --command="" --text="Installing ${element//\"/}..." & local apply_killpid=$!
+                yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Installing ${element//\"/}..." & local apply_killpid=$!
 
                 sudo -u "$runuser" flatpak install -y "$(flatpak search ${element//\"/} --columns=name,application | grep "^${element//\"/}" | awk -F '\t' '{print $2}' | head -n1)" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Installing ${element//\"/}..." --no-cancel --auto-close --width=300 --height=50
 
@@ -415,7 +415,7 @@ else #if at least one package is selected for installation or removal
             for element in "${flatpak_removal_list[@]}"
             do
 
-                yad --notification --image=size=48 --image=emblem-package --command="" --text="Removing ${element//\"/}..." & local apply_killpid=$!
+                yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Removing ${element//\"/}..." & local apply_killpid=$!
 
                 sudo -u "$runuser" flatpak uninstall -y "$(flatpak search ${element//\"/} --columns=name,application | grep "^${element//\"/}" | awk -F '\t' '{print $2}' | head -n1)" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Removing ${element//\"/}..." --no-cancel --auto-close --width=300 --height=50
 
@@ -527,7 +527,7 @@ then
         if [[ "$purge" == "TRUE|" ]]
         then
 
-            yad --notification --image=size=48 --image=emblem-package --command="" --text="Purging obsolete packages, dependencies and configuration files..." & local apply_killpid=$!
+            yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Purging obsolete packages, dependencies and configuration files..." & local apply_killpid=$!
 
             sudo apt autoremove --purge -y | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Purging obsolete packages and dependencies..." --progress --pulsate --no-cancel --auto-close
 
@@ -548,7 +548,7 @@ then
 
         else
 
-            yad --notification --image=size=48 --image=emblem-package --command="" --text="Removing obsolete packages and dependencies..." & local apply_killpid=$!
+            yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Removing obsolete packages and dependencies..." & local apply_killpid=$!
 
             sudo apt autoremove -y | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing obsolete packages and dependencies..." --progress --pulsate --no-cancel --auto-close
 
@@ -581,7 +581,7 @@ then
     if [[ "$ex" == "0" ]]
     then
 
-        yad --notification --image=size=48 --image=emblem-package --command="" --text="Purging obsolete configuration files..." & local apply_killpid=$!
+        yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Purging obsolete configuration files..." & local apply_killpid=$!
 
         sudo dpkg --list | grep '^rc' | awk '{print $2}' | xargs sudo dpkg --purge | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Purging obsolete configuration files..." --progress --pulsate --no-cancel --auto-close
 

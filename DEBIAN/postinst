@@ -138,9 +138,9 @@ sudo mkdir -p /etc/skel/Videos
 
 sudo mkdir -p /etc/skel/.config/menus
 
-sudo touch -p /etc/skel/.config/shock-welcome-indicator
+sudo touch /etc/skel/.config/shock-welcome-indicator
 
-sudo touch -p /etc/skel/.config/userlogstat
+sudo touch /etc/skel/.config/userlogstat
 
 sudo cp -r /shock/chromium /etc/skel/.config
 

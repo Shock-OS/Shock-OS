@@ -195,7 +195,7 @@ sudo echo 'shock-startup' >> "/home/$x/.bashrc"
 
 clear
 
-echo "1" > setupvalue
+echo "1" | tee /shock/setupvalue
 
 clear
 
