@@ -1,21 +1,6 @@
 #!/bin/bash
 
-#the root check element begins
-
-if [[ "$(id -u)" != "0" ]]
-then
-
-    echo "Script must be run as root. Exiting..."
-
-    exit
-
-fi
-
-#the root check element ends
-
-runuser=$1
-
-#this software is a graphical frontend for APT
+#this software is a graphical frontend for APT and Flatpak
 
 #the detect_exit function begins
 
@@ -247,7 +232,7 @@ else #if at least one package is selected for installation or removal
 
     local file=0
 
-    until [[ ! -f "/tmp/shockware-center-$runuser-$file" ]]
+    until [[ ! -f "/tmp/shockware-center-$USER-$file" ]]
     do
 
         let file++
@@ -271,13 +256,13 @@ else #if at least one package is selected for installation or removal
 
             echo "The following APT packages will be INSTALLED:
     $(printf "%s\n" "${apt_install_list_no_quotes[@]}")
-    " | tee -a "/tmp/shockware-center-$runuser-$file"
+    " | tee -a "/tmp/shockware-center-$USER-$file"
 
         else #if single package
 
             echo "The following APT package will be INSTALLED:
     $(printf "%s\n" "${apt_install_list_no_quotes[@]}")
-    " | tee -a "/tmp/shockware-center-$runuser-$file"
+    " | tee -a "/tmp/shockware-center-$USER-$file"
 
         fi
 
@@ -300,13 +285,13 @@ else #if at least one package is selected for installation or removal
 
             echo "The following APT packages will be REMOVED:
     $(printf "%s\n" "${apt_removal_list_no_quotes[@]}")
-    " | tee -a "/tmp/shockware-center-$runuser-$file"
+    " | tee -a "/tmp/shockware-center-$USER-$file"
 
         else #if single package
 
             echo "The following APT package will be REMOVED:
     $(printf "%s\n" "${apt_removal_list_no_quotes[@]}")
-    " | tee -a "/tmp/shockware-center-$runuser-$file"
+    " | tee -a "/tmp/shockware-center-$USER-$file"
 
         fi
 
@@ -320,13 +305,13 @@ else #if at least one package is selected for installation or removal
 
             echo "The following Flatpaks will be INSTALLED:
     $(printf "%s\n" "${flatpak_install_list[@]//\"/}")
-    " | tee -a "/tmp/shockware-center-$runuser-$file"
+    " | tee -a "/tmp/shockware-center-$USER-$file"
 
         else #if single flatpak
 
             echo "The following Flatpak will be INSTALLED:
     $(printf "%s\n" "${flatpak_install_list[@]//\"/}")
-    " | tee -a "/tmp/shockware-center-$runuser-$file"
+    " | tee -a "/tmp/shockware-center-$USER-$file"
 
         fi
 
@@ -340,13 +325,13 @@ else #if at least one package is selected for installation or removal
 
             echo "The following Flatpaks will be REMOVED:
     $(printf "%s\n" "${flatpak_removal_list[@]//\"/}")
-    " | tee -a "/tmp/shockware-center-$runuser-$file"
+    " | tee -a "/tmp/shockware-center-$USER-$file"
 
         else #if single flatpak
 
             echo "The following Flatpak will be REMOVED:
     $(printf "%s\n" "${flatpak_removal_list[@]//\"/}")
-    " | tee -a "/tmp/shockware-center-$runuser-$file"
+    " | tee -a "/tmp/shockware-center-$USER-$file"
 
         fi
 
@@ -354,7 +339,7 @@ else #if at least one package is selected for installation or removal
 
     end_loading
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text-info --filename="/tmp/shockware-center-$runuser-$file" --width=400 --height=300 --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0
+    yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text-info --filename="/tmp/shockware-center-$USER-$file" --width=400 --height=300 --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0
 
     ex=$?
 
@@ -367,9 +352,9 @@ else #if at least one package is selected for installation or removal
             for i in "${apt_install_list_no_quotes[@]}"
             do
 
-                yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Installing ${apt_install_list_no_quotes[i]}..." & local apply_killpid=$!
+                yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Installing ${apt_install_list_no_quotes[i]}..." & local apply_killpid=$!
 
-                sudo apt install -y "${apt_install_list_no_quotes[i]}" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Installing ${apt_install_list_no_quotes[i]}..." --no-cancel --auto-close --width=300 --height=50
+                pkexec apt install -y "${apt_install_list_no_quotes[i]}" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Installing ${apt_install_list_no_quotes[i]}..." --no-cancel --auto-close --width=300 --height=50
 
                 kill -9 $apply_killpid
 
@@ -383,9 +368,9 @@ else #if at least one package is selected for installation or removal
             for i in "${apt_removal_list_no_quotes[@]}"
             do
 
-                yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Removing ${apt_removal_list_no_quotes[i]}..." & local apply_killpid=$!
+                yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Removing ${apt_removal_list_no_quotes[i]}..." & local apply_killpid=$!
 
-                sudo apt remove -y "${apt_removal_list_no_quotes[i]}" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Removing ${apt_removal_list_no_quotes[i]}..." --no-cancel --auto-close --width=300 --height=50
+                pkexec apt remove -y "${apt_removal_list_no_quotes[i]}" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Removing ${apt_removal_list_no_quotes[i]}..." --no-cancel --auto-close --width=300 --height=50
 
                 kill -9 $apply_killpid
 
@@ -399,9 +384,9 @@ else #if at least one package is selected for installation or removal
             for element in "${flatpak_install_list[@]}"
             do
 
-                yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Installing ${element//\"/}..." & local apply_killpid=$!
+                yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Installing ${element//\"/}..." & local apply_killpid=$!
 
-                sudo -u "$runuser" flatpak install -y "$(flatpak search ${element//\"/} --columns=name,application | grep "^${element//\"/}" | awk -F '\t' '{print $2}' | head -n1)" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Installing ${element//\"/}..." --no-cancel --auto-close --width=300 --height=50
+                flatpak install -y "$(flatpak search ${element//\"/} --columns=name,application | grep "^${element//\"/}" | awk -F '\t' '{print $2}' | head -n1)" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Installing ${element//\"/}..." --no-cancel --auto-close --width=300 --height=50
 
                 kill -9 $apply_killpid
 
@@ -415,9 +400,9 @@ else #if at least one package is selected for installation or removal
             for element in "${flatpak_removal_list[@]}"
             do
 
-                yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Removing ${element//\"/}..." & local apply_killpid=$!
+                yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Removing ${element//\"/}..." & local apply_killpid=$!
 
-                sudo -u "$runuser" flatpak uninstall -y "$(flatpak search ${element//\"/} --columns=name,application | grep "^${element//\"/}" | awk -F '\t' '{print $2}' | head -n1)" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Removing ${element//\"/}..." --no-cancel --auto-close --width=300 --height=50
+                flatpak uninstall -y "$(flatpak search ${element//\"/} --columns=name,application | grep "^${element//\"/}" | awk -F '\t' '{print $2}' | head -n1)" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Removing ${element//\"/}..." --no-cancel --auto-close --width=300 --height=50
 
                 kill -9 $apply_killpid
 
@@ -443,7 +428,7 @@ fi
 
 start_loading
 
-rm "/tmp/shockware-center-$runuser-$file"
+rm "/tmp/shockware-center-$USER-$file"
 
 }
 
@@ -453,19 +438,19 @@ rm "/tmp/shockware-center-$runuser-$file"
 
 function read_settings() {
 
-if [[ -f "/home/$runuser/.config/shockware-center" ]] #if config file exists
+if [[ -f "/home/$USER/.config/shockware-center" ]] #if config file exists
 then
 
-    view_mode_setting=$(sed -n 1p "/home/$runuser/.config/shockware-center")
+    view_mode_setting=$(sed -n 1p "/home/$USER/.config/shockware-center")
 
-    rows_per_page=$(sed -n 2p "/home/$runuser/.config/shockware-center")
+    rows_per_page=$(sed -n 2p "/home/$USER/.config/shockware-center")
 
-    show_apt_packages=$(sed -n 3p "/home/$runuser/.config/shockware-center")
+    show_apt_packages=$(sed -n 3p "/home/$USER/.config/shockware-center")
 
     if [[ "$(aptitude show flatpak | grep State:)" == "State: installed" ]] #if flatpak is installed
     then
 
-        show_flatpaks=$(sed -n 4p "/home/$runuser/.config/shockware-center")
+        show_flatpaks=$(sed -n 4p "/home/$USER/.config/shockware-center")
 
     else #if flatpak is not installed
 
@@ -492,13 +477,13 @@ else #if no config file exists
 
     show_apt_packages="TRUE"
 
-    echo "$view_mode_setting" | tee "/home/$runuser/.config/shockware-center"
+    echo "$view_mode_setting" | tee "/home/$USER/.config/shockware-center"
 
-    echo "$rows_per_page" | tee -a "/home/$runuser/.config/shockware-center"
+    echo "$rows_per_page" | tee -a "/home/$USER/.config/shockware-center"
 
-    echo "$show_apt_packages" | tee -a "/home/$runuser/.config/shockware-center"
+    echo "$show_apt_packages" | tee -a "/home/$USER/.config/shockware-center"
 
-    echo "$show_flatpaks" | tee -a "/home/$runuser/.config/shockware-center"
+    echo "$show_flatpaks" | tee -a "/home/$USER/.config/shockware-center"
 
 fi
 
@@ -527,11 +512,11 @@ then
         if [[ "$purge" == "TRUE|" ]]
         then
 
-            yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Purging obsolete packages, dependencies and configuration files..." & local apply_killpid=$!
+            yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Purging obsolete packages, dependencies and configuration files..." & local apply_killpid=$!
 
-            sudo apt autoremove --purge -y | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Purging obsolete packages and dependencies..." --progress --pulsate --no-cancel --auto-close
+            pkexec apt autoremove --purge -y | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Purging obsolete packages and dependencies..." --progress --pulsate --no-cancel --auto-close
 
-            sudo dpkg --list | grep '^rc' | awk '{print $2}' | xargs sudo dpkg --purge | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Purging obsolete configuration files..." --progress --pulsate --no-cancel --auto-close
+            pkexec bash -c "dpkg --list | grep '^rc' | awk '{print $2}' | xargs dpkg --purge | zenity --window-icon=/usr/share/shockware-center/icon.svg --title=\"Shockware Center\" --text=\"Purging obsolete configuration files...\" --progress --pulsate --no-cancel --auto-close"
 
             kill -9 $apply_killpid
 
@@ -548,9 +533,9 @@ then
 
         else
 
-            yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Removing obsolete packages and dependencies..." & local apply_killpid=$!
+            yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Removing obsolete packages and dependencies..." & local apply_killpid=$!
 
-            sudo apt autoremove -y | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing obsolete packages and dependencies..." --progress --pulsate --no-cancel --auto-close
+            pkexec apt autoremove -y | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing obsolete packages and dependencies..." --progress --pulsate --no-cancel --auto-close
 
             kill -9 $apply_killpid
 
@@ -581,9 +566,9 @@ then
     if [[ "$ex" == "0" ]]
     then
 
-        yad --notification --image=size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Purging obsolete configuration files..." & local apply_killpid=$!
+        yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Purging obsolete configuration files..." & local apply_killpid=$!
 
-        sudo dpkg --list | grep '^rc' | awk '{print $2}' | xargs sudo dpkg --purge | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Purging obsolete configuration files..." --progress --pulsate --no-cancel --auto-close
+        pkexec bash -c "dpkg --list | grep '^rc' | awk '{print $2}' | xargs dpkg --purge | zenity --window-icon=/usr/share/shockware-center/icon.svg --title=\"Shockware Center\" --text=\"Purging obsolete configuration files...\" --progress --pulsate --no-cancel --auto-close"
 
         kill -9 $apply_killpid
 
@@ -912,13 +897,13 @@ To bulk install/remove software, check the software you want to install, and unc
 
             show_flatpaks=$(echo "$settings_output" | awk -F'|' '{print $4}')
 
-            echo "$view_mode_setting" | tee "/home/$runuser/.config/shockware-center"
+            echo "$view_mode_setting" | tee "/home/$USER/.config/shockware-center"
 
-            echo "$rows_per_page" | tee -a "/home/$runuser/.config/shockware-center"
+            echo "$rows_per_page" | tee -a "/home/$USER/.config/shockware-center"
 
-            echo "$show_apt_packages" | tee -a "/home/$runuser/.config/shockware-center"
+            echo "$show_apt_packages" | tee -a "/home/$USER/.config/shockware-center"
 
-            echo "$show_flatpaks" | tee -a "/home/$runuser/.config/shockware-center"
+            echo "$show_flatpaks" | tee -a "/home/$USER/.config/shockware-center"
 
             read_settings
 
