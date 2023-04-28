@@ -833,8 +833,8 @@ do
     then
 
         yad_list='yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Page: $((page+1)) out of $(($(expr ${#packages_input_for_yad_page_counter[@]} / $rows_per_page)+1))
-    Double-click an package for more information on it.
-    To bulk install/remove software, check the software you want to install, and uncheck the software you want to remove." --list --dclick-action="$dclick_action" --column="Installed":CHK --column="Type":IMG --column="TYPE":HD --column="Name" --button="Settings"!gtk-execute:0 --button="Updates"!software-update-available-symbolic:10 --button="Clean"!/usr/share/shockware-center/clean.png:20 --button="Search"!gtk-find:30 $page_buttons --button="Apply"!gtk-ok:80 --width=800 --height=500 --print-all --search-column=4 --buttons-layout=spread'
+Double-click an package for more information on it.
+To bulk install/remove software, check the software you want to install, and uncheck the software you want to remove." --list --dclick-action="$dclick_action" --column="Installed":CHK --column="Type":IMG --column="TYPE":HD --column="Name" --button="Settings"!gtk-execute:0 --button="Updates"!software-update-available-symbolic:10 --button="Clean"!/usr/share/shockware-center/clean.png:20 --button="Search"!gtk-find:30 $page_buttons --button="Apply"!gtk-ok:80 --width=800 --height=500 --print-all --search-column=4 --buttons-layout=spread'
 
         yad_list+=" ${packages[@]}"
 
@@ -950,7 +950,7 @@ do
         until ((${#new_keyword}>=3)) && [[ "$ex" != "10" ]]
         do
 
-            search_output="$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Keyword:" "$new_keyword_entry" --field="Show APT Packages":CHK "$show_apt_packages" --field="Show Flatpaks":CHK "$show_flatpaks" --button="Show All":10 --button="Search":0 --width=300)"
+            search_output="$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Keyword:" "$new_keyword_entry" --field="Show APT Packages":CHK "$show_apt_packages" --field="Show Flatpaks":CHK "$show_flatpaks" --button="Show All":10 --button="Search":0 --width=300 --buttons-layout=edge)"
 
             ex=$?
 
@@ -1004,11 +1004,15 @@ do
     elif [[ "$ex" == "50" ]] #jump
     then
 
+        end_loading
+
         jump_page=$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#packages_input_for_yad_page_counter[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
 
-        jump_page=$(echo "$jump_page" | awk -F'|' '{print $1}')
-
         ex=$?
+
+        start_loading
+
+        jump_page=$(echo "$jump_page" | awk -F'|' '{print $1}')
 
         if [[ "$ex" == "0" ]]
         then
