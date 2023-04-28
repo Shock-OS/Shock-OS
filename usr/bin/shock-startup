@@ -49,8 +49,6 @@ then
 
     rm ~/.config/userlogstat
 
-    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo #sets up the FlatHub repository
-
 fi
 
 if [[ "$(cat /shock/setupvalue)" == "1" ]]
@@ -83,8 +81,6 @@ fi
 dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" #ensures that the user can logout and shutdown (fixes the shutdown menu being locked if the system crashed during automatic updates)
 
 mpg123 /shock/startup-sound/* #this command plays the startup sound
-
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo #sets up the FlatHub repository (if it's not already setup)
 
 shock-welcome
 
