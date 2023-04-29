@@ -2,25 +2,71 @@
 
 # Installing automatic updates
 
-yad --notification --image=/shock/auto-updates.svg --icon-size=48 --text="Automatic updates are being installed. Please do not turn off your computer." --command="" & killpid=$! &&
+runuser=$1
+
+pause="no"
+
+function notification() {
+
+sudo -u "$runuser" dconf write /org/mate/desktop/lockdown/disable-log-out "true" # Stops the user from accessing the shutdown menu while automatic updates are being applied.
+
+bash -c "yad --notification --image=/shock/auto-updates.svg --icon-size=48 --text=\"Automatic updates are being installed. Please do not turn off your computer.\" --command=\"\" --menu=Pause\!quit\!gtk-media-pause
+
+pause=\"Yes\"
+
+yad --notification --image=gtk-refresh --icon-size=48 --text=\"Waiting to pause automatic updates...\" --command=\"\" & killpid=\$!" & killpid=$! &&
+
+}
+
+notification
 
 success="no"
 
-until [[ "$success" == "yes" ]]
+sudo apt update
+
+updates=($(apt list --upgradable | awk -F/ '{print $1}'))
+
+updates=("${updates[@]:1}")
+
+for package in "${updates[@]}"
 do
 
-output=$(sudo apt-get update && sudo apt-get upgrade -y)
+    if [[ "$pause" == "yes" ]] #if automatic updates are paused
+    then
 
-success="yes"
+        sudo kill -9 $killpid
 
-if [[ "$output" == *"'sudo dpkg --configure -a'"* ]] #if packages need to be reconfigured
-then
+        sudo -u "$runuser" dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" # Allows the user to access the shutdown menu.
+
+        yad --notification --image=gtk-media-pause --icon-size=48 --text="Automatic updates are paused." --command="" --menu=Resume\!quit\!gtk-media-play-ltr
+
+        pause="no"
+
+        notification
+
+    fi
 
     success="no"
 
-    sudo dpkg --configure -a
+    until [[ "$success" == "yes" ]]
+    do
 
-fi
+        output=$(sudo apt install "$package")
+
+        if [[ "$output" == *"'sudo dpkg --configure -a'"* ]] #if packages need to be reconfigured
+        then
+
+            success="no"
+
+            sudo dpkg --configure -a
+
+        else
+
+            success="yes"
+
+        fi
+
+    done
 
 done
 

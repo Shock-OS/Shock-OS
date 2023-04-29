@@ -2,6 +2,8 @@
 
 #this software is a graphical frontend for APT and Flatpak
 
+start_time=$(date +%s) #DEBUG
+
 #the detect_exit function begins
 
 function detect_exit() {
@@ -34,6 +36,10 @@ apt_removal_list=()
 #the record function begins
 
 function record() {
+
+echo "$(($(date +%s) - start_time))" #DEBUG
+
+echo "RECORDING..." #DEBGUG
 
 local counter=0
 
@@ -668,6 +674,10 @@ do
 
     packages_input=()
 
+    echo "$(($(date +%s) - start_time))" #DEBUG
+
+    echo "SEARCHING..." #DEBUG
+
     if [[ -n "$keyword" ]] #if keyword is not empty (whenever a search is made)
     then
 
@@ -716,6 +726,10 @@ do
 
     fi
 
+    echo "$(($(date +%s) - start_time))" #DEBUG
+
+    echo "SORTING IN ALPHABETICAL ORDER..." #DEBUG
+
     #the sort in alphabetical order patch begins
 
     packages_input_values=$(printf "%s\n" "${packages_input[@]}")
@@ -730,7 +744,15 @@ do
 
     packages_input=("${packages_input[@]:$((rows_per_page*page))}")
 
+    echo "$(($(date +%s) - start_time))" #DEBUG
+
+    echo "GETTING LIST OF INSTALLED APPS..." #DEBUG
+
     get_installed
+
+    echo "$(($(date +%s) - start_time))" #DEBUG
+
+    echo "PREPARING APP LIST..." #DEBUG
 
     packages=()
 
@@ -789,6 +811,10 @@ do
 
     done
 
+    echo "$(($(date +%s) - start_time))" #DEBUG
+
+    echo "DONE" #DEBUG
+
     if ((${#packages_input[@]}>rows_per_page))
     then
 
@@ -844,9 +870,9 @@ To bulk install/remove software, check the software you want to install, and unc
 
         start_loading
 
-    fi
+        record
 
-    record
+    fi
 
     if [[ "$ex" == "0" ]] #settings
     then
