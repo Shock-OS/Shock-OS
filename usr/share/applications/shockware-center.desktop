@@ -3,7 +3,7 @@ Version=1
 Name=Shockware Center
 GenericName=Shockware Center
 Comment=Install/Remove Debian APT packages and Flatpaks.
-Exec=bash -c "pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shockware-center $(whoami)"
+Exec=shockware-center
 Icon=/usr/share/shockware-center/icon.svg
 Terminal=false
 Type=Application
