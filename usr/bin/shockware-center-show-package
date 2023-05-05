@@ -112,17 +112,17 @@ Remotes: $remotes" | tee "/tmp/shockware-center-FLATPAK-info/$4"
 
 else #if APT package
 
-    description="$(aptitude show $4 | sed -n '/^Description:/,/^ /p')"
+    description="$(apt show $4 | sed -n '/^Description:/,/^ /p')"
 
     check_description
 
-    state="$(aptitude show $4 | grep State:)"
+    state="$(apt show $4 | grep State:)"
 
-    version="$(aptitude show $4 | grep Version:)"
+    version="$(apt show $4 | grep Version:)"
 
-    arch="$(aptitude show $4 | grep Architecture:)"
+    arch="$(apt show $4 | grep Architecture:)"
 
-    size="$(aptitude show $4 | grep 'Uncompressed Size:')"
+    size="$(apt show $4 | grep Size:)"
 
     mkdir /tmp/shockware-center-APT-info
 

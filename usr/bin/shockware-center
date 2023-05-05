@@ -453,7 +453,7 @@ then
 
     show_apt_packages=$(sed -n 3p "/home/$USER/.config/shockware-center")
 
-    if [[ "$(aptitude show flatpak | grep State:)" == "State: installed" ]] #if flatpak is installed
+    if [[ "$(apt show flatpak | grep State:)" == "State: installed" ]] #if flatpak is installed
     then
 
         show_flatpaks=$(sed -n 4p "/home/$USER/.config/shockware-center")
@@ -466,7 +466,7 @@ then
 
 else #if no config file exists
 
-    if [[ "$(aptitude show flatpak | grep State:)" == "State: installed" ]] #if flatpak is installed
+    if [[ "$(apt show flatpak | grep State:)" == "State: installed" ]] #if flatpak is installed
     then
 
         show_flatpaks="TRUE"
@@ -628,7 +628,7 @@ function get_installed() {
 if [[ "$show_apt_packages" == "TRUE" ]]
 then
 
-    installed_packages=($(aptitude search '~i' -F "%p" | grep "$keyword" | sed 's/.*/"&"/')) #ChatGPT
+    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq | grep "$keyword" | sed 's/.*/"&"/')) #ChatGPT
 
 fi
 
@@ -658,6 +658,74 @@ keyword=""
 
 start_loading
 
+#the preload begins
+
+echo "$(($(date +%s) - start_time))" #DEBUG
+
+echo "PRELOADING..." #DEBUG
+
+if [[ "$show_apt_packages" == "TRUE" ]]
+then
+
+    #all_apt_packages=($(apt list | awk -F/ '{print $1}' | uniq | sed 's/.*/"&"/'))
+
+    #all_apt_packages=("${all_apt_packages[@]:1}") #removes '"Listing..."' from the packages list (because it's obviously not a package)
+
+    all_apt_packages=($(find /var/lib/app-info/icons/*/* -type f -printf '%f\n' | cut -d'_' -f1 | sed 's/.*/"&"/' | sort | uniq))
+
+    #the removal of armhf packages from the package selection begins
+
+    if [[ "$(uname -m)" == "aarch64" ]]
+    then
+
+        for i in "${!all_apt_packages[@]}"
+        do
+
+            if [[ "${all_apt_packages[$i]}" == *":"* ]]
+            then
+
+                unset 'all_apt_packages[i]'
+
+            fi
+
+        done
+
+    fi
+
+    #the removal of armhf packages from the package selection ends
+
+    echo "ALL APT PACKAGES: ${all_apt_packages[@]}" #DEBUG
+
+    echo "$(($(date +%s) - start_time))" #DEBUG
+
+fi
+
+if [[ "$show_flatpaks" == "TRUE" ]]
+then
+
+    all_flatpaks=($(grep -o '<name>[^<]*</name>' /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | sed 's/<name>\(.*\)<\/name>/\"\1\"/g' | uniq)) #Gets all Flatpak names from AppStream (ChatGPT wrote part of this command)
+
+fi
+
+echo "$(($(date +%s) - start_time))" #DEBUG
+
+echo "SORTING IN ALPHABETICAL ORDER..." #DEBUG
+
+#the sort in alphabetical order patch begins
+
+if [[ "$show_apt_packages" == "TRUE" ]] && [[ "$show_flatpaks" == "TRUE" ]]
+then
+
+    all_packages=$(echo "$(printf "%s\n" "${all_apt_packages[@]} ${all_flatpaks[@]}")" | sort)
+
+    mapfile -t all_packages <<< "$all_packages"
+
+fi
+
+#the sort in alphabetical order patch ends
+
+#the preload ends
+
 while true
 do
 
@@ -684,25 +752,23 @@ do
         if [[ "$show_apt_packages" == "TRUE" ]]
         then
 
-            aptitude_search='!~v'
-
-            aptitude_search+=" $keyword"
-
-            packages_input=($(aptitude search "$aptitude_search" -F %p | sed 's/.*/"&"/')) #ChatGPT
+            packages_input=($(printf "%s\n" "${all_apt_packages[@]}" | grep -i "$keyword"))
 
         fi
 
         if [[ "$show_flatpaks" == "TRUE" ]]
         then
 
-            IFS=$'\n' read -d '' -ra flatpak_search_results <<< "$(flatpak search --arch=$(uname -m) --columns=name $keyword | awk '{print "\""$0" [FLATPAK]\""}' RS='\n')" #ChatGPT
+            packages_input+=($(printf "%s\n" "${all_flatpaks[@]}" | grep -i "$keyword"))
 
-            if [[ "${flatpak_search_results[@]}" != "\"No matches found [FLATPAK]\"" ]] #only if flatpaks matching the keyword are found
-            then
+            #IFS=$'\n' read -d '' -ra flatpak_search_results <<< "$(flatpak search --arch=$(uname -m) --columns=name $keyword | awk '{print "\""$0" [FLATPAK]\""}' RS='\n')" #ChatGPT
 
-                packages_input+=("${flatpak_search_results[@]}")
+            #if [[ "${flatpak_search_results[@]}" != "\"No matches found [FLATPAK]\"" ]] #only if flatpaks matching the keyword are found
+            #then
 
-            fi
+                #packages_input+=("${flatpak_search_results[@]}")
+
+            #fi
 
         fi
 
@@ -711,16 +777,14 @@ do
         if [[ "$show_apt_packages" == "TRUE" ]]
         then
 
-            packages_input=($(aptitude search '!~v' -F %p | sed 's/.*/"&"/'))
+            packages_input=("${all_apt_packages[@]}")
 
         fi
 
         if [[ "$show_flatpaks" == "TRUE" ]]
         then
 
-            IFS=$'\n' read -d '' -ra flatpak_search_results <<< "$(flatpak remote-ls --all --app --columns=name | awk '{print "\""$0" [FLATPAK]\""}' RS='\n')" #ChatGPT
-
-            packages_input+=("${flatpak_search_results[@]}")
+            packages_input+=("${all_flatpaks[@]}")
 
         fi
 
@@ -761,6 +825,8 @@ do
     until ((counter>${#packages_input[@]})) || ((counter>rows_per_page))
     do
 
+        echo "${packages_input[counter]}" #DEBUG
+
         if [[ -n "${packages_input[counter]}" ]] && [[ "${packages_input[counter]}" != '"$kernel"' ]]
         then
 
@@ -797,7 +863,9 @@ do
 
                 fi
 
-                packages+=("\"/usr/share/shockware-center/apt$view_mode.png\"")
+                packages+=("$(find /var/lib/app-info/icons/*/*/$(echo "${packages_input[counter]}" | tr -d '\"')_* | head -1)")
+
+                #packages+=("$(find /var/lib/app-info/icons/*/*/\"$(echo "${packages_input[counter]}" | tr -d '\"')\"*)")
 
                 packages+=("APT")
 
