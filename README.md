@@ -25,7 +25,9 @@ Shock OS is built by installing a .deb package on top of a fresh install of Rasp
 
 ```$ git clone https://github.com/Shock-OS/Shock-OS.git```
 
-```$ dpkg-deb --build -Zxz Shock-OS```
+```cd Shock-OS```
+
+```$ dpkg-deb --build -Zxz shockos-?.0-all.deb```
 
 And there you go! Simply install that on top of a fresh install of Raspberry Pi OS Lite (32-bit or 64-bit NON-Legacy) and you've got a test-build!
 
