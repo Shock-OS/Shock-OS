@@ -1,0 +1,7 @@
+#!/bin/bash
+
+dconf write /org/mate/desktop/lockdown/disable-log-out "true" # Stops the user from accessing the shutdown menu while automatic updates are being applied.
+
+sudo shock-auto-updates
+
+dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" # Allows the user to access the shutdown menu.

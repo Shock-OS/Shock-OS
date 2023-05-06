@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#welcome screen for Shock OS. Run on first-boot
+
+if [[ -f ~/.config/shock-welcome-indicator ]]
+then
+
+    ds=$(yad --form --width=500 --window-icon='/shock/gnome-logo-white.svg' --title="Welcome to Shock OS" --field="Congratulations! Your new system is ready to go. Here are a few things you can do to personalize your system:":LBL "" --field="Set Desktop Wallpaper":FBTN "shock-wallpapers" --field="Choose Themes and Accent Colors":FBTN "shock-themes" --field="Choose Panel Layout":FBTN "shock-panel-layout-changer" --field="":LBL "" --field="By default, Shock OS outputs audio through the 3.5mm headphone jack, but you may want to switch to HDMI or another source.":LBL "" --field="Manage Audio Output Device":FBTN "mate-volume-control --page=output" --field="":LBL "" --field="Thank you for choosing Shock OS! We hope you love it!
+
+John 15:12":LBL "" --field="":LBL "" --field="Launch this window at startup":CHK "TRUE" --button=Dismiss)
+
+    if [[ "$ds" == *"FALSE"* ]]
+    then
+
+        rm ~/.config/shock-welcome-indicator
+
+    fi
+
+fi

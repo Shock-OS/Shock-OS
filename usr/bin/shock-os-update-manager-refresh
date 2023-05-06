@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# The system will now check for new updates...
-
-sudo apt update

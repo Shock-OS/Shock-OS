@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=shock-os-update-manager.desktop
-Exec=shock-os-update-manager
-Name[en_US]=shock-os-update-manager.desktop
-Type=Application
-Terminal=false
-X-GNOME-Autostart-Phase=Desktop

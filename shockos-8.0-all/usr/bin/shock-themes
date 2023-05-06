@@ -1,0 +1,107 @@
+#!/bin/bash
+
+if ! [[ -f ~/.config/shock_themes ]]
+then
+
+    touch ~/.config/shock_themes
+
+    echo 'shock-light-blue' | tee ~/.config/shock_themes
+
+fi
+
+current_theme=$(cat ~/.config/shock_themes)
+
+if [[ "$current_theme" == *"light"* ]]
+then
+
+    theme_selection='^Light!Dark'
+
+elif [[ "$current_theme" == *"dark"* ]]
+then
+
+    theme_selection='Light!^Dark'
+
+fi
+
+if [[ "$current_theme" == *"blue"* ]]
+then
+
+    color_selection='^Blue!Green!Orange!Pink!Purple!Red!Yellow'
+
+elif [[ "$current_theme" == *"green"* ]]
+then
+
+    color_selection='Blue!^Green!Orange!Pink!Purple!Red!Yellow'
+
+elif [[ "$current_theme" == *"orange"* ]]
+then
+
+    color_selection='Blue!Green!^Orange!Pink!Purple!Red!Yellow'
+
+elif [[ "$current_theme" == *"pink"* ]]
+then
+
+    color_selection='Blue!Green!Orange!^Pink!Purple!Red!Yellow'
+
+elif [[ "$current_theme" == *"purple"* ]]
+then
+
+    color_selection='Blue!Green!Orange!Pink!^Purple!Red!Yellow'
+
+elif [[ "$current_theme" == *"red"* ]]
+then
+
+    color_selection='Blue!Green!Orange!Pink!Purple!^Red!Yellow'
+
+elif [[ "$current_theme" == *"yellow"* ]]
+then
+
+    color_selection='Blue!Green!Orange!Pink!Purple!Red!^Yellow'
+
+fi
+
+output=$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes & Colors" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Choose Third Party Themes/Icons/Cursors":1 --button="Apply":0)
+
+ex=$?
+
+if [[ "$ex" == "0" ]]
+then
+
+    lod=$(echo "$output" | awk -F'|' '{print $1}')
+
+    lod=$(echo "$lod" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+
+    color=$(echo "$output" | awk -F'|' '{print $2}')
+
+    color=$(echo "$color" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+
+    theme="shock-$lod-$color"
+
+    dconf write /org/mate/desktop/interface/gtk-theme "'$theme'"
+
+    dconf write /org/mate/marco/general/theme "'$theme'"
+
+    dconf write /org/mate/desktop/interface/icon-theme "'$theme'"
+
+    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
+
+    echo "[Greeter]
+    theme-name=shock-dark-$color
+    icon-theme-name=shock-dark-$color
+    show-hostname=false
+    show-power=false
+    show-keyboard=false
+    show-clock=false" > /etc/lightdm/slick-greeter.conf
+
+    echo "$theme" | tee ~/.config/shock_themes
+
+elif [[ "$ex" == "1" ]]
+then
+
+    shock-third-party-themes-selector
+
+fi
+
+
+
+

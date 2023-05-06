@@ -1,0 +1,147 @@
+#!/bin/bash
+
+#the detect_exit function begins
+
+function detect_exit() {
+
+ex=$?
+
+if [[ "$ex" != "0" ]]
+then
+
+    exit
+
+fi
+
+}
+
+#the detect_exit function ends
+
+#the loading functions begin
+
+function start_loading() {
+
+yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Loading package info..." --center --progress --pulsate --auto-close --undecorated --no-buttons & killpid=$!
+
+}
+
+function end_loading() {
+
+kill -9 $killpid
+
+}
+
+#the loading functions end
+
+#the check_description function begins
+
+function check_description() {
+
+if [[ -z "$description" ]]
+then
+
+    description="No description provided."
+
+fi
+
+}
+
+#the check_description function ends
+
+start_loading
+
+if [[ "$3" == "FLATPAK" ]] #if flatpak
+then
+
+    IFS=$'\n' read -d '' -ra installed_flatpaks <<< "$(flatpak list --columns=name | awk '{print "\""$0"\""}' RS='\n')"
+
+    flatpak_id=$(flatpak search $4 --columns=name,application | grep "^$4" | awk -F '\t' '{print $2}' | head -n1)
+    
+    description="$(flatpak search $4 --columns=name,description | grep "^$4" | awk -F '\t' '{print $2}' | head -n1)"
+
+    version="$(flatpak search $4 --columns=name,version | grep "^$4" | awk -F '\t' '{print $2}' | head -n1)"
+
+    branch="$(flatpak search $4 --columns=name,branch | grep "^$4" | awk -F '\t' '{print $2}' | head -n1)"
+
+    remotes="$(flatpak search $4 --columns=name,remotes | grep "^$4" | awk -F '\t' '{print $2}' | head -n1)"
+
+    check_description
+
+    mkdir /tmp/shockware-center-FLATPAK-info
+    
+    if [[ " ${installed_flatpaks[@]} " != *" \"$4\" "* ]] #if not installed
+    then
+
+        echo "Description: $description
+
+Version: $version
+
+State: not installed
+
+Application ID: $flatpak_id
+
+Branch: $branch
+
+Remotes: $remotes" | tee "/tmp/shockware-center-FLATPAK-info/$4"
+
+        end_loading
+
+        yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $4 [FLATPAK]" --text-info --filename="/tmp/shockware-center-FLATPAK-info/$4" --button="Close" --width=400 --height=300
+
+    else #if installed
+
+        echo "Description: $description
+
+Version: $version
+
+State: installed
+
+Application ID: $flatpak_id
+
+Branch: $branch
+
+Remotes: $remotes" | tee "/tmp/shockware-center-FLATPAK-info/$4"
+
+        end_loading
+
+        yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $4 [FLATPAK]" --text-info --filename="/tmp/shockware-center-FLATPAK-info/$4" --button="Close" --width=400 --height=300
+
+    fi
+
+    rm "/tmp/shockware-center-FLATPAK-info/$4"
+
+else #if APT package
+
+    description="$(apt show $4 | sed -n '/^Description:/,/^ /p')"
+
+    check_description
+
+    state="$(apt show $4 | grep State:)"
+
+    version="$(apt show $4 | grep Version:)"
+
+    arch="$(apt show $4 | grep Architecture:)"
+
+    size="$(apt show $4 | grep Size:)"
+
+    mkdir /tmp/shockware-center-APT-info
+
+    echo "$description
+
+$version
+
+$state
+
+$arch
+
+${size:13}" | tee "/tmp/shockware-center-APT-info/$4"
+
+    end_loading
+
+    yad --window-icon=emblem-packge --title="Details of Package $4" --text-info --filename="/tmp/shockware-center-APT-info/$4" --button="Close" --width=400 --height=300
+
+    rm "/tmp/shockware-center-APT-info/$4"
+
+fi
+
+

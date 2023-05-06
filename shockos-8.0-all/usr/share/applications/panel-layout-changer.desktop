@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1
+Name=Panel Layouts
+GenericName=Panel Layouts
+Comment=Change the panel layout
+Exec=shock-panel-layout-changer
+TryExec=shock-panel-layout-changer
+Icon=mate-panel
+Terminal=false
+Type=Application
+Categories=Settings;DesktopSettings;
+Keywords=panel;layout;layouts;taskbar;shelf;
+Name[en_US]=Panel Layouts

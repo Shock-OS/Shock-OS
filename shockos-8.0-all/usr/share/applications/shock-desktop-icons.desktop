@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1
+Name=Desktop Icons
+GenericName=Desktop Icons
+Comment=Manage desktop icons
+Exec=shock-desktop-icons
+TryExec=shock-desktop-icons
+Icon=emblem-desktop
+Terminal=false
+Type=Application
+Categories=Settings;DesktopSettings;
+Keywords=wallpaper;desktop;background;icons;apps
+Name[en_US]=Desktop Icons

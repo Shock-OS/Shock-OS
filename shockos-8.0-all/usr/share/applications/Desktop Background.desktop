@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1
+Name=Desktop Background
+GenericName=Desktop Background
+Comment=Change the desktop background
+Exec=shock-wallpapers
+TryExec=shock-wallpapers
+Icon=background
+Terminal=false
+Type=Application
+Categories=Settings;DesktopSettings;
+Keywords=wallpaper;desktop;background;
+Name[en_US]=Desktop Background

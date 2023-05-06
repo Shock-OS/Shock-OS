@@ -1,0 +1,116 @@
+#!/bin/bash
+
+#config-file - line 1: application font, line 2: desktop font, line 3: document font, line 4: fixed width font, line 5: window title font 
+
+function detect_exit() {
+
+ex=$?
+
+if [[ "$ex" != "0" ]]
+then
+
+    exit
+
+fi
+
+}
+
+if ! [[ -f ~/.config/shock_fonts ]]
+then
+
+    touch ~/.config/shock_fonts
+
+    echo 'Cantarell 11' | tee ~/.config/shock_fonts
+
+    echo 'Cantarell 11' | tee -a ~/.config/shock_fonts
+
+    echo 'Cantarell 11' | tee -a ~/.config/shock_fonts
+
+    echo 'Monospace 13' | tee -a ~/.config/shock_fonts
+
+    echo 'Cantarell Bold 11' | tee -a ~/.config/shock_fonts
+
+fi
+
+current_appfont=$(sed -n 1p ~/.config/shock_fonts)
+
+current_deskfont=$(sed -n 2p ~/.config/shock_fonts)
+
+current_docfont=$(sed -n 3p ~/.config/shock_fonts)
+
+current_fixedwidthfont=$(sed -n 4p ~/.config/shock_fonts)
+
+current_windowtitlefont=$(sed -n 5p ~/.config/shock_fonts)
+
+font_to_change=$(yad --title="Fonts" --window-icon=preferences-desktop-font --form --text='Which system font would you like to change?' --field='':CB 'Application Font!Desktop Font!Document Font!Fixed Width Font!Window Title Font' --button="Next")
+
+detect_exit
+
+if [[ "$font_to_change" == "Application Font|" ]]
+then
+
+    new_font=$(yad --font --title="Application Font" --window-icon=preferences-desktop-font --fontname="$current_appfont" --button="Apply")
+
+    detect_exit
+
+    dconf write /org/mate/desktop/interface/font-name "'$new_font'"
+
+    current_appfont="$new_font"
+
+elif [[ "$font_to_change" == "Desktop Font|" ]]
+then
+
+    new_font=$(yad --font --title="Desktop Font" --window-icon=preferences-desktop-font --fontname="$current_deskfont" --button="Apply")
+
+    detect_exit
+
+    dconf write /org/mate/caja/desktop/font "'$new_font'"
+
+    current_deskfont="$new_font"
+
+elif [[ "$font_to_change" == "Document Font|" ]]
+then
+
+    new_font=$(yad --font --title="Document Font" --window-icon=preferences-desktop-font --fontname="$current_docfont" --button="Apply")
+
+    detect_exit
+
+    dconf write /org/mate/desktop/interface/document-font-name "'$new_font'"
+
+    current_docfont="$new_font"
+
+elif [[ "$font_to_change" == "Fixed Width Font|" ]]
+then
+
+    new_font=$(yad --font --title="Fixed Width Font" --window-icon=preferences-desktop-font --fontname="$current_fixedwidthfont" --button="Apply")
+
+    detect_exit
+
+    dconf write /org/mate/desktop/interface/monospace-font-name "'$new_font'"
+
+    current_fixedwidthfont="$new_font"
+
+elif [[ "$font_to_change" == "Window Title Font|" ]]
+then
+
+    new_font=$(yad --font --title="Window Title Font" --window-icon=preferences-desktop-font --fontname="$current_windowtitlefont" --button="Apply")
+
+    detect_exit
+
+    dconf write /org/mate/marco/general/titlebar-font "'$new_font'"
+
+    current_windowtitlefont="$new_font"
+
+fi
+
+echo "$current_appfont" | tee ~/.config/shock_fonts
+
+echo "$current_deskfont" | tee -a ~/.config/shock_fonts
+
+echo "$current_docfont" | tee -a ~/.config/shock_fonts
+
+echo "$current_fixedwidthfont" | tee -a ~/.config/shock_fonts
+
+echo "$current_windowtitlefont" | tee -a ~/.config/shock_fonts
+
+

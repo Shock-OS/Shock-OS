@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=shock-parental-controls-startup.desktop
+Exec=shock-parental-controls-startup
+Name[en_US]=shock-parental-controls-startup.desktop
+Type=Application
+Terminal=false
+X-GNOME-Autostart-Phase=Desktop
