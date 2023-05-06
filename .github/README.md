@@ -40,3 +40,7 @@ These images can be flashed to a storage device, such as an SD card, USB stick, 
 We are currently looking for the following contributions:
 - Translators - Shock OS is currently only available in English. While the locale can be switched to a different language, the Shock OS software (programs in this repo designed for Shock OS) is still only in English, which may cause Shock OS to not function as intended if the system is set to a different language.
 - Porting to x86 - For those interested in running Shock OS on a regular, Intel/AMD x86 or x86_64 computer, porting Shock OS should be very easy. All of the programs in this repo, as well as the programs that the .deb package installs, are x86 compatible. Instead of installing on top of Raspberry Pi OS Lite, the Shock OS .deb package can be installed on top of Debian standard. We just need people who know how to create a Live ISO of Shock OS with the Calamares installer. 
+
+### License
+
+Shock OS is licensed under the GNU General Public License 3.0 (GPL-3.0)
