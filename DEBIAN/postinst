@@ -263,6 +263,8 @@ flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flat
 
 mv /LICENSE /shock #moves the LICENSE file from the root directory to the /shock directory
 
+rm -r /.git #removes the /.git directory
+
 
 
 
