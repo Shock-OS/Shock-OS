@@ -6,4 +6,4 @@ Priority: optional
 Depends: mate-desktop-environment-extras,slick-greeter,zenity,yad,mpg123,btrfs-progs,network-manager-gnome,dosfstools,mtools,wget,xz-utils,apt-show-versions,apt-config-icons
 Recommends:pi-package,chromium-browser,rhythmbox,celluloid,libreoffice,libreoffice-gnome,gnome-calendar,cups,system-config-printer,onboard,orca,gnote,ntp,xscreensaver-data-extra,gnome-weather,gnome-disk-utility,flatpak,gucharmap
 Maintainer: Carson Grover
-Description: This package installs Shock OS 8.0 Garrett on top of Raspberry Pi OS Lite.
+Description: This package installs Shock OS 8.0 Holly on top of Raspberry Pi OS Lite.
