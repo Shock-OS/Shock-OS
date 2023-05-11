@@ -68,7 +68,7 @@ NOTE: The logout and power options in the start menu will be temporarily disable
 
         sudo rm -R /usr/share/shock-release-upgrader/*
 
-        sudo wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader
+        sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/development/upgrades/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader
 
         if [[ -f /usr/share/shock-release-upgrader/$upgrto_version-preupgr-script ]]
         then
@@ -91,7 +91,7 @@ NOTE: The logout and power options in the start menu will be temporarily disable
 
         sudo apt install -y /usr/share/shock-release-upgrader/$upgrto_version.deb 2>&1 | yad --center --progress --pulsate --auto-close --window-icon=/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version $upgrto_codename..." --text="Upgrading to Shock OS $upgrto_version $upgrto_codename. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
 
-        sudo wget https://raw.githubusercontent.com/Shock-OS/Upgrade-Packages/main/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader
+        sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/development/upgrades/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader
 
         if [[ -f /usr/share/shock-release-upgrader/$upgrto_version-postupgr-script ]]
         then
