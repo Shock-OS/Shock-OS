@@ -705,6 +705,8 @@ then
 
     all_flatpaks=($(grep -o '<name>[^<]*</name>' /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | sed 's/<name>\(.*\)<\/name>/\"\1\"/g' | uniq)) #Gets all Flatpak names from AppStream (ChatGPT wrote part of this command)
 
+	all_flatpak_ids=($(grep -o '<id>[^<]*</id>' /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | sed 's/<id>\(.*\)<\/id>/\"\1\"/g' | uniq)) #Gets all Flatpak IDs from AppStream (ChatGPT wrote part of this command)
+
 fi
 
 echo "$(($(date +%s) - start_time))" #DEBUG
