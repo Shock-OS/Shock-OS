@@ -271,7 +271,16 @@ sudo sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/config.txt #this command enab
 
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo #sets up the FlatHub repository
 
+#the splash screen patch begins
 
+echo "$(cat /boot/cmdline.txt) quiet splash plymouth.ignore-serial-consoles" | sudo tee /boot/cmdline.txt
+
+echo "[Daemon]
+Theme=shockspin
+ShowDelay=0
+Enable=1" | sudo tee -a /etc/plymouth/plymouthd.conf
+
+#the splash screen patch ends
 
 
 
