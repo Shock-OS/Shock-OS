@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=ShockSpinElegant
+Description=A simple, elegant Shock OS splash screen with the spinner (same as shockspin, but without the Shock OS logo below the spinner).
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/shockspinelegant
+ScriptFile=/usr/share/plymouth/themes/shockspinelegant/shockspinelegant.script
