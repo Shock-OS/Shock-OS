@@ -61,7 +61,54 @@ do
 	if [[ "$ex" == "0" ]] #install
 	then
 
-		INSTALL THEME
+		file="$(yad --window-icon=gnome-settings-theme --title="Install a Theme" --text="Please select a theme, icon or cursor pack to install. You may select a folder or a compressed archive." --file --button="Install"\!document-open)"
+
+		ex=$?
+
+		if [[ "$ex" == "0" ]]
+		then
+
+			if [[ -f "$file" ]] #if archive, then extract archive
+			then
+
+				mkdir -p /tmp/shock_themes/$(whoami)/"$(basename "$file")"
+
+				cd /tmp/shock_themes/$(whoami)/"$(basename "$file")"
+
+				unp "$file"
+
+				cd "$(dirname $(find $(basename $(echo "$file" | sed 's/\.[^.]*$//')) -name index.theme))"
+
+			else
+
+				cd "$(dirname $(find "$file" -name index.theme))"
+
+			fi
+
+			cd ..
+
+			for i in *
+			do
+
+				if [[ -e "$i/index.theme" ]]
+				then
+
+					if [[ -d "$i/cursors" || "$i/places" ]]
+					then
+
+						cp -r "$i" ~/.icons
+
+					else
+
+						cp -r "$i" ~/.themes
+
+					fi
+
+				fi
+
+			done
+
+		fi
 
 	elif [[ "$ex" == "1" ]] #remove
 	then
