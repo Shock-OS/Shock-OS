@@ -1,106 +1,350 @@
 #!/bin/bash
 
-if ! [[ -f ~/.config/shock_themes ]]
-then
+while true
+do
 
-    touch ~/.config/shock_themes
+	yadlist="start-here \"Default Shock OS theme, icon and cursor pack\" Default"
 
-    echo 'shock-light-blue' | tee ~/.config/shock_themes
+	for i in ~/.themes/* #list all themes
+	do
 
-fi
+		yadlist+=" gnome-settings-theme \"Theme pack\" \"$(basename "$i")\" "
 
-current_theme=$(cat ~/.config/shock_themes)
+	done
 
-if [[ "$current_theme" == *"light"* ]]
-then
+	for i in ~/.icons/* #list all 2-in-1 icons and cursor packs
+	do
 
-    theme_selection='^Light!Dark'
+		if  [[ "$(basename "$(find "$i" -name "places" | head -1)")" == "places" ]] && [[ -d "$i/cursors" ]]
+		then
 
-elif [[ "$current_theme" == *"dark"* ]]
-then
+			yadlist+=" ICONS_ICON \"Icon pack with cursors\" \"$(basename "$i")\" "
 
-    theme_selection='Light!^Dark'
+		fi
 
-fi
+	done
 
-if [[ "$current_theme" == *"blue"* ]]
-then
+	for i in ~/.icons/* #list all icons
+	do
 
-    color_selection='^Blue!Green!Orange!Pink!Purple!Red!Yellow'
+		if  [[ "$(basename "$(find "$i" -name "places" | head -1)")" == "places" ]] && [[ ! -d "$i/cursors" ]]
+		then
 
-elif [[ "$current_theme" == *"green"* ]]
-then
+			yadlist+=" ICONS_ICON \"Icon pack\" \"$(basename "$i")\" "
 
-    color_selection='Blue!^Green!Orange!Pink!Purple!Red!Yellow'
+		fi
 
-elif [[ "$current_theme" == *"orange"* ]]
-then
+	done
 
-    color_selection='Blue!Green!^Orange!Pink!Purple!Red!Yellow'
+	for i in ~/.icons/* #list all cursors
+	do
 
-elif [[ "$current_theme" == *"pink"* ]]
-then
+		if  [[ -d "$i/cursors" ]] && [[ "$(basename "$(find "$i" -name "places" | head -1)")" != "places" ]]
+		then
 
-    color_selection='Blue!Green!Orange!^Pink!Purple!Red!Yellow'
+			yadlist+=" CURSOR_ICON \"Cursor pack\" \"$(basename "$i")\" "
 
-elif [[ "$current_theme" == *"purple"* ]]
-then
+		fi
 
-    color_selection='Blue!Green!Orange!Pink!^Purple!Red!Yellow'
+	done
 
-elif [[ "$current_theme" == *"red"* ]]
-then
+	yad="yad --window-icon=gnome-settings-theme --title=\"Theme Manager\" --text=\"Install, remove or rename themes, icons and cursors.\" --list --column=\"Type\":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=3 --height=300 --buttons-layout=spread --button=\"Install\"\!add --button=\"Remove\"\!remove --button=\"Rename\"\!gtk-edit --button=\"Use\"\!dialog-ok $(echo "$yadlist")"
 
-    color_selection='Blue!Green!Orange!Pink!Purple!^Red!Yellow'
+	output="$(eval $yad)"
 
-elif [[ "$current_theme" == *"yellow"* ]]
-then
+	ex=$?
 
-    color_selection='Blue!Green!Orange!Pink!Purple!Red!^Yellow'
+	name=$(echo $output | awk 'BEGIN {FS="|" } { print $3 }')
 
-fi
+	type=$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')
 
-output=$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes & Colors" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Choose Third Party Themes/Icons/Cursors":1 --button="Apply":0)
+	if [[ "$ex" == "0" ]] #install
+	then
 
-ex=$?
+		cd ~/
 
-if [[ "$ex" == "0" ]]
-then
+		file="$(yad --window-icon=gnome-settings-theme --title="Install a Theme" --text="Please select a theme, icon or cursor pack to install. You may select a folder or a compressed archive." --file --button="Install"\!document-open)"
 
-    lod=$(echo "$output" | awk -F'|' '{print $1}')
+		ex=$?
 
-    lod=$(echo "$lod" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+		if [[ "$ex" == "0" ]]
+		then
 
-    color=$(echo "$output" | awk -F'|' '{print $2}')
+			if [[ -f "$file" ]] #if archive, then extract archive
+			then
 
-    color=$(echo "$color" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+				mkdir -p /tmp/shock_themes/$(whoami)/"$(basename "$file")"
 
-    theme="shock-$lod-$color"
+				cd /tmp/shock_themes/$(whoami)/"$(basename "$file")"
 
-    dconf write /org/mate/desktop/interface/gtk-theme "'$theme'"
+				unp "$file"
 
-    dconf write /org/mate/marco/general/theme "'$theme'"
+				cd "$(dirname $(find $(basename $(echo "$file" | sed 's/\.[^.]*$//')) -name index.theme))"
 
-    dconf write /org/mate/desktop/interface/icon-theme "'$theme'"
+			else
 
-    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
+				cd "$(dirname $(find "$file" -name index.theme))"
 
-    echo "[Greeter]
-    theme-name=shock-dark-$color
-    icon-theme-name=shock-dark-$color
-    show-hostname=false
-    show-power=false
-    show-keyboard=false
-    show-clock=false" > /etc/lightdm/slick-greeter.conf
+			fi
 
-    echo "$theme" | tee ~/.config/shock_themes
+			cd ..
 
-elif [[ "$ex" == "1" ]]
-then
+			for i in *
+			do
 
-    shock-third-party-themes-selector
+				if [[ -e "$i/index.theme" ]]
+				then
 
-fi
+					if [[ -d "$i/cursors" ]] || [[ -d "$i/places" ]]
+					then
+
+						cp -r "$i" ~/.icons
+
+					else
+
+						cp -r "$i" ~/.themes
+
+					fi
+
+				fi
+
+			done
+
+		fi
+
+	elif [[ "$ex" == "1" ]] #remove
+	then
+
+		if [[ "$type" == "Theme pack" ]] #if theme pack
+		then
+
+			rm -r ~/.themes/"$name"
+
+		else #if icon or cursor pack
+
+			rm -r ~/.icons/"$name"
+
+		fi
+
+	elif [[ "$ex" == "2" ]] #rename
+	then
+
+		success="no"
+
+		until [[ "$success" == "yes" ]]
+		do
+
+			newname="$(yad --window-icon=gnome-settings-theme --title="Rename Theme" --text="Please enter the new name for your theme pack." --entry --entry-text="$name" --button="Rename")"
+
+			ex=$?
+
+			if [[ "$ex" == "0" ]]
+			then
+
+				success="yes"
+
+				if [[ "$type" == "Theme pack" ]] #if theme pack
+				then
+
+					if [[ -e ~/.themes/"$newname" ]] #if theme with that name already exists
+					then
+
+						yad --window-icon=gnome-settings-theme --image=emblem-important --title="Rename Theme" --text="There is already a theme pack named '$newname'. Please choose a different name." --button="Retry"
+
+						success="no"
+
+					else
+
+						mv ~/.themes/"$name" ~/.themes/"$newname"
+
+					fi
+
+				else #if icon or cursor pack
+
+					if [[ -e ~/.icons/"$newname" ]] #if icon or cursor pack with that name already exists
+					then
+
+						yad --window-icon=gnome-settings-theme --image=emblem-important --title="Rename Theme" --text="There is already an icon/cursor pack named '$newname'. Please choose a different name." --button="Retry"
+
+						success="no"
+
+					else
+
+						mv ~/.icons/"$name" ~/.icons/"$newname"
+
+					fi
+
+				fi
+
+			fi
+
+		done
+
+	elif [[ "$ex" == "3" ]] #use
+	then
+
+		if [[ "$type" == "Default Shock OS theme, icon and cursor pack" ]]
+		then
+
+			if ! [[ -f ~/.config/shock_themes ]]
+			then
+
+				touch ~/.config/shock_themes
+
+				echo 'lod=light
+color=blue' | tee ~/.config/shock_themes
+
+			fi
+
+			eval "$(cat ~/.config/shock_themes)"
+
+			if [[ "$lod" == "light" ]]
+			then
+
+				theme_selection='^Light!Dark'
+
+			elif [[ "$lod" == "dark" ]]
+			then
+
+				theme_selection='Light!^Dark'
+
+			fi
+
+			if [[ "$color" == "blue" ]]
+			then
+
+				color_selection='^Blue!Green!Orange!Pink!Purple!Red!Yellow'
+
+			elif [[ "$color" == "green" ]]
+			then
+
+				color_selection='Blue!^Green!Orange!Pink!Purple!Red!Yellow'
+
+			elif [[ "$color" == "orange" ]]
+			then
+
+				color_selection='Blue!Green!^Orange!Pink!Purple!Red!Yellow'
+
+			elif [[ "$color" == "pink" ]]
+			then
+
+				color_selection='Blue!Green!Orange!^Pink!Purple!Red!Yellow'
+
+			elif [[ "$color" == "purple" ]]
+			then
+
+				color_selection='Blue!Green!Orange!Pink!^Purple!Red!Yellow'
+
+			elif [[ "$color" == "red" ]]
+			then
+
+				color_selection='Blue!Green!Orange!Pink!Purple!^Red!Yellow'
+
+			elif [[ "$color" == "yellow" ]]
+			then
+
+				color_selection='Blue!Green!Orange!Pink!Purple!Red!^Yellow'
+
+			fi
+
+			output=$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes & Colors" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Apply")
+
+			ex=$?
+
+			if [[ "$ex" == "0" ]]
+			then
+
+				lod=$(echo "$output" | awk -F'|' '{print $1}')
+
+				lod=$(echo "$lod" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+
+				color=$(echo "$output" | awk -F'|' '{print $2}')
+
+				color=$(echo "$color" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+
+				theme="shock-$lod-$color"
+
+				dconf write /org/mate/desktop/interface/gtk-theme "'$theme'"
+
+				dconf write /org/mate/marco/general/theme "'$theme'"
+
+				dconf write /org/mate/desktop/interface/icon-theme "'$theme'"
+
+				dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
+
+				echo "[Greeter]
+theme-name=shock-dark-$color
+icon-theme-name=shock-dark-$color
+show-hostname=false
+show-power=false
+show-keyboard=false
+show-clock=false" > /etc/lightdm/slick-greeter.conf
+
+				echo "lod=$lod
+color=$color" | tee ~/.config/shock_themes
+
+			fi
+
+		elif [[ "$type" == "Theme pack" ]]
+		then
+
+			dconf write /org/mate/desktop/interface/gtk-theme "'$name'"
+
+			dconf write /org/mate/marco/general/theme "'$name'"
+
+		elif [[ "$type" == "Icon pack" ]]
+		then
+
+			dconf write /org/mate/desktop/interface/icon-theme "'$name'"
+
+		elif [[ "$type" == "Cursor pack" ]]
+		then
+
+			dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$name'"
+
+		elif [[ "$type" == "Icon pack with cursors" ]]
+		then
+
+			yad --window-icon=gnome-settings-theme --title="Icon Pack with Cursors" --text="The icon pack '$name' also contains cursors. Would you like to use the icons, the cursors, or both?" --button="Icons Only" --button="Cursors Only" --button="Both"
+
+			ex=$?
+
+			if [[ "$ex" == "0" ]] #icons only
+			then
+
+				dconf write /org/mate/desktop/interface/icon-theme "'$name'"
+
+			elif [[ "$ex" == "1" ]] #cursors only
+			then
+
+				dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$name'"
+
+			elif [[ "$ex" == "2" ]] #both
+			then
+
+				dconf write /org/mate/desktop/interface/icon-theme "'$name'"
+
+				dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$name'"
+
+			fi
+
+		fi
+
+	else
+
+		exit
+
+	fi
+
+done
+
+
+
+
+
+
+
+
 
 
 
