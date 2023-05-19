@@ -75,24 +75,26 @@ do
 		if [[ "$ex" == "0" ]]
 		then
 
+			mkdir -p /tmp/shock_themes/$(whoami)/"$(basename "$file")"
+
+			cd /tmp/shock_themes/$(whoami)/"$(basename "$file")"
+
 			if [[ -f "$file" ]] #if archive, then extract archive
 			then
 
-				mkdir -p /tmp/shock_themes/$(whoami)/"$(basename "$file")"
-
-				cd /tmp/shock_themes/$(whoami)/"$(basename "$file")"
-
 				unp -f "$file"
 
-				cd *
+			else #if folder
 
-			else
+				cp -r "$file" .
 
-				cd "$(dirname $(find "$file" -name index.theme))"
+				cd "$(dirname $(find "/tmp/shock_themes/$(whoami)/$(basename "$file")" -name index.theme))"
+
+				cd ..
 
 			fi
 
-			cd ..
+			#cd ..
 
 			for i in *
 			do
@@ -115,7 +117,7 @@ do
 
 			done
 
-			rm -r /tmp/shock_themes/$(whoami)/"$(basename "$file")"
+			#rm -r /tmp/shock_themes/$(whoami)/"$(basename "$file")" #DEBUG
 
 		fi
 
