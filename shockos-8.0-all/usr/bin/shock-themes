@@ -5,12 +5,17 @@ do
 
 	yadlist="start-here \"Default Shock OS theme, icon and cursor pack\" Default"
 
-	for i in ~/.themes/* #list all themes
-	do
+	if (($(ls ~/.themes | wc -l)>0))
+	then
 
-		yadlist+=" gnome-settings-theme \"Theme pack\" \"$(basename "$i")\" "
+		for i in ~/.themes/* #list all themes
+		do
 
-	done
+			yadlist+=" gnome-settings-theme \"Theme pack\" \"$(basename "$i")\" "
+
+		done
+
+	fi
 
 	for i in ~/.icons/* #list all 2-in-1 icons and cursor packs
 	do
@@ -77,9 +82,9 @@ do
 
 				cd /tmp/shock_themes/$(whoami)/"$(basename "$file")"
 
-				unp "$file"
+				unp -f "$file"
 
-				cd "$(dirname $(find $(basename $(echo "$file" | sed 's/\.[^.]*$//')) -name index.theme))"
+				cd *
 
 			else
 
@@ -109,6 +114,8 @@ do
 				fi
 
 			done
+
+			rm -r /tmp/shock_themes/$(whoami)/"$(basename "$file")"
 
 		fi
 
