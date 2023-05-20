@@ -19,7 +19,7 @@ do
 
 	done
 
-	yadlist="yad --window-icon=\"ICON HERE\" --title=\"Splash Screen\" --text=\"Please choose a splash screen.\" --list --no-headers --response=2 --width=500 --height=300 --always-print-result --column=\"Name\" ${splashes[@]} --button=Install\!add --button=Remove\!remove --button=Apply\!gtk-ok"
+	yadlist="yad --window-icon=\"ICON HERE\" --title=\"Splash Screen\" --text=\"Please choose a splash screen.\" --list --no-headers --response=2 --width=500 --height=300 --always-print-result --column=\"Name\" ${splashes[@]} --buttons-layout=spread --button=Install\!add --button=Remove\!remove --button=Apply\!gtk-ok"
 
 	setsplash="$(eval "$yadlist")"
 
@@ -32,7 +32,7 @@ do
 
 		cd ~/
 
-		file="$(yad --file --window-icon="ICON HERE" --title="Install a Splash Screen" --text="Please choose a folder or a compressed archive containing a plymouth splash screen." --button="Install"\!document-open)"
+		file="$(yad --file --window-icon=xfce4-splash --title="Install a Splash Screen" --text="Please choose a folder or a compressed archive containing a plymouth splash screen." --button="Install"\!document-open)"
 
 		mkdir -p /tmp/shock-splash-screens/$(whoami)/"$(basename "$file")"
 
@@ -73,7 +73,7 @@ do
 		if [[ "$setsplash" == "Shock OS Spinner" ]] || [[ "$setsplash" == "Shock OS Elegant Spinner" ]] || [[ "$setsplash" == "Shock OS Dots" ]]
 		then
 
-			yad --window-icon="ICON HERE" --title="Splash Screens" --image=emblem-important --text="You cannot remove Shock OS splash screens." --button="Dismiss"
+			yad --window-icon=xfce4-splash --title="Splash Screens" --image=emblem-important --text="You cannot remove Shock OS splash screens." --button="Dismiss"
 
 		else
 

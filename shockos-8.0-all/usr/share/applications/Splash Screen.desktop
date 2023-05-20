@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1
+Name=Splash Screen
+GenericName=Splash Screen
+Comment=Change the splash screen
+Exec=shock-splash-screens
+TryExec=shock-splash-screens
+Icon=xfce4-splash
+Terminal=false
+Type=Application
+Categories=Settings;DesktopSettings;
+Keywords=splash;boot;startup;start;loading;image;screen;
+Name[en_US]=Splash Screen
