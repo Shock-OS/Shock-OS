@@ -12,13 +12,53 @@ cp -r /shock/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
 
 cp -r /shock/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
 
-sudo rm /usr/share/images/desktop-base/login-background.svg
+rm /usr/share/images/desktop-base/login-background.svg
 
 cp /shock/login-background.svg /usr/share/images/desktop-base
 
 #the above command will replace the default Debian wallpapers with the Shock OS wallpapers
 
-cp -r /shock/icons/* /usr/share/icons
+for i in /usr/share/icons/*
+do
+
+	if [[ -e "$i/index.theme" ]]
+	then
+
+		if [[ -d "$i/status" ]] || [[ -d "$i/places" ]]
+		then
+
+			directories=($(cat "$i/index.theme" | grep places | grep -oP "\[([^]]+)\]"))
+
+			directories+=($(cat "$i/index.theme" | grep status | grep -oP "\[([^]]+)\]"))
+
+			for a in "${directories[@]}"
+			do
+
+				if [[ "$a" == *"scalable"* ]]
+				then
+
+					cp -rf /usr/share/shock-themes/scalable/* "$i/${a:1:${#a}-2}"
+
+				elif [[ "$a" == *"symbolic"* ]]
+				then
+
+					cp -rf /usr/share/shock-themes/symbolic/* "$i/${a:1:${#a}-2}"
+
+				else
+
+					cp -rf "/usr/share/shock-themes/$(echo "$a" | grep -oE '[0-9]+' | head -n 1)"/* "$i/${a:1:${#a}-2}"
+
+				fi
+
+			done
+
+		fi
+
+	fi
+
+done
+
+#cp -r /fshock/icons/* /usr/share/icons #DEBUG
 
 #the above command replaces GNOME and MATE start menu icons with the Shock OS logo
 
@@ -50,9 +90,9 @@ cp /shock/cursor.theme /usr/share/icons/mate
 
 #the above set of commands sets the default Shock OS screen
 
-sudo touch /etc/lightdm/slick-greeter.conf
+touch /etc/lightdm/slick-greeter.conf
 
-sudo chmod a+w /etc/lightdm/slick-greeter.conf
+chmod a+w /etc/lightdm/slick-greeter.conf
 
 echo "[Greeter]
 theme-name=shock-dark-blue
@@ -64,157 +104,168 @@ show-clock=false" > /etc/lightdm/slick-greeter.conf
 
 #the above set of commands sets the slick-greeter settings
 
-sudo chmod -R a+w /shock
+chmod -R a+w /shock
 
 echo "0" > /shock/setupvalue
 
 #the above set of commands sets the 'pi' user to automatic login
 
-sudo rm /usr/share/applications/mate-default-applications-properties.desktop
+rm /usr/share/applications/mate-default-applications-properties.desktop
 
-sudo cp /shock/mate-default-applications-properties.desktop /usr/share/applications
+cp /shock/mate-default-applications-properties.desktop /usr/share/applications
 
 #the above command sets a star as the logo for the preferred applications
 
-sudo rm /usr/share/pixmaps/gnome-logo-white.svg
+rm /usr/share/pixmaps/gnome-logo-white.svg
 
-sudo rm /usr/share/pixmaps/mate-logo-white.svg
+rm /usr/share/pixmaps/mate-logo-white.svg
 
-sudo rm /usr/share/applications/screensavers/gnomelogo-floaters.desktop
+rm /usr/share/applications/screensavers/gnomelogo-floaters.desktop
 
-sudo rm /usr/share/applications/screensavers/footlogo-floaters.desktop
+rm /usr/share/applications/screensavers/footlogo-floaters.desktop
 
-sudo cp /shock/gnomelogo-floaters.desktop /usr/share/applications/screensavers
+cp /shock/gnomelogo-floaters.desktop /usr/share/applications/screensavers
 
-sudo cp -r /shock/gnome-logo-white.svg /usr/share/pixmaps
+cp -r /shock/gnome-logo-white.svg /usr/share/pixmaps
 
 #the above commands set the Lightning Bolt and Raspberry screensavers
 
-sudo rm /usr/share/applications/yad-icon-browser.desktop
+rm /usr/share/applications/yad-icon-browser.desktop
 
-sudo rm /usr/share/applications/display-im6.q16.desktop
+rm /usr/share/applications/display-im6.q16.desktop
 
-sudo rm /usr/share/applications/htop.desktop
+rm /usr/share/applications/htop.desktop
 
-sudo rm /usr/share/applications/libreoffice-startcenter.desktop
+rm /usr/share/applications/libreoffice-startcenter.desktop
 
-sudo rm /usr/share/applications/ca.desrt.dconf-editor.desktop
+rm /usr/share/applications/ca.desrt.dconf-editor.desktop
 
-sudo rm /usr/share/applications/caja-file-management-properties.desktop
+rm /usr/share/applications/caja-file-management-properties.desktop
 
-sudo rm /usr/share/applications/mate-volume-control.desktop
+rm /usr/share/applications/mate-volume-control.desktop
 
-sudo rm /usr/share/applications/mate-time-admin.desktop
+rm /usr/share/applications/mate-time-admin.desktop
 
-sudo rm /usr/share/applications/mpv.desktop
+rm /usr/share/applications/mpv.desktop
 
-sudo rm /usr/share/applications/mate-tweak.desktop
+rm /usr/share/applications/mate-tweak.desktop
 
-sudo rm /usr/share/applications/users.desktop
+rm /usr/share/applications/users.desktop
 
-sudo rm /usr/share/applications/mate-font-viewer.desktop
+rm /usr/share/applications/mate-font-viewer.desktop
 
-sudo rm /usr/share/applications/mate-appearance-properties.desktop
+rm /usr/share/applications/mate-appearance-properties.desktop
 
 #removes the shortcuts for unwanted apps in the applications directory
 
 #the home directory building begins
 
-sudo mkdir -p /etc/skel/Desktop
+mkdir -p /etc/skel/Desktop
 
-sudo mkdir -p /etc/skel/Documents
+mkdir -p /etc/skel/Documents
 
-sudo mkdir -p /etc/skel/Downloads
+mkdir -p /etc/skel/Downloads
 
-sudo mkdir -p /etc/skel/Music
+mkdir -p /etc/skel/Music
 
-sudo mkdir -p /etc/skel/Pictures
+mkdir -p /etc/skel/Pictures
 
-sudo mkdir -p /etc/skel/Public
+mkdir -p /etc/skel/Public
 
-sudo mkdir -p /etc/skel/Templates
+mkdir -p /etc/skel/Templates
 
-sudo mkdir -p /etc/skel/Videos
+mkdir -p /etc/skel/Videos
 
-sudo mkdir -p /etc/skel/.config/menus
+mkdir -p /etc/skel/.config/menus
 
-sudo touch /etc/skel/.config/shock-welcome-indicator
+touch /etc/skel/.config/shock-welcome-indicator
 
-sudo touch /etc/skel/.config/userlogstat
+touch /etc/skel/.config/userlogstat
 
-sudo cp -r /shock/chromium /etc/skel/.config
+touch /etc/skel/.config/user-dirs.dirs
 
-sudo mkdir -p /etc/skel/.cache
+echo 'XDG_DESKTOP_DIR="$HOME/Desktop"
+XDG_DOWNLOAD_DIR="$HOME/Downloads"
+XDG_TEMPLATES_DIR="$HOME/Templates"
+XDG_PUBLICSHARE_DIR="$HOME/Public"
+XDG_DOCUMENTS_DIR="$HOME/Documents"
+XDG_MUSIC_DIR="$HOME/Music"
+XDG_PICTURES_DIR="$HOME/Pictures"
+XDG_VIDEOS_DIR="$HOME/Videos"' | tee /etc/skel/.config/user-dirs.dirs
 
-sudo mkdir -p /etc/skel/.local/share/applications
+cp -r /shock/chromium /etc/skel/.config
 
-sudo cp /shock/mate_dock_applet.conf /etc/skel/.config
+mkdir -p /etc/skel/.cache
+
+mkdir -p /etc/skel/.local/share/applications
+
+cp /shock/mate_dock_applet.conf /etc/skel/.config
 
 #the home directory building ends
 
-sudo cp -r /shock/applications/* /etc/skel/.local/share/applications
+cp -r /shock/applications/* /etc/skel/.local/share/applications
 
-sudo cp -r /shock/applications/* /usr/share/applications
+cp -r /shock/applications/* /usr/share/applications
 
 #the above command renames the apps to Shock OS friendly names
 
 #the XScreenSaver imperfect screensaver removal patch begins
 
-sudo rm /usr/share/applications/screensavers/binaryring.desktop
+rm /usr/share/applications/screensavers/binaryring.desktop
 
-sudo rm /usr/share/applications/screensavers/deluxe.desktop
+rm /usr/share/applications/screensavers/deluxe.desktop
 
-sudo rm /usr/share/applications/screensavers/fireworkx.desktop
+rm /usr/share/applications/screensavers/fireworkx.desktop
 
-sudo rm /usr/share/applications/screensavers/fluidballs.desktop
+rm /usr/share/applications/screensavers/fluidballs.desktop
 
-sudo rm /usr/share/applications/screensavers/fontglide.desktop
+rm /usr/share/applications/screensavers/fontglide.desktop
 
-sudo rm /usr/share/applications/screensavers/fuzzyflakes.desktop
+rm /usr/share/applications/screensavers/fuzzyflakes.desktop
 
-sudo rm /usr/share/applications/screensavers/glitchpeg.desktop
+rm /usr/share/applications/screensavers/glitchpeg.desktop
 
-sudo rm /usr/share/applications/screensavers/goop.desktop
+rm /usr/share/applications/screensavers/goop.desktop
 
-sudo rm /usr/share/applications/screensavers/interference.desktop
+rm /usr/share/applications/screensavers/interference.desktop
 
-sudo rm /usr/share/applications/screensavers/kumppa.desktop
+rm /usr/share/applications/screensavers/kumppa.desktop
 
-sudo rm /usr/share/applications/screensavers/metaballs.desktop
+rm /usr/share/applications/screensavers/metaballs.desktop
 
-sudo rm /usr/share/applications/screensavers/qix.desktop
+rm /usr/share/applications/screensavers/qix.desktop
 
-sudo rm /usr/share/applications/screensavers/rd-bomb.desktop
+rm /usr/share/applications/screensavers/rd-bomb.desktop
 
-sudo rm /usr/share/applications/screensavers/rocks.desktop
+rm /usr/share/applications/screensavers/rocks.desktop
 
-sudo rm /usr/share/applications/screensavers/spotlight.desktop
+rm /usr/share/applications/screensavers/spotlight.desktop
 
-sudo rm /usr/share/applications/screensavers/strange.desktop
+rm /usr/share/applications/screensavers/strange.desktop
 
-sudo rm /usr/share/applications/screensavers/vidwhacker.desktop
+rm /usr/share/applications/screensavers/vidwhacker.desktop
 
 #the XScreenSaver imperfect screensaver removal patch ends
 
-sudo cp /usr/bin/mate-appearance-properties /usr/bin/mate-appearance-properties-old
+cp /usr/bin/mate-appearance-properties /usr/bin/mate-appearance-properties-old
 
-sudo rm /usr/bin/mate-appearance-properties
+rm /usr/bin/mate-appearance-properties
 
-sudo touch /usr/bin/mate-appearance-properties
+touch /usr/bin/mate-appearance-properties
 
 echo '#!/bin/bash
 
-shock-wallpapers' | sudo tee /usr/bin/mate-appearance-properties
+shock-wallpapers' | tee /usr/bin/mate-appearance-properties
 
-sudo chmod +x /usr/bin/mate-appearance-properties
+chmod +x /usr/bin/mate-appearance-properties
 
 #the above set of commands replaces the mate-appearance-properties program with a link to shock-wallpapers (for the desktop context menu)
 
 echo '# Allow any user to check for new system updates upon startup without requiring a password
 
-%sudo ALL = NOPASSWD:/usr/bin/shock-os-update-manager-refresh' | sudo EDITOR='tee' visudo -f /etc/sudoers.d/shock-os-update-manager-refresh
+%ALL = NOPASSWD:/usr/bin/shock-os-update-manager-refresh' | EDITOR='tee' vi-f /etc/sudoers.d/shock-os-update-manager-refresh
 
-#the above command allows anyone in the sudo group to run shock-os-update-manager-refresh without a password
+#the above command allows anyone in the group to run shock-os-update-manager-refresh without a password
 
 #setfacl -m g:shock-child:--- /usr/bin/pkexec
 
@@ -222,63 +273,63 @@ echo '# Allow any user to check for new system updates upon startup without requ
 
 #Wi-Fi patch begins
 
-sudo echo "denyinterfaces wlan0" >> /etc/dhcpcd.conf
+echo "denyinterfaces wlan0" >> /etc/dhcpcd.conf
 
-sudo echo "[main]
+echo "[main]
 plugins=ifupdown,keyfile
 dhcp=internal
 
 [ifupdown]
 managed=true" > /etc/NetworkManager/NetworkManager.conf
 
-sudo systemctl enable NetworkManager
+systemctl enable NetworkManager
 
 #Wi-Fi patch ends
 
-sudo echo 'sudo shock-initial-setup' >> /home/shock/.bashrc
+echo 'shock-initial-setup' >> /home/shock/.bashrc
 
 #the above set of commands sets the initial setup program to run on first boot
 
-sudo systemctl set-default multi-user #ensures the target is set to multi-user
+systemctl set-default multi-user #ensures the target is set to multi-user
 
 #the 'shock' temporary autologin patch begins
 
-sudo sed -i 's/#NAutoVTs=6/NAutoVTs=1/g' /etc/systemd/logind.conf
+sed -i 's/#NAutoVTs=6/NAutoVTs=1/g' /etc/systemd/logind.conf
 
-sudo echo '[Service]
+echo '[Service]
 ExecStart=
-ExecStart=-/usr/sbin/agetty --autologin shock --noclear %I $TERM' | sudo tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
+ExecStart=-/usr/sbin/agetty --autologin shock --noclear %I $TERM' | tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
 
-sudo systemctl is-enabled getty@tty1.service
+systemctl is-enabled getty@tty1.service
 
-sudo systemctl enable getty@tty1.service
+systemctl enable getty@tty1.service
 
-sudo systemctl daemon-reload
+systemctl daemon-reload
 
 #the 'shock' temporary autologin patch ends
 
 #the clean patch begins
 
-sudo apt purge pluma #gets rid of pluma (because gedit is installed instead)
+apt purge pluma #gets rid of pluma (because gedit is installed instead)
 
-sudo apt autoremove --purge
+apt autoremove --purge
 
-sudo apt update
+apt update
 
 #the clean patch ends
 
-sudo sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/config.txt #this command enables the two front USB ports on the DeskPi Lite
+sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/config.txt #this command enables the two front USB ports on the DeskPi Lite
 
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo #sets up the FlatHub repository
 
 #the splash screen patch begins
 
-echo "$(cat /boot/cmdline.txt) quiet splash plymouth.ignore-serial-consoles" | sudo tee /boot/cmdline.txt
+echo "$(cat /boot/cmdline.txt) quiet splash plymouth.ignore-serial-consoles" | tee /boot/cmdline.txt
 
 echo "[Daemon]
 Theme=shockspin
 ShowDelay=0
-Enable=1" | sudo tee -a /etc/plymouth/plymouthd.conf
+Enable=1" | tee -a /etc/plymouth/plymouthd.conf
 
 #the splash screen patch ends
 

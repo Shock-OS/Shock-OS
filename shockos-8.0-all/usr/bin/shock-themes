@@ -23,7 +23,7 @@ do
 		if  [[ "$(basename "$(find "$i" -name "places" | head -1)")" == "places" ]] && [[ -d "$i/cursors" ]]
 		then
 
-			yadlist+=" ICONS_ICON \"Icon pack with cursors\" \"$(basename "$i")\" "
+			yadlist+=" folder-images \"Icon pack with cursors\" \"$(basename "$i")\" "
 
 		fi
 
@@ -35,7 +35,7 @@ do
 		if  [[ "$(basename "$(find "$i" -name "places" | head -1)")" == "places" ]] && [[ ! -d "$i/cursors" ]]
 		then
 
-			yadlist+=" ICONS_ICON \"Icon pack\" \"$(basename "$i")\" "
+			yadlist+=" folder-images \"Icon pack\" \"$(basename "$i")\" "
 
 		fi
 
@@ -47,13 +47,13 @@ do
 		if  [[ -d "$i/cursors" ]] && [[ "$(basename "$(find "$i" -name "places" | head -1)")" != "places" ]]
 		then
 
-			yadlist+=" CURSOR_ICON \"Cursor pack\" \"$(basename "$i")\" "
+			yadlist+=" input-mouse \"Cursor pack\" \"$(basename "$i")\" "
 
 		fi
 
 	done
 
-	yad="yad --window-icon=gnome-settings-theme --title=\"Theme Manager\" --text=\"Install, remove or rename themes, icons and cursors.\" --list --column=\"Type\":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=3 --height=300 --buttons-layout=spread --button=\"Install\"\!add --button=\"Remove\"\!remove --button=\"Rename\"\!gtk-edit --button=\"Use\"\!dialog-ok $(echo "$yadlist")"
+	yad="yad --window-icon=gnome-settings-theme --title=\"Themes\" --text=\"Install, remove, rename or use themes, icons and cursors.\" --list --column=\"Type\":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=3 --height=300 --buttons-layout=spread --button=\"Install\"\!add --button=\"Remove\"\!remove --button=\"Rename\"\!gtk-edit --button=\"Use\"\!dialog-ok $(echo "$yadlist")"
 
 	output="$(eval $yad)"
 
@@ -68,7 +68,7 @@ do
 
 		cd ~/
 
-		file="$(yad --window-icon=gnome-settings-theme --title="Install a Theme" --text="Please select a theme, icon or cursor pack to install. You may select a folder or a compressed archive." --file --button="Install"\!document-open)"
+		file="$(yad --window-icon=gnome-settings-theme --title="Install" --text="Please select a theme, icon or cursor pack to install. You may select a folder or a compressed archive." --file --button="Install"\!document-open)"
 
 		ex=$?
 
@@ -102,7 +102,7 @@ do
 				if [[ -e "$i/index.theme" ]]
 				then
 
-					if [[ -d "$i/cursors" ]] || [[ -d "$i/places" ]]
+					if [[ -d "$i/status" ]] || [[ -d "$i/places" ]]
 					then
 
 						directories=($(cat "$i/index.theme" | grep places | grep -oP "\[([^]]+)\]"))
@@ -142,7 +142,7 @@ do
 
 			done
 
-			#rm -r /tmp/shock_themes/$(whoami)/"$(basename "$file")" #DEBUG
+			rm -r /tmp/shock_themes/$(whoami)/"$(basename "$file")"
 
 		fi
 
@@ -168,7 +168,7 @@ do
 		until [[ "$success" == "yes" ]]
 		do
 
-			newname="$(yad --window-icon=gnome-settings-theme --title="Rename Theme" --text="Please enter the new name for your theme pack." --entry --entry-text="$name" --button="Rename")"
+			newname="$(yad --window-icon=gnome-settings-theme --title="Rename" --text="Please enter the new name for your theme pack." --entry --entry-text="$name" --button="Rename")"
 
 			ex=$?
 
@@ -183,13 +183,24 @@ do
 					if [[ -e ~/.themes/"$newname" ]] #if theme with that name already exists
 					then
 
-						yad --window-icon=gnome-settings-theme --image=emblem-important --title="Rename Theme" --text="There is already a theme pack named '$newname'. Please choose a different name." --button="Retry"
+						yad --window-icon=gnome-settings-theme --image=emblem-important --title="Rename" --text="There is already a theme pack named '$newname'. Please choose a different name." --button="Retry"
 
 						success="no"
 
 					else
 
 						mv ~/.themes/"$name" ~/.themes/"$newname"
+
+						if [[ "$(cat ~/.config/shock-themes-gtk-theme)" == "$name" ]]
+						then
+
+							dconf write /org/mate/desktop/interface/gtk-theme "'$newname'"
+
+							dconf write /org/mate/marco/general/theme "'$newname'"
+
+							echo "$newname" | tee ~/.config/shock-themes-gtk-theme
+
+						fi
 
 					fi
 
@@ -198,13 +209,31 @@ do
 					if [[ -e ~/.icons/"$newname" ]] #if icon or cursor pack with that name already exists
 					then
 
-						yad --window-icon=gnome-settings-theme --image=emblem-important --title="Rename Theme" --text="There is already an icon/cursor pack named '$newname'. Please choose a different name." --button="Retry"
+						yad --window-icon=gnome-settings-theme --image=emblem-important --title="Rename" --text="There is already an icon/cursor pack named '$newname'. Please choose a different name." --button="Retry"
 
 						success="no"
 
 					else
 
 						mv ~/.icons/"$name" ~/.icons/"$newname"
+
+						if [[ "$(cat ~/.config/shock-themes-icon-theme)" == "$name" ]]
+						then
+
+							dconf write /org/mate/desktop/interface/icon-theme "'$newname'"
+
+							echo "$newname" | tee ~/.config/shock-themes-icon-theme
+
+						fi
+
+						if [[ "$(cat ~/.config/shock-themes-mouse-theme)" == "$name" ]]
+						then
+
+							dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$newname'"
+
+							echo "$newname" | tee ~/.config/shock-themes-mouse-theme
+
+						fi
 
 					fi
 
@@ -281,7 +310,7 @@ color=blue' | tee ~/.config/shock_themes
 
 			fi
 
-			output=$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes & Colors" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Apply")
+			output=$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Apply")
 
 			ex=$?
 
@@ -326,15 +355,21 @@ color=$color" | tee ~/.config/shock_themes
 
 			dconf write /org/mate/marco/general/theme "'$name'"
 
+			echo "$name" | tee ~/.config/shock-themes-gtk-theme
+
 		elif [[ "$type" == "Icon pack" ]]
 		then
 
 			dconf write /org/mate/desktop/interface/icon-theme "'$name'"
 
+			echo "$name" | tee ~/.config/shock-themes-icon-theme
+
 		elif [[ "$type" == "Cursor pack" ]]
 		then
 
 			dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$name'"
+
+			echo "$name" | tee ~/.config/shock-themes-mouse-theme
 
 		elif [[ "$type" == "Icon pack with cursors" ]]
 		then
@@ -348,17 +383,25 @@ color=$color" | tee ~/.config/shock_themes
 
 				dconf write /org/mate/desktop/interface/icon-theme "'$name'"
 
+				echo "$name" | tee ~/.config/shock-themes-icon-theme
+
 			elif [[ "$ex" == "1" ]] #cursors only
 			then
 
 				dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$name'"
+
+				echo "$name" | tee ~/.config/shock-themes-mouse-theme
 
 			elif [[ "$ex" == "2" ]] #both
 			then
 
 				dconf write /org/mate/desktop/interface/icon-theme "'$name'"
 
+				echo "$name" | tee ~/.config/shock-themes-icon-theme
+
 				dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$name'"
+
+				echo "$name" | tee ~/.config/shock-themes-mouse-theme
 
 			fi
 

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1
-Name=Themes and Colors
-GenericName=Themes and Colors
+Name=Themes
+GenericName=Themes
 Comment=Change the desktop theme and accent color
 Exec=shock-themes
 TryExec=shock-themes
@@ -10,4 +10,4 @@ Terminal=false
 Type=Application
 Categories=Settings;DesktopSettings;
 Keywords=theme;accent;color;dark;light;desktop;red;orange;yellow;green;blue;purple;pink;
-Name[en_US]=Themes and Colors
+Name[en_US]=Themes
