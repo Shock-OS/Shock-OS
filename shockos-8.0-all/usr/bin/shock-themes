@@ -107,10 +107,26 @@ do
 
 						directories=($(cat "$i/index.theme" | grep places | grep -oP "\[([^]]+)\]"))
 
+						directories+=($(cat "$i/index.theme" | grep status | grep -oP "\[([^]]+)\]"))
+
 						for a in "${directories[@]}"
 						do
 
-							cp -rf "/usr/share/shock-themes/shock-icons/$(echo "$a" | grep -oE '[0-9]+' | head -n 1)"/* "$a/${a:1:${#a}-2}"
+							if [[ "$a" == *"scalable"* ]]
+							then
+
+								cp -rf /usr/share/shock-themes/scalable/* "$i/${a:1:${#a}-2}"
+
+							elif [[ "$a" == *"symbolic"* ]]
+							then
+
+								cp -rf /usr/share/shock-themes/symbolic/* "$i/${a:1:${#a}-2}"
+
+							else
+
+								cp -rf "/usr/share/shock-themes/$(echo "$a" | grep -oE '[0-9]+' | head -n 1)"/* "$i/${a:1:${#a}-2}"
+
+							fi
 
 						done
 
