@@ -1,0 +1,123 @@
+#!/bin/bash
+
+while true
+do
+
+	splashes=()
+
+	for i in /usr/share/plymouth/themes/*
+	do
+
+		name="$(cat "$i"/"$(basename "$i")".plymouth | grep '^Name=')"
+
+		if [[ -n "$name" ]]
+		then
+
+			splashes+=("\"${name:5}\"")
+
+		fi
+
+	done
+
+	yadlist="yad --window-icon=\"ICON HERE\" --title=\"Splash Screen\" --text=\"Please choose a splash screen.\" --list --no-headers --response=2 --width=500 --height=300 --always-print-result --column=\"Name\" ${splashes[@]} --button=Install\!add --button=Remove\!remove --button=Apply\!gtk-ok"
+
+	setsplash="$(eval "$yadlist")"
+
+	ex=$?
+
+	setsplash="${setsplash%?}"
+
+	if [[ "$ex" == "0" ]] #install
+	then
+
+		cd ~/
+
+		file="$(yad --file --window-icon="ICON HERE" --title="Install a Splash Screen" --text="Please choose a folder or a compressed archive containing a plymouth splash screen." --button="Install"\!document-open)"
+
+		mkdir -p /tmp/shock-splash-screens/$(whoami)/"$(basename "$file")"
+
+		cd /tmp/shock-splash-screens/$(whoami)/"$(basename "$file")"
+
+		if [[ -f "$file" ]] #if archive
+		then
+
+			unp -f "$file"
+
+		else #if folder
+
+			cp -rf "$file" .
+
+		fi
+
+		cd "$(dirname "$(find * -name *'.plymouth')")"
+
+		cd ..
+
+		for i in *
+		do
+
+			if [[ -d "$i" && -f "$i"/"$i".plymouth && -f "$i"/"$i".script ]]
+			then
+
+				pkexec cp -rf "$(realpath "$i")" /usr/share/plymouth/themes
+
+			fi
+
+		done
+
+		rm -rf /tmp/shock-splash-screens/$(whoami)/"$(basename "$file")"
+
+	elif [[ "$ex" == "1" ]] #remove
+	then
+
+		if [[ "$setsplash" == "Shock OS Spinner" ]] || [[ "$setsplash" == "Shock OS Elegant Spinner" ]] || [[ "$setsplash" == "Shock OS Dots" ]]
+		then
+
+			yad --window-icon="ICON HERE" --title="Splash Screens" --image=emblem-important --text="You cannot remove Shock OS splash screens." --button="Dismiss"
+
+		else
+
+			for i in /usr/share/plymouth/themes/*
+			do
+
+				name="$(cat "$i"/"$(basename "$i")".plymouth | grep '^Name=')"
+
+				if [[ "$name" == "Name=$setsplash" ]]
+				then
+
+					pkexec rm -rf "$i"
+
+				fi
+
+			done
+
+		fi
+
+	elif [[ "$ex" == "2" ]] #apply
+	then
+
+		for i in /usr/share/plymouth/themes/*
+		do
+
+			name="$(cat "$i"/"$(basename "$i")".plymouth | grep '^Name=')"
+
+			if [[ "$name" == "Name=$setsplash" ]]
+			then
+
+				echo "[Daemon]
+	Theme=$(basename "$i")
+	ShowDelay=0
+	Enable=1" | pkexec tee /etc/plymouth/plymouthd.conf
+
+			fi
+
+		done
+
+	else
+
+		exit
+
+	fi
+
+done
+	

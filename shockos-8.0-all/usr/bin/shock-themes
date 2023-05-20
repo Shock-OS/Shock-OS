@@ -3,7 +3,7 @@
 while true
 do
 
-	yadlist="start-here \"Default Shock OS theme, icon and cursor pack\" Default"
+	yadlist="start-here \"The default Shock OS look and feel\" Default"
 
 	if (($(ls ~/.themes | wc -l)>0))
 	then
@@ -53,7 +53,7 @@ do
 
 	done
 
-	yad="yad --window-icon=gnome-settings-theme --title=\"Themes\" --text=\"Install, remove, rename or use themes, icons and cursors.\" --list --column=\"Type\":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=3 --height=300 --buttons-layout=spread --button=\"Install\"\!add --button=\"Remove\"\!remove --button=\"Rename\"\!gtk-edit --button=\"Use\"\!dialog-ok $(echo "$yadlist")"
+	yad="yad --window-icon=gnome-settings-theme --title=\"Themes\" --text=\"Install, remove, rename or use themes, icons and cursors.\" --list --column=\"Type\":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=3 --height=300 --buttons-layout=spread --button=\"Install\"\!add --button=\"Remove\"\!remove --button=\"Rename\"\!gtk-edit --button=\"Apply\"\!dialog-ok $(echo "$yadlist")"
 
 	output="$(eval $yad)"
 
@@ -149,7 +149,12 @@ do
 	elif [[ "$ex" == "1" ]] #remove
 	then
 
-		if [[ "$type" == "Theme pack" ]] #if theme pack
+		if [[ "$type" == "The default Shock OS look and feel" ]]
+		then
+
+			yad --window-icon=gnome-settings-theme --title="Themes" --image=emblem-important --text="You cannot remove the default theme." --button="Dismiss"
+
+		elif [[ "$type" == "Theme pack" ]] #if theme pack
 		then
 
 			rm -r ~/.themes/"$name"
@@ -177,7 +182,12 @@ do
 
 				success="yes"
 
-				if [[ "$type" == "Theme pack" ]] #if theme pack
+				if [[ "$type" == "The default Shock OS look and feel" ]]
+				then
+
+					yad --window-icon=gnome-settings-theme --title="Rename" --image=emblem-important --text="You cannot rename the default theme." --button="Dismiss"
+
+				elif [[ "$type" == "Theme pack" ]] #if theme pack
 				then
 
 					if [[ -e ~/.themes/"$newname" ]] #if theme with that name already exists
@@ -243,10 +253,10 @@ do
 
 		done
 
-	elif [[ "$ex" == "3" ]] #use
+	elif [[ "$ex" == "3" ]] #apply
 	then
 
-		if [[ "$type" == "Default Shock OS theme, icon and cursor pack" ]]
+		if [[ "$type" == "The default Shock OS look and feel" ]]
 		then
 
 			if ! [[ -f ~/.config/shock_themes ]]

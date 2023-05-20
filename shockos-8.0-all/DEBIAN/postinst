@@ -329,7 +329,7 @@ echo "$(cat /boot/cmdline.txt) quiet splash plymouth.ignore-serial-consoles" | t
 echo "[Daemon]
 Theme=shockspin
 ShowDelay=0
-Enable=1" | tee -a /etc/plymouth/plymouthd.conf
+Enable=1" | tee /etc/plymouth/plymouthd.conf
 
 #the splash screen patch ends
 
