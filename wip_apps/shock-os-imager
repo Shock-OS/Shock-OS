@@ -1,0 +1,198 @@
+#!/bin/bash
+
+runuser=$1
+
+if [[ "$(id -u)" != "0" ]]
+then
+
+    echo "Script must be run as root. Exiting..."
+
+    exit
+
+fi
+
+target_drive="(null)"
+
+until [[ "$target_drive" != "(null)" ]]
+do
+
+	mkdir -p /usr/share/shock-os-imager
+
+	rm /usr/share/shock-os-imager/images
+
+	wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/images -P /usr/share/shock-os-imager
+
+	eval "$(cat /usr/share/shock-os-imager/images)"
+
+	lsblk | grep /media | grep -oP "sd[a-z]" | awk '{print "/dev/"$1}' | sort | uniq | tee /tmp/shock-os-imager-"$runuser"-drives
+
+	counter=1
+
+	drives=""
+
+	success="yes"
+
+	until [[ "$success" == "no" ]]
+	do
+
+		current_line=$(sed -n "$counter"p /tmp/shock-os-imager-"$runuser"-drives)
+
+		if [[ -z "$current_line" ]]
+		then
+
+		    success="no"
+
+		fi
+
+		echo "counter: $counter" #DEBUG
+
+		echo "current_line: $current_line" #DEBUG
+
+		if ! [[ -z "$current_line" ]]
+		then
+
+		    current_label="5555"
+
+		    label_part_counter=1
+
+		    label=""
+
+		    until [[ -z "$current_label" ]]
+		    do
+
+		        current_label=$(sudo blkid "$current_line""$label_part_counter")
+
+		        if [[ "$current_label" == *"LABEL="* ]]
+		        then
+
+		            current_label="${current_label#*:}"
+
+		            eval "$current_label"
+
+		            if [[ -z "$label" ]]
+		            then
+
+		                label="$LABEL"
+
+		            else
+
+		                label="$label,$LABEL"
+
+		            fi
+
+		        elif [[ -z "$label" ]]
+		        then
+
+		            label="NO LABEL"
+
+		        fi
+
+		        let label_part_counter++
+
+		    done
+
+		    if [[ -z "$drives" ]]
+		    then
+
+		        drives="$current_line ($label)"
+
+		    else
+
+		        drives="$drives!$current_line ($label)"
+
+		    fi
+
+		fi
+
+		let counter++
+
+	done
+
+	output="$(yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Install Shock OS onto an external storage device." --form --field="Drive to flash:":CB "$drives" --field="Shock OS version:":CB "$images" --button="Refresh"\!gtk-refresh:10 --button="Flash"\!start-here:20)"
+
+	ex=$?
+
+	target_drive=$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')
+
+	target_drive=$(echo "$target_drive" | cut -d' ' -f1)
+
+	if [[ "$target_drive" == "(null)" ]] && [[ "$ex" == "20" ]]
+	then
+
+		zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="You have not selected a drive to flash. Please plug in a storage device to install Shock OS on, and then click 'Retry'" --ok-label="Retry" --width=300
+
+	elif (($(sudo blockdev --getsize64 $target_drive)<15000000000)) && [[ "$ex" == "20" ]] #if drive is less than 16GB
+    then
+
+		target_drive="(null)"
+
+        zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="The SD card/USB Drive you selected is too small. Shock OS requires a storage device of at least 16GB. Please insert a storage device that is at least 16GB in size, then press 'Retry' when you are ready to continue." --ok-label="Retry" --width=300
+
+    fi
+
+done
+
+image_to_flash=$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')
+
+image_to_flash_display="$image_to_flash"
+
+image_to_flash=$(echo "$output" | awk -F'|' '{print $2}')
+
+image_to_flash_display_name="$image_to_flash"
+
+image_to_flash_codename=${image_to_flash:13}
+
+if [[ "$image_to_flash" == *"Legacy"* ]]
+then
+
+	image_to_flash_variant="Legacy"
+
+else
+	
+	image_to_flash_variant=$(echo "$image_to_flash_codename" | sed 's/[^0-9]*//g')
+
+fi
+
+image_to_flash="$(echo "$image_to_flash_codename" | cut -f1 -d" ")$image_to_flash_variant"
+
+echo "TARGET DRIVE: $target_drive
+
+IMAGE TO FLASH: $image_to_flash" #DEBUG
+
+if [[ "$ex" == "20" ]] #flash
+then
+
+	url="${!image_to_flash}"
+
+	filename="$(echo $url | awk 'BEGIN {FS="/" } { print $9 }')"
+
+	if [[ ! -f /usr/share/shock-os-imager/cached-images/$filename ]] #if Shock OS image is not already downloaded
+	then
+
+		mkdir -p /usr/share/shock-os-imager/cached-images
+
+		echo "$url" #DEBUG
+
+		wget "$url" -P /usr/share/shock-os-imager/cached-images 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-os-imager/icon.svg --progress --title="Downloading $image_to_flash_display" --width=310 --text="Downloading $image_to_flash_display. This may take a while..." --no-cancel --auto-close
+
+		if [[ ! -f /usr/share/shock-os-imager/cached-images/$filename ]] #if download failed
+		then
+
+			yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="The download failed or was interrupted. The operation has been aborted." --button="Dissmiss"
+
+			exit
+
+		fi
+
+	fi
+
+	
+
+elif [[ "$ex" != "10" ]]
+then
+
+	exit
+
+fi
+
+
