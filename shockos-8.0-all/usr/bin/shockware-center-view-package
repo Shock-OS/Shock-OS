@@ -1,0 +1,65 @@
+#!/bin/bash
+
+package="$2"
+
+details="$(apt show $package)"
+
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed
+then
+
+	irbuttons='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
+
+else
+
+	irbuttons='--button=Install!add:5'
+
+fi
+
+description="$(echo "$details" | grep -A10 Description:)"
+
+version="$(echo "$details" | grep Version:)"
+
+size="$(echo "$details" | grep Size:)"
+
+mkdir -p /tmp/shockware-center-info
+
+echo "$description
+
+$version
+
+$size" | tee "/tmp/shockware-center-info/$package"
+
+yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $package" --width=400 --height=300 --image="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)" --text-info --filename="/tmp/shockware-center-info/$package" $irbuttons
+
+ex=$?
+
+rm "/tmp/shockware-center-info/$package"
+
+if [[ "$ex" == "3" ]] #launch
+then
+
+	$package &
+
+elif [[ "$ex" == "4" ]] #remove
+then
+
+	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $package?" --button="Yes, remove" --button="No, keep"
+
+	ex=$?
+
+	if [[ "$ex" == "0" ]]
+	then
+
+		pkexec apt remove -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing $package..." --no-cancel --auto-close --progress --pulsate
+
+	fi
+
+elif [[ "$ex" == "5" ]] #install
+then
+
+	pkexec apt install -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Installing $package..." --no-cancel --auto-close --progress --pulsate
+
+fi
+

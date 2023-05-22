@@ -1,1099 +1,113 @@
 #!/bin/bash
 
-#this software is a graphical frontend for APT and Flatpak
+#READ SETTINGS
 
-start_time=$(date +%s) #DEBUG
+rows_per_page=100
 
-#the detect_exit function begins
+#READ SETTINGS ENDS
 
-function detect_exit() {
+all_packages=($(find /var/lib/app-info/icons/*/* -type f -printf '%f\n' | cut -d'_' -f1 | sort | uniq)) #ChatGPT
 
-local ex=$?
-
-if [[ "$ex" != "0" ]]
-then
-
-    exit
-
-fi
-
-}
-
-#the detect_exit function ends
-
-flatpak_install_list=()
-
-flatpak_install_list_for_page=()
-
-flatpak_removal_list=()
-
-flatpak_removal_list_for_page=()
-
-apt_install_list=()
-
-apt_removal_list=()
-
-#the record function begins
-
-function record() {
-
-echo "$(($(date +%s) - start_time))" #DEBUG
-
-echo "RECORDING..." #DEBGUG
-
-local counter=0
-
-packages_output=$(echo "$packages_output" | awk -v FS="|" -v OFS="|" '{ for (i=1; i<=NF; i++) { $i = "\"" $i "\"" ; gsub(/""/,"",$i) ; gsub(/\|\|/,"|",$i) } gsub(/\|\|/,"|",$0) } 1' | tr '|' ' ') #ChatGPT
-
-readarray -t packages_output <<< "$packages_output" #ChatGPT
-
-get_installed
-
-until [[ -z "${packages_output[counter]}" ]]
-do
-
-    local installed=$(echo "${packages_output[counter]}" | cut -d'"' -f2) #ChatGPT
-
-    local type=$(echo "${packages_output[counter]}" | cut -d'"' -f4) #ChatGPT
-
-    local package_name=$(echo "${packages_output[counter]}" | cut -d'"' -f6) #ChatGPT
-
-    if [[ "$type" == "FLATPAK" ]] #FLATPAK
-    then
-
-        if [[ "$installed" == "TRUE" ]] && [[ " ${installed_flatpaks[@]} " != *" \"$package_name [FLATPAK]\" "* ]] && [[ " ${flatpak_install_list[@]} " != *" \"$package_name\" "* ]] #if flatpak selected for installation
-        then
-
-            flatpak_install_list+=("\"$package_name\"")
-
-            flatpak_install_list_for_page+=("\"$package_name [FLATPAK]\"")
-
-        elif [[ "$installed" == "FALSE" ]] && [[ " ${installed_flatpaks[@]} " == *" \"$package_name [FLATPAK]\" "* ]] && [[ " ${flatpak_removal_list[@]} " != *" \"$package_name\" "* ]] #if flatpak selected for removal
-        then
-
-            flatpak_removal_list+=("\"$package_name\"")
-
-            flatpak_removal_list_for_page+=("\"$package_name [FLATPAK]\"")
-
-        elif [[ "$installed" == "FALSE" ]] && [[ " ${flatpak_install_list[@]} " == *" \"$package_name\" "* ]] #if flatpak unselected for installation
-        then
-
-            # the ChatGPT remove from array patch begins
-
-            for i in "${!flatpak_install_list[@]}"
-            do
-
-              if [[ "${flatpak_install_list[$i]}" == "\"$package_name\"" ]]
-              then
-
-                unset "flatpak_install_list[$i]"
-
-                break # remove only the first exact match
-
-              fi
-
-            done
-
-            # the ChatGPT remove from array patch ends
-
-            # the ChatGPT remove from array patch begins
-
-            for i in "${!flatpak_install_list_for_page[@]}"
-            do
-
-              if [[ "${flatpak_install_list_for_page[$i]}" == "\"$package_name [FLATPAK]\"" ]]
-              then
-
-                unset "flatpak_install_list_for_page[$i]"
-
-                break # remove only the first exact match
-
-              fi
-
-            done
-
-            # the ChatGPT remove from array patch ends
-
-        elif [[ "$installed" == "TRUE" ]] && [[ " ${flatpak_removal_list[@]} " == *" \"$package_name\" "* ]] #if flatpak unselected for removal
-        then
-
-            # the ChatGPT remove from array patch begins
-
-            for i in "${!flatpak_removal_list[@]}"
-            do
-
-              if [[ "${flatpak_removal_list[$i]}" == "\"$package_name\"" ]]
-              then
-
-                unset "flatpak_removal_list[$i]"
-
-                break # remove only the first exact match
-
-              fi
-
-            done
-
-            # the ChatGPT remove from array patch ends
-
-            # the ChatGPT remove from array patch begins
-
-            for i in "${!flatpak_removal_list_for_page[@]}"
-            do
-
-              if [[ "${flatpak_removal_list_for_page[$i]}" == "\"$package_name [FLATPAK]\"" ]]
-              then
-
-                unset "flatpak_removal_list_for_page[$i]"
-
-                break # remove only the first exact match
-
-              fi
-
-            done
-
-            # the ChatGPT remove from array patch ends
-
-        fi
-
-    else #APT
-
-        if [[ "$installed" == "TRUE" ]] && [[ " ${installed_packages[@]} " != *" \"$package_name\" "* ]] && [[ " ${apt_install_list[@]} " != *" \"$package_name\" "* ]] #if apt package selected for installation
-        then
-
-            apt_install_list+=("\"$package_name\"")
-
-        elif [[ "$installed" == "FALSE" ]] && [[ " ${installed_packages[@]} " == *" \"$package_name\" "* ]] && [[ " ${apt_removal_list[@]} " != *" \"$package_name\" "* ]] #if apt package selected for removal
-        then
-
-            apt_removal_list+=("\"$package_name\"")
-
-        elif [[ "$installed" == "FALSE" ]] && [[ " ${apt_install_list[@]} " == *" \"$package_name\" "* ]] #if apt package unselected for installation
-        then
-
-            # the ChatGPT remove from array patch begins
-
-            for i in "${!apt_install_list[@]}"
-            do
-
-              if [[ "${apt_install_list[$i]}" == "\"$package_name\"" ]]
-              then
-
-                unset "apt_install_list[$i]"
-
-                break # remove only the first exact match
-
-              fi
-
-            done
-
-            # the ChatGPT remove from array patch ends
-
-        elif [[ "$installed" == "TRUE" ]] && [[ " ${apt_removal_list[@]} " == *" \"$package_name\" "* ]] #if apt package unselected for removal
-        then
-
-            # the ChatGPT remove from array patch begins
-
-            for i in "${!apt_removal_list[@]}"
-            do
-
-              if [[ "${apt_removal_list[$i]}" == "\"$package_name\"" ]]
-              then
-
-                unset "apt_removal_list[$i]"
-
-                break # remove only the first exact match
-
-              fi
-
-            done
-
-            # the ChatGPT remove from array patch ends
-
-        fi
-
-    fi
-
-    let counter++
-
-done
-
-}
-
-#the record function ends
-
-#the apply function begins
-
-function apply() {
-
-if [[ "${#apt_install_list[@]}" == "0" ]] && [[ "${#apt_removal_list[@]}" == "0" ]] && [[ "${#flatpak_install_list[@]}" == "0" ]] && [[ "${#flatpak_removal_list[@]}" == "0" ]] #if no packages selected for installation or removal
-then
-
-    end_loading
-
-    yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Nothing has been selected for installation or removal." --button="Dismiss"
-
-else #if at least one package is selected for installation or removal
-
-    local text=""
-
-    local file=0
-
-    until [[ ! -f "/tmp/shockware-center-$USER-$file" ]]
-    do
-
-        let file++
-
-    done
-
-    if (("${#apt_install_list[@]}">0)) #if there are APT packages selected for installation
-    then
-
-        apt_install_list_no_quotes=("${apt_install_list[@]}")
-
-        for i in "${!apt_install_list_no_quotes[@]}"
-        do
-
-          apt_install_list_no_quotes[$i]=$(echo "${apt_install_list_no_quotes[$i]}" | sed 's/"//g')
-
-        done
-
-        if (("${#apt_install_list[@]}">1)) #if multiple packages
-        then
-
-            echo "The following APT packages will be INSTALLED:
-    $(printf "%s\n" "${apt_install_list_no_quotes[@]}")
-    " | tee -a "/tmp/shockware-center-$USER-$file"
-
-        else #if single package
-
-            echo "The following APT package will be INSTALLED:
-    $(printf "%s\n" "${apt_install_list_no_quotes[@]}")
-    " | tee -a "/tmp/shockware-center-$USER-$file"
-
-        fi
-
-    fi
-
-    if (("${#apt_removal_list[@]}">0)) #if there are APT packages selected for removal
-    then
-
-        apt_removal_list_no_quotes=("${apt_removal_list[@]}")
-
-        for i in "${!apt_removal_list_no_quotes[@]}"
-        do
-
-          apt_removal_list_no_quotes[$i]=$(echo "${apt_removal_list_no_quotes[$i]}" | sed 's/"//g')
-
-        done
-
-        if (("${#apt_removal_list[@]}">1)) #if multiple packages
-        then
-
-            echo "The following APT packages will be REMOVED:
-    $(printf "%s\n" "${apt_removal_list_no_quotes[@]}")
-    " | tee -a "/tmp/shockware-center-$USER-$file"
-
-        else #if single package
-
-            echo "The following APT package will be REMOVED:
-    $(printf "%s\n" "${apt_removal_list_no_quotes[@]}")
-    " | tee -a "/tmp/shockware-center-$USER-$file"
-
-        fi
-
-    fi
-
-    if (("${#flatpak_install_list[@]}">0)) #if there are flatpaks selected for installation
-    then
-
-        if (("${#flatpak_install_list[@]}">1)) #if multiple flatpaks
-        then
-
-            echo "The following Flatpaks will be INSTALLED:
-    $(printf "%s\n" "${flatpak_install_list[@]//\"/}")
-    " | tee -a "/tmp/shockware-center-$USER-$file"
-
-        else #if single flatpak
-
-            echo "The following Flatpak will be INSTALLED:
-    $(printf "%s\n" "${flatpak_install_list[@]//\"/}")
-    " | tee -a "/tmp/shockware-center-$USER-$file"
-
-        fi
-
-    fi
-
-    if (("${#flatpak_removal_list[@]}">0)) #if there are flatpaks selected for removal
-    then
-
-        if (("${#flatpak_removal_list[@]}">1)) #if multiple flatpaks
-        then
-
-            echo "The following Flatpaks will be REMOVED:
-    $(printf "%s\n" "${flatpak_removal_list[@]//\"/}")
-    " | tee -a "/tmp/shockware-center-$USER-$file"
-
-        else #if single flatpak
-
-            echo "The following Flatpak will be REMOVED:
-    $(printf "%s\n" "${flatpak_removal_list[@]//\"/}")
-    " | tee -a "/tmp/shockware-center-$USER-$file"
-
-        fi
-
-    fi
-
-    end_loading
-
-    yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text-info --filename="/tmp/shockware-center-$USER-$file" --width=400 --height=300 --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0
-
-    ex=$?
-
-    if [[ "$ex" == "0" ]]
-    then
-
-        if (("${#apt_install_list[@]}">0)) #if apt packages are pending installation
-        then
-
-            for i in "${apt_install_list_no_quotes[@]}"
-            do
-
-                yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Installing ${apt_install_list_no_quotes[i]}..." & local apply_killpid=$!
-
-                pkexec apt install -y "${apt_install_list_no_quotes[i]}" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Installing ${apt_install_list_no_quotes[i]}..." --no-cancel --auto-close --width=300 --height=50
-
-                kill -9 $apply_killpid
-
-            done
-
-        fi
-
-        if (("${#apt_removal_list[@]}">0)) #if apt packages are pending removal
-        then
-
-            for i in "${apt_removal_list_no_quotes[@]}"
-            do
-
-                yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Removing ${apt_removal_list_no_quotes[i]}..." & local apply_killpid=$!
-
-                pkexec apt remove -y "${apt_removal_list_no_quotes[i]}" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Removing ${apt_removal_list_no_quotes[i]}..." --no-cancel --auto-close --width=300 --height=50
-
-                kill -9 $apply_killpid
-
-            done
-
-        fi
-
-        if (("${#flatpak_install_list[@]}">0)) #if flatpaks are pending installation
-        then
-
-            for element in "${flatpak_install_list[@]}"
-            do
-
-                yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Installing ${element//\"/}..." & local apply_killpid=$!
-
-                flatpak install -y "$(flatpak search ${element//\"/} --columns=name,application | grep "^${element//\"/}" | awk -F '\t' '{print $2}' | head -n1)" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Installing ${element//\"/}..." --no-cancel --auto-close --width=300 --height=50
-
-                kill -9 $apply_killpid
-
-            done
-
-        fi
-
-        if (("${#flatpak_removal_list[@]}">0)) #if flatpaks are pending removal
-        then
-
-            for element in "${flatpak_removal_list[@]}"
-            do
-
-                yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Removing ${element//\"/}..." & local apply_killpid=$!
-
-                flatpak uninstall -y "$(flatpak search ${element//\"/} --columns=name,application | grep "^${element//\"/}" | awk -F '\t' '{print $2}' | head -n1)" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress --pulsate --text="Removing ${element//\"/}..." --no-cancel --auto-close --width=300 --height=50
-
-                kill -9 $apply_killpid
-
-            done
-
-        fi
-
-        flatpak_install_list=()
-
-        flatpak_install_list_for_page=()
-
-        flatpak_removal_list=()
-
-        flatpak_removal_list_for_page=()
-
-        apt_install_list=()
-
-        apt_removal_list=()
-
-    fi    
-
-fi
-
-start_loading
-
-rm "/tmp/shockware-center-$USER-$file"
-
-}
-
-#the apply function ends
-
-#the read_settings function begins
-
-function read_settings() {
-
-if [[ -f "/home/$USER/.config/shockware-center" ]] #if config file exists
-then
-
-    view_mode_setting=$(sed -n 1p "/home/$USER/.config/shockware-center")
-
-    rows_per_page=$(sed -n 2p "/home/$USER/.config/shockware-center")
-
-    show_apt_packages=$(sed -n 3p "/home/$USER/.config/shockware-center")
-
-    if [[ "$(apt show flatpak | grep State:)" == "State: installed" ]] #if flatpak is installed
-    then
-
-        show_flatpaks=$(sed -n 4p "/home/$USER/.config/shockware-center")
-
-    else #if flatpak is not installed
-
-        show_flatpaks="FALSE"
-
-    fi
-
-else #if no config file exists
-
-    if [[ "$(apt show flatpak | grep State:)" == "State: installed" ]] #if flatpak is installed
-    then
-
-        show_flatpaks="TRUE"
-
-    else #if flatpak is not installed
-
-        show_flatpaks="FALSE"
-
-    fi
-
-    view_mode_setting="Large"
-
-    rows_per_page="100"
-
-    show_apt_packages="TRUE"
-
-    echo "$view_mode_setting" | tee "/home/$USER/.config/shockware-center"
-
-    echo "$rows_per_page" | tee -a "/home/$USER/.config/shockware-center"
-
-    echo "$show_apt_packages" | tee -a "/home/$USER/.config/shockware-center"
-
-    echo "$show_flatpaks" | tee -a "/home/$USER/.config/shockware-center"
-
-fi
-
-}
-
-#the read_settings function ends
-
-read_settings
-
-#the clean function begins
-
-function clean() {
-
-if [[ "$(apt list)" == *"[installed,auto-removable]"* ]]
-then
-
-    end_loading
-
-    purge=$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Your system has obsolete packages and dependencies." --form --field="Purge obsolete configuration files (deep clean)":CHK 'FALSE' --button="Clean")
-
-    ex=$?
-
-    if [[ "$ex" == "0" ]]
-    then
-
-        if [[ "$purge" == "TRUE|" ]]
-        then
-
-            yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Purging obsolete packages, dependencies and configuration files..." & local apply_killpid=$!
-
-            pkexec apt autoremove --purge -y | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Purging obsolete packages and dependencies..." --progress --pulsate --no-cancel --auto-close
-
-            pkexec bash -c "dpkg --list | grep '^rc' | awk '{print $2}' | xargs dpkg --purge | zenity --window-icon=/usr/share/shockware-center/icon.svg --title=\"Shockware Center\" --text=\"Purging obsolete configuration files...\" --progress --pulsate --no-cancel --auto-close"
-
-            kill -9 $apply_killpid
-
-            if [[ "$(apt list)" != *"[residual-config]"* ]]
-            then
-
-                yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="Your system is all clean. There are no obsolete packages, dependencies or configuration files left on your system." --button="Dismiss"
-
-            else
-
-                yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="An error occurred while purging obsolete packages, dependencies and configuration files." --button="Dismiss"
-
-            fi
-
-        else
-
-            yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Removing obsolete packages and dependencies..." & local apply_killpid=$!
-
-            pkexec apt autoremove -y | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing obsolete packages and dependencies..." --progress --pulsate --no-cancel --auto-close
-
-            kill -9 $apply_killpid
-
-            if [[ "$(apt list)" != *"[installed,auto-removable]"* ]]
-            then
-
-                yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="Obsolete packages and dependencies have been removed." --button="Dismiss"
-
-            else
-
-                yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="An error occurred while removing obsolete packages and dependencies." --button="Dismiss"
-
-            fi
-
-        fi
-
-    fi
-
-elif [[ "$(apt list)" == *"[residual-config]"* ]]
-then
-
-    end_loading
-
-    purge=$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="You have no obsolete packages or dependencies installed. However, some obsolete configuration files still remain on your system." --button="Clean")
-
-    ex=$?
-
-    if [[ "$ex" == "0" ]]
-    then
-
-        yad --notification --icon-size=48 --image=/usr/share/shockware-center/icon.svg --command="" --text="Purging obsolete configuration files..." & local apply_killpid=$!
-
-        pkexec bash -c "dpkg --list | grep '^rc' | awk '{print $2}' | xargs dpkg --purge | zenity --window-icon=/usr/share/shockware-center/icon.svg --title=\"Shockware Center\" --text=\"Purging obsolete configuration files...\" --progress --pulsate --no-cancel --auto-close"
-
-        kill -9 $apply_killpid
-
-        if [[ "$(apt list)" != *"[residual-config]"* ]]
-        then
-
-            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="Your system is all clean. There are no obsolete packages, dependencies or configuration files left on your system." --button="Dismiss"
-
-        else
-
-            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="An error occurred while purging obsolete configuration files." --button="Dismiss"
-
-        fi
-
-    fi
-
-else
-
-    end_loading
-
-    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="Your system is all clean. There are no obsolete packages, dependencies or configuration files left on your system." --button="Dismiss"
-
-fi
-
-start_loading
-
-}
-
-#the clean function ends
-
-#the loading functions begin
-
-function start_loading() {
-
-yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Loading..." --center --progress --pulsate --auto-close --undecorated --no-buttons & killpid=$!
-
-}
-
-function end_loading() {
-
-kill -9 $killpid
-
-}
-
-#the loading functions end
-
-#the get_installed function begins
-
-function get_installed() {
-
-if [[ "$show_apt_packages" == "TRUE" ]]
-then
-
-    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq | grep "$keyword" | sed 's/.*/"&"/')) #ChatGPT
-
-fi
-
-if [[ "$show_flatpaks" == "TRUE" ]]
-then
-
-    IFS=$'\n' read -d '' -ra installed_flatpaks <<< "$(flatpak list --columns=name | awk '{print "\""$0" [FLATPAK]\""}' RS='\n')" #ChatGPT
-
-    if [[ "${installed_flatpaks[@]}" == "\"No matches found [FLATPAK]\"" ]] #if no flatpaks are installed
-    then
-
-        installed_flatpaks=()
-    
-    fi
-
-fi
-
-}
-
-#the get_installed function ends
-
-dclick_action='sh -c "/usr/bin/shockware-center-show-package %s >/dev/null 2>&1 &"' #ChatGPT
-
-page=0
+all_packages_icons=($(find /var/lib/app-info/icons/*/* -type f | sed 's/.*/"&"/' | sort | uniq)) #ChatGPT
 
 keyword=""
 
-start_loading
-
-#the preload begins
-
-echo "$(($(date +%s) - start_time))" #DEBUG
-
-echo "PRELOADING..." #DEBUG
-
-if [[ "$show_apt_packages" == "TRUE" ]]
-then
-
-    #all_apt_packages=($(apt list | awk -F/ '{print $1}' | uniq | sed 's/.*/"&"/'))
-
-    #all_apt_packages=("${all_apt_packages[@]:1}") #removes '"Listing..."' from the packages list (because it's obviously not a package)
-
-    all_apt_packages=($(find /var/lib/app-info/icons/*/* -type f -printf '%f\n' | cut -d'_' -f1 | sed 's/.*/"&"/' | sort | uniq))
-
-    #the removal of armhf packages from the package selection begins
-
-    if [[ "$(uname -m)" == "aarch64" ]]
-    then
-
-        for i in "${!all_apt_packages[@]}"
-        do
-
-            if [[ "${all_apt_packages[$i]}" == *":"* ]]
-            then
-
-                unset 'all_apt_packages[i]'
-
-            fi
-
-        done
-
-    fi
-
-    #the removal of armhf packages from the package selection ends
-
-    echo "ALL APT PACKAGES: ${all_apt_packages[@]}" #DEBUG
-
-    echo "$(($(date +%s) - start_time))" #DEBUG
-
-fi
-
-if [[ "$show_flatpaks" == "TRUE" ]]
-then
-
-    all_flatpaks=($(grep -o '<name>[^<]*</name>' /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | sed 's/<name>\(.*\)<\/name>/\"\1\"/g' | uniq)) #Gets all Flatpak names from AppStream (ChatGPT wrote part of this command)
-
-	all_flatpak_ids=($(grep -o '<id>[^<]*</id>' /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | sed 's/<id>\(.*\)<\/id>/\"\1\"/g' | uniq)) #Gets all Flatpak IDs from AppStream (ChatGPT wrote part of this command)
-
-fi
-
-echo "$(($(date +%s) - start_time))" #DEBUG
-
-echo "SORTING IN ALPHABETICAL ORDER..." #DEBUG
-
-#the sort in alphabetical order patch begins
-
-if [[ "$show_apt_packages" == "TRUE" ]] && [[ "$show_flatpaks" == "TRUE" ]]
-then
-
-    all_packages=$(echo "$(printf "%s\n" "${all_apt_packages[@]} ${all_flatpaks[@]}")" | sort)
-
-    mapfile -t all_packages <<< "$all_packages"
-
-fi
-
-#the sort in alphabetical order patch ends
-
-#the preload ends
+page=0
 
 while true
 do
 
-    if [[ "$view_mode_setting" == "Large" ]]
-    then
+	if [[ -n "$keyword" ]] #if keyword is not empty
+	then
 
-        view_mode="32"
+		search_results_prep_full=($(printf "%s\n" "${all_packages[@]}" | grep -i "$keyword"))
 
-    else
+	else #if keyword is empty (Show All or on startup)
 
-        view_mode="16"
+		search_results_prep_full=("${all_packages[@]}")
 
-    fi
+	fi
 
-    packages_input=()
+	if (("${#search_results_prep_full[@]}"==0)) #if no search results
+	then
 
-    echo "$(($(date +%s) - start_time))" #DEBUG
+		zenity --info --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="No results found." --ok-label="Dissmiss"
 
-    echo "SEARCHING..." #DEBUG
+		ex=1
 
-    if [[ -n "$keyword" ]] #if keyword is not empty (whenever a search is made)
-    then
+	else #if there are search results
 
-        if [[ "$show_apt_packages" == "TRUE" ]]
-        then
+		search_results_prep=("${search_results_prep_full[@]:$((rows_per_page*page))}")
 
-            packages_input=($(printf "%s\n" "${all_apt_packages[@]}" | grep -i "$keyword"))
+		search_results_prep=("${search_results_prep[@]::$((rows_per_page))}")
 
-        fi
+		search_results=()
 
-        if [[ "$show_flatpaks" == "TRUE" ]]
-        then
+		for i in "${search_results_prep[@]}"
+		do
 
-            packages_input+=($(printf "%s\n" "${all_flatpaks[@]}" | grep -i "$keyword"))
+			icon="$(find /var/lib/app-info/icons/*/*/"$i"_* | head -1)"
 
-            #IFS=$'\n' read -d '' -ra flatpak_search_results <<< "$(flatpak search --arch=$(uname -m) --columns=name $keyword | awk '{print "\""$0" [FLATPAK]\""}' RS='\n')" #ChatGPT
+			if [[ -n "$icon" ]]
+			then
 
-            #if [[ "${flatpak_search_results[@]}" != "\"No matches found [FLATPAK]\"" ]] #only if flatpaks matching the keyword are found
-            #then
+				search_results+=("$icon" "$i")
 
-                #packages_input+=("${flatpak_search_results[@]}")
+			fi
 
-            #fi
+		done
 
-        fi
+		if ((${#search_results_prep_full[@]}>rows_per_page))
+		then
 
-    else #if keyword is empty (on startup or when 'Show All' selected from search) (shows all packages available)
+		    if ((page>0))
+		    then
 
-        if [[ "$show_apt_packages" == "TRUE" ]]
-        then
+		        page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
 
-            packages_input=("${all_apt_packages[@]}")
+		    else
 
-        fi
+		        page_buttons='--button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
 
-        if [[ "$show_flatpaks" == "TRUE" ]]
-        then
+		    fi
 
-            packages_input+=("${all_flatpaks[@]}")
+		elif ((page>0))
+		then
 
-        fi
+		    page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50' 
 
-    fi
+		else
 
-    echo "$(($(date +%s) - start_time))" #DEBUG
+		    page_buttons=""
 
-    echo "SORTING IN ALPHABETICAL ORDER..." #DEBUG
+		fi
 
-    #the sort in alphabetical order patch begins
+		yadlist="yad --window-icon=/usr/share/shockware-center/icon.svg --title=\"Shockware Center\" --width=800 --height=500 --buttons-layout=spread --list --dclick-action=shockware-center-view-package --column=\"Icon\":IMG --column=\"Name\" --button=\"Search\"\!gtk-find:1 $page_buttons ${search_results[@]}"
 
-    packages_input_values=$(printf "%s\n" "${packages_input[@]}")
+		eval "$yadlist"
 
-    packages_input=$(echo "$packages_input_values" | sort)
+		ex=$?
 
-    mapfile -t packages_input <<< "$packages_input"
+	fi
 
-    #the sort in alphabetical order patch ends
+	if [[ "$ex" == "40" ]] #previous
+	then
 
-    packages_input_for_yad_page_counter=("${packages_input[@]}")
+		page=$((page-1))
 
-    packages_input=("${packages_input[@]:$((rows_per_page*page))}")
+	elif [[ "$ex" == "60" ]] #next
+	then
 
-    echo "$(($(date +%s) - start_time))" #DEBUG
+		page=$((page+1))
 
-    echo "GETTING LIST OF INSTALLED APPS..." #DEBUG
+	elif [[ "$ex" == "50" ]] #jump
+	then
 
-    get_installed
+		jump_page=$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
 
-    echo "$(($(date +%s) - start_time))" #DEBUG
+		ex=$?
 
-    echo "PREPARING APP LIST..." #DEBUG
-
-    packages=()
-
-    counter=0
-
-    until ((counter>${#packages_input[@]})) || ((counter>rows_per_page))
-    do
-
-        echo "${packages_input[counter]}" #DEBUG
-
-        if [[ -n "${packages_input[counter]}" ]] && [[ "${packages_input[counter]}" != '"$kernel"' ]]
-        then
-
-            if [[ "${packages_input[counter]}" == *' [FLATPAK]"' ]] #FLATPAK
-            then
-
-                if [[ " ${installed_flatpaks[@]} " == *" ${packages_input[counter]} "* || " ${flatpak_install_list_for_page[@]} " == *" ${packages_input[counter]} "* ]] && [[ " ${flatpak_removal_list_for_page[@]} " != *" ${packages_input[counter]} "* ]] #if flatpak installed or selected for installation
-                then
-
-                    packages+=("TRUE")
-
-                else
-
-                    packages+=("FALSE")
-
-                fi
-
-                packages+=("\"/usr/share/shockware-center/flatpak$view_mode.png\"")
-
-                packages+=("FLATPAK")
-
-                packages+=("${packages_input[counter]::-11}\"")
-
-            else #APT
-
-                if [[ " ${installed_packages[@]} " == *" ${packages_input[counter]} "* || " ${apt_install_list[@]} " == *" ${packages_input[counter]} "* ]] && [[ " ${apt_removal_list[@]} " != *" ${packages_input[counter]} "* ]] #if APT package installed or selected for installation
-                then
-
-                    packages+=("TRUE")
-
-                else
-
-                    packages+=("FALSE")
-
-                fi
-
-                packages+=("$(find /var/lib/app-info/icons/*/*/$(echo "${packages_input[counter]}" | tr -d '\"')_* | head -1)")
-
-                #packages+=("$(find /var/lib/app-info/icons/*/*/\"$(echo "${packages_input[counter]}" | tr -d '\"')\"*)")
-
-                packages+=("APT")
-
-                packages+=("${packages_input[counter]}")
-
-            fi
-
-        fi
-
-        let counter++
-
-    done
-
-    echo "$(($(date +%s) - start_time))" #DEBUG
-
-    echo "DONE" #DEBUG
-
-    if ((${#packages_input[@]}>rows_per_page))
-    then
-
-        if ((page>0))
-        then
-
-            page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
-
-        else
-
-            page_buttons='--button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
-
-        fi
-
-    elif ((page>0))
-    then
-
-        page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50' 
-
-    else
-
-        page_buttons=""
-
-    fi
-
-    if (("${#packages[@]}">0)) #if at least 1 search result
-    then
-
-        yad_list='yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Page: $((page+1)) out of $(($(expr ${#packages_input_for_yad_page_counter[@]} / $rows_per_page)+1))
-Double-click an package for more information on it.
-To bulk install/remove software, check the software you want to install, and uncheck the software you want to remove." --list --dclick-action="$dclick_action" --column="Installed":CHK --column="Type":IMG --column="TYPE":HD --column="Name" --button="Settings"!gtk-execute:0 --button="Updates"!software-update-available-symbolic:10 --button="Clean"!/usr/share/shockware-center/clean.png:20 --button="Search"!gtk-find:30 $page_buttons --button="Apply"!gtk-ok:80 --width=800 --height=500 --print-all --search-column=4 --buttons-layout=spread'
-
-        yad_list+=" ${packages[@]}"
-
-        end_loading
-
-        packages_output=$(eval $yad_list)
-
-        ex=$?
-
-    else #if no search results
-
-        end_loading
-
-        zenity --info --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="No results found." --ok-label="Dismiss"
-
-        ex="30"
-
-    fi
-
-    if [[ "$ex" == *"0"* ]]
-    then
-
-        start_loading
-
-        record
-
-    fi
-
-    if [[ "$ex" == "0" ]] #settings
-    then
-
-        if [[ "$view_mode_setting" == "Large" ]]
-        then
-
-            view_mode_toggle='Large!Small'
-
-        else
-
-            view_mode_toggle='Large!^Small'
-
-        fi
-
-        if [[ "$rows_per_page" == "50" ]]
-        then
-
-            rows_per_page_toggle='50!100!200'
-
-        elif [[ "$rows_per_page" == "100" ]]
-        then
-
-            rows_per_page_toggle='50!^100!200'
-
-        else
-
-            rows_per_page_toggle='50!100!^200'
-
-        fi
-
-        end_loading
-
-        settings_output=$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="View Mode:":CB "$view_mode_toggle" --field="Rows Per Page:":CB "$rows_per_page_toggle" --field="Show APT Packages":CHK "$show_apt_packages" --field="Show Flatpaks":CHK "$show_flatpaks" --button="Apply"\!gtk-ok --width=300)
-
-        ex=$?
-
-        start_loading
-
-        if [[ "$ex" == "0" ]]
-        then
-
-            view_mode_setting=$(echo "$settings_output" | awk -F'|' '{print $1}')
-
-            rows_per_page=$(echo "$settings_output" | awk -F'|' '{print $2}')
-
-            show_apt_packages=$(echo "$settings_output" | awk -F'|' '{print $3}')
-
-            show_flatpaks=$(echo "$settings_output" | awk -F'|' '{print $4}')
-
-            echo "$view_mode_setting" | tee "/home/$USER/.config/shockware-center"
-
-            echo "$rows_per_page" | tee -a "/home/$USER/.config/shockware-center"
-
-            echo "$show_apt_packages" | tee -a "/home/$USER/.config/shockware-center"
-
-            echo "$show_flatpaks" | tee -a "/home/$USER/.config/shockware-center"
-
-            read_settings
-
-        fi
-
-    elif [[ "$ex" == "10" ]] #updates
-    then
-
-        end_loading
-
-        shock-os-update-manager & exit
-
-    elif [[ "$ex" == "20" ]] #clean
-    then
-
-        clean
- 
-    elif [[ "$ex" == "30" ]] #search
-    then
-
-        page=0
-
-        new_keyword_entry="$keyword"
-
-        new_keyword=""
-
-        end_loading
-
-        until ((${#new_keyword}>=3)) && [[ "$ex" != "10" ]]
-        do
-
-            search_output="$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Keyword:" "$new_keyword_entry" --field="Show APT Packages":CHK "$show_apt_packages" --field="Show Flatpaks":CHK "$show_flatpaks" --button="Show All":10 --button="Search":0 --width=300 --buttons-layout=edge)"
-
-            ex=$?
-
-            if [[ "$ex" != "0" ]]
-            then
-
-                break
-
-            fi
-
-            new_keyword=$(echo "$search_output" | awk -F'|' '{print $1}')
-
-            new_keyword_entry="$new_keyword"
-
-            if ((${#new_keyword}<3)) && [[ "$ex" != "10" ]]
-            then
-
-                yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Your search keyword must be at least three characters long." --button="Retry"
-
-            fi
-
-        done
-
-        start_loading
-
-        if [[ "$ex" == "0" ]]
-        then
-
-            keyword=$(echo "$search_output" | awk -F'|' '{print $1}')
-
-            show_apt_packages=$(echo "$search_output" | awk -F'|' '{print $2}')
-
-            show_flatpaks=$(echo "$search_output" | awk -F'|' '{print $3}')
-
-        elif [[ "$ex" == "10" ]]
-        then
-
-            keyword=""
-
-            show_apt_packages=$(echo "$search_output" | awk -F'|' '{print $2}')
-
-            show_flatpaks=$(echo "$search_output" | awk -F'|' '{print $3}')
-
-        fi
-
-    elif [[ "$ex" == "40" ]] #previous page
-    then
-
-        let page--
-
-    elif [[ "$ex" == "50" ]] #jump
-    then
-
-        end_loading
-
-        jump_page=$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#packages_input_for_yad_page_counter[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
-
-        ex=$?
-
-        start_loading
-
-        jump_page=$(echo "$jump_page" | awk -F'|' '{print $1}')
+		jump_page=$(echo "$jump_page" | awk -F'|' '{print $1}')
 
         if [[ "$ex" == "0" ]]
         then
@@ -1102,21 +116,23 @@ To bulk install/remove software, check the software you want to install, and unc
 
         fi
 
-    elif [[ "$ex" == "60" ]] #next page
-    then
+	elif [[ "$ex" == "1" ]] #search
+	then
 
-        let page++
+		keyword="$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --entry --entry-text="$keyword" --button="Search"\!gtk-find)"
 
-    elif [[ "$ex" == "80" ]] #apply
-    then
+		keyword=$(echo "$keyword" | awk '{print tolower($0)}') #this command makes all the letters lowercase
 
-        apply
+        keyword=$(echo ${keyword//[[:blank:]]/}) #this command removes all spaces
 
-    else
+		page=0
 
-        exit
+	else
 
-    fi
+		exit
+
+	fi
 
 done
+
 
