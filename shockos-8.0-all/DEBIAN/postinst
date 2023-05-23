@@ -320,6 +320,8 @@ apt update
 
 sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/config.txt #this command enables the two front USB ports on the DeskPi Lite
 
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo #adds the FlatHub repository
+
 #the splash screen patch begins
 
 echo "$(cat /boot/cmdline.txt) quiet splash plymouth.ignore-serial-consoles" | tee /boot/cmdline.txt

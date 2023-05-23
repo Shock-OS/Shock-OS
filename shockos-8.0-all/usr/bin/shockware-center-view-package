@@ -2,64 +2,158 @@
 
 package="$2"
 
-details="$(apt show $package)"
+type="$3"
 
-installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+#THE LOADING FUNCTIONS BEGIN
 
-if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed
+function start_loading() {
+
+yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Loading app info..." --center --progress --pulsate --auto-close --undecorated --no-buttons & killpid=$!
+
+}
+
+function end_loading() {
+
+kill -9 $killpid
+
+}
+
+#THE LOADING FUNCTIONS END
+
+start_loading
+
+if [[ "$type" == "A" ]] #if APT package
 then
 
-	irbuttons='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
+	details="$(apt show $package)"
 
-else
+	installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
-	irbuttons='--button=Install!add:5'
-
-fi
-
-description="$(echo "$details" | grep -A10 Description:)"
-
-version="$(echo "$details" | grep Version:)"
-
-size="$(echo "$details" | grep Size:)"
-
-mkdir -p /tmp/shockware-center-info
-
-echo "$description
-
-$version
-
-$size" | tee "/tmp/shockware-center-info/$package"
-
-yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $package" --width=400 --height=300 --image="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)" --text-info --filename="/tmp/shockware-center-info/$package" $irbuttons
-
-ex=$?
-
-rm "/tmp/shockware-center-info/$package"
-
-if [[ "$ex" == "3" ]] #launch
-then
-
-	$package &
-
-elif [[ "$ex" == "4" ]] #remove
-then
-
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $package?" --button="Yes, remove" --button="No, keep"
-
-	ex=$?
-
-	if [[ "$ex" == "0" ]]
+	if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed
 	then
 
-		pkexec apt remove -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing $package..." --no-cancel --auto-close --progress --pulsate
+		irbuttons='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
+
+	else
+
+		irbuttons='--button=Install!add:5'
 
 	fi
 
-elif [[ "$ex" == "5" ]] #install
-then
+	description="$(echo "$details" | grep -A10 Description:)"
 
-	pkexec apt install -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Installing $package..." --no-cancel --auto-close --progress --pulsate
+	version="$(echo "$details" | grep Version:)"
+
+	size="$(echo "$details" | grep Size:)"
+
+	tmpfile="$(mktemp)"
+
+	echo "$description
+
+	$version
+
+	$size" | tee "$tmpfile"
+
+	end_loading
+
+	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $package" --text="APT package" --width=400 --height=300 --image="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)" --text-info --filename="$tmpfile" $irbuttons
+
+	ex=$?
+
+	rm "$tmpfile"
+
+	if [[ "$ex" == "3" ]] #launch
+	then
+
+		$package &
+
+	elif [[ "$ex" == "4" ]] #remove
+	then
+
+		yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $package?" --button="Yes, remove" --button="No, keep"
+
+		ex=$?
+
+		if [[ "$ex" == "0" ]]
+		then
+
+			pkexec apt remove -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing $package..." --no-cancel --auto-close --progress --pulsate
+
+		fi
+
+	elif [[ "$ex" == "5" ]] #install
+	then
+
+		pkexec apt install -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Installing $package..." --no-cancel --auto-close --progress --pulsate
+
+	fi
+
+else #if Flatpak
+
+	icon="$4"
+
+	id="$(basename "$4")"
+
+	id="${id::-4}"
+
+	installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
+
+	if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed
+	then
+
+		irbuttons='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
+
+	else
+
+		irbuttons='--button=Install!add:5'
+
+	fi
+
+	description="$(flatpak search "$id" --columns=app,description | grep "^$id" | awk -F '\t' '{print $2}' | head -n1)"
+
+	version="$(flatpak search "$id" --columns=app,version | grep "^$id" | awk -F '\t' '{print $2}' | head -n1)"
+
+	tmpfile="$(mktemp)"
+
+	echo " Description: $description
+
+Version: $version" | tee "$tmpfile"
+
+	end_loading
+
+	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $package" --text="Flatpak application" --width=400 --height=300 --image="$icon" --text-info --filename="$tmpfile" $irbuttons
+
+	ex=$?
+
+	rm "$tmpfile"
+
+	if [[ "$ex" == "3" ]] #launch
+	then
+
+		flatpak run "$id" &
+
+	elif [[ "$ex" == "4" ]] #remove
+	then
+
+		yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $package?" --button="Yes, remove" --button="No, keep"
+
+		ex=$?
+
+		if [[ "$ex" == "0" ]]
+		then
+
+			flaptak uninstall -y "$id" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing $package..." --no-cancel --auto-close --progress --pulsate
+
+		fi
+
+	elif [[ "$ex" == "5" ]] #install
+	then
+
+		flatpak install -y "$id" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Installing $package..." --no-cancel --auto-close --progress --pulsate
+
+	fi
 
 fi
+
+	
 
