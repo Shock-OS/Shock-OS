@@ -69,8 +69,6 @@ appstream_file="/var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.
 
 appstream_icons_dir="/var/lib/flatpak/appstream/flathub/$(uname -m)/active/icons/64x64"
 
-#mapfile -t all_flatpaks < <(grep -A1 -w -f <(printf "%s\n" "${app_ids[@]}") "${appstream_file}" | grep "<name>" | sed -e 's/<[^>]*>//g' | sed -e 's/^[[:space:]]*//' -e 's/.*/"& [FLATPAK]"/')
-
 IFS=$'\n' read -d '' -ra all_flatpaks <<< "$(flatpak remote-ls --all --app --columns=name | awk '{print "\""$0" [FLATPAK]\""}' RS='\n')" #ChatGPT
 
 keyword=""
