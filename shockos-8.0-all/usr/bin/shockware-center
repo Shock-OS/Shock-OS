@@ -126,9 +126,20 @@ do
 	if (("${#search_results_prep_full[@]}"==0)) #if no search results
 	then
 
-		zenity --info --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="No results found." --ok-label="Dissmiss"
+		zenity --info --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="No results found." --ok-label="Dismiss"
 
-		ex=1
+		if [[ "$show_apt_packages" == "FALSE" ]] && [[ "$show_flatpaks" == "FALSE" ]]
+		then
+
+			ex=1 #settings
+
+		else
+
+			ex=2 #search
+
+		fi
+
+		end_loading
 
 	else #if there are search results
 

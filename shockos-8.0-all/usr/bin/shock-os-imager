@@ -1,5 +1,9 @@
 #!/bin/bash
 
+runuser=$1
+
+#the root check element begins
+
 if [[ "$(id -u)" != "0" ]]
 then
 
@@ -9,287 +13,307 @@ then
 
 fi
 
-runuser=$1
+#the root check element ends
 
-success3="no"
+mkdir -p /usr/share/shock-os-imager
 
-until [[ "$success3" == "yes" ]]
+rm /usr/share/shock-os-imager/images
+
+rm /usr/share/shock-os-imager/cached-images/download*
+
+target_drive="(null)"
+
+until [[ "$target_drive" != "(null)" ]] && [[ "$ex" == "20" ]]
 do
 
-    success3="yes"
+	internet="yes"
 
-    success2="no"
+	until [[ -f /usr/share/shock-os-imager/images ]] || [[ "$internet" == "no" ]]
+	do
 
-    until [[ "$success2" == "yes" ]]
-    do
+		wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/images -P /usr/share/shock-os-imager
 
-        success2="yes"
+		if [[ ! -f /usr/share/shock-os-imager/images ]]
+		then
 
-        lsblk | grep /media | grep -oP "sd[a-z]" | awk '{print "/dev/"$1}' | sort | uniq | tee /tmp/shock-os-imager-"$runuser"-drives
+			if (($(ls /usr/share/shock-os-imager/cached-images/ | wc -l)>0)) #if there are cached images available
+			then
 
-        counter=1
+				yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-important --title="Shock OS Imager" --text="There is no internet connection, but cached images are available. Please either reconnect to the internet and hit 'Retry', or continue with only cached images." --button="Continue with Cached Images Only" --button="Retry"
 
-        drives=""
+				ex=$?
 
-        ex="0"
+				if [[ "$ex" == "0" ]]
+				then
 
-        success="yes"
+					internet="no"
 
-        until [[ "$success" == "no" ]]
-        do
+				elif [[ "$ex" != "1" ]]
+				then
 
-            current_line=$(sed -n "$counter"p /tmp/shock-os-imager-"$runuser"-drives)
+					exit
 
-            if [[ -z "$current_line" ]]
-            then
+				fi
 
-                success="no"
+			else
 
-            fi
+				yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-important --title="Shock OS Imager" --text="There is no internet connection, and no cached images are available. Please reconnect to the internet and hit 'Retry'." --button="Retry"
 
-            echo "counter: $counter" #DEBUG
+				ex=$?
 
-            echo "current_line: $current_line" #DEBUG
+				if [[ "$ex" != "0" ]]
+				then
 
-            if ! [[ -z "$current_line" ]]
-            then
+					exit
 
-                current_label="5555"
+				fi
 
-                label_part_counter=1
+			fi
 
-                label=""
+		fi
 
-                until [[ -z "$current_label" ]]
-                do
+	done
 
-                    current_label=$(echo "$password" | sudo -S blkid "$current_line""$label_part_counter")
+	if [[ "$internet" == "yes" ]]
+	then
 
-                    if [[ "$current_label" == *"LABEL="* ]]
-                    then
+		rm /usr/share/shock-os-imager/images-offline
 
-                        current_label="${current_label#*:}"
+		cp /usr/share/shock-os-imager/images /usr/share/shock-os-imager/images-offline
 
-                        eval "$current_label"
+		rm /usr/share/shock-os-imager/find-cached-images
 
-                        if [[ -z "$label" ]]
-                        then
+		wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/find-cached-images -P /usr/share/shock-os-imager
 
-                            label="$LABEL"
+		eval "$(cat /usr/share/shock-os-imager/images)"
 
-                        else
+	else
 
-                            label="$label,$LABEL"
+		eval "$(cat /usr/share/shock-os-imager/images-offline)"
 
-                        fi
+		eval "$(cat /usr/share/shock-os-imager/find-cached-images)"
 
-                    elif [[ -z "$label" ]]
-                    then
+	fi
 
-                        label="NO LABEL"
+	lsblk | grep /media | grep -oP "sd[a-z]" | awk '{print "/dev/"$1}' | sort | uniq | tee /tmp/shock-os-imager-"$runuser"-drives
 
-                    fi
+	counter=1
 
-                    let label_part_counter++
+	drives=""
 
-                done
+	success="yes"
 
-                if [[ -z "$drives" ]]
-                then
+	until [[ "$success" == "no" ]]
+	do
 
-                    drives="$current_line ($label)"
+		current_line=$(sed -n "$counter"p /tmp/shock-os-imager-"$runuser"-drives)
 
-                else
+		if [[ -z "$current_line" ]]
+		then
 
-                    drives="$drives!$current_line ($label)"
+		    success="no"
 
-                fi
+		fi
 
-            fi
+		echo "counter: $counter" #DEBUG
 
-            let counter++
+		echo "current_line: $current_line" #DEBUG
 
-        done
+		if ! [[ -z "$current_line" ]]
+		then
 
-        echo "$password" | sudo -S rm /usr/share/shock-os-imager/images*
+		    current_label="5555"
 
-        echo "$password" | sudo -S wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/images -P /usr/share/shock-os-imager
+		    label_part_counter=1
 
-        if [[ -f /usr/share/shock-os-imager/images ]]
-        then
+		    label=""
 
-            echo "$password" | sudo -S rm /usr/share/shock-os-imager/image-url-list
+		    until [[ -z "$current_label" ]]
+		    do
 
-            echo "$password" | sudo -S mv /usr/share/shock-os-imager/images /usr/share/shock-os-imager/image-url-list
+		        current_label=$(sudo blkid "$current_line""$label_part_counter")
 
-        fi
+		        if [[ "$current_label" == *"LABEL="* ]]
+		        then
 
-        eval $(cat /usr/share/shock-os-imager/image-url-list)
+		            current_label="${current_label#*:}"
 
-        cached_images=""
+		            eval "$current_label"
 
-        if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)>0))
-        then
+		            if [[ -z "$label" ]]
+		            then
 
-            cached_images="--button=Clear Cached Images:3"
+		                label="$LABEL"
 
-        fi
+		            else
 
-        message=""
+		                label="$label,$LABEL"
 
-        ping -c 3 google.com
+		            fi
 
-        cti=$?
+		        elif [[ -z "$label" ]]
+		        then
 
-        if [[ "$cti" != "0" ]]
-        then
+		            label="NO LABEL"
 
-            message="--field=Your computer is not connected to the internet. Only cached images may be used while offline, because downloading images requires an internet connection.:LBL"
+		        fi
 
-        fi
+		        let label_part_counter++
 
-        output=$(yad --window-icon=/usr/share/shock-os-imager/icon.svg --width=300 --title='Shock OS Imager' --form --field='SD Card/USB Drive:':CB "$drives" --field='Shock OS Image:':CB "$images" "$message" --button="Cancel":1 "$cached_images" --button="Refresh Drives":2 --button="Write":0)
+		    done
 
-        ex=$?
+		    if [[ -z "$drives" ]]
+		    then
 
-        echo "$ex"
+		        drives="$current_line ($label)"
 
-        if [[ "$ex" != "0" ]] && [[ "$ex" != "2" ]] && [[ "$ex" != "3" ]]
-        then
+		    else
 
-            exit
+		        drives="$drives!$current_line ($label)"
 
-        elif [[ "$ex" == "2" ]]
-        then
+		    fi
 
-            success2="no"
+		fi
 
-        elif [[ "$ex" == "3" ]]
-        then
+		let counter++
 
-            success2="no"
+	done
 
-            if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)>1))
-            then
+	output="$(yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Install Shock OS onto an external storage device." --form --field="SD card/USB drive:":CB "$drives" --field="Shock OS version:":CB "$images" --button="Refresh"\!gtk-refresh:10 --button="Flash"\!start-here:20)"
 
-                yad --window-icon=/usr/share/shock-os-imager/icon.svg --title='Shock OS Imager' --text="You are about to delete $(ls /usr/share/shock-os-imager/cached-images | wc -l) cached images. Would you like to continue?" --button="Cancel":1 --button="Delete Cached Images":0
+	ex=$?
 
-            else
+	target_drive=$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')
 
-                yad --window-icon=/usr/share/shock-os-imager/icon.svg --title='Shock OS Imager' --text="You are about to delete 1 cached image. Would you like to continue?" --button="Cancel":1 --button="Delete Cached Image":0
+	target_drive_display_name=$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')
 
-            fi
+	target_drive=$(echo "$target_drive" | cut -d' ' -f1)
 
-            ex4=$?
+	if [[ "$target_drive" == "(null)" ]] && [[ "$ex" == "20" ]]
+	then
 
-            if [[ "$ex4" == "0" ]]
-            then
+		zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="You have not selected a drive to flash. Please plug in a storage device to install Shock OS on, and then click 'Retry'" --ok-label="Retry" --width=300
 
-                echo "$password" | sudo -S rm /usr/share/shock-os-imager/cached-images/*
-
-            fi
-
-        fi
-
-        drive_to_write=$(echo "$output" | awk -F'|' '{print $1}')
-
-        drive_to_write_display_name="$drive_to_write"
-
-        drive_to_write=$(echo "$drive_to_write" | cut -f1 -d" ")
-
-        shock_os_image=$(echo "$output" | awk -F'|' '{print $2}')
-
-        shock_os_image_display_name="$shock_os_image"
-
-        shock_os_image_codename=${shock_os_image:13}
-
-        if [[ "$shock_os_image" == *"Legacy"* ]]
-        then
-
-            shock_os_image_variant="Legacy"
-
-        else
-            
-            shock_os_image_variant=$(echo "$shock_os_image_codename" | sed 's/[^0-9]*//g')
-
-        fi
-
-        shock_os_image="$(echo "$shock_os_image_codename" | cut -f1 -d" ")$shock_os_image_variant"
-
-        echo "shock_os_image: $shock_os_image
-
-        drive_to_write: $drive_to_write"
-
-        if [[ "$drive_to_write" == "(null)" ]] && [[ "$ex" != "2" ]]
-        then
-
-            success2="no"
-
-            yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="You have not selected a drive to write the Shock OS image to. Please plug in a SD card or USB stick that you do not mind erasing, then select 'Retry'." --button="Retry"
-
-        elif (($(echo "$password" | sudo -S blockdev --getsize64 $drive_to_write)<15000000000)) && [[ "$ex" != "2" ]] #drive is less than 16GB
-        then
-
-            success2="no"
-
-            yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="The SD card/USB Drive you selected is too small. Shock OS requires a storage device of at least 16GB. Please insert a storage device that is at least 16GB in size, then press 'Retry' when you are ready to continue." --button="Retry"
-
-        fi
-
-    done
-
-    if ! [[ -f /usr/share/shock-os-imager/cached-images/$shock_os_image.img.xz ]]
+	elif (($(sudo blockdev --getsize64 $target_drive)<15000000000)) && [[ "$ex" == "20" ]] #if drive is less than 16GB
     then
 
-        ping -c 3 google.com
+		target_drive="(null)"
 
-        cti=$?
+        zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="The SD card/USB Drive you selected is too small. Shock OS requires a storage device of at least 16GB. Please insert a storage device that is at least 16GB in size, then press 'Retry' when you are ready to continue." --ok-label="Retry" --width=300
 
-        if [[ "$cti" == "0" ]]
-        then
+    elif [[ "$ex" != "10" ]] && [[ "$ex" != "20" ]]
+	then
 
-            url="${!shock_os_image}"
+		exit
 
-            until [[ ! -f "$imgddir" ]] && [[ ! -z "$imgddir" ]]
-            do
-
-                imgddir="/tmp/shock-os-imager-$runuser-$(openssl rand -base64 15 | tr -dc 'a-zA-Z0-9' | head -c 10)"
-
-            done
-
-            echo "$password" | sudo -S exit_code=$(wget "$url" -P "$imgddir" 2>&1 >/dev/null; echo $?) | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-os-imager/icon.svg --progress --title="Downloading Image..." --width=310 --text="Downloading $shock_os_image_display_name. This may take a while..." --no-buttons --auto-close --auto-kill
-
-            ex3=$?
-
-            echo $ex3
-
-            if [[ "$ex3" != "0" ]]
-            then
-
-                exit
-
-            fi
-
-            mv "$imgddir"/download /usr/share/shock-os-imager/cached-images/$shock_os_image.img.xz
-
-        else
-
-            yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Error downloading $shock_os_image_display_name. Please connect to the internet or use a cached image." --button="Dismiss"
-
-            success3="no"
-
-        fi
-
-    fi
+	fi
 
 done
 
-echo "$password" | sudo -S umount $drive_to_write*
+image_to_flash=$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')
 
-echo "$password" | sudo -S unxz -c /usr/share/shock-os-imager/cached-images/$shock_os_image.img.xz | sudo dd of=$drive_to_write bs=4M status=progress | zenity --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Writing $shock_os_image_display_name to $drive_to_write_display_name. This will take about 30 minutes..." --progress --pulsate --auto-close --no-cancel
+image_to_flash_display="$image_to_flash"
 
-zenity --notification --title="Flashing Complete" --text="$shock_os_image_display_name has successfully been flashed to $drive_to_write_display_name."
+image_to_flash=$(echo "$output" | awk -F'|' '{print $2}')
 
-yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Congratulations! $shock_os_image_display_name has successfully been flashed to $drive_to_write_display_name. Thank you and enjoy!" --button="Dismiss"
+image_to_flash_display_name="$image_to_flash"
+
+image_to_flash_codename=${image_to_flash:13}
+
+if [[ "$image_to_flash" == *"Legacy"* ]]
+then
+
+	image_to_flash_variant="Legacy"
+
+else
+	
+	image_to_flash_variant=$(echo "$image_to_flash_codename" | sed 's/[^0-9]*//g')
+
+fi
+
+image_to_flash="$(echo "$image_to_flash_codename" | cut -f1 -d" ")$image_to_flash_variant"
+
+echo "TARGET DRIVE: $target_drive
+
+IMAGE TO FLASH: $image_to_flash" #DEBUG
+
+if [[ "$ex" == "20" ]] #flash
+then
+
+	url="${!image_to_flash}"
+
+	filename="$(basename "${url%/*}")"
+
+	if [[ ! -f /usr/share/shock-os-imager/cached-images/$filename ]] #if Shock OS image is not already downloaded
+	then
+
+		if [[ "$internet" == "no" ]]
+		then
+
+			until [[ -f /usr/share/shock-os-imager/images ]]
+			do
+
+				wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/images -P /usr/share/shock-os-imager
+
+				if [[ ! -f /usr/share/shock-os-imager/images ]]
+				then
+
+					yad --window-icon=/usr/share/shock-os-imager/icon.svg --window-icon=emblem-important --text="You are not connected to the internet, and an image for the Shock OS version you selected is not cached. Please either connect to the internet and hit 'Retry', or cancel." --button="Retry" --button="Cancel"
+
+					ex=$?
+
+					if [[ "$ex" != "0" ]]
+					then
+
+						exit
+
+					fi
+
+				fi
+
+			done
+
+		fi
+
+		mkdir -p /usr/share/shock-os-imager/cached-images
+
+		echo "$url" #DEBUG
+
+		wget "$url" -P /usr/share/shock-os-imager/cached-images 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-os-imager/icon.svg --progress --title="Downloading $image_to_flash_display" --width=310 --text="Downloading $image_to_flash_display. This may take a while..." --no-cancel --auto-close
+
+		mv /usr/share/shock-os-imager/cached-images/download /usr/share/shock-os-imager/cached-images/$filename
+
+		if [[ ! -f /usr/share/shock-os-imager/cached-images/$filename ]] #if download failed
+		then
+
+			yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="The download failed or was interrupted. The operation has been aborted." --button="Dismiss"
+
+			exit
+
+		fi
+
+	fi
+
+	partitions=$(lsblk -n "$target_drive" | grep -c '^')
+
+	for ((i=1; i<=$partitions; i++))
+	do
+
+		umount "$target_drive$i"
+
+	done | zenity --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Unmounting file systems on $target_device..." --progress --pulsate --no-cancel --auto-close
+
+	sudo unxz -c /usr/share/shock-os-imager/cached-images/"$filename" | sudo dd of=$target_drive bs=4M status=progress | zenity --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes..." --progress --pulsate --auto-close --no-cancel
+
+	zenity --notification --title="Flashing Complete" --text="$image_to_flash_display has successfully been flashed to $target_drive_display_name."
+
+	yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Congratulations! $image_to_flash_display has successfully been flashed to $target_drive_display_name. Thank you and enjoy!" --button="Dismiss"
+
+elif [[ "$ex" != "10" ]]
+then
+
+	exit
+
+fi
 
 
