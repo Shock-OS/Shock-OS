@@ -1,3 +1,0 @@
-#!/bin/bash
-
-dpkg-deb --build -Zxz shockos-8.0-all

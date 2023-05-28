@@ -1,3 +1,0 @@
-#!/bin/bash
-
-yad --text-info --filename=/shock/credits --width=400 --height=300 --window-icon=/shock/gnome-logo-white.svg --title="Shock OS Credits"
