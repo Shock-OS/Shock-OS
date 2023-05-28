@@ -69,13 +69,9 @@ NOTE: The logout and power options in the start menu will be temporarily disable
 
 Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Continue"
 
-	current_version_codename="$(sed -n "$current_version"p /usr/share/shock-release-upgrader/codenames)"
-
-	current_version_codename_all_lowercase=$(echo "$current_version_codename" | awk '{print tolower($0)}') #this command makes all the letters lowercase
-
 	mkdir -p /usr/share/shock-release-upgrader/upgrades
 
-	wget https://github.com/Shock-OS/Shock-OS/"$current_version_codename_all_lowercase"/upgrades/"$upgrto_version.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --no-cancel --auto-close
+	wget https://github.com/Shock-OS/Shock-OS/upgrades/"$upgrto_version.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --no-cancel --auto-close
 
 	cd /usr/share/shock-release-upgrader/upgrades
 
@@ -85,7 +81,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
 	dpkg-deb --build -Zxz "$upgrto_version" 2>&1 | yad --center --window-icon=/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." -no-buttons --no-escape --undecorated --auto-close --progress --pulsate --progress-text="" --no-buttons
 
-	sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/"$current_version_codename_all_lowercase"/upgrades/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader/upgrades
+	sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader/upgrades
 
     if [[ -f /usr/share/shock-release-upgrader/upgrades/$upgrto_version-preupgr-script ]]
     then
@@ -98,7 +94,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
 	sudo apt install -y ./"$upgrto_version.deb" 2>&1 | yad --center --progress --pulsate --auto-close --window-icon=/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
 
-	sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/"$current_version_codename_all_lowercase"/upgrades/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader/upgrades
+	sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader/upgrades
 
     if [[ -f /usr/share/shock-release-upgrader/upgrades/$upgrto_version-postupgr-script ]]
     then
@@ -132,22 +128,4 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 	fi
 
 fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
