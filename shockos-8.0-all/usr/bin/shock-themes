@@ -75,20 +75,22 @@ do
 		if [[ "$ex" == "0" ]]
 		then
 
-			mkdir -p /tmp/shock_themes/$(whoami)/"$(basename "$file")"
+            tmpdir=$(mktemp -d)
 
-			cd /tmp/shock_themes/$(whoami)/"$(basename "$file")"
+			mkdir -p "$tmpdir"
+
+			cd "$tmpdir"
 
 			if [[ -f "$file" ]] #if archive, then extract archive
 			then
 
-				unp -f "$file"
+				7z x -y "$file"
 
 			else #if folder
 
 				cp -r "$file" .
 
-				cd "$(dirname $(find "/tmp/shock_themes/$(whoami)/$(basename "$file")" -name index.theme))"
+				cd "$(dirname $(find "$tmpdir" -name index.theme))"
 
 				cd ..
 
@@ -142,7 +144,7 @@ do
 
 			done
 
-			rm -r /tmp/shock_themes/$(whoami)/"$(basename "$file")"
+			rm -r "$tmpdir"
 
 		fi
 

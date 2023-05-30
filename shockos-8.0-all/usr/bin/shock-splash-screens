@@ -34,14 +34,16 @@ do
 
 		file="$(yad --file --window-icon=xfce4-splash --title="Install a Splash Screen" --text="Please choose a folder or a compressed archive containing a plymouth splash screen." --button="Install"\!document-open)"
 
-		mkdir -p /tmp/shock-splash-screens/$(whoami)/"$(basename "$file")"
+        tmpdir=$(mktemp -d)
 
-		cd /tmp/shock-splash-screens/$(whoami)/"$(basename "$file")"
+		mkdir -p "$tmpdir"
+
+		cd "$tmpdir"
 
 		if [[ -f "$file" ]] #if archive
 		then
 
-			unp -f "$file"
+			7z x -y "$file"
 
 		else #if folder
 
@@ -65,7 +67,7 @@ do
 
 		done
 
-		rm -rf /tmp/shock-splash-screens/$(whoami)/"$(basename "$file")"
+		rm -rf "$tmpdir"
 
 	elif [[ "$ex" == "1" ]] #remove
 	then

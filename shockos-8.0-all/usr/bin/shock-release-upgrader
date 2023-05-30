@@ -75,7 +75,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
 	cd /usr/share/shock-release-upgrader/upgrades
 
-	unp "$upgrto_version.zip"
+	7z e -y "$upgrto_version.zip"
 
 	chmod --recursive 755 $upgrto_version/DEBIAN
 

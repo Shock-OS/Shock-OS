@@ -1,0 +1,152 @@
+#!/bin/bash
+
+function detect_exit() {
+
+local ex=$?
+
+if [[ "$ex" != "0" ]]
+then
+
+    exit
+
+fi
+
+}
+
+output=$(yad --window-icon="ICON HERE" --title="Backup & Restore" --text="What would you like to backup/restore?" --form --field="":CB 'Personal Files!Software Selection' --field="":CB 'Backup!Restore' --button="Next")
+
+detect_exit
+
+category=$(echo "$output" | awk -F'|' '{print $1}')
+
+bor=$(echo "$output" | awk -F'|' '{print $2}')
+
+if [[ "$category" == "Personal Files" ]] && [[ "$bor" == "Backup" ]] #if backing up personal files
+then
+
+    executeonce="yes"
+
+    until [[ ! -f "$bpfdir/$bpfname" ]] && [[ "$executeonce" == "no" ]]
+    do
+
+        executeonce="no"
+
+        bpfoutput=$(yad --window-icon="[ICON HERE]" --title="Backup & Restore" --text="Please choose a name and a location for the backup archive." --form --field="Name:" "$(whoami)-ShockFilesBackup" --field="Location:":DIR "/home/$(whoami)" --button="Back Up")
+
+        detect_exit
+
+        bpfname=$(echo "$bpfoutput" | awk -F'|' '{print $1}')
+
+        bpfdir=$(echo "$bpfoutput" | awk -F'|' '{print $2}')
+
+        if [[ -f "$bpfdir/$bpfname" ]]
+        then
+
+            yad --window-icon="[ICON HERE]" --image=emblem-important --text="$bpfdir/$bpfname already exists. Please choose a different name or location." --button="Retry"
+
+        fi
+
+    done
+
+    touch ~/.shock-pfbackup-indicator
+
+    zip -r "$bpfdir/$bpfname" /home/$(whoami)/* | yad --window-icon="[ICON HERE]" --title="Backing Up Personal Files..." --text="Backing up your home directory to $zipoutputdir/$zipname..." --progress --pulsate --no-cancel --no-buttons --auto-close --auto-kill --progress-text=""
+
+elif [[ "$category" == "Personal Files" ]] && [[ "$bor" == "Restore" ]] #if restoring personal files
+then
+
+    success="no"
+
+    until [[ "$success" == "yes" ]]
+    do
+
+        success="yes"
+
+        rpfile=$(yad --window-icon="[ICON HERE]" --title="Restore Personal Files" --text="Please select the backup archive you would like to restore." --file)
+
+        detect_exit
+
+        if [[ -f "$rpfile" ]] #if archive
+        then
+
+            if [[ "$(7z l "$rpfile" | grep "~/.shock-pfbackup-indicator")" != "~/.shock-pfbackup-indicator" ]] #if NOT valid Shock OS personal files backup archive
+            then
+
+                yad --window-icon="[ICON HERE]" --title="Invalid Backup Archive" --image=emblem-important --text="$rpfile is not a valid backup archive. Please choose a valid backup archive." --button="Retry"
+
+                success="no"
+
+            fi
+
+        else
+
+            if [[ ! -f "$rpfile/.shock-pfbackup-indicator" ]]
+            then
+
+                yad --window-icon="[ICON HERE]" --title="Invalid Backup Folder" --image=emblem-important --text="$rpfile is not a valid backup folder. Please choose a valid backup folder." --button="Retry"
+
+                success="no"
+
+            fi
+
+        fi
+
+    done                
+
+    if [[ -f "$rpfile" ]] #if archive
+    then
+
+        7z x -y "$rpfile" -o /home/$(whoami)
+
+    else #if folder
+
+        cp -rf "$rpfile"/* /home/$(whoami)
+
+    fi
+
+elif [[ "$category" == "Software Selection" ]] && [[ "$bor" == "Backup" ]] #if backing up software selection
+then
+
+    ssboutput=$(yad --window-icon="[ICON HERE]" --title="Back Up Software Selection" --text="Please choose a name and a location for your software selection backup." --form --field="Name" "$(whoami)-ShockSoftwareBackup" --field="Location":DIR "/home/$(whoami)" --button="Back Up")
+
+    detect_exit
+
+    ssbname=$(echo "$ssboutput" | awk -F'|' '{print $1}')
+
+    ssbdir=$(echo "$ssboutput" | awk -F'|' '{print $2}')
+
+    echo "#shock-software-selection-backup
+
+sudo apt install -y $(comm -23 <(apt-mark showmanual | sort -u) <(gzip -dc /var/log/installer/initial-status.gz | sed -n 's/^Package: //p' | sort -u) | xargs dpkg-query -W -f='${Package} ' 2>/dev/null)
+
+flatpak install -y $(flatpak list --columns=app | uniq)" | tee "$ssbdir/$ssbname"
+
+elif [[ "$category" == "Software Selection" ]] && [[ "$bor" == "Restore" ]] #if restoring software selection
+then
+
+    success="no"
+
+    until [[ "$success" == "yes" ]]
+    do
+
+        success="yes"
+
+        ssrfile=$(yad --window-icon="[ICON HERE]" --title="Restore Software Selection" --text="Please select a software selection backup to restore." --file)
+
+        if [[ "$(cat "$ssrfile")" != "#shock-software-selection-backup"* ]]
+        then
+
+            yad --window-icon="[ICON HERE]" --title="Invalid Software Selection Backup" --text="$ssrfile is not a valid software selection backup. Please select a valid backup." --button="Retry"
+
+            detect_exit
+
+            success="no"
+
+        fi
+
+    done
+
+    eval "$(cat "$ssrfile")"
+
+fi
+    
