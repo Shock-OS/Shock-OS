@@ -46,7 +46,7 @@ then
 	if [[ -z "$icon" ]]
 	then
 
-		icon="/usr/share/shockware-center/apt32.png"
+		icon="/usr/share/shock-os-update-manager/apt.svg"
 
 	fi
 

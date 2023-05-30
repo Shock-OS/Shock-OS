@@ -131,7 +131,7 @@ do
 			if [[ ! -f "$icon" ]]
 			then
 
-				icon="/usr/share/shockware-center/flatpak32.png"
+				icon="/usr/share/shock-os-update-manager/flatpak.svg"
 
 			fi
 			
@@ -148,7 +148,7 @@ do
 			if [[ ! -n "$icon" ]]
 			then
 
-				icon="/usr/share/shockware-center/apt32.png"
+				icon="/usr/share/shock-os-update-manager/apt.svg"
 
 			fi	
 
