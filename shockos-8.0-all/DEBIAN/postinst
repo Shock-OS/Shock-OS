@@ -308,16 +308,6 @@ systemctl daemon-reload
 
 #the 'shock' temporary autologin patch ends
 
-#the clean patch begins
-
-apt purge pluma #gets rid of pluma (because gedit is installed instead)
-
-apt autoremove --purge
-
-apt update
-
-#the clean patch ends
-
 sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/config.txt #this command enables the two front USB ports on the DeskPi Lite
 
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo #adds the FlatHub repository

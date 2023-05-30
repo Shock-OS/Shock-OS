@@ -64,6 +64,16 @@ then
 
     sudo chown $(whoami) ~/.bashrc
 
+    #the clean patch begins
+
+    sudo apt purge pluma #gets rid of pluma (because gedit is installed instead)
+
+    sudo apt autoremove --purge
+
+    sudo apt update
+
+    #the clean patch ends
+
     # the default .bashrc file restoration patch ends
 
     sudo systemctl set-default graphical
