@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#this script installs the Shock OS .deb in the current directory
+
+until [[ "$(apt show shock-os-metapackage)" == *"Installed: yes"* ]]
+do
+
+    sudo apt update
+
+    sudo apt install ./shockos*
+
+done
+
+sudo apt update
+
+sudo apt purge -y pluma #gets rid of pluma (because gedit is installed instead)
+
+sudo apt autoremove --purge -y
+
+sudo apt update

@@ -8,7 +8,7 @@ type="$3"
 
 function start_loading() {
 
-yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Loading app info..." --center --progress --pulsate --auto-close --undecorated --no-buttons & killpid=$!
+yad --window-icon=system-software-update --title="Shockware Center" --progress-text="Loading app info..." --center --progress --pulsate --auto-close --undecorated --no-buttons & killpid=$!
 
 }
 
@@ -52,7 +52,7 @@ then
 
 	end_loading
 
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $package" --text="APT package" --width=400 --height=300 --image="$icon" --text-info --filename="$tmpfile" --button="Close"\!gtk-close
+	yad --window-icon=system-software-update --title="Details of $package" --text="APT package" --width=400 --height=300 --image="$icon" --text-info --filename="$tmpfile" --button="Close"\!gtk-close
 
 	ex=$?
 
@@ -78,7 +78,7 @@ Version: $version" | tee "$tmpfile"
 
 	end_loading
 
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $package" --text="Flatpak application" --width=400 --height=300 --image="$icon" --text-info --filename="$tmpfile" --button="Close"\!gtk-close
+	yad --window-icon=system-software-update --title="Details of $package" --text="Flatpak application" --width=400 --height=300 --image="$icon" --text-info --filename="$tmpfile" --button="Close"\!gtk-close
 
 	ex=$?
 

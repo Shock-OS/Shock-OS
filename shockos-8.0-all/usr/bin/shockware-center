@@ -310,9 +310,23 @@ do
 	elif [[ "$ex" == "2" ]] #search
 	then
 
-		keyword="$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --entry --entry-text="$keyword" --button="Search"\!gtk-find)"
+		newkeyword="$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --entry --entry-text="$keyword" --button="Show All"\!gtk-justify-fill --button="Search"\!gtk-find --buttons-layout=edge)"
+
+        ex=$?
 
 		page=0
+
+        if [[ "$ex" == "0" ]]
+        then
+
+            keyword=""
+
+        elif [[ "$ex" == "1" ]]
+        then
+
+            keyword="$newkeyword"
+
+        fi
 
 	else
 

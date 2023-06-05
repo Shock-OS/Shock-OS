@@ -171,7 +171,7 @@ whiptail --title "User Created Successfully" --msgbox "Congratulations! You have
 
 #the whiptail user creation patch begins
 
-echo "%$x ALL=(ALL:ALL) NOPASSWD:ALL" | sudo sudo EDITOR='tee' visudo -f /etc/sudoers.d/initsetup_rootpriv #enables the user to run all commands without a password (temporarily)
+echo "%$x ALL=(ALL:ALL) NOPASSWD:ALL" | sudo EDITOR='tee' visudo -f /etc/sudoers.d/initsetup_rootpriv #enables the user to run all commands without a password (temporarily)
 
 sudo systemctl set-default multi-user
 
@@ -189,7 +189,7 @@ sudo systemctl enable getty@tty1.service
 
 sudo systemctl daemon-reload
 
-sudo echo 'shock-startup' >> "/home/$x/.bashrc"
+echo 'shock-startup' | sudo tee -a "/home/$x/.bashrc"
 
 #the setup finalizer temporary autologin patch ends
 

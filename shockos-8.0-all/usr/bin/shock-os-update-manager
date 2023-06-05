@@ -206,7 +206,7 @@ do
 	elif [[ "$ex" == "50" ]] #jump
 	then
 
-		jump_page=$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Update Manager" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
+		jump_page=$(yad --window-icon=system-software-update --title="Update Manager" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
 
 		ex=$?
 
@@ -222,7 +222,7 @@ do
 	elif [[ "$ex" == "1" ]] #install updates
 	then
 
-		install_updates | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Update Manager" --text="Installing updates..." --progress --pulsate --auto-close --no-cancel
+		install_updates | zenity --window-icon=system-software-update --title="Update Manager" --text="Installing updates..." --progress --pulsate --auto-close --no-cancel
 
 		if ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
 		then
