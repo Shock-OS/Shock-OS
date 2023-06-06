@@ -2,6 +2,10 @@
 
 IFS=$'\n'
 
+splash_killed="FALSE"
+
+yad --picture --filename=/usr/share/shockware-center/splash.png --size=fit --width=1000 --height=397 --undecorated --no-buttons --skip-taskbar & splash_kilpid=$!
+
 #READ/WRITE SETTINGS BEGINS
 
 function read_settings() {
@@ -101,6 +105,15 @@ keyword=""
 
 page=0
 
+if [[ "$splash_killed" == "FALSE" ]]
+then
+
+    kill -9 $splash_kilpid
+
+    splash_killed="TRUE"
+
+fi
+
 while true
 do
 
@@ -173,6 +186,17 @@ do
 
 		search_results=()
 
+        if [[ "$show_apt_packages" == "TRUE" ]] && [[ "$show_flatpaks" == "TRUE" ]]
+        then
+
+            show_duplicates="TRUE"
+
+        else
+
+            show_duplicates="FALSE"
+
+        fi
+
 		for i in "${search_results_prep[@]}"
 		do
 
@@ -200,7 +224,7 @@ do
 
 				icon="$appstream_icons_dir/$icon.png"
 
-                if [[ " ${all_duplicates[@]} " == *" ${i::-11} [BOTH]\" "* ]] #if duplicate application (both APT and Flatpak)
+                if [[ " ${all_duplicates[@]} " == *" ${i::-11} [BOTH]\" "* ]] && [[ "$show_duplicates" == "TRUE" ]] #if duplicate application (both APT and Flatpak) and both Flatpak and APT packages are shown.
                 then
 
                     item_number=$(printf '%s\n' "${apt_packages_and_names[@]}" | grep -nF "${i::-11} [APT]\"" | cut -d ':' -f 1 | head -n1) #ChatGPT

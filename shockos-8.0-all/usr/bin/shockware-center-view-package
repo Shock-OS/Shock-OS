@@ -1,8 +1,8 @@
 #!/bin/bash
 
-package="$2"
-
 type="$3"
+
+full_name="$2"
 
 #THE LOADING FUNCTIONS BEGIN
 
@@ -22,8 +22,14 @@ kill -9 $killpid
 
 start_loading
 
+#!/bin/bash
+
+key="$RANDOM"
+
 if [[ "$type" == "A" ]] #if APT package
 then
+
+    package="$4"
 
 	details="$(apt show $package)"
 
@@ -42,21 +48,21 @@ then
 
 	description="$(echo "$details" | grep -A10 Description:)"
 
-	version="$(echo "$details" | grep Version:)"
+    version="$(echo "$details" | grep Version:)"
 
-	size="$(echo "$details" | grep Size:)"
+    size="$(echo "$details" | grep Size:)"
 
 	tmpfile="$(mktemp)"
 
 	echo "$description
 
-	$version
+$version
 
-	$size" | tee "$tmpfile"
+$size" | tee "$tmpfile"
 
 	end_loading
 
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $package" --text="APT package" --width=400 --height=300 --image="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)" --text-info --filename="$tmpfile" $irbuttons
+	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="APT package" --width=400 --height=300 --image="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)" --text-info --filename="$tmpfile" $irbuttons
 
 	ex=$?
 
@@ -70,36 +76,37 @@ then
 	elif [[ "$ex" == "4" ]] #remove
 	then
 
-		yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $package?" --button="Yes, remove" --button="No, keep"
+		yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name?" --button="Yes, remove" --button="No, keep"
 
 		ex=$?
 
 		if [[ "$ex" == "0" ]]
 		then
 
-			pkexec apt remove -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing $package..." --no-cancel --auto-close --progress --pulsate
+			pkexec apt remove -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing $full_name..." --no-cancel --auto-close --progress --pulsate
 
 		fi
 
 	elif [[ "$ex" == "5" ]] #install
 	then
 
-		pkexec apt install -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Installing $package..." --no-cancel --auto-close --progress --pulsate
+		pkexec apt install -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Installing $full_name..." --no-cancel --auto-close --progress --pulsate
 
         if [[ "$(apt show $package)" == *"Installed: yes"* ]] #if installed successfully
         then
 
-            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$package was successfully installed." --button="Dismiss"
+            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name was successfully installed." --button="Dismiss"
 
         else
     
-            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $package. Please double check your internet connection and try again later." --button="Dismiss"
+            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $full_name. Please double check your internet connection and try again later." --button="Dismiss"
 
         fi
 
 	fi
 
-else #if Flatpak
+elif [[ "$type" == "F" ]] #if Flatpak
+then
 
 	icon="$4"
 
@@ -126,13 +133,13 @@ else #if Flatpak
 
 	tmpfile="$(mktemp)"
 
-	echo " Description: $description
+	echo "Description: $description
 
 Version: $version" | tee "$tmpfile"
 
 	end_loading
 
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $package" --text="Flatpak application" --width=400 --height=300 --image="$icon" --text-info --filename="$tmpfile" $irbuttons
+	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="Flatpak application" --width=400 --height=300 --image="$icon" --text-info --filename="$tmpfile" $irbuttons
 
 	ex=$?
 
@@ -146,38 +153,110 @@ Version: $version" | tee "$tmpfile"
 	elif [[ "$ex" == "4" ]] #remove
 	then
 
-		yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $package?" --button="Yes, remove" --button="No, keep"
+		yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name?" --button="Yes, remove" --button="No, keep"
 
 		ex=$?
 
 		if [[ "$ex" == "0" ]]
 		then
 
-			flaptak uninstall -y "$id" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing $package..." --no-cancel --auto-close --progress --pulsate
+			flaptak uninstall -y "$id" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing $full_name..." --no-cancel --auto-close --progress --pulsate
 
 		fi
 
 	elif [[ "$ex" == "5" ]] #install
 	then
 
-		flatpak install -y "$id" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Installing $package..." --no-cancel --auto-close --progress --pulsate
+		flatpak install -y "$id" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Installing $full_name..." --no-cancel --auto-close --progress --pulsate
 
         installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
 
         if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed successfully
 	    then
 
-            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$package was successfully installed." --button="Dismiss"
+            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name was successfully installed." --button="Dismiss"
 
         else
 
-            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $package. Please double check your internet connection and try again later." --button="Dismiss"
+            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $full_name. Please double check your internet connection and try again later." --button="Dismiss"
 
         fi
 
 	fi
 
+else #if both
+
+    package="$5"
+
+    details="$(apt show $package)"
+
+	installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+	if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed
+	then
+
+		irbuttons='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
+
+	else
+
+		irbuttons='--button=Install!add:5'
+
+	fi
+
+	description="$(echo "$details" | grep -A10 Description:)"
+
+	version="$(echo "$details" | grep Version:)"
+
+	size="$(echo "$details" | grep Size:)"
+
+	tmpfile="$(mktemp)"
+
+	echo "$description
+
+$version
+
+$size" | tee "$tmpfile"
+
+    yad --plug=$key --tabnum=1 --image="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)" --text-info --filename="$tmpfile" $irbuttons &
+
+    icon="$4"
+
+	id="$(basename "$4")"
+
+	id="${id::-4}"
+
+	installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
+
+	if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed
+	then
+
+		irbuttons='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
+
+	else
+
+		irbuttons='--button=Install!add:5'
+
+	fi
+
+	description="$(flatpak search "$id" --columns=app,description | grep "^$id" | awk -F '\t' '{print $2}' | head -n1)"
+
+	version="$(flatpak search "$id" --columns=app,version | grep "^$id" | awk -F '\t' '{print $2}' | head -n1)"
+
+	tmpfile="$(mktemp)"
+
+	echo "Description: $description
+
+Version: $version" | tee "$tmpfile"
+
+    yad --plug=$key --tabnum=2 --image="$icon" --text-info --filename="$tmpfile" $irbuttons &
+
+    end_loading
+
+    yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="$full_name is available from both APT and Flatpak." --width=400 --height=300 --notebook --key=$key --tab="APT" --tab="Flatpak"
+
 fi
+
+    
 
 	
 

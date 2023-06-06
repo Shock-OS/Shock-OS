@@ -327,9 +327,11 @@ Enable=1" | tee /etc/plymouth/plymouthd.conf
 
 #the splash screen patch ends
 
-rm /usr/share/plymouth/themes/*
+rm -r /usr/share/plymouth/themes/*
 
 cp -r /usr/share/shock/splashes/* /usr/share/plymouth/themes
+
+pip install pyyaml
 
 
 
