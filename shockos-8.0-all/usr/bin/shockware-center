@@ -75,6 +75,28 @@ IFS=$'\n' read -d '' -ra all_packages <<< "$(python /usr/bin/shockware-center-ge
 
 IFS=$'\n' read -d '' -ra apt_packages_and_names <<< "$(python /usr/bin/shockware-center-get-apt-packages-names.py)" #ChatGPT
 
+all_duplicates=()
+
+for i in "${all_packages[@]}"
+do
+
+    i="${i::-7}"
+
+    i="${i#\"}"
+
+    echo "$i" #DEBUG
+
+    if [[ " ${all_flatpaks[@]} " == *" \"$i [FLATPAK]\" "* ]] #if app is both an apt and a flatpak
+    then
+
+        all_duplicates+=("\"$i [BOTH]\"")
+
+    fi
+
+done
+
+echo "${all_duplicates[@]}" #DEBUG
+
 keyword=""
 
 page=0
@@ -147,11 +169,9 @@ do
 
 		search_results_prep=("${search_results_prep[@]::$((rows_per_page))}")
 
-		mapfile -t search_results_prep < <(printf '%s\n' "${search_results_prep[@]}" | sed 's/^"\(.*\)"$/"\1"/')
+		mapfile -t search_results_prep < <(printf '%s\n' "${search_results_prep[@]}" | sed 's/^"\(.*\)"$/"\1"/' | sort -u)
 
 		search_results=()
-
-		duplicates=()
 
 		for i in "${search_results_prep[@]}"
 		do
@@ -180,14 +200,37 @@ do
 
 				icon="$appstream_icons_dir/$icon.png"
 
-				if [[ -f "$icon" ]]
-				then
+                if [[ " ${all_duplicates[@]} " == *" ${i::-11} [BOTH]\" "* ]] #if duplicate application (both APT and Flatpak)
+                then
 
-					search_results+=("\"$icon\"" "\"$name\"" "\"F\"" "\"$icon\"")
+                    item_number=$(printf '%s\n' "${apt_packages_and_names[@]}" | grep -nF "${i::-11} [APT]\"" | cut -d ':' -f 1 | head -n1) #ChatGPT
 
-				fi
+                    package_name="${apt_packages_and_names[item_number]}"
 
-			else #if APT package
+                    package_name="${package_name#\"}"
+
+				    package_name="${package_name%\"}"
+
+			        if [[ -n "$icon" ]]
+			        then
+
+                        search_results+=("\"$icon\"" "\"$name\"" "\"B\"" "\"$icon\"" "\"$package_name\"")
+
+			        fi
+
+                else #if not duplicate application (Flatpak only)
+
+				    if [[ -f "$icon" ]]
+				    then
+
+					    search_results+=("\"$icon\"" "\"$name\"" "\"F\"" "\"$icon\"" "\"N/A\"")
+
+				    fi
+
+                fi
+
+			elif [[ " ${all_duplicates[@]} " != *" ${i::-7} [BOTH]\" "* ]] #if APT package
+            then
 
                 name="${i::-7}\""
 
@@ -204,7 +247,7 @@ do
 				if [[ -n "$icon" ]]
 				then
 
-					search_results+=("$icon" "$name" "\"A\"" "\"$package_name\"")
+					search_results+=("$icon" "$name" "\"A\"" "\"$package_name\"" "\"N/A\"")
 
 				fi
 
@@ -237,7 +280,7 @@ do
 
 		fi
 
-		yadlist="yad --window-icon=/usr/share/shockware-center/icon.svg --title=\"Shockware Center\" --text=\"Page $((page+1)) of $(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1)). Double-click on an app to install/remove it.\" --width=800 --height=500 --buttons-layout=spread --list --dclick-action=shockware-center-view-package --column=\"Icon\":IMG --column=\"Name\" --column=\"Type\":HD --column=\"Icon (only for Flatpaks when clicked on)\":HD --button=\"Settings\"\!gnome-settings:1 --button=\"Search\"\!gtk-find:2 $page_buttons ${search_results[@]}"
+		yadlist="yad --window-icon=/usr/share/shockware-center/icon.svg --title=\"Shockware Center\" --text=\"Page $((page+1)) of $(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1)). Double-click on an app to install/remove it.\" --width=800 --height=500 --buttons-layout=spread --list --dclick-action=shockware-center-view-package --column=\"Icon\":IMG --column=\"Name\" --column=\"Type\":HD --column=\"Icon (only for Flatpaks when clicked on)\":HD --column=\"Flatpak ID column (only used for duplicate packages)\":HD --button=\"Settings\"\!gnome-settings:1 --button=\"Search\"\!gtk-find:2 $page_buttons ${search_results[@]}"
 
 		end_loading
 
