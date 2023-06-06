@@ -1,8 +1,0 @@
-[Plymouth Theme]
-Name=Shock OS Dots
-Description=The Shock OS logo on a cool background, with a loading animation
-ModuleName=script
-
-[script]
-ImageDir=/usr/share/plymouth/themes/shockdots
-ScriptFile=/usr/share/plymouth/themes/shockdots/shockdots.script

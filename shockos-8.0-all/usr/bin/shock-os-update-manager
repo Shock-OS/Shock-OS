@@ -139,9 +139,7 @@ do
 
 		else #if APT package
 
-			name="${i#\"}"
-
-			name="${name%\"}"
+            name="${i%%/*}"
 
 			icon="$(find /var/lib/app-info/icons/*/*/"$name"_* | head -1)"
 

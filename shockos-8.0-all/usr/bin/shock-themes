@@ -53,7 +53,7 @@ do
 
 	done
 
-	yad="yad --window-icon=gnome-settings-theme --title=\"Themes\" --text=\"Install, remove, rename or use themes, icons and cursors.\" --list --column=\"Type\":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=3 --height=300 --buttons-layout=spread --button=\"Install\"\!add --button=\"Remove\"\!remove --button=\"Rename\"\!gtk-edit --button=\"Apply\"\!dialog-ok $(echo "$yadlist")"
+	yad="yad --window-icon=gnome-settings-theme --title=\"Themes\" --text=\"Install, remove, rename or use themes, icons and cursors.\" --list --column=\"Type\":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=3 --height=300 --buttons-layout=spread --button=\"Install\"\!add --button=\"Remove\"\!remove --button=\"Rename\"\!gtk-edit --button=\"Use\"\!dialog-ok $(echo "$yadlist")"
 
 	output="$(eval $yad)"
 
@@ -255,7 +255,7 @@ do
 
 		done
 
-	elif [[ "$ex" == "3" ]] #apply
+	elif [[ "$ex" == "3" ]] #use
 	then
 
 		if [[ "$type" == "The default Shock OS look and feel" ]]
@@ -322,7 +322,7 @@ color=blue' | tee ~/.config/shock_themes
 
 			fi
 
-			output=$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Apply")
+			output=$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Apply"\!gtk-ok)
 
 			ex=$?
 

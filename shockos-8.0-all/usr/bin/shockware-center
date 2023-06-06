@@ -61,15 +61,19 @@ kill -9 $killpid
 
 read_settings
 
-all_packages=($(find /var/lib/app-info/icons/*/* -type f -printf '%f\n' | cut -d'_' -f1 | sort | uniq | awk '{ printf "\"%s\"\n", $0 }')) #ChatGPT
+#all_packages=($(find /var/lib/app-info/icons/*/* -type f -printf '%f\n' | cut -d'_' -f1 | sort -u | awk '{ printf "\"%s\"\n", $0 }')) #ChatGPT
 
-all_packages_icons=($(find /var/lib/app-info/icons/*/* -type f | sed 's/.*/"&"/' | sort | uniq)) #ChatGPT
+all_packages_icons=($(find /var/lib/app-info/icons/*/* -type f | sed 's/.*/"&"/' | sort -u)) #ChatGPT
 
 appstream_file="/var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml"
 
 appstream_icons_dir="/var/lib/flatpak/appstream/flathub/$(uname -m)/active/icons/64x64"
 
 IFS=$'\n' read -d '' -ra all_flatpaks <<< "$(flatpak remote-ls --all --app --columns=name | awk '{print "\""$0" [FLATPAK]\""}' RS='\n')" #ChatGPT
+
+IFS=$'\n' read -d '' -ra all_packages <<< "$(python /usr/bin/shockware-center-get-apt-names.py | sort -u)" #ChatGPT
+
+IFS=$'\n' read -d '' -ra apt_packages_and_names <<< "$(python /usr/bin/shockware-center-get-apt-packages-names.py)" #ChatGPT
 
 keyword=""
 
@@ -88,11 +92,7 @@ do
 		if [[ "$show_apt_packages" == "TRUE" ]]
 		then
 
-			aptkeyword=$(echo "$keyword" | awk '{print tolower($0)}') #this command makes all the letters lowercase
-
-		    aptkeyword=$(echo ${aptkeyword//[[:blank:]]/}) #this command removes all spaces
-
-			search_results_prep_full=($(printf "%s\n" "${all_packages[@]}" | grep -i "$aptkeyword"))
+			search_results_prep_full=($(printf "%s\n" "${all_packages[@]}" | grep -i "$keyword"))
 
 		fi
 
@@ -189,16 +189,22 @@ do
 
 			else #if APT package
 
-				name="${i#\"}"
+                name="${i::-7}\""
 
-				name="${name%\"}"
+                item_number=$(printf '%s\n' "${apt_packages_and_names[@]}" | grep -nF "$i" | cut -d ':' -f 1 | head -n1) #ChatGPT
 
-				icon="$(find /var/lib/app-info/icons/*/*/"$name"_* | head -1)"
+                package_name="${apt_packages_and_names[item_number]}"
+
+                package_name="${package_name#\"}"
+
+				package_name="${package_name%\"}"
+
+				icon="$(find /var/lib/app-info/icons/*/*/"$package_name"_* | head -1)"
 
 				if [[ -n "$icon" ]]
 				then
 
-					search_results+=("$icon" "$i" "\"A\"" "\"A\"")
+					search_results+=("$icon" "$name" "\"A\"" "\"$package_name\"")
 
 				fi
 
@@ -290,8 +296,6 @@ do
 
 		ex=$?
 
-		echo $settings #DEBUG
-
 		if [[ "$ex" == "0" ]]
 		then
 
@@ -310,18 +314,18 @@ do
 	elif [[ "$ex" == "2" ]] #search
 	then
 
-		newkeyword="$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --entry --entry-text="$keyword" --button="Show All"\!gtk-justify-fill --button="Search"\!gtk-find --buttons-layout=edge)"
+		newkeyword="$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --entry --entry-text="$keyword" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
 
         ex=$?
 
 		page=0
 
-        if [[ "$ex" == "0" ]]
+        if [[ "$ex" == "1" ]] #show all
         then
 
             keyword=""
 
-        elif [[ "$ex" == "1" ]]
+        elif [[ "$ex" == "0" ]] #search
         then
 
             keyword="$newkeyword"

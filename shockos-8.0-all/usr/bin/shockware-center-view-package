@@ -86,6 +86,17 @@ then
 
 		pkexec apt install -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Installing $package..." --no-cancel --auto-close --progress --pulsate
 
+        if [[ "$(apt show $package)" == *"Installed: yes"* ]] #if installed successfully
+        then
+
+            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$package was successfully installed." --button="Dismiss"
+
+        else
+    
+            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $package. Please double check your internet connection and try again later." --button="Dismiss"
+
+        fi
+
 	fi
 
 else #if Flatpak
@@ -150,6 +161,19 @@ Version: $version" | tee "$tmpfile"
 	then
 
 		flatpak install -y "$id" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Installing $package..." --no-cancel --auto-close --progress --pulsate
+
+        installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
+
+        if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed successfully
+	    then
+
+            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$package was successfully installed." --button="Dismiss"
+
+        else
+
+            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $package. Please double check your internet connection and try again later." --button="Dismiss"
+
+        fi
 
 	fi
 

@@ -19,7 +19,7 @@ do
 
 	done
 
-	yadlist="yad --window-icon=\"ICON HERE\" --title=\"Splash Screen\" --text=\"Please choose a splash screen.\" --list --no-headers --response=2 --width=500 --height=300 --always-print-result --column=\"Name\" ${splashes[@]} --buttons-layout=spread --button=Install\!add --button=Remove\!remove --button=Apply\!gtk-ok"
+	yadlist="yad --window-icon=\"ICON HERE\" --title=\"Splash Screen\" --text=\"Please choose a splash screen.\" --list --no-headers --response=2 --width=500 --height=300 --always-print-result --column=\"Name\" ${splashes[@]} --buttons-layout=spread --button=Install\!add --button=Remove\!remove --button=Use\!gtk-ok"
 
 	setsplash="$(eval "$yadlist")"
 
@@ -95,7 +95,7 @@ do
 
 		fi
 
-	elif [[ "$ex" == "2" ]] #apply
+	elif [[ "$ex" == "2" ]] #use
 	then
 
 		for i in /usr/share/plymouth/themes/*

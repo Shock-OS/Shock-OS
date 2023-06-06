@@ -312,6 +312,8 @@ sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/config.txt #this command enables t
 
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo #adds the FlatHub repository
 
+flatpak update #refreshes the flatpak cache and downloads the icons for the Shockware Center
+
 #the splash screen patch begins
 
 newcmdline="$(cat /boot/cmdline.txt) quiet splash plymouth.ignore-serial-consoles"
@@ -324,6 +326,10 @@ ShowDelay=0
 Enable=1" | tee /etc/plymouth/plymouthd.conf
 
 #the splash screen patch ends
+
+rm /usr/share/plymouth/themes/*
+
+cp -r /usr/share/shock/splashes/* /usr/share/plymouth/themes
 
 
 
