@@ -17,22 +17,10 @@ do
 
 	fi
 
-	for i in ~/.icons/* #list all 2-in-1 icons and cursor packs
-	do
-
-		if  [[ "$(basename "$(find "$i" -name "places" | head -1)")" == "places" ]] && [[ -d "$i/cursors" ]]
-		then
-
-			yadlist+=" folder-images \"Icon pack with cursors\" \"$(basename "$i")\" "
-
-		fi
-
-	done
-
 	for i in ~/.icons/* #list all icons
 	do
 
-		if  [[ "$(basename "$(find "$i" -name "places" | head -1)")" == "places" ]] && [[ ! -d "$i/cursors" ]]
+		if  [[ -d "$(find "$i" -name places | head -n1)" || -d "$(find "$i" -name status | head -n1)" ]] && [[ "$(cat "$i/index.theme")" == *"[Icon Theme]"* ]]
 		then
 
 			yadlist+=" folder-images \"Icon pack\" \"$(basename "$i")\" "
@@ -44,7 +32,7 @@ do
 	for i in ~/.icons/* #list all cursors
 	do
 
-		if  [[ -d "$i/cursors" ]] && [[ "$(basename "$(find "$i" -name "places" | head -1)")" != "places" ]]
+		if  [[ -d "$(find "$i" -name cursors | head -n1)" ]] || [[ -f "$i/cursors.theme" ]]
 		then
 
 			yadlist+=" input-mouse \"Cursor pack\" \"$(basename "$i")\" "
@@ -54,6 +42,8 @@ do
 	done
 
 	yad="yad --window-icon=gnome-settings-theme --title=\"Themes\" --text=\"Install, remove, rename or use themes, icons and cursors.\" --list --column=\"Type\":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=3 --height=300 --buttons-layout=spread --button=\"Install\"\!add --button=\"Remove\"\!remove --button=\"Rename\"\!gtk-edit --button=\"Use\"\!dialog-ok $(echo "$yadlist")"
+
+    sleep 1
 
 	output="$(eval $yad)"
 
@@ -75,74 +65,119 @@ do
 		if [[ "$ex" == "0" ]]
 		then
 
-            tmpdir=$(mktemp -d)
+            if [[ "$file" == *".deb" ]]
+            then
 
-			mkdir -p "$tmpdir"
+                yad --window-icon=gnome-settings-theme --image=emblem-important --title="Install" --text="$file is not a compatible theme file. Please choose a folder or a compressed archive containing the theme you want to install." --button="Dismiss"
 
-			cd "$tmpdir"
+            else
 
-			if [[ -f "$file" ]] #if archive, then extract archive
-			then
+                tmpdir=$(mktemp -d)
 
-				unp -f "$file"
+			    mkdir -p "$tmpdir"
 
-			else #if folder
+			    cd "$tmpdir"
 
-				cp -r "$file" .
+			    if [[ -f "$file" ]] #if archive, then extract archive
+			    then
 
-			fi
+				    unp -f "$file"
 
-            cd "$(dirname $(find "$tmpdir" -name index.theme | head -n1))"
+			    else #if folder
 
-            cd ..
+				    cp -r "$file" .
 
-			for i in *
-			do
+			    fi
 
-				if [[ -e "$i/index.theme" ]]
-				then
+                found_dir="TRUE"
 
-					if [[ -n "$(find . -name places)" ]] || [[ -n "$(find . -name status)" ]]
-					then
+                itd="$(dirname "$(find "$tmpdir" -name index.theme | head -n1)")"
 
-						directories=($(cat "$i/index.theme" | grep places | grep -oP "\[([^]]+)\]"))
+                mtd="$(dirname "$(find "$tmpdir" -name metacity* | head -n1)")"
 
-						directories+=($(cat "$i/index.theme" | grep status | grep -oP "\[([^]]+)\]"))
+                if [[ "$itd" != "." ]]
+                then
 
-						for a in "${directories[@]}"
-						do
+                    cd "$itd"
 
-							if [[ "$a" == *"scalable"* ]]
-							then
+                elif [[ -d "$mtd" ]]
+                then
 
-								cp -rf /usr/share/shock-themes/scalable/* "$i/${a:1:${#a}-2}"
+                    cd "$mtd"
 
-							elif [[ "$a" == *"symbolic"* ]]
-							then
+                else
 
-								cp -rf /usr/share/shock-themes/symbolic/* "$i/${a:1:${#a}-2}"
+                    found_dir="FALSE"
 
-							else
+                fi
 
-								cp -rf "/usr/share/shock-themes/$(echo "$a" | grep -oE '[0-9]+' | head -n 1)"/* "$i/${a:1:${#a}-2}"
+                if [[ "$found_dir" == "TRUE" ]]
+                then
 
-							fi
+                    cd ..
 
-						done
+			        for i in *
+			        do
 
-						cp -r "$i" ~/.icons
+				        if [[ -f "$i/index.theme" ]] || [[ -d "$(find "$i" -name metacity* | head -n1)" ]]
+				        then
 
-					else
+					        if [[ -d "$(find "$i" -name cursors | head -n1)" ]] || [[ -f "$i/cursors.theme" ]] || [[ "$(cat "$i/index.theme")" == *"[Icon Theme]"* ]]
+					        then
 
-						cp -r "$i" ~/.themes
+						        directories=($(cat "$i/index.theme" | grep places | grep -oP "\[([^]]+)\]"))
 
-					fi
+						        directories+=($(cat "$i/index.theme" | grep status | grep -oP "\[([^]]+)\]"))
 
-				fi
+						        for a in "${directories[@]}"
+						        do
 
-			done
+							        if [[ "$a" == *"scalable"* ]]
+							        then
 
-			rm -r "$tmpdir"
+								        cp -rf /usr/share/shock-themes/scalable/* "$i/${a:1:${#a}-2}"
+
+							        elif [[ "$a" == *"symbolic"* ]]
+							        then
+
+								        cp -rf /usr/share/shock-themes/symbolic/* "$i/${a:1:${#a}-2}"
+
+							        else
+
+								        cp -rf "/usr/share/shock-themes/$(echo "$a" | grep -oE '[0-9]+' | head -n 1)"/* "$i/${a:1:${#a}-2}"
+
+							        fi
+
+						        done
+
+                                mkdir -p ~/.icons
+
+						        cp -r "$i" ~/.icons
+
+					        fi
+
+                            if [[ "$(cat "$i/index.theme")" == *"X-GNOME-Metatheme"* ]] || [[ -d "$(find "$i" -name metacity* | head -n1)" ]]
+                            then
+
+                                mkdir -p ~/.themes
+
+                                cp -r "$i" ~/.themes
+
+                            fi
+
+				        fi
+
+			        done
+
+			        rm -r "$tmpdir"
+
+                else
+
+                    yad --window-icon=gnome-settings-theme --image=emblem-important --title="Install" --text="$file does not appear to contain any themes, icon packs or cursor packs." --button="Dismiss"
+
+                fi
+
+            fi
 
 		fi
 
@@ -157,11 +192,38 @@ do
 		elif [[ "$type" == "Theme pack" ]] #if theme pack
 		then
 
-			rm -r ~/.themes/"$name"
+            if [[ "$(dconf read /org/mate/desktop/interface/gtk-theme)" == "'$name'" ]] || [[ "$(dconf read /org/mate/marco/general/theme)" == "'$name'" ]]
+            then
+
+                yad --window-icon=gnome-settings-theme --title="Themes" --image=emblem-important --text="You cannot remove $name because it is currently in use. Please switch to a different theme before removing $name." --button="Dismiss"
+
+            else
+
+			    rm -r ~/.themes/"$name"
+
+            fi
 
 		else #if icon or cursor pack
 
-			rm -r ~/.icons/"$name"
+            if [[ "$(dconf read /org/mate/desktop/interface/icon-theme)" == "'$name'" ]] || [[ "$(dconf write /org/mate/desktop/peripherals/mouse/cursor-theme)" == "'$name'" ]]
+            then
+
+                if [[ "$type" == "Icon pack" ]]
+                then
+
+                    yad --window-icon=gnome-settings-theme --title="Themes" --image=emblem-important --text="You cannot remove $name because it is currently in use. Please switch to a different icon theme before removing $name." --button-"Dismiss"
+
+                else
+
+                    yad --window-icon=gnome-settings-theme --title="Themes" --image=emblem-important --text="You cannot remove $name because it is currently in use. Please switch to a different cursor theme before removing $name." --button-"Dismiss"
+
+                fi
+
+            else
+
+			    rm -r ~/.icons/"$name"
+
+            fi
 
 		fi
 
@@ -203,14 +265,12 @@ do
 
 						    mv ~/.themes/"$name" ~/.themes/"$newname"
 
-						    if [[ "$(cat ~/.config/shock-themes-gtk-theme)" == "$name" ]]
+						    if [[ "$(dconf read /org/mate/desktop/interface/gtk-theme)" == "'$name'" ]] || [[ "$(dconf read /org/mate/marco/general/theme)" == "'$name'" ]]
 						    then
 
 							    dconf write /org/mate/desktop/interface/gtk-theme "'$newname'"
 
 							    dconf write /org/mate/marco/general/theme "'$newname'"
-
-							    echo "$newname" | tee ~/.config/shock-themes-gtk-theme
 
 						    fi
 
@@ -229,21 +289,17 @@ do
 
 						    mv ~/.icons/"$name" ~/.icons/"$newname"
 
-						    if [[ "$(cat ~/.config/shock-themes-icon-theme)" == "$name" ]]
+						    if [[ "$(dconf read /org/mate/desktop/interface/icon-theme)" == "'$name'" ]]
 						    then
 
 							    dconf write /org/mate/desktop/interface/icon-theme "'$newname'"
 
-							    echo "$newname" | tee ~/.config/shock-themes-icon-theme
-
 						    fi
 
-						    if [[ "$(cat ~/.config/shock-themes-mouse-theme)" == "$name" ]]
+						    if [[ "$(dconf write /org/mate/desktop/peripherals/mouse/cursor-theme)" == "'$name'" ]]
 						    then
 
 							    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$newname'"
-
-							    echo "$newname" | tee ~/.config/shock-themes-mouse-theme
 
 						    fi
 
@@ -369,55 +425,15 @@ color=$color" | tee ~/.config/shock_themes
 
 			dconf write /org/mate/marco/general/theme "'$name'"
 
-			echo "$name" | tee ~/.config/shock-themes-gtk-theme
-
 		elif [[ "$type" == "Icon pack" ]]
 		then
 
 			dconf write /org/mate/desktop/interface/icon-theme "'$name'"
 
-			echo "$name" | tee ~/.config/shock-themes-icon-theme
-
 		elif [[ "$type" == "Cursor pack" ]]
 		then
 
 			dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$name'"
-
-			echo "$name" | tee ~/.config/shock-themes-mouse-theme
-
-		elif [[ "$type" == "Icon pack with cursors" ]]
-		then
-
-			yad --window-icon=gnome-settings-theme --title="Icon Pack with Cursors" --text="The icon pack '$name' also contains cursors. Would you like to use the icons, the cursors, or both?" --button="Icons Only" --button="Cursors Only" --button="Both"
-
-			ex=$?
-
-			if [[ "$ex" == "0" ]] #icons only
-			then
-
-				dconf write /org/mate/desktop/interface/icon-theme "'$name'"
-
-				echo "$name" | tee ~/.config/shock-themes-icon-theme
-
-			elif [[ "$ex" == "1" ]] #cursors only
-			then
-
-				dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$name'"
-
-				echo "$name" | tee ~/.config/shock-themes-mouse-theme
-
-			elif [[ "$ex" == "2" ]] #both
-			then
-
-				dconf write /org/mate/desktop/interface/icon-theme "'$name'"
-
-				echo "$name" | tee ~/.config/shock-themes-icon-theme
-
-				dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$name'"
-
-				echo "$name" | tee ~/.config/shock-themes-mouse-theme
-
-			fi
 
 		fi
 

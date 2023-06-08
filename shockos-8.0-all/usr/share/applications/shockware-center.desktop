@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1
 Name=Shockware Center
-GenericName=Shockware Center
+GenericName=App Store
 Comment=Install/Remove Debian APT packages and Flatpaks.
 Exec=shockware-center
 Icon=/usr/share/shockware-center/icon.svg
