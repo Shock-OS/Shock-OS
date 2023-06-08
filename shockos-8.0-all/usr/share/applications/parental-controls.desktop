@@ -4,7 +4,7 @@ Name=Parental Controls
 GenericName=Parental Controls
 Comment=Manage the privilages of child profiles
 Exec=bash -c "pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shock-parental-controls"
-Icon=/shock/parental-controls.png
+Icon=/usr/share/shock/parental-controls.png
 Terminal=false
 Type=Application
 Categories=System;Settings;

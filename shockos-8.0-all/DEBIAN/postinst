@@ -4,17 +4,17 @@ cd /
 
 ls
 
-cp /shock/os-release /usr/lib
+cp /usr/share/shock/os-release /usr/lib
 
 #the above set of commands copies the os release file to /usr/lib
 
-cp -r /shock/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
+cp -r /usr/share/shock/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
 
-cp -r /shock/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
+cp -r /usr/share/shock/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
 
 rm /usr/share/images/desktop-base/login-background.svg
 
-cp /shock/login-background.svg /usr/share/images/desktop-base
+cp /usr/share/shock/login-background.svg /usr/share/images/desktop-base
 
 #the above command will replace the default Debian wallpapers with the Shock OS wallpapers
 
@@ -58,23 +58,23 @@ do
 
 done
 
-#cp -rf /shock/icons/* /usr/share/icons #DEBUG
+#cp -rf /usr/share/shock/icons/* /usr/share/icons #DEBUG
 
 #the above command replaces GNOME and MATE start menu icons with the Shock OS logo
 
-cp -r /shock/icons/Adwaita/scalable/places/mate-logo.svg /usr/share/mate-menu/icons
+cp -r /usr/share/shock/icons/Adwaita/scalable/places/mate-logo.svg /usr/share/mate-menu/icons
 
 #the above command sets the start menu icon to the Shock OS logo
 
-#cp -r /shock/themes/* /usr/share/themes
+#cp -r /usr/share/shock/themes/* /usr/share/themes
 
 #the above command copies the Shock OS appearance theme to the themes folder
 
-cp -r /shock/panel/* /usr/share/mate-panel/layouts
+cp -r /usr/share/shock/panel/* /usr/share/mate-panel/layouts
 
 #the above command installs the Shock OS panel layout and sets it as the default
 
-cp -r /shock/logos/* /usr/share/desktop-base/debian-logos
+cp -r /usr/share/shock/logos/* /usr/share/desktop-base/debian-logos
 
 #the above command replaces the Debian branding with Shock OS branding
 
@@ -82,11 +82,11 @@ rm /etc/lightdm/lightdm.conf
 
 rm /usr/share/icons/mate/cursor.theme
 
-cp /shock/lightdm.conf /etc/lightdm
+cp /usr/share/shock/lightdm.conf /etc/lightdm
 
-cp /shock/lightdm-gtk-greeter.conf /etc/lightdm
+cp /usr/share/shock/lightdm-gtk-greeter.conf /etc/lightdm
 
-cp /shock/cursor.theme /usr/share/icons/mate
+cp /usr/share/shock/cursor.theme /usr/share/icons/mate
 
 #the above set of commands sets the default Shock OS screen
 
@@ -104,15 +104,15 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
 #the above set of commands sets the slick-greeter settings
 
-chmod -R a+w /shock
+chmod -R a+w /usr/share/shock
 
-echo "0" | tee /shock/setupvalue
+echo "0" | tee /usr/share/shock/setupvalue
 
 #the above set of commands sets the 'pi' user to automatic login
 
 rm /usr/share/applications/mate-default-applications-properties.desktop
 
-cp /shock/mate-default-applications-properties.desktop /usr/share/applications
+cp /usr/share/shock/mate-default-applications-properties.desktop /usr/share/applications
 
 #the above command sets a star as the logo for the preferred applications
 
@@ -124,9 +124,9 @@ rm /usr/share/applications/screensavers/gnomelogo-floaters.desktop
 
 rm /usr/share/applications/screensavers/footlogo-floaters.desktop
 
-cp /shock/gnomelogo-floaters.desktop /usr/share/applications/screensavers
+cp /usr/share/shock/gnomelogo-floaters.desktop /usr/share/applications/screensavers
 
-cp -r /shock/gnome-logo-white.svg /usr/share/pixmaps
+cp -r /usr/share/shock/gnome-logo-white.svg /usr/share/pixmaps
 
 #the above commands set the Lightning Bolt and Raspberry screensavers
 
@@ -193,19 +193,19 @@ XDG_MUSIC_DIR="$HOME/Music"
 XDG_PICTURES_DIR="$HOME/Pictures"
 XDG_VIDEOS_DIR="$HOME/Videos"' | tee /etc/skel/.config/user-dirs.dirs
 
-cp -r /shock/chromium /etc/skel/.config
+cp -r /usr/share/shock/chromium /etc/skel/.config
 
 mkdir -p /etc/skel/.cache
 
 mkdir -p /etc/skel/.local/share/applications
 
-cp /shock/mate_dock_applet.conf /etc/skel/.config
+cp /usr/share/shock/mate_dock_applet.conf /etc/skel/.config
 
 #the home directory building ends
 
-cp -r /shock/applications/* /etc/skel/.local/share/applications
+cp -r /usr/share/shock/applications/* /etc/skel/.local/share/applications
 
-cp -r /shock/applications/* /usr/share/applications
+cp -r /usr/share/shock/applications/* /usr/share/applications
 
 #the above command renames the apps to Shock OS friendly names
 

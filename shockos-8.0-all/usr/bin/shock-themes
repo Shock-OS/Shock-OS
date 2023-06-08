@@ -84,19 +84,17 @@ do
 			if [[ -f "$file" ]] #if archive, then extract archive
 			then
 
-				7z x -y "$file"
+				unp -f "$file"
 
 			else #if folder
 
 				cp -r "$file" .
 
-				cd "$(dirname $(find "$tmpdir" -name index.theme))"
-
-				cd ..
-
 			fi
 
-			#cd ..
+            cd "$(dirname $(find "$tmpdir" -name index.theme | head -n1))"
+
+            cd ..
 
 			for i in *
 			do
@@ -104,7 +102,7 @@ do
 				if [[ -e "$i/index.theme" ]]
 				then
 
-					if [[ -d "$i/status" ]] || [[ -d "$i/places" ]]
+					if [[ -n "$(find . -name places)" ]] || [[ -n "$(find . -name status)" ]]
 					then
 
 						directories=($(cat "$i/index.theme" | grep places | grep -oP "\[([^]]+)\]"))
@@ -170,90 +168,94 @@ do
 	elif [[ "$ex" == "2" ]] #rename
 	then
 
-		success="no"
+        if [[ "$type" == "The default Shock OS look and feel" ]]
+		then
 
-		until [[ "$success" == "yes" ]]
-		do
+            yad --window-icon=gnome-settings-theme --title="Rename" --image=emblem-important --text="You cannot rename the default theme." --button="Dismiss"
 
-			newname="$(yad --window-icon=gnome-settings-theme --title="Rename" --text="Please enter the new name for your theme pack." --entry --entry-text="$name" --button="Rename")"
+        else
 
-			ex=$?
+		    success="no"
 
-			if [[ "$ex" == "0" ]]
-			then
+		    until [[ "$success" == "yes" ]]
+		    do
 
-				success="yes"
+			    newname="$(yad --window-icon=gnome-settings-theme --title="Rename" --text="Please enter the new name for your theme pack." --entry --entry-text="$name" --button="Rename")"
 
-				if [[ "$type" == "The default Shock OS look and feel" ]]
-				then
+			    ex=$?
 
-					yad --window-icon=gnome-settings-theme --title="Rename" --image=emblem-important --text="You cannot rename the default theme." --button="Dismiss"
+			    if [[ "$ex" == "0" ]]
+			    then
 
-				elif [[ "$type" == "Theme pack" ]] #if theme pack
-				then
+				    success="yes"
 
-					if [[ -e ~/.themes/"$newname" ]] #if theme with that name already exists
-					then
+				    if [[ "$type" == "Theme pack" ]] #if theme pack
+				    then
 
-						yad --window-icon=gnome-settings-theme --image=emblem-important --title="Rename" --text="There is already a theme pack named '$newname'. Please choose a different name." --button="Retry"
+					    if [[ -e ~/.themes/"$newname" ]] #if theme with that name already exists
+					    then
 
-						success="no"
+						    yad --window-icon=gnome-settings-theme --image=emblem-important --title="Rename" --text="There is already a theme pack named '$newname'. Please choose a different name." --button="Retry"
 
-					else
+						    success="no"
 
-						mv ~/.themes/"$name" ~/.themes/"$newname"
+					    else
 
-						if [[ "$(cat ~/.config/shock-themes-gtk-theme)" == "$name" ]]
-						then
+						    mv ~/.themes/"$name" ~/.themes/"$newname"
 
-							dconf write /org/mate/desktop/interface/gtk-theme "'$newname'"
+						    if [[ "$(cat ~/.config/shock-themes-gtk-theme)" == "$name" ]]
+						    then
 
-							dconf write /org/mate/marco/general/theme "'$newname'"
+							    dconf write /org/mate/desktop/interface/gtk-theme "'$newname'"
 
-							echo "$newname" | tee ~/.config/shock-themes-gtk-theme
+							    dconf write /org/mate/marco/general/theme "'$newname'"
 
-						fi
+							    echo "$newname" | tee ~/.config/shock-themes-gtk-theme
 
-					fi
+						    fi
 
-				else #if icon or cursor pack
+					    fi
 
-					if [[ -e ~/.icons/"$newname" ]] #if icon or cursor pack with that name already exists
-					then
+				    else #if icon or cursor pack
 
-						yad --window-icon=gnome-settings-theme --image=emblem-important --title="Rename" --text="There is already an icon/cursor pack named '$newname'. Please choose a different name." --button="Retry"
+					    if [[ -e ~/.icons/"$newname" ]] #if icon or cursor pack with that name already exists
+					    then
 
-						success="no"
+						    yad --window-icon=gnome-settings-theme --image=emblem-important --title="Rename" --text="There is already an icon/cursor pack named '$newname'. Please choose a different name." --button="Retry"
 
-					else
+						    success="no"
 
-						mv ~/.icons/"$name" ~/.icons/"$newname"
+					    else
 
-						if [[ "$(cat ~/.config/shock-themes-icon-theme)" == "$name" ]]
-						then
+						    mv ~/.icons/"$name" ~/.icons/"$newname"
 
-							dconf write /org/mate/desktop/interface/icon-theme "'$newname'"
+						    if [[ "$(cat ~/.config/shock-themes-icon-theme)" == "$name" ]]
+						    then
 
-							echo "$newname" | tee ~/.config/shock-themes-icon-theme
+							    dconf write /org/mate/desktop/interface/icon-theme "'$newname'"
 
-						fi
+							    echo "$newname" | tee ~/.config/shock-themes-icon-theme
 
-						if [[ "$(cat ~/.config/shock-themes-mouse-theme)" == "$name" ]]
-						then
+						    fi
 
-							dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$newname'"
+						    if [[ "$(cat ~/.config/shock-themes-mouse-theme)" == "$name" ]]
+						    then
 
-							echo "$newname" | tee ~/.config/shock-themes-mouse-theme
+							    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$newname'"
 
-						fi
+							    echo "$newname" | tee ~/.config/shock-themes-mouse-theme
 
-					fi
+						    fi
 
-				fi
+					    fi
 
-			fi
+				    fi
 
-		done
+			    fi
+
+		    done
+
+        fi
 
 	elif [[ "$ex" == "3" ]] #use
 	then

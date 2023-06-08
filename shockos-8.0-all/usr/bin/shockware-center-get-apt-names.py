@@ -17,13 +17,22 @@ else:
 # Create the wildcard pattern for the current locale
 locale_pattern = current_locale + "*"
 
+# Define the fallback locale
+fallback_locale = "C"
+
 # Iterate over each archive file
 for file_path in archive_files:
     with gzip.open(file_path, 'rt') as gz_file:
         for document in yaml.load_all(gz_file, Loader=yaml.CSafeLoader):
             if document.get("Type") == "desktop-application":
                 name_locale = document.get("Name", {})
+                localized_name = None
                 for locale_key in name_locale.keys():
                     if fnmatch.fnmatch(locale_key, locale_pattern):
                         localized_name = name_locale[locale_key]
-                        print(f'"{localized_name} [APT]"')
+                        break
+                if localized_name is None:
+                    localized_name = name_locale.get(fallback_locale)
+                if localized_name:
+                    print(f'"{localized_name} [APT]"')
+

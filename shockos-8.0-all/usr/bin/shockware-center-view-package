@@ -8,7 +8,7 @@ full_name="$2"
 
 function start_loading() {
 
-yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Loading app info..." --center --progress --pulsate --auto-close --undecorated --no-buttons & killpid=$!
+yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Loading app info..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
 
 }
 
@@ -30,6 +30,15 @@ if [[ "$type" == "A" ]] #if APT package
 then
 
     package="$4"
+
+    apt_icon="$(find /var/lib/app-info/icons/*/64x64/"$package"_* | head -1)" #prefer 64x64 icons
+
+    if [[ -z "$apt_icon" ]]
+    then
+
+        apt_icon="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)"
+
+    fi
 
 	details="$(apt show $package)"
 
@@ -62,7 +71,7 @@ $size" | tee "$tmpfile"
 
 	end_loading
 
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="APT package" --width=400 --height=300 --image="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)" --text-info --filename="$tmpfile" $irbuttons
+	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="APT package" --width=400 --height=300 --image="$apt_icon" --text-info --filename="$tmpfile" $irbuttons
 
 	ex=$?
 
@@ -83,14 +92,14 @@ $size" | tee "$tmpfile"
 		if [[ "$ex" == "0" ]]
 		then
 
-			pkexec apt remove -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing $full_name..." --no-cancel --auto-close --progress --pulsate
+			pkexec apt remove -y $package | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Removing $full_name..." --auto-close --progress --pulsate
 
 		fi
 
 	elif [[ "$ex" == "5" ]] #install
 	then
 
-		pkexec apt install -y $package | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Installing $full_name..." --no-cancel --auto-close --progress --pulsate
+		pkexec apt install -y $package | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Installing $full_name..." --auto-close --progress --pulsate
 
         if [[ "$(apt show $package)" == *"Installed: yes"* ]] #if installed successfully
         then
@@ -127,15 +136,11 @@ then
 
 	fi
 
-	description="$(flatpak search "$id" --columns=app,description | grep "^$id" | awk -F '\t' '{print $2}' | head -n1)"
-
-	version="$(flatpak search "$id" --columns=app,version | grep "^$id" | awk -F '\t' '{print $2}' | head -n1)"
+	description=$(grep -A 10 "<id>$id</id>" /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | grep "<description>" | sed -e 's/<[^>]*>//g' -e 's/^[[:space:]]*//')
 
 	tmpfile="$(mktemp)"
 
-	echo "Description: $description
-
-Version: $version" | tee "$tmpfile"
+	echo "Description: $description" | tee "$tmpfile"
 
 	end_loading
 
@@ -160,14 +165,14 @@ Version: $version" | tee "$tmpfile"
 		if [[ "$ex" == "0" ]]
 		then
 
-			flaptak uninstall -y "$id" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Removing $full_name..." --no-cancel --auto-close --progress --pulsate
+			flaptak uninstall -y "$id" | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Removing $full_name..." --auto-close --progress --pulsate
 
 		fi
 
 	elif [[ "$ex" == "5" ]] #install
 	then
 
-		flatpak install -y "$id" | zenity --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Installing $full_name..." --no-cancel --auto-close --progress --pulsate
+		flatpak install -y "$id" | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Installing $full_name..." --auto-close --progress --pulsate
 
         installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
 
@@ -187,6 +192,15 @@ Version: $version" | tee "$tmpfile"
 else #if both
 
     package="$5"
+
+    apt_icon="$(find /var/lib/app-info/icons/*/64x64/"$package"_* | head -1)" #prefer 64x64 icons
+
+    if [[ -z "$apt_icon" ]]
+    then
+
+        apt_icon="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)"
+
+    fi
 
     details="$(apt show $package)"
 
@@ -217,7 +231,7 @@ $version
 
 $size" | tee "$tmpfile"
 
-    yad --plug=$key --tabnum=1 --image="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)" --text-info --filename="$tmpfile" $irbuttons &
+    yad --plug=$key --tabnum=1 --image="$apt_icon" --text-info --filename="$tmpfile" $irbuttons &
 
     icon="$4"
 
@@ -238,15 +252,11 @@ $size" | tee "$tmpfile"
 
 	fi
 
-	description="$(flatpak search "$id" --columns=app,description | grep "^$id" | awk -F '\t' '{print $2}' | head -n1)"
-
-	version="$(flatpak search "$id" --columns=app,version | grep "^$id" | awk -F '\t' '{print $2}' | head -n1)"
+	description=$(grep -A 10 "<id>$id</id>" /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | grep "<description>" | sed -e 's/<[^>]*>//g' -e 's/^[[:space:]]*//')
 
 	tmpfile="$(mktemp)"
 
-	echo "Description: $description
-
-Version: $version" | tee "$tmpfile"
+	echo "Description: $description" | tee "$tmpfile"
 
     yad --plug=$key --tabnum=2 --image="$icon" --text-info --filename="$tmpfile" $irbuttons &
 

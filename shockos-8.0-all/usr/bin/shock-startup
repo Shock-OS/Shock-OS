@@ -51,7 +51,7 @@ then
 
 fi
 
-if [[ "$(cat /shock/setupvalue)" == "1" ]]
+if [[ "$(cat /usr/share/shock/setupvalue)" == "1" ]]
 then
 
     sudo deluser --remove-home shock #the 'shock' user has been removed
@@ -68,9 +68,9 @@ then
 
     sudo systemctl set-default graphical
 
-    sudo rm /etc/sudoers.d/initsetup_rootpriv #this command removes elevated privilages as they are no longer required.
+    sudo rm /usr/share/shock/setupvalue
 
-    rm /shock/setupvalue
+    sudo rm /etc/sudoers.d/initsetup_rootpriv #this command removes elevated privilages as they are no longer required.
 
     echo "Finalizing setup..."
 
@@ -80,7 +80,7 @@ fi
 
 dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" #ensures that the user can logout and shutdown (fixes the shutdown menu being locked if the system crashed during automatic updates)
 
-mpg123 /shock/startup-sound/* #this command plays the startup sound
+mpg123 /usr/share/shock/startup-sound/* #this command plays the startup sound
 
 shock-welcome
 

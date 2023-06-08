@@ -4,7 +4,9 @@ IFS=$'\n'
 
 splash_killed="FALSE"
 
-yad --picture --filename=/usr/share/shockware-center/splash.png --size=fit --width=1000 --height=397 --undecorated --no-buttons --skip-taskbar & splash_kilpid=$!
+category="All Applications"
+
+yad --fixed --picture --filename=/usr/share/shockware-center/shockware-loader.png --size=fit --width=1000 --height=397 --undecorated --no-buttons --skip-taskbar & splash_kilpid=$!
 
 #READ/WRITE SETTINGS BEGINS
 
@@ -51,7 +53,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shockware-center
 
 function start_loading() {
 
-yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Loading..." --center --progress --pulsate --auto-close --undecorated --no-buttons & killpid=$!
+yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Loading..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
 
 }
 
@@ -69,11 +71,11 @@ read_settings
 
 all_packages_icons=($(find /var/lib/app-info/icons/*/* -type f | sed 's/.*/"&"/' | sort -u)) #ChatGPT
 
-appstream_file="/var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml"
-
 appstream_icons_dir="/var/lib/flatpak/appstream/flathub/$(uname -m)/active/icons/64x64"
 
-IFS=$'\n' read -d '' -ra all_flatpaks <<< "$(flatpak remote-ls --all --app --columns=name | awk '{print "\""$0" [FLATPAK]\""}' RS='\n')" #ChatGPT
+#IFS=$'\n' read -d '' -ra all_flatpaks <<< "$(flatpak remote-ls --all --app --columns=name | awk '{print "\""$0" [FLATPAK]\""}' RS='\n')" #ChatGPT
+
+all_flatpaks=($(grep -o '<component type="desktop[^"]*">\|<name>[^<]*</name>' "/var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml" | sed -n '/<component type="desktop[^"]*">/{n; s/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/; p}'))
 
 IFS=$'\n' read -d '' -ra all_packages <<< "$(python /usr/bin/shockware-center-get-apt-names.py | sort -u)" #ChatGPT
 
@@ -105,14 +107,7 @@ keyword=""
 
 page=0
 
-if [[ "$splash_killed" == "FALSE" ]]
-then
-
-    kill -9 $splash_kilpid
-
-    splash_killed="TRUE"
-
-fi
+kill -9 $splash_kilpid
 
 while true
 do
@@ -121,20 +116,167 @@ do
 
 	search_results_prep_full=()
 
+    if [[ "$category" != "All Applications" ]]
+    then
+
+        if [[ "$category" == "Accessories" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>Utility</category>' /var/lib/flatpak/appstream/flathub/aarch64/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            if [[ -z "${all_apt_accessories[@]}" ]]
+            then
+
+                all_apt_accessories=($(python /usr/bin/shockware-center-search-categories-apt.py Utility))
+
+            fi
+
+            all_packages_proxy=("${all_apt_accessories[@]}")
+
+        elif [[ "$category" == "Games" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>Game</category>' /var/lib/flatpak/appstream/flathub/aarch64/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            if [[ -z "${all_apt_games[@]}" ]]
+            then
+
+                all_apt_games=($(python /usr/bin/shockware-center-search-categories-apt.py Game))
+
+            fi
+
+            all_packages_proxy=("${all_apt_games[@]}")
+
+        elif [[ "$category" == "Graphics" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>Graphics</category>' /var/lib/flatpak/appstream/flathub/aarch64/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            if [[ -z "${all_apt_graphics[@]}" ]]
+            then
+
+                all_apt_graphics=($(python /usr/bin/shockware-center-search-categories-apt.py Graphics))
+
+            fi
+
+            all_packages_proxy=("${all_apt_graphics[@]}")
+
+        elif [[ "$category" == "Internet" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>Network</category>' /var/lib/flatpak/appstream/flathub/aarch64/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            if [[ -z "${all_apt_internet[@]}" ]]
+            then
+
+                all_apt_internet=($(python /usr/bin/shockware-center-search-categories-apt.py Network))
+
+            fi
+
+            all_packages_proxy=("${all_apt_internet[@]}")
+
+        elif [[ "$category" == "Office" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>Office</category>' /var/lib/flatpak/appstream/flathub/aarch64/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            if [[ -z "${all_apt_office[@]}" ]]
+            then
+
+                all_apt_office=($(python /usr/bin/shockware-center-search-categories-apt.py Office))
+
+            fi
+
+            all_packages_proxy=("${all_apt_office[@]}")
+
+        elif [[ "$category" == "Programming" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>Development</category>' /var/lib/flatpak/appstream/flathub/aarch64/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            if [[ -z "${all_apt_programming[@]}" ]]
+            then
+
+                all_apt_programming=($(python /usr/bin/shockware-center-search-categories-apt.py Development))
+
+            fi
+
+            all_packages_proxy=("${all_apt_programming[@]}")
+
+        elif [[ "$category" == "Education" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>Education</category>' /var/lib/flatpak/appstream/flathub/aarch64/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>Science</category>' /var/lib/flatpak/appstream/flathub/aarch64/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            if [[ -z "${all_apt_education[@]}" ]]
+            then
+
+                all_apt_education=($(python /usr/bin/shockware-center-search-categories-apt.py Education))
+
+                all_apt_education+=($(python /usr/bin/shockware-center-search-categories-apt.py Science))
+
+            fi
+
+            all_packages_proxy=("${all_apt_education[@]}")
+
+        elif [[ "$category" == "Multimedia" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>AudioVideo</category>' /var/lib/flatpak/appstream/flathub/aarch64/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            if [[ -z "${all_apt_multimedia[@]}" ]]
+            then
+
+                all_apt_multimedia=($(python /usr/bin/shockware-center-search-categories-apt.py AudioVideo))
+
+            fi
+
+            all_packages_proxy=("${all_apt_multimedia[@]}")
+
+        elif [[ "$category" == "System Tools" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>Settings</category>' /var/lib/flatpak/appstream/flathub/aarch64/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>System</category>' /var/lib/flatpak/appstream/flathub/aarch64/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            if [[ -z "${all_apt_system_tools[@]}" ]]
+            then
+
+                all_apt_system_tools=($(python /usr/bin/shockware-center-search-categories-apt.py Settings))
+
+                all_apt_system_tools+=($(python /usr/bin/shockware-center-search-categories-apt.py System))
+
+            fi
+
+            all_packages_proxy=("${all_apt_system_tools[@]}")
+
+        fi
+
+    else #if no category picked
+
+        all_packages_proxy=("${all_packages[@]}")
+
+        all_flatpaks_proxy=("${all_flatpaks[@]}")
+
+    fi
+
 	if [[ -n "$keyword" ]] #if keyword is not empty
 	then
 
 		if [[ "$show_apt_packages" == "TRUE" ]]
 		then
 
-			search_results_prep_full=($(printf "%s\n" "${all_packages[@]}" | grep -i "$keyword"))
+			search_results_prep_full=($(printf "%s\n" "${all_packages_proxy[@]}" | grep -i "$keyword"))
 
 		fi
 
 		if [[ "$show_flatpaks" == "TRUE" ]]
 		then
 
-			search_results_prep_full+=($(printf "%s\n" "${all_flatpaks[@]}" | grep -i "$keyword"))
+			search_results_prep_full+=($(printf "%s\n" "${all_flatpaks_proxy[@]}" | grep -i "$keyword"))
 
 		fi
 
@@ -143,14 +285,14 @@ do
 		if [[ "$show_apt_packages" == "TRUE" ]]
 		then
 
-			search_results_prep_full=("${all_packages[@]}")
+			search_results_prep_full=("${all_packages_proxy[@]}")
 
 		fi
 
 		if [[ "$show_flatpaks" == "TRUE" ]]
 		then
 
-			search_results_prep_full+=("${all_flatpaks[@]}")
+			search_results_prep_full+=("${all_flatpaks_proxy[@]}")
 
 		fi
 
@@ -170,7 +312,7 @@ do
 
 		else
 
-			ex=2 #search
+			ex=3 #search
 
 		fi
 
@@ -266,7 +408,14 @@ do
 
 				package_name="${package_name%\"}"
 
-				icon="$(find /var/lib/app-info/icons/*/*/"$package_name"_* | head -1)"
+				icon="$(find /var/lib/app-info/icons/*/64x64/"$package_name"_* | head -1)" #prefer 64x64 icons
+
+                if [[ -z "$icon" ]]
+                then
+
+                    icon="$(find /var/lib/app-info/icons/*/*/"$package_name"_* | head -1)"
+
+                fi
 
 				if [[ -n "$icon" ]]
 				then
@@ -304,7 +453,7 @@ do
 
 		fi
 
-		yadlist="yad --window-icon=/usr/share/shockware-center/icon.svg --title=\"Shockware Center\" --text=\"Page $((page+1)) of $(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1)). Double-click on an app to install/remove it.\" --width=800 --height=500 --buttons-layout=spread --list --dclick-action=shockware-center-view-package --column=\"Icon\":IMG --column=\"Name\" --column=\"Type\":HD --column=\"Icon (only for Flatpaks when clicked on)\":HD --column=\"Flatpak ID column (only used for duplicate packages)\":HD --button=\"Settings\"\!gnome-settings:1 --button=\"Search\"\!gtk-find:2 $page_buttons ${search_results[@]}"
+		yadlist="yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title=\"Shockware Center\" --text=\"Page $((page+1)) of $(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1)). Category: $category. Double-click on an app to install/remove it.\" --width=800 --height=500 --buttons-layout=spread --list --dclick-action=shockware-center-view-package --column=\"Icon\":IMG --column=\"Name\" --column=\"Type\":HD --column=\"Icon (only for Flatpaks when clicked on)\":HD --column=\"Flatpak ID column (only used for duplicate packages)\":HD --button=\"Settings\"\!gnome-settings:1 --button=\"Categories\"\:2 --button=\"Search\"\!gtk-find:3 $page_buttons ${search_results[@]}"
 
 		end_loading
 
@@ -327,7 +476,7 @@ do
 	elif [[ "$ex" == "50" ]] #jump
 	then
 
-		jump_page=$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
+		jump_page=$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
 
 		ex=$?
 
@@ -359,7 +508,7 @@ do
 
 		fi
 
-		settings="$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Rows per page:":CB "$rpp" --field="Show APT packages":CHK "$show_apt_packages" --field="Show Flatpaks":CHK "$show_flatpaks" --button="Apply"\!gtk-ok)"
+		settings="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Rows per page:":CB "$rpp" --field="Show APT packages":CHK "$show_apt_packages" --field="Show Flatpaks":CHK "$show_flatpaks" --button="Apply"\!gtk-ok)"
 
 		ex=$?
 
@@ -378,10 +527,28 @@ do
 
 		fi
 
-	elif [[ "$ex" == "2" ]] #search
+    elif [[ "$ex" == "2" ]] #categories
+    then
+
+        output=$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --list --no-headers --width=400 --height=300 --column="Icon":IMG --column="Category" open-menu-symbolic "All Applications" applications-accessories Accessories applications-games Games applications-graphics Graphics applications-internet Internet applications-office Office applications-development Programming applications-education Education applications-multimedia Multimedia applications-system "System Tools" --button="Go")
+
+        ex=$?
+
+        if [[ "$ex" == "0" ]]
+        then
+
+            page=0
+
+            keyword=""
+
+            category=$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')
+
+        fi
+
+	elif [[ "$ex" == "3" ]] #search
 	then
 
-		newkeyword="$(yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --entry --entry-text="$keyword" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
+		newkeyword="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --entry --entry-text="$keyword" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
 
         ex=$?
 

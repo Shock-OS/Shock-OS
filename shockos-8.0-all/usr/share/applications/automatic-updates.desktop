@@ -4,7 +4,7 @@ Name=Automatic Updates
 GenericName=Automatic Updates
 Comment=Enable/disable automatic updates
 Exec=bash -c "pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shock-auto-updates-setup"
-Icon=/shock/auto-updates.svg
+Icon=/usr/share/shock/auto-updates.svg
 Terminal=false
 Type=Application
 Categories=System;Settings;PackageManager;

@@ -6,7 +6,7 @@
 
 #the 'shock' user should be set to autologin
 
-if [[ "$(cat /shock/setupvalue)" != "0" ]]
+if [[ "$(cat /usr/share/shock/setupvalue)" != "0" ]]
 then
 
     exit
@@ -195,7 +195,7 @@ echo 'shock-startup' | sudo tee -a "/home/$x/.bashrc"
 
 clear
 
-echo "1" | tee /shock/setupvalue
+echo "1" | tee /usr/share/shock/setupvalue
 
 clear
 

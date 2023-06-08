@@ -43,7 +43,7 @@ do
 		if [[ -f "$file" ]] #if archive
 		then
 
-			7z x -y "$file"
+			unp -f "$file"
 
 		else #if folder
 
