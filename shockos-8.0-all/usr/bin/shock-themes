@@ -104,9 +104,11 @@ do
 
                 mtd="$(find "$tmpdir" -name metacity-1 | head -n1 | rev | cut -d '/' -f 2- | rev)"
 
+                gtkd="$(find "$tmpdir" -name 'gtk-*' | head -n1 | rev | cut -d '/' -f 2- | rev)"
+
                 sid="$(find "$tmpdir" -name settings.ini | head -n1 | rev | cut -d '/' -f 2- | rev)"
 
-                if [[ -n "$itd" ]]
+                if [[ -d "$itd" ]]
                 then
 
                     cd "$itd"
@@ -116,7 +118,12 @@ do
 
                     cd "$mtd"
 
-                elif [[ -n "$sid" ]]
+                elif [[ -d "$gtkd" ]]
+                then
+
+                    cd "$gtkd"
+
+                elif [[ -d "$sid" ]]
                 then
 
                     cd "$sid"
@@ -134,40 +141,85 @@ do
 
                     cd ..
 
+                    for a in /usr/share/shock-themes/16x16/*
+                    do
+
+                        for b in $(find . -name "$(basename "$a")")
+                        do
+
+                            if [[ -n "$b" ]]
+                            then
+
+                                cp -f "/usr/share/shock-themes/$(identify -format "%wx%h" "$b")/$(basename "$a")" "$b"
+
+                            fi
+
+                        done
+
+                    done
+
 			        for i in *
 			        do
 
 				        if [[ -d "$(find "$i" -name cursors | head -n1)" || -f "$i/cursors.theme" || "$(cat "$i/index.theme")" == *"[Icon Theme]"* ]] && [[ -f "$i/index.theme" ]]
 			            then
 
-				            for a in /usr/share/shock-themes/16x16/*
-                            do
-
-                                for b in "$(find "$i" -name "$(basename "$a")")"
-                                do
-
-                                    cp -f "/usr/share/shock-themes/$(identify -format "%wx%h" "$b")/$(basename "$a")" "$b"
-
-                                done
-
-                            done
-
                             worked="TRUE"
 
                             mkdir -p ~/.icons
 
-				            cp -rf "$i" ~/.icons
+                            if [[ -d ~/.icons/"$i" ]] #if directory with the same name already exists
+                            then
+
+                                dn=1
+
+                                until [[ ! -d ~/.icons/"$i ($dn)" ]]
+                                do
+
+                                    dn=$((dn+1))
+
+                                done
+
+                                mkdir -p ~/.icons/"$i ($dn)"
+
+                                cp -rf "$i"/* ~/.icons/"$i ($dn)"
+
+                            else
+
+				                cp -rf "$i" ~/.icons
+
+                            fi
 
 			            fi
 
-                        if [[ "$(cat "$i/index.theme")" == *"X-GNOME-Metatheme"* ]] || [[ -d "$(find "$i" -name metacity-1 | head -n1)" ]] || [[ -f "$i/settings.ini" ]]
+                        if [[ "$(cat "$i/index.theme")" == *"X-GNOME-Metatheme"* ]] || [[ -d "$(find "$i" -name metacity-1 | head -n1)" ]] || [[ -d "$(find "$i" -name 'gtk-*' | head -n1)" ]] || [[ -f "$i/settings.ini" ]]
                         then
 
                             worked="TRUE"
 
                             mkdir -p ~/.themes
 
-                            cp -rf "$i" ~/.themes
+                            if [[ -d ~/.themes/"$i" ]] #if directory with the same name already exists
+                            then
+
+                                dn=1
+
+                                until [[ ! -d ~/.themes/"$i ($dn)" ]]
+                                do
+
+                                    dn=$((dn+1))
+
+                                done
+
+                                mkdir -p ~/.themes/"$i ($dn)"
+
+                                cp -rf "$i"/* ~/.themes/"$i ($dn)"
+
+                            else
+
+                                cp -rf "$i" ~/.themes
+
+                            fi
 
                         fi
 

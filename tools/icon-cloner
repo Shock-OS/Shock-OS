@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#This script takes the names of all the files in one directory and makes copies in another directory with the same name. Useful for creating icon themes where multiple directories have files with the same name. This does NOT copy files from one directory to another, it makes copies of the "base.png" or "base.svg" file with the corresponding names. Only the names are changed, not the entire file.
+
+#USAGE: ./icon-cloner <source-dir> <clone-dir>
+
+#First argument - source directory
+
+#Second argument - clone directory
+
+#The clone directory must have two files: base.png & base.svg
+
+for i in "$1"/*
+do
+
+    if [[ "$i" == *".png" ]] #PNG
+    then
+
+        cp "$2/base.png" "$2/$(basename "$i")"
+
+    else
+
+        cp "$2/base.svg" "$2/$(basename "$i")"
+
+    fi
+
+done
