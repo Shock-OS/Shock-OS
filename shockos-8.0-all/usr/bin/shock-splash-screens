@@ -1,5 +1,16 @@
 #!/bin/bash
 
+if [[ "$(id -u)" != "0" ]]
+then
+
+    echo "Script must be run as root. Exiting..."
+
+    exit
+
+fi
+
+runuser=$1
+
 while true
 do
 
@@ -19,7 +30,7 @@ do
 
 	done
 
-	yadlist="yad --window-icon=\"ICON HERE\" --title=\"Splash Screen\" --text=\"Please choose a splash screen.\" --list --no-headers --response=2 --width=500 --height=300 --always-print-result --column=\"Name\" ${splashes[@]} --buttons-layout=spread --button=Install\!add --button=Remove\!remove --button=Use\!gtk-ok"
+	yadlist="yad --window-icon=\"ICON HERE\" --title=\"Splash Screen\" --text=\"Please choose a splash screen.\" --list --no-headers --response=2 --width=500 --height=300 --always-print-result --column=\"Name\" ${splashes[@]} --buttons-layout=spread --button=Browse\!applications-internet --button=Install\!add --button=Remove\!remove --button=Rename\!gtk-edit --button=Use\!gtk-ok"
 
 	setsplash="$(eval "$yadlist")"
 
@@ -27,7 +38,12 @@ do
 
 	setsplash="${setsplash%?}"
 
-	if [[ "$ex" == "0" ]] #install
+    if [[ "$ex" == "0" ]] #browse
+    then
+
+        sudo -u "$runuser" xdg-open 'https://www.gnome-look.org/browse?cat=108&ord=latest' &
+
+	elif [[ "$ex" == "1" ]] #install
 	then
 
 		cd ~/
@@ -61,7 +77,7 @@ do
 			if [[ -d "$i" && -f "$i"/"$i".plymouth && -f "$i"/"$i".script ]]
 			then
 
-				pkexec cp -rf "$(realpath "$i")" /usr/share/plymouth/themes
+				cp -rf "$(realpath "$i")" /usr/share/plymouth/themes
 
 			fi
 
@@ -69,7 +85,7 @@ do
 
 		rm -rf "$tmpdir"
 
-	elif [[ "$ex" == "1" ]] #remove
+	elif [[ "$ex" == "2" ]] #remove
 	then
 
 		if [[ "$setsplash" == "Shock OS Spinner" ]] || [[ "$setsplash" == "Shock OS Elegant Spinner" ]] || [[ "$setsplash" == "Shock OS Dots" ]]
@@ -87,7 +103,7 @@ do
 				if [[ "$name" == "Name=$setsplash" ]]
 				then
 
-					pkexec rm -rf "$i"
+					rm -rf "$i"
 
 				fi
 
@@ -95,7 +111,71 @@ do
 
 		fi
 
-	elif [[ "$ex" == "2" ]] #use
+    elif [[ "$ex" == "3" ]] #rename
+    then
+
+        if [[ "$setsplash" == "Shock OS Spinner" ]] || [[ "$setsplash" == "Shock OS Elegant Spinner" ]] || [[ "$setsplash" == "Shock OS Dots" ]]
+		then
+
+			yad --window-icon=xfce4-splash --title="Rename" --image=emblem-important --text="You cannot rename Shock OS splash screens." --button="Dismiss"
+
+		else
+
+            success="FALSE"
+
+            until [[ "$success" == "TRUE" ]]
+            do
+
+                newname="$(yad --window-icon=xfce4-splash --title="Rename" --text="Please enter the new name for your splash screen." --entry --entry-text="$setsplash" --button="Rename")"
+
+                ex=$?
+
+                if [[ "$ex" == "0" ]]
+                then
+
+                    if [[ " ${splashes[@]} " == " \"$newname\" " ]]
+                    then
+
+                        success="FALSE"
+
+                        yad --window-icon=xfce4-splash --image=emblem-important --title="Rename" --text="A splash screen named '$newname' already exists. Please choose a different name." --button="Retry"
+
+                    else
+
+                        success="TRUE"
+
+                    fi
+
+                else
+
+                    break
+
+                fi
+
+            done
+
+            if [[ "$success" == "TRUE" ]]
+            then
+
+                for i in /usr/share/plymouth/themes/*
+		        do
+
+			        name="$(cat "$i"/"$(basename "$i")".plymouth | grep '^Name=')"
+
+			        if [[ "$name" == "Name=$setsplash" ]]
+			        then
+
+                        sed -i "/^Name=/s/.*/Name=$newname/" "$i/$(basename "$i").plymouth"
+
+                    fi
+
+                done
+
+            fi
+
+        fi
+
+	elif [[ "$ex" == "4" ]] #use
 	then
 
 		for i in /usr/share/plymouth/themes/*
@@ -107,9 +187,9 @@ do
 			then
 
 				echo "[Daemon]
-	Theme=$(basename "$i")
-	ShowDelay=0
-	Enable=1" | pkexec tee /etc/plymouth/plymouthd.conf
+Theme=$(basename "$i")
+ShowDelay=0
+Enable=1" | tee /etc/plymouth/plymouthd.conf
 
 			fi
 

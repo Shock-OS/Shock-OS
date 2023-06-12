@@ -4,6 +4,12 @@ type="$3"
 
 full_name="$2"
 
+package="$4"
+
+icon="$5"
+
+id="$(basename "$5")"
+
 #THE LOADING FUNCTIONS BEGIN
 
 function start_loading() {
@@ -20,6 +26,155 @@ kill -9 $killpid
 
 #THE LOADING FUNCTIONS END
 
+function apt_fetch_info() {
+
+apt_icon="$(find /var/lib/app-info/icons/*/64x64/"$package"_* | head -1)" #prefer 64x64 icons
+
+if [[ -z "$apt_icon" ]]
+then
+
+    apt_icon="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)"
+
+fi
+
+details="$(apt show $package)"
+
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed
+then
+
+	irbuttons_apt='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
+
+else
+
+	irbuttons_apt='--button=Install!add:5'
+
+fi
+
+description="$(echo "$details" | grep -A10 Description:)"
+
+version="$(echo "$details" | grep Version:)"
+
+size="$(echo "$details" | grep Size:)"
+
+tmpfile="$(mktemp)"
+
+echo "$description
+
+$version
+
+$size" | tee "$tmpfile"
+
+}
+
+function apt_launch() {
+
+$package &
+
+}
+
+function apt_remove() {
+
+yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove" --button="No, keep"
+
+ex=$?
+
+if [[ "$ex" == "0" ]]
+then
+
+	pkexec apt remove -y $package | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Removing $full_name$both..." --auto-close --progress --pulsate
+
+    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully removed." --button="Dismiss"
+
+fi
+
+}
+
+function apt_install() {
+
+pkexec apt install -y $package | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Installing $full_name$both..." --auto-close --progress --pulsate
+
+if [[ "$(apt show $package)" == *"Installed: yes"* ]] #if installed successfully
+then
+
+    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully installed." --button="Dismiss"
+
+else
+
+    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $full_name$both. Please double check your internet connection and try again later." --button="Dismiss"
+
+fi
+
+}
+
+function flatpak_fetch_info() {
+
+id="${id::-4}"
+
+installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
+
+if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed
+then
+
+	irbuttons_flatpak='--button=Launch!mate-panel-launcher:6 --button=Remove!remove:7'
+
+else
+
+	irbuttons_flatpak='--button=Install!add:8'
+
+fi
+
+description=$(grep -A 10 "<id>$id</id>" /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | grep "<description>" | sed -e 's/<[^>]*>//g' -e 's/^[[:space:]]*//')
+
+tmpfile2="$(mktemp)"
+
+echo "Description: $description" | tee "$tmpfile2"
+
+}
+
+function flatpak_launch() {
+
+flatpak run "$id" &
+
+}
+
+function flatpak_remove() {
+
+yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove" --button="No, keep"
+
+ex=$?
+
+if [[ "$ex" == "0" ]]
+then
+
+	flatpak uninstall -y "$id" | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Removing $full_name$both..." --auto-close --progress --pulsate
+
+    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully removed." --button="Dismiss"
+
+fi
+
+}
+
+function flatpak_install() {
+
+flatpak install -y "$id" | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Installing $full_name$both..." --auto-close --progress --pulsate
+
+installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
+
+if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed successfully
+then
+
+    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully installed." --button="Dismiss"
+
+else
+
+    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $full_name$both. Please double check your internet connection and try again later." --button="Dismiss"
+
+fi
+
+}
+
 start_loading
 
 #!/bin/bash
@@ -29,49 +184,11 @@ key="$RANDOM"
 if [[ "$type" == "A" ]] #if APT package
 then
 
-    package="$4"
-
-    apt_icon="$(find /var/lib/app-info/icons/*/64x64/"$package"_* | head -1)" #prefer 64x64 icons
-
-    if [[ -z "$apt_icon" ]]
-    then
-
-        apt_icon="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)"
-
-    fi
-
-	details="$(apt show $package)"
-
-	installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
-
-	if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed
-	then
-
-		irbuttons='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
-
-	else
-
-		irbuttons='--button=Install!add:5'
-
-	fi
-
-	description="$(echo "$details" | grep -A10 Description:)"
-
-    version="$(echo "$details" | grep Version:)"
-
-    size="$(echo "$details" | grep Size:)"
-
-	tmpfile="$(mktemp)"
-
-	echo "$description
-
-$version
-
-$size" | tee "$tmpfile"
+    apt_fetch_info
 
 	end_loading
 
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="APT package" --width=400 --height=300 --image="$apt_icon" --text-info --filename="$tmpfile" $irbuttons
+	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="APT package" --width=400 --height=300 --image="$apt_icon" --text-info --filename="$tmpfile" $irbuttons_apt
 
 	ex=$?
 
@@ -80,189 +197,135 @@ $size" | tee "$tmpfile"
 	if [[ "$ex" == "3" ]] #launch
 	then
 
-		$package &
+		apt_launch
 
 	elif [[ "$ex" == "4" ]] #remove
 	then
 
-		yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name?" --button="Yes, remove" --button="No, keep"
-
-		ex=$?
-
-		if [[ "$ex" == "0" ]]
-		then
-
-			pkexec apt remove -y $package | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Removing $full_name..." --auto-close --progress --pulsate
-
-		fi
+		apt_remove
 
 	elif [[ "$ex" == "5" ]] #install
 	then
 
-		pkexec apt install -y $package | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Installing $full_name..." --auto-close --progress --pulsate
-
-        if [[ "$(apt show $package)" == *"Installed: yes"* ]] #if installed successfully
-        then
-
-            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name was successfully installed." --button="Dismiss"
-
-        else
-    
-            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $full_name. Please double check your internet connection and try again later." --button="Dismiss"
-
-        fi
+		apt_install
 
 	fi
 
 elif [[ "$type" == "F" ]] #if Flatpak
 then
 
-	icon="$4"
-
-	id="$(basename "$4")"
-
-	id="${id::-4}"
-
-	installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
-
-	if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed
-	then
-
-		irbuttons='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
-
-	else
-
-		irbuttons='--button=Install!add:5'
-
-	fi
-
-	description=$(grep -A 10 "<id>$id</id>" /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | grep "<description>" | sed -e 's/<[^>]*>//g' -e 's/^[[:space:]]*//')
-
-	tmpfile="$(mktemp)"
-
-	echo "Description: $description" | tee "$tmpfile"
+	flatpak_fetch_info
 
 	end_loading
 
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="Flatpak application" --width=400 --height=300 --image="$icon" --text-info --filename="$tmpfile" $irbuttons
+	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="Flatpak application" --width=400 --height=300 --image="$icon" --text-info --filename="$tmpfile2" $irbuttons_flatpak
 
 	ex=$?
 
-	rm "$tmpfile"
+	rm "$tmpfile2"
 
-	if [[ "$ex" == "3" ]] #launch
+	if [[ "$ex" == "6" ]] #launch
 	then
 
-		flatpak run "$id" &
+		flatpak_launch
 
-	elif [[ "$ex" == "4" ]] #remove
+	elif [[ "$ex" == "7" ]] #remove
 	then
 
-		yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name?" --button="Yes, remove" --button="No, keep"
+		flatpak_remove
 
-		ex=$?
-
-		if [[ "$ex" == "0" ]]
-		then
-
-			flaptak uninstall -y "$id" | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Removing $full_name..." --auto-close --progress --pulsate
-
-		fi
-
-	elif [[ "$ex" == "5" ]] #install
+	elif [[ "$ex" == "8" ]] #install
 	then
 
-		flatpak install -y "$id" | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Installing $full_name..." --auto-close --progress --pulsate
-
-        installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
-
-        if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed successfully
-	    then
-
-            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name was successfully installed." --button="Dismiss"
-
-        else
-
-            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $full_name. Please double check your internet connection and try again later." --button="Dismiss"
-
-        fi
+		flatpak_install
 
 	fi
 
 else #if both
 
-    package="$5"
+    apt_fetch_info
 
-    apt_icon="$(find /var/lib/app-info/icons/*/64x64/"$package"_* | head -1)" #prefer 64x64 icons
+    yad --plug=$key --tabnum=1 --image="$apt_icon" --text-info --filename="$tmpfile" &
 
-    if [[ -z "$apt_icon" ]]
-    then
+    flatpak_fetch_info
 
-        apt_icon="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)"
-
-    fi
-
-    details="$(apt show $package)"
-
-	installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
-
-	if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed
-	then
-
-		irbuttons='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
-
-	else
-
-		irbuttons='--button=Install!add:5'
-
-	fi
-
-	description="$(echo "$details" | grep -A10 Description:)"
-
-	version="$(echo "$details" | grep Version:)"
-
-	size="$(echo "$details" | grep Size:)"
-
-	tmpfile="$(mktemp)"
-
-	echo "$description
-
-$version
-
-$size" | tee "$tmpfile"
-
-    yad --plug=$key --tabnum=1 --image="$apt_icon" --text-info --filename="$tmpfile" $irbuttons &
-
-    icon="$4"
-
-	id="$(basename "$4")"
-
-	id="${id::-4}"
-
-	installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
-
-	if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed
-	then
-
-		irbuttons='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
-
-	else
-
-		irbuttons='--button=Install!add:5'
-
-	fi
-
-	description=$(grep -A 10 "<id>$id</id>" /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | grep "<description>" | sed -e 's/<[^>]*>//g' -e 's/^[[:space:]]*//')
-
-	tmpfile="$(mktemp)"
-
-	echo "Description: $description" | tee "$tmpfile"
-
-    yad --plug=$key --tabnum=2 --image="$icon" --text-info --filename="$tmpfile" $irbuttons &
+    yad --plug=$key --tabnum=2 --image="$icon" --text-info --filename="$tmpfile2" &
 
     end_loading
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="$full_name is available from both APT and Flatpak." --width=400 --height=300 --notebook --key=$key --tab="APT" --tab="Flatpak"
+    if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed
+    then
+
+	    irbuttons_apt='--button=Launch APT!mate-panel-launcher:3'
+
+        irbuttons_apt_2='--button=Remove APT!remove:4'
+
+    else
+
+	    irbuttons_apt='--button=Install APT!add:5'
+
+    fi
+
+    if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed
+    then
+
+	    irbuttons_flatpak='--button=Launch Flatpak!mate-panel-launcher:6'
+
+        irbuttons_flatpak_2='--button=Remove Flatpak!remove:7'
+
+    else
+
+	    irbuttons_flatpak='--button=Install Flatpak!add:8'
+
+    fi
+
+    yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="$full_name is available from both APT and Flatpak." --width=400 --height=300 --notebook --key=$key --tab="APT" --tab="Flatpak" "$irbuttons_apt" "$irbuttons_apt_2" "$irbuttons_flatpak" "$irbuttons_flatpak_2"
+
+    ex=$?
+
+    rm "$tmpfile"
+
+    rm "$tmpfile2"
+
+    if [[ "$ex" == "3" ]] #launch APT
+	then
+
+		apt_launch
+
+	elif [[ "$ex" == "4" ]] #remove APT
+	then
+
+        both=" (APT)"
+
+		apt_remove
+
+	elif [[ "$ex" == "5" ]] #install APT
+	then
+
+        both=" (APT)"
+
+		apt_install
+
+	elif [[ "$ex" == "6" ]] #launch FLATPAK
+	then
+
+		flatpak_launch
+
+	elif [[ "$ex" == "7" ]] #remove FLATPAK
+	then
+
+        both=" (Flatpak)"
+
+		flatpak_remove
+
+	elif [[ "$ex" == "8" ]] #install FLATPAK
+	then
+
+        both=" (Flatpak)"
+
+		flatpak_install
+
+	fi
 
 fi
 

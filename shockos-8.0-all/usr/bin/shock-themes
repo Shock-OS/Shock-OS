@@ -50,7 +50,7 @@ do
 
 	done
 
-	yad="yad --window-icon=gnome-settings-theme --title=\"Themes\" --text=\"Install, remove, rename or use themes, icons and cursors.\" --list --column=\"Type\":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=3 --height=300 --buttons-layout=spread --button=\"Install\"\!add --button=\"Remove\"\!remove --button=\"Rename\"\!gtk-edit --button=\"Use\"\!dialog-ok $(echo "$yadlist")"
+	yad="yad --window-icon=gnome-settings-theme --title=\"Themes\" --text=\"Install, remove, rename or use themes, icons and cursors.\" --list --column=\"Type\":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=4 --height=300 --buttons-layout=spread --button=\"Browse\"\!applications-internet --button=\"Install\"\!add --button=\"Remove\"\!remove --button=\"Rename\"\!gtk-edit --button=\"Use\"\!dialog-ok $(echo "$yadlist")"
 
 	output="$(eval $yad)"
 
@@ -60,7 +60,12 @@ do
 
 	type=$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')
 
-	if [[ "$ex" == "0" ]] #install
+    if [[ "$ex" == "0" ]] #browse
+    then
+
+        xdg-open https://www.mate-look.org/browse
+
+	elif [[ "$ex" == "1" ]] #install
 	then
 
 		cd ~/
@@ -244,7 +249,7 @@ do
 
 		fi
 
-	elif [[ "$ex" == "1" ]] #remove
+	elif [[ "$ex" == "2" ]] #remove
 	then
 
 		if [[ "$type" == "The default Shock OS look and feel" ]]
@@ -290,7 +295,7 @@ do
 
 		fi
 
-	elif [[ "$ex" == "2" ]] #rename
+	elif [[ "$ex" == "3" ]] #rename
 	then
 
         if [[ "$type" == "The default Shock OS look and feel" ]]
@@ -304,7 +309,7 @@ do
 
 		    until [[ "$success" == "yes" ]]
 		    do
-			    newname="$(yad --window-icon=gnome-settings-theme --title="Rename" --text="Please enter the new name for your theme pack." --entry --entry-text="$name" --button="Rename")"
+			    newname="$(yad --window-icon=gnome-settings-theme --title="Rename" --text="Please enter the new name for your theme pack." --entry --entry-text="$name" --button="Rename"\!gtk-edit)"
 
 			    ex=$?
 
@@ -369,13 +374,17 @@ do
 
 				    fi
 
-			    fi
+			    else
+
+                    break
+
+                fi
 
 		    done
 
         fi
 
-	elif [[ "$ex" == "3" ]] #use
+	elif [[ "$ex" == "4" ]] #use
 	then
 
 		if [[ "$type" == "The default Shock OS look and feel" ]]

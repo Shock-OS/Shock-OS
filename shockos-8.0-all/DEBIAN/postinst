@@ -176,7 +176,7 @@ mkdir -p /etc/skel/.cache
 
 mkdir -p /etc/skel/.local/share/applications
 
-cp /usr/share/shock/mate_dock_applet.conf /etc/skel/.config
+#cp /usr/share/shock/mate_dock_applet.conf /etc/skel/.config
 
 #the home directory building ends
 
@@ -238,9 +238,7 @@ chmod +x /usr/bin/mate-appearance-properties
 
 #the above set of commands replaces the mate-appearance-properties program with a link to shock-wallpapers (for the desktop context menu)
 
-echo '# Allow any user to check for new system updates upon startup without requiring a password
-
-%ALL = NOPASSWD:/usr/bin/shock-os-update-manager-refresh' | EDITOR='tee' visudo -f /etc/sudoers.d/shock-os-update-manager-refresh
+echo 'ALL ALL=NOPASSWD:/usr/bin/shock-os-update-manager-refresh' | tee /etc/sudoers.d/shock-os-update-manager-refresh
 
 #the above command allows anyone in the group to run shock-os-update-manager-refresh without a password
 

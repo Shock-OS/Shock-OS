@@ -2,4 +2,22 @@
 
 #The system will now check for new updates...
 
+if [[ "$(id -u)" != "0" ]]
+then
+
+    echo "Script must be run as root. Exiting..."
+
+    exit
+
+fi
+
 sudo apt update
+
+sudo mkdir -p /var/lib/app-info/xml
+
+for i in /var/lib/app-info/yaml/*
+do
+
+    sudo appstreamcli convert "$i" /var/lib/app-info/xml/"$(basename "$i")".xml
+
+done

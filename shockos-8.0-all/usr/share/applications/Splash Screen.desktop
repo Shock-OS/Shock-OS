@@ -3,8 +3,7 @@ Version=1
 Name=Splash Screen
 GenericName=Splash Screen
 Comment=Change the splash screen
-Exec=shock-splash-screens
-TryExec=shock-splash-screens
+Exec=bash -c "pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shock-splash-screens $(whoami)"
 Icon=xfce4-splash
 Terminal=false
 Type=Application
