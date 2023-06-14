@@ -91,21 +91,6 @@ then
 
     fi
 
-elif [[ -f /usr/share/shockware-center/32-bit-compatibility-mode-indicator ]] #if 64-bit system with 32-bit compatibility mode enabled
-then
-
-    sudo wget https://appstream.debian.org/data/"$codename"/contrib/Components-armhf.yml.gz -O /var/lib/app-info/yaml/debian-"$codename"-contrib-Components-armhf.yml.gz
-
-    sudo wget https://appstream.debian.org/data/"$codename"/main/Components-armhf.yml.gz -O /var/lib/app-info/yaml/debian-"$codename"-main-Components-armhf.yml.gz
-
-    sudo wget https://appstream.debian.org/data/"$codename"/non-free/Components-armhf.yml.gz -O /var/lib/app-info/yaml/debian-"$codename"-non-free-Components-armhf.yml.gz
-
-else #if 64-bit system WITHOUT 32-bit compatibility mode enabled
-
-    sudo rm /var/lib/app-info/yaml/*armhf*
-
-    sudo rm /var/lib/app-info/xml/*armhf*
-
 fi
 
 for i in /var/lib/app-info/yaml/*

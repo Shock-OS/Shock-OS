@@ -113,7 +113,18 @@ then
 
 	pkexec apt remove -y $package | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Removing $full_name$both..." --auto-close --progress --pulsate
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully removed." --button="Dismiss"
+    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+    if [[ " ${installed_packages[@]} " != *" $package "* ]] #if removed successfully
+    then
+
+        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully removed." --button="Dismiss"
+
+    else
+
+        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to remove $full_name$both." --button="Dismiss"
+
+    fi
 
 fi
 
@@ -123,7 +134,9 @@ function apt_install() {
 
 pkexec apt install -y $package | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Installing $full_name$both..." --auto-close --progress --pulsate
 
-if [[ "$(apt show $package)" == *"Installed: yes"* ]] #if installed successfully
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed successfully
 then
 
     yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully installed." --button="Dismiss"
@@ -178,7 +191,18 @@ then
 
 	flatpak uninstall -y "$id" | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Removing $full_name$both..." --auto-close --progress --pulsate
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully removed." --button="Dismiss"
+    installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
+
+    if [[ " ${installed_flatpaks[@]} " != *" $id "* ]] #if removed successfully
+    then
+
+        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully removed." --button="Dismiss"
+
+    else
+
+        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to remove $full_name$both." --button="Dismiss"
+
+    fi
 
 fi
 

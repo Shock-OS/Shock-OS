@@ -4,9 +4,15 @@ IFS=$'\n'
 
 #THE LOADING FUNCTIONS BEGIN
 
+function start_loading_gui() {
+
+yad --window-icon=system-software-update --title="Update Manager" --progress-text="Checking for updates..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & gui_killpid=$!
+
+}
+
 function start_loading() {
 
-yad --window-icon=system-software-update --title="Update Manager" --progress-text="Loading..." --center --progress --pulsate --auto-close --undecorated --no-buttons & killpid=$!
+yad --window-icon=system-software-update --title="Update Manager" --progress-text="Loading..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
 
 }
 
@@ -14,26 +20,32 @@ function end_loading() {
 
 kill -9 $killpid
 
+kill -9 $gui_killpid
+
 }
 
 #THE LOADING FUNCTIONS END
 
 function install_updates() {
 
-local count=1
+pkexec apt upgrade -y
 
-until ((count>3)) || ((${#all_updates[@]}==0))
-do
+ex=$?
 
-	pkexec apt upgrade -y
+if [[ "$ex" != "0" ]]
+then
 
-	flatpak update -y
+    updates_cancelled="TRUE"
 
-	fetch_updates
+else
 
-	count=$((count+1))
+    updates_cancelled="FALSE"
 
-done
+    flatpak update -y
+
+    fetch_updates
+
+fi
 
 }
 
@@ -64,12 +76,28 @@ all_updates=($(printf "%s\n" "${all_updates[@]}" | sort))
 
 }
 
+if [[ "$1" == "gui" ]] #if launched in GUI mode
+then
+
+    start_loading_gui
+
+fi
+
 fetch_updates
 
 if ((${#all_updates[@]}==0))
 then
 
 	echo "Your system is up to date."
+
+    if [[ "$1" == "gui" ]] #if launched in GUI mode
+    then
+
+        end_loading
+
+        yad --window-icon=emblem-default --image=emblem-default --title="Update Manger" --text="Your system is up to date." --button="Dismiss" --width=300
+
+    fi
 
 	exit
 
@@ -84,7 +112,12 @@ else
 
 fi
 
-yad --notification --image=system-software-update --text="$text" --icon-size=48
+if [[ "$1" != "gui" ]] #if NOT launched in GUI mode
+then
+
+    yad --notification --image=system-software-update --text="$text" --icon-size=48
+
+fi
 
 page=0
 
@@ -233,7 +266,7 @@ do
 
 		install_updates | zenity --window-icon=system-software-update --title="Update Manager" --text="Installing updates..." --progress --pulsate --auto-close --no-cancel
 
-		if ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
+		if [[ "$updates_cancelled" == "TRUE" ]] || ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
 		then
 
 			yad --window-icon=emblem-important --image=emblem-important --title="Update Manager" --text="Failed to install the updates. Please double check your internet connection and try again later." --button="Dismiss" --width=400
