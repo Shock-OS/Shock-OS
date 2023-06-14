@@ -39,32 +39,60 @@ fi
 
 details="$(apt show $package)"
 
-installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
-
-if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed
+if [[ "$details" == *"State: not a real package (virtual)"* ]] #if virtual package (likely only to happen on a 32-bit system)
 then
 
-	irbuttons_apt='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
+    if [[ "$type" == "A" ]] #if only apt package.
+    then
 
-else
+        end_loading
 
-	irbuttons_apt='--button=Install!add:5'
+        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="$full_name is not available." --button="Dismiss"
+
+        exit
+
+    else #if duplicate package
+
+        irbuttons_apt=""
+
+        apt_icon="emblem-important"
+
+        tmpfile="$(mktemp)"
+
+        echo "$full_name is not available." | tee "$tmpfile"
+
+    fi
+
+else #if normal package
+
+    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+    if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed
+    then
+
+	    irbuttons_apt='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
+
+    else
+
+	    irbuttons_apt='--button=Install!add:5'
+
+    fi
+
+    description="$(echo "$details" | grep -A10 Description:)"
+
+    version="$(echo "$details" | grep Version:)"
+
+    size="$(echo "$details" | grep Size:)"
+
+    tmpfile="$(mktemp)"
+
+    echo "$description
+
+    $version
+
+    $size" | tee "$tmpfile"
 
 fi
-
-description="$(echo "$details" | grep -A10 Description:)"
-
-version="$(echo "$details" | grep Version:)"
-
-size="$(echo "$details" | grep Size:)"
-
-tmpfile="$(mktemp)"
-
-echo "$description
-
-$version
-
-$size" | tee "$tmpfile"
 
 }
 
@@ -125,7 +153,7 @@ else
 
 fi
 
-description=$(grep -A 10 "<id>$id</id>" /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | grep "<description>" | sed -e 's/<[^>]*>//g' -e 's/^[[:space:]]*//')
+description=$(grep -A 10 "<id>$id</id>" /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep "<description>" | sed -e 's/<[^>]*>//g' -e 's/^[[:space:]]*//')
 
 tmpfile2="$(mktemp)"
 
@@ -177,7 +205,16 @@ fi
 
 start_loading
 
-#!/bin/bash
+if [[ "$(getconf LONG_BIT)" == "32" ]]
+then
+
+    arch="arm"
+
+else
+
+    arch="aarch64"
+
+fi
 
 key="$RANDOM"
 

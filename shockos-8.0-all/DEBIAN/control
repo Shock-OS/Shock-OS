@@ -4,6 +4,6 @@ Architecture: all
 Essential: no
 Priority: optional
 Depends: mate-desktop-environment-extras,slick-greeter,zenity,yad,mpg123,btrfs-progs,network-manager-gnome,dosfstools,mtools,wget,xz-utils,apt-show-versions,apt-config-icons,pip,unp
-Recommends: chromium-browser,rhythmbox,celluloid,libreoffice,libreoffice-gnome,gnome-calendar,cups,system-config-printer,onboard,orca,gnote,ntp,xscreensaver-data-extra,gnome-weather,gnome-disk-utility,gucharmap,gedit,plymouth,flatpak
+Recommends: chromium,rhythmbox,celluloid,libreoffice,libreoffice-gnome,gnome-calendar,cups,system-config-printer,onboard,orca,gnote,ntp,xscreensaver-data-extra,gnome-weather,gnome-disk-utility,gucharmap,gedit,plymouth,flatpak
 Maintainer: Carson Grover
 Description: This package installs Shock OS 8.0 Holly on top of Raspberry Pi OS Lite.

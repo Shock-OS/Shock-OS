@@ -14,23 +14,35 @@ runuser=$1
 while true
 do
 
+    cd /usr/share/plymouth/themes
+
+    current_splash_dir="$(grep "^Theme=" /etc/plymouth/plymouthd.conf)"
+
+    current_splash_dir="${current_splash_dir:6}"
+
+    current_splash="$(grep "^Name=" "$current_splash_dir/$current_splash_dir.plymouth")"
+
+    current_splash="${current_splash:5}"
+
 	splashes=()
 
 	for i in /usr/share/plymouth/themes/*
 	do
 
-		name="$(cat "$i"/"$(basename "$i")".plymouth | grep '^Name=')"
+		name="$(grep "^Name=" "$i"/"$(basename "$i")".plymouth)"
+
+        name="${name:5}"
 
 		if [[ -n "$name" ]]
 		then
 
-			splashes+=("\"${name:5}\"")
+			splashes+=("\"$name\"")
 
 		fi
 
 	done
 
-	yadlist="yad --window-icon=\"ICON HERE\" --title=\"Splash Screen\" --text=\"Please choose a splash screen.\" --list --no-headers --response=2 --width=500 --height=300 --always-print-result --column=\"Name\" ${splashes[@]} --buttons-layout=spread --button=Browse\!applications-internet --button=Install\!add --button=Remove\!remove --button=Rename\!gtk-edit --button=Use\!gtk-ok"
+	yadlist="yad --window-icon=\"ICON HERE\" --title=\"Splash Screen\" --text=\"Please choose a splash screen. Current splash screen: $current_splash\" --list --no-headers --response=4 --width=500 --height=300 --always-print-result --column=\"Name\" ${splashes[@]} --buttons-layout=spread --button=Browse\!applications-internet --button=Install\!add --button=Remove\!remove --button=Rename\!gtk-edit --button=Use\!gtk-ok"
 
 	setsplash="$(eval "$yadlist")"
 
@@ -46,7 +58,7 @@ do
 	elif [[ "$ex" == "1" ]] #install
 	then
 
-		cd ~/
+		cd /home/$runuser
 
 		file="$(yad --file --window-icon=xfce4-splash --title="Install a Splash Screen" --text="Please choose a folder or a compressed archive containing a plymouth splash screen." --button="Install"\!document-open)"
 
@@ -74,7 +86,51 @@ do
 		for i in *
 		do
 
-			if [[ -d "$i" && -f "$i"/"$i".plymouth && -f "$i"/"$i".script ]]
+            ito="TRUE"
+
+            if [[ -z "$(grep "^Name=" "$i"/"$i".plymouth)" ]] && [[ -d "$i" ]]
+            then
+
+                success="FALSE"
+
+                until [[ "$success" == "TRUE" ]]
+                do
+
+                    newname="$(yad --window-icon=xfce4-splash --title="Install a Splash Screen" --text="This splash screen in folder '$i' does not appear to have a name. Please choose a name for this splash screen." --entry --entry-text="$i" --button="Next"\!gtk-go-forward-ltr)"
+
+                    ex=$?
+
+                    if [[ "$ex" == "0" ]]
+                    then
+
+                        if [[ " ${splashes[@]} " == *" \"$newname\" "* ]]
+                        then
+
+                            yad --window-icon=xfce4-splash --image=emblem-important --title="Install a Splash Screen" --text="A splash screen named '$newname' already exists. Please choose a different name." --button="Retry"
+
+                        else
+
+                            success="TRUE"
+
+                            echo "
+[Plymouth Theme]
+Name=$newname" | tee -a "$i"/"$i".plymouth
+
+                        fi
+
+                    else
+
+                        break
+
+                        ito="FALSE"
+
+                    fi
+
+                done
+
+            fi
+
+			if [[ -d "$i" ]] && [[ -f "$i"/"$i".plymouth ]] && [[ -f "$i"/"$i".script ]] && [[ "$ito" == "TRUE" ]]
 			then
 
 				cp -rf "$(realpath "$i")" /usr/share/plymouth/themes
@@ -100,7 +156,16 @@ do
 
 				name="$(cat "$i"/"$(basename "$i")".plymouth | grep '^Name=')"
 
-				if [[ "$name" == "Name=$setsplash" ]]
+                name="${name:5}"
+
+                if [[ "$current_splash" == "$name" ]]
+                then
+
+                    yad --window-icon=xfce4-splash --title="Splash Screens" --image=emblem-important --text="'$name' is currently in use. Please switch to a different splash screen before removing it." --button="Dismiss"
+
+                    break
+
+				elif [[ "$name" == "$setsplash" ]]
 				then
 
 					rm -rf "$i"
@@ -126,14 +191,14 @@ do
             until [[ "$success" == "TRUE" ]]
             do
 
-                newname="$(yad --window-icon=xfce4-splash --title="Rename" --text="Please enter the new name for your splash screen." --entry --entry-text="$setsplash" --button="Rename")"
+                newname="$(yad --window-icon=xfce4-splash --title="Rename" --text="Please enter the new name for your splash screen." --entry --entry-text="$setsplash" --button="Rename"\!gtk-edit)"
 
                 ex=$?
 
                 if [[ "$ex" == "0" ]]
                 then
 
-                    if [[ " ${splashes[@]} " == " \"$newname\" " ]]
+                    if [[ " ${splashes[@]} " == *" \"$newname\" "* ]]
                     then
 
                         success="FALSE"

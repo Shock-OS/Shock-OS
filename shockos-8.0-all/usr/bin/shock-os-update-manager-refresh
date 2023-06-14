@@ -15,9 +15,104 @@ sudo apt update
 
 sudo mkdir -p /var/lib/app-info/xml
 
+if [[ "$(getconf LONG_BIT)" == "32" ]] #if 32-bit system
+then
+
+    codename="$(lsb_release -cs)"
+
+    sudo mkdir -p /var/lib/app-info/yaml
+
+    sudo mkdir -p /var/lib/app-info/icons/debian-"$codename"-contrib/48x48
+
+    sudo mkdir -p /var/lib/app-info/icons/debian-"$codename"-main/48x48
+
+    sudo mkdir -p /var/lib/app-info/icons/debian-"$codename"-non-free/48x48
+
+    sudo mkdir -p /var/lib/app-info/icons/debian-"$codename"-contrib/64x64
+
+    sudo mkdir -p /var/lib/app-info/icons/debian-"$codename"-main/64x64
+
+    sudo mkdir -p /var/lib/app-info/icons/debian-"$codename"-non-free/64x64
+
+    if [[ "$(sudo wget https://appstream.debian.org/data/"$codename"/contrib/icons-48x48.tar.gz -P /var/lib/app-info/icons/debian-"$codename"-contrib/48x48 2>&1)" != *"fail"* ]]
+    then
+
+        sudo wget https://appstream.debian.org/data/"$codename"/main/icons-48x48.tar.gz -P /var/lib/app-info/icons/debian-"$codename"-main/48x48
+
+        sudo wget https://appstream.debian.org/data/"$codename"/non-free/icons-48x48.tar.gz -P /var/lib/app-info/icons/debian-"$codename"-non-free/48x48
+
+        sudo wget https://appstream.debian.org/data/"$codename"/contrib/icons-64x64.tar.gz -P /var/lib/app-info/icons/debian-"$codename"-contrib/64x64
+
+        sudo wget https://appstream.debian.org/data/"$codename"/main/icons-64x64.tar.gz -P /var/lib/app-info/icons/debian-"$codename"-main/64x64
+
+        sudo wget https://appstream.debian.org/data/"$codename"/non-free/icons-64x64.tar.gz -P /var/lib/app-info/icons/debian-"$codename"-non-free/64x64
+
+        cd /var/lib/app-info/icons/debian-"$codename"-contrib/48x48
+
+        sudo unp -f *.gz
+
+        sudo rm *.gz
+
+        cd /var/lib/app-info/icons/debian-"$codename"-main/48x48
+
+        sudo unp -f *.gz
+
+        sudo rm *.gz
+
+        cd /var/lib/app-info/icons/debian-"$codename"-non-free/48x48
+
+        sudo unp -f *.gz
+
+        sudo rm *.gz
+
+        cd /var/lib/app-info/icons/debian-"$codename"-contrib/64x64
+
+        sudo unp -f *.gz
+
+        sudo rm *.gz
+
+        cd /var/lib/app-info/icons/debian-"$codename"-main/64x64
+
+        sudo unp -f *.gz
+
+        sudo rm *.gz
+
+        cd /var/lib/app-info/icons/debian-"$codename"-non-free/64x64
+
+        sudo unp -f *.gz
+
+        sudo rm *.gz
+
+        sudo wget https://appstream.debian.org/data/"$codename"/contrib/Components-armhf.yml.gz -O /var/lib/app-info/yaml/debian-"$codename"-contrib-Components-armhf.yml.gz
+
+        sudo wget https://appstream.debian.org/data/"$codename"/main/Components-armhf.yml.gz -O /var/lib/app-info/yaml/debian-"$codename"-main-Components-armhf.yml.gz
+
+        sudo wget https://appstream.debian.org/data/"$codename"/non-free/Components-armhf.yml.gz -O /var/lib/app-info/yaml/debian-"$codename"-non-free-Components-armhf.yml.gz
+
+    fi
+
+elif [[ -f /usr/share/shockware-center/32-bit-compatibility-mode-indicator ]] #if 64-bit system with 32-bit compatibility mode enabled
+then
+
+    sudo wget https://appstream.debian.org/data/"$codename"/contrib/Components-armhf.yml.gz -O /var/lib/app-info/yaml/debian-"$codename"-contrib-Components-armhf.yml.gz
+
+    sudo wget https://appstream.debian.org/data/"$codename"/main/Components-armhf.yml.gz -O /var/lib/app-info/yaml/debian-"$codename"-main-Components-armhf.yml.gz
+
+    sudo wget https://appstream.debian.org/data/"$codename"/non-free/Components-armhf.yml.gz -O /var/lib/app-info/yaml/debian-"$codename"-non-free-Components-armhf.yml.gz
+
+else #if 64-bit system WITHOUT 32-bit compatibility mode enabled
+
+    sudo rm /var/lib/app-info/yaml/*armhf*
+
+    sudo rm /var/lib/app-info/xml/*armhf*
+
+fi
+
 for i in /var/lib/app-info/yaml/*
 do
 
     sudo appstreamcli convert "$i" /var/lib/app-info/xml/"$(basename "$i")".xml
 
 done
+
+

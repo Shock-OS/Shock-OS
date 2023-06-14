@@ -18,3 +18,5 @@ sudo apt purge -y pluma #gets rid of pluma (because gedit is installed instead)
 sudo apt autoremove --purge -y
 
 sudo apt update
+
+sudo shock-os-update-manager-refresh

@@ -17,7 +17,7 @@ then
 
     dconf write /org/mate/panel/objects/dockapplet/prefs/win-from-cur-workspace-only "'true'"
 
-    dconf write /org/mate/panel/objects/dockapplet/prefs/pinned-apps "['chromium-browser.desktop', 'caja-browser.desktop', 'mate-terminal.desktop', 'shockware-center.desktop']"
+    dconf write /org/mate/panel/objects/dockapplet/prefs/pinned-apps "['chromium.desktop', 'caja-browser.desktop', 'mate-terminal.desktop', 'shockware-center.desktop']"
 
     #the above set of commands sets the mate-dock-applet defaults
 

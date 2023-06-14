@@ -135,22 +135,33 @@ do
 
 			fi
 			
-			update_list+=("\"$icon\"" "\"$name\"" "\"F\"" "\"$icon\"")
+			update_list+=("\"$icon\"" "\"$name\"")
 
 		else #if APT package
 
             name="${i%%/*}"
 
+            name="${name#\"}"
+
 			icon="$(find /var/lib/app-info/icons/*/*/"$name"_* | head -1)"
 
-			if [[ ! -n "$icon" ]]
+			if [[ ! -f "$icon" ]]
 			then
 
 				icon="/usr/share/shock-os-update-manager/apt.svg"
 
-			fi	
+			fi
 
-			update_list+=("$icon" "$i" "\"A\"" "\"A\"")
+            full_name="$(grep -A 10000 "<pkgname>$name</pkgname>" /var/lib/app-info/xml/*.xml | grep '<name>' | head -n1 | awk -F'[<>]' '{print $3}')"
+
+            if [[ -n "$full_name" ]]
+            then
+
+                name="$full_name"
+
+            fi
+
+			update_list+=("\"$icon\"" "\"$name\"")
 
 		fi
 
@@ -183,7 +194,7 @@ do
 
 	fi
 
-	yadlist="yad --window-icon=system-software-update --title=\"Update Manager\" --width=800 --height=500 --text=\"Updates are available for the following apps/packages:\" --list --dclick-action=shock-os-update-manager-view-package --no-click --column=\"Icon\":IMG --column=\"Name\" --column=\"Hidden 1\":HD --column=\"Hidden 2\":HD $page_buttons --button=\"Install Updates\"\!system-software-update:1 ${update_list[@]}"
+	yadlist="yad --window-icon=system-software-update --title=\"Update Manager\" --width=800 --height=500 --text=\"Updates are available for the following apps/packages:\" --list --dclick-action=shock-os-update-manager-view-package --no-click --column=\"Icon\":IMG --column=\"Name\" $page_buttons --button=\"Install Updates\"\!system-software-update:1 ${update_list[@]}"
 
 	end_loading
 
