@@ -88,9 +88,9 @@ else #if normal package
 
     echo "$description
 
-    $version
+$version
 
-    $size" | tee "$tmpfile"
+$size" | tee "$tmpfile"
 
 fi
 

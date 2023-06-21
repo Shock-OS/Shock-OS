@@ -96,7 +96,7 @@ done &
 while true
 do
 
-    shock-release-upgrader
+    sudo shock-release-upgrader
 
     sleep 900
 

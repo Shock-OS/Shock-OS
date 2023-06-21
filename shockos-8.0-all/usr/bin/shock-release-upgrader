@@ -9,7 +9,7 @@ then
 
     exit
 
-elif [[ -f /usr/share/shock-os-update-manger/disable-release-upgrader-indicator ]]
+elif [[ -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]]
 then
 
     echo "Checking for and upgrading to new releases of Shock OS is currently disabled. To re-enable this functionality, go to the Update Manager -> Settings and check the box that says 'Notify me of new versions of Shock OS'. Exiting..."

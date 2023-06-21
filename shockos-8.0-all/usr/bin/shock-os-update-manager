@@ -26,6 +26,77 @@ kill -9 $gui_killpid
 
 #THE LOADING FUNCTIONS END
 
+automatic_updates=""
+
+notify_of_new_versions_of_shock_os=""
+
+#THE SETTINGS FUNCTION BEGINS
+
+function settings() {
+
+if [[ -f /etc/sudoers.d/shock_automatic_updates ]] #if automatic updates are enabled
+then
+
+    automatic_updates="TRUE"
+
+else #if disabled
+
+    automatic_updates="FALSE"
+
+fi
+
+if [[ ! -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]] #if notification of new versions of Shock OS is enabled
+then
+
+    notify_of_new_versions_of_shock_os="TRUE"
+
+else #if disabled
+
+    notify_of_new_versions_of_shock_os="FALSE"
+
+fi
+
+settings="$(yad --window-icon=system-software-update --width=100 --title="Settings" --form --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --button="Apply"\!gtk-ok)"
+
+ex=$?
+
+if [[ "$ex" == "0" ]]
+then
+
+    automatic_updates=$(echo $settings | awk 'BEGIN {FS="|" } { print $2 }')
+
+    notify_of_new_versions_of_shock_os=$(echo $settings | awk 'BEGIN {FS="|" } { print $4 }')
+
+    if [[ "$automatic_updates" == "TRUE" ]] && [[ ! -f /etc/sudoers.d/shock_automatic_updates ]] #enable automatic updates
+    then
+
+        echo 'ALL ALL=NOPASSWD:/usr/bin/shock-auto-updates' | pkexec tee /etc/sudoers.d/shock_automatic_updates
+
+    elif [[ "$automatic_updates" == "FALSE" ]] && [[ -f /etc/sudoers.d/shock_automatic_updates ]] #disable automatic updates
+    then
+
+        pkexec rm /etc/sudoers.d/shock_automatic_updates
+
+    fi
+
+    if [[ "$notify_of_new_versions_of_shock_os" == "TRUE" ]] && [[ -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]] #enable notification of new versions of Shock OS
+    then
+
+        pkexec rm /usr/share/shock-os-update-manager/disable-release-upgrader-indicator
+
+    elif [[ "$notify_of_new_versions_of_shock_os" == "FALSE" ]] && [[ ! -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]] #disable notification of new versions of Shock OS
+    then
+
+        pkexec touch /usr/share/shock-os-update-manager/disable-release-upgrader-indicator
+
+    fi
+
+fi
+
+}
+
+#THE SETTINGS FUNCTION ENDS
+
 function install_updates() {
 
 pkexec env DEBIAN_FRONTEND=gnome apt upgrade -y
@@ -101,8 +172,17 @@ then
 
         end_loading
 
-        yad --window-icon=emblem-default --image=emblem-default --title="Update manager" --text="Your system is up to date." --button="Dismiss" --width=300
+        yad --window-icon=emblem-default --image=emblem-default --buttons-layout=edge --title="Update Manager" --text="Your system is up to date." --button="Settings"\!gnome-settings --button="Dismiss" --width=300
 
+        ex=$?
+
+        if [[ "$ex" == "0" ]] #settings
+        then
+
+            settings
+
+        fi
+    
     fi
 
     exit
@@ -291,64 +371,7 @@ do
         elif [[ "$ex" == "1" ]] #settings
         then
 
-            if [[ -f /etc/sudoers.d/shock_automatic_updates ]] #if automatic updates are enabled
-            then
-
-                automatic_updates="TRUE"
-
-            else #if disabled
-
-                automatic_updates="FALSE"
-
-            fi
-
-            if [[ ! -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]] #if notification of new versions of Shock OS is enabled
-            then
-
-                notify_of_new_versions_of_shock_os="TRUE"
-
-            else #if disabled
-
-                notify_of_new_versions_of_shock_os="FALSE"
-
-            fi
-
-            settings="$(yad --window-icon=system-software-update --width=100 --title="Settings" --form --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --button="Apply"\!gtk-ok)"
-
-            ex=$?
-
-            if [[ "$ex" == "0" ]]
-            then
-
-                automatic_updates=$(echo $settings | awk 'BEGIN {FS="|" } { print $2 }')
-
-                notify_of_new_versions_of_shock_os=$(echo $settings | awk 'BEGIN {FS="|" } { print $4 }')
-
-                if [[ "$automatic_updates" == "TRUE" ]] && [[ ! -f /etc/sudoers.d/shock_automatic_updates ]] #enable automatic updates
-                then
-
-                    echo 'ALL ALL=NOPASSWD:/usr/bin/shock-auto-updates' | pkexec tee /etc/sudoers.d/shock_automatic_updates
-
-                elif [[ "$automatic_updates" == "FALSE" ]] && [[ -f /etc/sudoers.d/shock_automatic_updates ]] #disable automatic updates
-                then
-
-                    pkexec rm /etc/sudoers.d/shock_automatic_updates
-
-                fi
-
-                if [[ "$notify_of_new_versions_of_shock_os" == "TRUE" ]] && [[ -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]] #enable notification of new versions of Shock OS
-                then
-
-                    pkexec rm /usr/share/shock-os-update-manager/disable-release-upgrader-indicator
-
-                elif [[ "$notify_of_new_versions_of_shock_os" == "FALSE" ]] && [[ ! -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]] #disable notification of new versions of Shock OS
-                then
-
-                    pkexec touch /usr/share/shock-os-update-manager/disable-release-upgrader-indicator
-
-                fi
-
-            fi
+            settings
 
         elif [[ "$ex" == "2" ]] #install updates
         then
