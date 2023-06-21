@@ -25,7 +25,7 @@ current_version="$(apt show shock-os-metapackage | grep Version: | awk '{print $
 if [[ "$current_version" == *"."* ]]
 then
 
-	current_version="${current_version%%.*}"
+    current_version="${current_version%%.*}"
 
 fi
 
@@ -36,9 +36,9 @@ wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/co
 if  [[ ! -f /usr/share/shock-release-upgrader/codenames ]]
 then
 
-	echo "An internet connection is required. Exiting..."
+    echo "An internet connection is required. Exiting..."
 
-	exit
+    exit
 
 fi
 
@@ -47,26 +47,26 @@ latest_version="$(cat /usr/share/shock-release-upgrader/codenames | wc -l)"
 if ((latest_version>current_version))
 then
 
-	upgrto_version=$((current_version+1))
+    upgrto_version=$((current_version+1))
 
-	upgrto_version_codename="$(sed -n "$upgrto_version"p /usr/share/shock-release-upgrader/codenames)"
+    upgrto_version_codename="$(sed -n "$upgrto_version"p /usr/share/shock-release-upgrader/codenames)"
 
-	if ((upgrto_version<10))
-	then
+    if ((upgrto_version<10))
+    then
 
-		upgrto_version_display_name="$upgrto_version.0"
+	    upgrto_version_display_name="$upgrto_version.0"
 
-	else
+    else
 
-		upgrto_version_display_name="$upgrto_version"
+	    upgrto_version_display_name="$upgrto_version"
 
-	fi
+    fi
 
     zenity --notification --text="The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available."
 
-	yad --notification --image=/usr/share/shock/shock-release-upgrader.svg --icon-size=48 --text="The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available. Click to upgrade."
+    yad --notification --image=/usr/share/shock/shock-release-upgrader.svg --icon-size=48 --text="The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available. Click to upgrade."
 
-	zenity --info --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Prepare to Upgrade" --text="Before upgrading, please make sure of the following:
+    zenity --info --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Prepare to Upgrade" --text="Before upgrading, please make sure of the following:
 
 1. The system is connected to a constant power supply.
 
@@ -78,25 +78,25 @@ NOTE: The logout and power options in the start menu will be temporarily disable
 
 Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Continue"
 
-	mkdir -p /usr/share/shock-release-upgrader/upgrades
+    mkdir -p /usr/share/shock-release-upgrader/upgrades
 
     rm -rf /usr/share/shock-release-upgrader/upgrades/*
 
-	wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version.zip"/download -P /usr/share/shock-release-upgrader/upgrades 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --no-cancel --auto-close
+    wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version.zip"/download -P /usr/share/shock-release-upgrader/upgrades 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --no-cancel --auto-close
 
-	cd /usr/share/shock-release-upgrader/upgrades
+    cd /usr/share/shock-release-upgrader/upgrades
 
-	unp -f download 2>&1 | yad --center --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Unpacking the Upgrade Pack..." --text="Unpacking the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." -no-buttons --no-escape --undecorated --auto-close --progress --pulsate --progress-text="" --no-buttons
+    unp -f download 2>&1 | yad --center --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Unpacking the Upgrade Pack..." --text="Unpacking the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." -no-buttons --no-escape --undecorated --auto-close --progress --pulsate --progress-text="" --no-buttons
 
     rm download
 
     mv * $upgrto_version
 
-	chmod --recursive 755 $upgrto_version/DEBIAN
+    chmod --recursive 755 $upgrto_version/DEBIAN
 
-	dpkg-deb --build -Zxz "$upgrto_version" 2>&1 | yad --center --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." -no-buttons --no-escape --undecorated --auto-close --progress --pulsate --progress-text="" --no-buttons
+    dpkg-deb --build -Zxz "$upgrto_version" 2>&1 | yad --center --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." -no-buttons --no-escape --undecorated --auto-close --progress --pulsate --progress-text="" --no-buttons
 
-	sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader/upgrades
+    sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader/upgrades
 
     if [[ -f /usr/share/shock-release-upgrader/upgrades/$upgrto_version-preupgr-script ]]
     then
@@ -107,9 +107,9 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
     fi
 
-	sudo env DEBIAN_FRONTEND=gnome apt install -y ./"$upgrto_version.deb" 2>&1 | yad --center --progress --pulsate --auto-close --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
+    sudo env DEBIAN_FRONTEND=gnome apt install -y ./"$upgrto_version.deb" 2>&1 | yad --center --progress --pulsate --auto-close --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
 
-	sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader/upgrades
+    sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader/upgrades
 
     if [[ -f /usr/share/shock-release-upgrader/upgrades/$upgrto_version-postupgr-script ]]
     then
@@ -120,34 +120,34 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
     fi
 
-	current_version="$(apt show shock-os-metapackage | grep Version: | awk '{print $2}')"
+    current_version="$(apt show shock-os-metapackage | grep Version: | awk '{print $2}')"
 
     if [[ "$current_version" == *"."* ]]
     then
 
-	    current_version="${current_version%%.*}"
+        current_version="${current_version%%.*}"
 
     fi
 
-	if ((current_version==upgrto_version))
-	then
+    if ((current_version==upgrto_version))
+    then
 
-		yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --image=emblem-default --title="Upgrade Complete" --text="Successfully upgraded to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please reboot for all changes to take full effect." --button="Reboot Later" --button="Reboot Now"
+	    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --image=emblem-default --title="Upgrade Complete" --text="Successfully upgraded to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please reboot for all changes to take full effect." --button="Reboot Later" --button="Reboot Now"
 
-		ex=$?
+	    ex=$?
 
-		if [[ "$ex" == "1" ]]
-		then
+	    if [[ "$ex" == "1" ]]
+	    then
 
-			sudo reboot
+		    sudo reboot
 
-		fi
+	    fi
 
-	else
+    else
 
-		yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --image=emblem-important --title="Upgrade Failed" --text="Failed to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please try again later." --button="Dismiss"
+	    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --image=emblem-important --title="Upgrade Failed" --text="Failed to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please try again later." --button="Dismiss"
 
-	fi
+    fi
 
 fi
 

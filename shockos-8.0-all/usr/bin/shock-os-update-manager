@@ -35,15 +35,15 @@ ex=$?
 if [[ "$ex" != "0" ]]
 then
 
-    updates_cancelled="TRUE"
+updates_cancelled="TRUE"
 
 else
 
-    updates_cancelled="FALSE"
+updates_cancelled="FALSE"
 
-    flatpak update -y
+flatpak update -y
 
-    fetch_updates
+fetch_updates
 
 fi
 
@@ -68,7 +68,7 @@ flatpak_ids=($(flatpak remote-ls --updates --columns=app))
 for i in "${flatpak_ids[@]}"
 do
 
-	all_updates+=("\"$(flatpak search "$i" --columns=app,name | grep -w "$i" | awk '{str=""; for(i=2;i<=NF;i++) str=str $i " "; sub(/ $/, "", str); printf "%s\n", str}') [FLATPAK]\"")
+all_updates+=("\"$(flatpak search "$i" --columns=app,name | grep -w "$i" | awk '{str=""; for(i=2;i<=NF;i++) str=str $i " "; sub(/ $/, "", str); printf "%s\n", str}') [FLATPAK]\"")
 
 done
 
@@ -87,13 +87,6 @@ then
 
     start_loading_gui
 
-elif [[ -f /etc/sudoers.d/shock_automatic_updates ]]
-then
-
-    shock-auto-updates-kickstart
-
-    exit
-
 fi
 
 fetch_updates
@@ -101,34 +94,34 @@ fetch_updates
 if ((${#all_updates[@]}==0))
 then
 
-	echo "Your system is up to date."
+    echo "Your system is up to date."
 
     if [[ "$1" == "gui" ]] #if launched from the Shockware Center
     then
 
         end_loading
 
-        yad --window-icon=emblem-default --image=emblem-default --title="Update Manger" --text="Your system is up to date." --button="Dismiss" --width=300
+        yad --window-icon=emblem-default --image=emblem-default --title="Update manager" --text="Your system is up to date." --button="Dismiss" --width=300
 
     fi
 
-	exit
+    exit
 
 elif ((${#all_updates[@]}==1))
 then
 
-	text="${#all_updates[@]} update is available. Click to install it."
+    text="${#all_updates[@]} update is available. Click to install it."
 
 else
 
-	text="${#all_updates[@]} updates are available. Click to install them."
+    text="${#all_updates[@]} updates are available. Click to install them."
 
 fi
 
 while true
 do
 
-    if [[ "$1" != "gui" ]] #if NOT launched from the Shockware Center
+    if [[ "$1" != "gui" ]] && [[ ! -f /etc/sudoers.d/shock_automatic_updates ]] #if NOT launched from the Shockware Center
     then
 
         yad --notification --image=system-software-update --text="$text" --icon-size=48 & notification_killpid=$!
@@ -144,6 +137,13 @@ do
 
         fi
 
+    elif [[ -f /etc/sudoers.d/shock_automatic_updates ]] #if automatic updates are enabled
+    then
+
+        shock-auto-updates-kickstart
+
+        exit
+
     fi
 
     page=0
@@ -151,66 +151,66 @@ do
     while true
     do
 
-	    start_loading
+        start_loading
 
-	    all_updates_show=("${all_updates[@]:$((rows_per_page*page))}")
+        all_updates_show=("${all_updates[@]:$((rows_per_page*page))}")
 
-	    all_updates_show=("${all_updates_show[@]::$((rows_per_page))}")
+        all_updates_show=("${all_updates_show[@]::$((rows_per_page))}")
 
-	    mapfile -t all_updates < <(printf '%s\n' "${all_updates[@]}" | sed 's/^"\(.*\)"$/"\1"/')
+        mapfile -t all_updates < <(printf '%s\n' "${all_updates[@]}" | sed 's/^"\(.*\)"$/"\1"/')
 
-	    update_list=()
+        update_list=()
 
-	    for i in "${all_updates_show[@]}"
-	    do
+        for i in "${all_updates_show[@]}"
+        do
 
-		    if [[ "$i" == *" [FLATPAK]\"" ]] #if Flatpak application
-		    then
+	        if [[ "$i" == *" [FLATPAK]\"" ]] #if Flatpak application
+	        then
 
-			    name="${i::-11}\""
+		        name="${i::-11}\""
 
-			    name="${name#\"}"
+		        name="${name#\"}"
 
-			    name="${name%\"}"
+		        name="${name%\"}"
 
-			    icon="$(grep -A 1 -B 3 "<name>$name</name>" /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | grep '<id>' | awk -F'[<>]' '{print $3}')"
+		        icon="$(grep -A 1 -B 3 "<name>$name</name>" /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | grep '<id>' | awk -F'[<>]' '{print $3}')"
 
-			    icon="${icon%% *}"
+		        icon="${icon%% *}"
 
-			    icon=$(echo "$icon" | head -n1)
+		        icon=$(echo "$icon" | head -n1)
 
-			    if [[ "$icon" == *".desktop" ]]
-			    then
+		        if [[ "$icon" == *".desktop" ]]
+		        then
 
-				    icon="${icon::-8}"
+			        icon="${icon::-8}"
 
-			    fi
+		        fi
 
-			    icon="$appstream_icons_dir/$icon.png"
+		        icon="$appstream_icons_dir/$icon.png"
 
-			    if [[ ! -f "$icon" ]]
-			    then
+		        if [[ ! -f "$icon" ]]
+		        then
 
-				    icon="/usr/share/shock-os-update-manager/flatpak.svg"
+			        icon="/usr/share/shock-os-update-manager/flatpak.svg"
 
-			    fi
-			    
-			    update_list+=("\"$icon\"" "\"$name\"")
+		        fi
+		        
+		        update_list+=("\"$icon\"" "\"$name\"")
 
-		    else #if APT package
+	        else #if APT package
 
                 name="${i%%/*}"
 
                 name="${name#\"}"
 
-			    icon="$(find /var/lib/app-info/icons/*/*/"$name"_* | head -1)"
+		        icon="$(find /var/lib/app-info/icons/*/*/"$name"_* | head -1)"
 
-			    if [[ ! -f "$icon" ]]
-			    then
+		        if [[ ! -f "$icon" ]]
+		        then
 
-				    icon="/usr/share/shock-os-update-manager/apt.svg"
+			        icon="/usr/share/shock-os-update-manager/apt.svg"
 
-			    fi
+		        fi
 
                 full_name="$(grep -A 10000 "<pkgname>$name</pkgname>" /var/lib/app-info/xml/*.xml | grep '<name>' | head -n1 | awk -F'[<>]' '{print $3}')"
 
@@ -221,65 +221,65 @@ do
 
                 fi
 
-			    update_list+=("\"$icon\"" "\"$name\"")
-
-		    fi
-
-	    done
-
-	    echo "UPDATE LIST: ${update_list[@]}" #DEBUG
-
-	    if ((${#update_list[@]}>rows_per_page))
-	    then
-
-	        if ((page>0))
-	        then
-
-	            page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
-
-	        else
-
-	            page_buttons='--button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
+		        update_list+=("\"$icon\"" "\"$name\"")
 
 	        fi
 
-	    elif ((page>0))
-	    then
+        done
 
-	        page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50' 
+        echo "UPDATE LIST: ${update_list[@]}" #DEBUG
 
-	    else
+        if ((${#update_list[@]}>rows_per_page))
+        then
 
-	        page_buttons=""
+            if ((page>0))
+            then
 
-	    fi
+                page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
 
-	    yadlist="yad --window-icon=system-software-update --title=\"Update Manager\" --width=800 --height=500 --text=\"Updates are available for the following apps/packages:\" --list --dclick-action=shock-os-update-manager-view-package --no-click --column=\"Icon\":IMG --column=\"Name\" $page_buttons --button=\"Settings\"\!gnome-settings:1 --button=\"Install Updates\"\!system-software-update:2 ${update_list[@]}"
+            else
 
-	    end_loading
+                page_buttons='--button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
 
-	    eval "$yadlist"
+            fi
 
-	    ex=$?
+        elif ((page>0))
+        then
 
-	    if [[ "$ex" == "40" ]] #previous
-	    then
+            page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50' 
 
-		    page=$((page-1))
+        else
 
-	    elif [[ "$ex" == "60" ]] #next
-	    then
+            page_buttons=""
 
-		    page=$((page+1))
+        fi
 
-	    elif [[ "$ex" == "50" ]] #jump
-	    then
+        yadlist="yad --window-icon=system-software-update --title=\"Update Manager\" --width=800 --height=500 --text=\"Updates are available for the following apps/packages:\" --list --dclick-action=shock-os-update-manager-view-package --no-click --buttons-layout=edge --column=\"Icon\":IMG --column=\"Name\" $page_buttons --button=\"Settings\"\!gnome-settings:1 --button=\"Install Updates\"\!system-software-update:2 ${update_list[@]}"
 
-		    jump_page=$(yad --window-icon=system-software-update --title="Update Manager" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
+        end_loading
 
-		    ex=$?
+        eval "$yadlist"
 
-		    jump_page=$(echo "$jump_page" | awk -F'|' '{print $1}')
+        ex=$?
+
+        if [[ "$ex" == "40" ]] #previous
+        then
+
+	        page=$((page-1))
+
+        elif [[ "$ex" == "60" ]] #next
+        then
+
+	        page=$((page+1))
+
+        elif [[ "$ex" == "50" ]] #jump
+        then
+
+	        jump_page=$(yad --window-icon=system-software-update --title="Update Manager" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
+
+	        ex=$?
+
+	        jump_page=$(echo "$jump_page" | awk -F'|' '{print $1}')
 
             if [[ "$ex" == "0" ]]
             then
@@ -302,7 +302,7 @@ do
 
             fi
 
-            if [[ ! -f /usr/share/shock-os-update-manger/disable-release-upgrader-indicator ]] #if notification of new versions of Shock OS is enabled
+            if [[ ! -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]] #if notification of new versions of Shock OS is enabled
             then
 
                 notify_of_new_versions_of_shock_os="TRUE"
@@ -313,55 +313,62 @@ do
 
             fi
 
-            settings="$(yad --window-icon=system-software-update --title="Settings" --form --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --button="Apply"\!gtk-ok)"
+            settings="$(yad --window-icon=system-software-update --width=100 --title="Settings" --form --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --button="Apply"\!gtk-ok)"
 
-            automatic_updates=$(echo $settings | awk 'BEGIN {FS="|" } { print $2 }')
+            ex=$?
 
-            notify_of_new_versions_of_shock_os=$(echo $settings | awk 'BEGIN {FS="|" } { print $4 }')
-
-            if [[ "$automatic_updates" == "TRUE" ]] && [[ ! -f /etc/sudoers.d/shock_automatic_updates ]] #enable automatic updates
+            if [[ "$ex" == "0" ]]
             then
 
-                echo 'ALL ALL=NOPASSWD:/usr/bin/shock-auto-updates' | pkexec tee /etc/sudoers.d/shock_automatic_updates
+                automatic_updates=$(echo $settings | awk 'BEGIN {FS="|" } { print $2 }')
 
-            elif [[ "$automatic_updates" == "FALSE" ]] && [[ -f /etc/sudoers.d/shock_automatic_updates ]] #disable automatic updates
-            then
+                notify_of_new_versions_of_shock_os=$(echo $settings | awk 'BEGIN {FS="|" } { print $4 }')
 
-                pkexec rm /etc/sudoers.d/shock_automatic_updates
+                if [[ "$automatic_updates" == "TRUE" ]] && [[ ! -f /etc/sudoers.d/shock_automatic_updates ]] #enable automatic updates
+                then
+
+                    echo 'ALL ALL=NOPASSWD:/usr/bin/shock-auto-updates' | pkexec tee /etc/sudoers.d/shock_automatic_updates
+
+                elif [[ "$automatic_updates" == "FALSE" ]] && [[ -f /etc/sudoers.d/shock_automatic_updates ]] #disable automatic updates
+                then
+
+                    pkexec rm /etc/sudoers.d/shock_automatic_updates
+
+                fi
+
+                if [[ "$notify_of_new_versions_of_shock_os" == "TRUE" ]] && [[ -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]] #enable notification of new versions of Shock OS
+                then
+
+                    pkexec rm /usr/share/shock-os-update-manager/disable-release-upgrader-indicator
+
+                elif [[ "$notify_of_new_versions_of_shock_os" == "FALSE" ]] && [[ ! -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]] #disable notification of new versions of Shock OS
+                then
+
+                    pkexec touch /usr/share/shock-os-update-manager/disable-release-upgrader-indicator
+
+                fi
 
             fi
 
-            if [[ "$notify_of_new_versions_of_shock_os" == "TRUE" ]] && [[ -f /usr/share/shock-os-update-manger/disable-release-upgrader-indicator ]] #enable notification of new versions of Shock OS
-            then
+        elif [[ "$ex" == "2" ]] #install updates
+        then
 
-                pkexec rm /usr/share/shock-os-update-manger/disable-release-upgrader-indicator
-
-            elif [[ "$notify_of_new_versions_of_shock_os" == "FALSE" ]] && [[ ! -f /usr/share/shock-os-update-manger/disable-release-upgrader-indicator ]] #disable notification of new versions of Shock OS
-            then
-
-                pkexec touch /usr/share/shock-os-update-manger/disable-release-upgrader-indicator
-
-            fi
-
-	    elif [[ "$ex" == "2" ]] #install updates
-	    then
-
-		    install_updates | zenity --window-icon=system-software-update --title="Update Manager" --text="Installing updates..." --progress --pulsate --auto-close --no-cancel
+	        install_updates | zenity --window-icon=system-software-update --title="Update Manager" --text="Installing updates..." --progress --pulsate --auto-close --no-cancel
 
             all_updates=($(printf "%s\n" "${all_updates[@]}" | sort))
 
-		    if [[ "$updates_cancelled" == "TRUE" ]] || ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
-		    then
+	        if [[ "$updates_cancelled" == "TRUE" ]] || ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
+	        then
 
-			    yad --window-icon=emblem-important --image=emblem-important --title="Update Manager" --text="Failed to install the updates. Please double check your internet connection and try again later." --button="Dismiss" --width=400
+		        yad --window-icon=emblem-important --image=emblem-important --title="Update Manager" --text="Failed to install the updates. Please double check your internet connection and try again later." --button="Dismiss" --width=400
 
-		    else
+	        else
 
-			    yad --window-icon=emblem-default --image=emblem-default --title="Update Manger" --text="Your system is up to date." --button="Dismiss" --width=300
+		        yad --window-icon=emblem-default --image=emblem-default --title="Update Manager" --text="Your system is up to date." --button="Dismiss" --width=300
 
-		    fi
+	        fi
 
-		    exit
+	        exit
 
         elif [[ "$1" == "gui" ]] #if launched from the Shockware Center
         then
@@ -372,12 +379,11 @@ do
 
             break
 
-	    fi
+        fi
 
     done
 
 done
-
 
 
 

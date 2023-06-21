@@ -82,12 +82,23 @@ dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" #ensures that t
 
 mpg123 /usr/share/shock/startup-sound/* #this command plays the startup sound
 
-shock-welcome
+shock-welcome &
 
+while true
+do
 
+    shock-os-update-manager
 
+    sleep 900
 
+done &
 
+while true
+do
 
+    shock-release-upgrader
 
+    sleep 900
+
+done
 
