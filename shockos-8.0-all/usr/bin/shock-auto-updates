@@ -1,74 +1,20 @@
 #!/bin/bash
 
-# Installing automatic updates
+#the root check element begins
 
-runuser=$1
+if [[ "$(id -u)" != "0" ]]
+then
 
-pause="no"
+    echo "Script must be run as root. Exiting..."
 
-function notification() {
+    exit
 
-sudo -u "$runuser" dconf write /org/mate/desktop/lockdown/disable-log-out "true" # Stops the user from accessing the shutdown menu while automatic updates are being applied.
+fi
 
-bash -c "yad --notification --image=/shock/auto-updates.svg --icon-size=48 --text=\"Automatic updates are being installed. Please do not turn off your computer.\" --command=\"\" --menu=Pause\!quit\!gtk-media-pause
+#the root check element ends
 
-pause=\"Yes\"
+yad --notification --image=/usr/share/shock/auto-updates.svg --icon-size=48 --text="Automatic updates are being installed. Please do not turn off your computer." --command="" & killpid=$!
 
-yad --notification --image=gtk-refresh --icon-size=48 --text=\"Waiting to pause automatic updates...\" --command=\"\" & killpid=\$!" & killpid=$! &&
+sudo apt upgrade -y
 
-}
-
-notification
-
-success="no"
-
-sudo apt update
-
-updates=($(apt list --upgradable | awk -F/ '{print $1}'))
-
-updates=("${updates[@]:1}")
-
-for package in "${updates[@]}"
-do
-
-    if [[ "$pause" == "yes" ]] #if automatic updates are paused
-    then
-
-        sudo kill -9 $killpid
-
-        sudo -u "$runuser" dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" # Allows the user to access the shutdown menu.
-
-        yad --notification --image=gtk-media-pause --icon-size=48 --text="Automatic updates are paused." --command="" --menu=Resume\!quit\!gtk-media-play-ltr
-
-        pause="no"
-
-        notification
-
-    fi
-
-    success="no"
-
-    until [[ "$success" == "yes" ]]
-    do
-
-        output=$(sudo apt install "$package")
-
-        if [[ "$output" == *"'sudo dpkg --configure -a'"* ]] #if packages need to be reconfigured
-        then
-
-            success="no"
-
-            sudo dpkg --configure -a
-
-        else
-
-            success="yes"
-
-        fi
-
-    done
-
-done
-
-sudo kill -9 $killpid
-
+kill -9 "$killpid"

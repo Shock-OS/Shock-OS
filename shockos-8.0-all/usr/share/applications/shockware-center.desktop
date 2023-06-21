@@ -2,7 +2,7 @@
 Version=1
 Name=Shockware Center
 GenericName=App Store
-Comment=Install/Remove Debian APT packages and Flatpaks.
+Comment=Browse, install and remove apps and games.
 Exec=shockware-center
 Icon=/usr/share/shockware-center/icon.svg
 Terminal=false

@@ -21,9 +21,9 @@ rm /usr/share/shock-os-imager/images
 
 rm /usr/share/shock-os-imager/cached-images/download*
 
-target_drive="(null)"
+success2="FALSE"
 
-until [[ "$target_drive" != "(null)" ]] && [[ "$ex" == "20" ]]
+until [[ "$success2" == "TRUE" ]]
 do
 
 	internet="yes"
@@ -179,7 +179,18 @@ do
 
 	done
 
-	output="$(yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Install Shock OS onto an external storage device." --form --field="SD card/USB drive:":CB "$drives" --field="Shock OS version:":CB "$images" --button="Refresh"\!gtk-refresh:10 --button="Flash"\!start-here:20)"
+    if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)>0))
+    then
+
+        cached_images_button='--button=Delete Cached Images!gtk-delete:30'
+
+    else
+
+        cached_images_button=""
+
+    fi
+
+	output="$(yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Install Shock OS onto an external storage device." --form --field="SD card/USB drive:":CB "$drives" --field="Shock OS version:":CB "$images" "$cached_images_button" --button="Refresh"\!gtk-refresh:10 --button="Flash"\!start-here:20)"
 
 	ex=$?
 
@@ -189,24 +200,63 @@ do
 
 	target_drive=$(echo "$target_drive" | cut -d' ' -f1)
 
-	if [[ "$target_drive" == "(null)" ]] && [[ "$ex" == "20" ]]
+    if [[ "$ex" == "30" ]] #delete cached images
+    then
+
+        if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)>1)) #plural
+        then
+
+            rmci_text="There are $(ls /usr/share/shock-os-imager/cached-images | wc -l) cached images on your system, taking up a total of $(du -sh /usr/share/shock-os-imager/cached-images | awk '{print $1}') of space. Would you like to delete them?"
+
+        else #singular
+        
+            rmci_text="There is 1 cached image on your system, taking up a total of $(du -sh /usr/share/shock-os-imager/cached-images | awk '{print $1}') of space. Would you like to delete it?"
+
+        fi
+
+        yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="$rmci_text" --button="Yes, remove" --button="No, keep"
+
+        ex=$?
+
+        if [[ "$ex" == "0" ]]
+        then
+
+            rm -rf /usr/share/shock-os-imager/cached-images/*
+
+            yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-default --title="Shock OS Imager" --text="All cached images have been successfully removed." --button="Dismiss"
+
+        fi
+
+	elif [[ "$target_drive" == "(null)" ]] && [[ "$ex" == "20" ]]
 	then
 
 		zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="You have not selected a drive to flash. Please plug in a storage device to install Shock OS on, and then click 'Retry'" --ok-label="Retry" --width=300
 
-	elif (($(sudo blockdev --getsize64 $target_drive)<15000000000)) && [[ "$ex" == "20" ]] #if drive is less than 16GB
+    elif [[ -z "$(lsblk -o PATH | grep -w $target_drive)" ]] && [[ "$ex" == "20" ]] #if error reading the device (perhaps it was unplugged)
+    then
+
+        zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --ok-label="Retry" --width=300
+
+	elif (($(lsblk -o PATH,SIZE -b | grep -w $target_drive | awk '{print $2}')<15000000000)) && [[ "$ex" == "20" ]] #if drive is less than 16GB
     then
 
 		target_drive="(null)"
 
-        zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="The SD card/USB Drive you selected is too small. Shock OS requires a storage device of at least 16GB. Please insert a storage device that is at least 16GB in size, then press 'Retry' when you are ready to continue." --ok-label="Retry" --width=300
+        zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="The SD card/USB drive you selected is too small. Shock OS requires a storage device of at least 16GB. Please insert a storage device that is at least 16GB in size, then press 'Retry' when you are ready to continue." --ok-label="Retry" --width=300
 
     elif [[ "$ex" != "10" ]] && [[ "$ex" != "20" ]]
 	then
 
 		exit
 
-	fi
+	elif [[ "$ex" == "20" ]]
+    then
+
+        success2="TRUE"
+
+    fi
+
+    echo "SUCCESS2: $success2" #DEBUG
 
 done
 
@@ -293,6 +343,15 @@ then
 		fi
 
 	fi
+
+    if [[ -z "$(lsblk -o PATH | grep -w $target_drive)" ]] #if error reading the device (perhaps it was unplugged)
+    then
+
+        zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --ok-label="Dismiss" --width=300
+
+        exit
+
+    fi
 
 	partitions=$(lsblk -n "$target_drive" | grep -c '^')
 

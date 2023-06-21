@@ -111,7 +111,7 @@ ex=$?
 if [[ "$ex" == "0" ]]
 then
 
-	pkexec apt remove -y $package | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Removing $full_name$both..." --auto-close --progress --pulsate
+	pkexec env DEBIAN_FRONTEND=gnome apt remove -y $package | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Removing $full_name$both..." --auto-close --progress --pulsate
 
     installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
@@ -132,7 +132,7 @@ fi
 
 function apt_install() {
 
-pkexec apt install -y $package | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Installing $full_name$both..." --auto-close --progress --pulsate
+pkexec env DEBIAN_FRONTEND=gnome apt install -y $package | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Installing $full_name$both..." --auto-close --progress --pulsate
 
 installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 

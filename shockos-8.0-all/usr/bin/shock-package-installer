@@ -1,0 +1,118 @@
+#!/bin/bash
+
+file="$1"
+
+if [[ -z "$file" ]]
+then
+
+    file="$(yad --window-icon=package --title="Package Installer" --file --text="Please select a .deb package to install." --button="Install"\!gtk-open)"
+
+fi
+
+if [[ -z "$file" ]]
+then
+
+    exit
+
+fi
+
+package="$(dpkg -I "$file" | grep Package: | awk '{print $2}')"
+
+package_display_name="$package"
+
+arch="$(dpkg -I "$file" | grep Architecture: | awk '{print $2}')"
+
+if ! [[ "$arch" == "all" || "$arch" == *"arm"* ]] #if not an ARM package
+then
+
+    yad --window-icon=package --image=emblem-important --width=400 --title="Package Installer" --text="$(basename "$file") is in an architecture that is incompatible with your system. Please use an ARM (armhf or arm64) version of the package if possible. i386 and amd64 packages will NOT work." --button="Dismiss"
+
+    exit
+
+elif [[ "$(getconf LONG_BIT)" == "32" ]] && ! [[ "$arch" == "all" || "$arch" == *"armhf"* ]] #if it is an ARM package, check for compatibility on 32-bit systems (32-bit)
+then
+
+    yad --window-icon=package --image=emblem-important --width=400 --title="Package Installer" --text="$(basename "$file") is a 64-bit package (arm64), but your system is only 32-bit (armhf). Please use a 32-bit (armhf) version of the package if possible." --button="Dismiss"
+
+    exit
+
+fi
+
+package=$(echo "$package" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+if [[ " ${installed_packages[@]} " == *" $package "* ]] #if package is already installed, then check for updates
+then
+
+    current_version="$(apt show "$package" | grep Version: | awk '{print $2}')"
+
+    deb_version="$(dpkg -I "$file" | grep Version: | awk '{print $2}')"
+
+    dpkg --compare-versions "$current_version" lt "$deb_version"
+
+    ex=$?
+
+    if [[ "$ex" == "0" ]] #deb is an upgrade
+    then
+
+        yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, but $(basename "$file") contains an upgraded version of it. Would you like to upgrade?" --button="Yes, upgrade"\!gtk-ok --button="No, cancel"\!gtk-cancel
+
+        ex2=$?
+
+        if [[ "$ex2" != "0" ]]
+        then
+
+            exit
+
+        fi
+
+    elif [[ "$current_version" == "$deb_version" ]] #if versions are the same
+    then
+
+        yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, and $(basename "$file") contains the same version you have installed. Installing the software again is unnecessary in most cases. Would you like to install the software again anyway?" --button="Yes, install again"\!gtk-ok --button="No, cancel"\!gtk-cancel
+
+        ex2=$?
+
+        if [[ "$ex2" != "0" ]]
+        then
+
+            exit
+
+        fi
+
+    else #if deb is a downgrade
+    
+        yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, and $(basename "$file") contains an older version of the software. Downgrading is not recommended in most cases. Would you like to downgrade the software anyway?" --button="Yes, downgrade"\!gtk-ok --button="No, cancel"\!gtk-cancel
+
+        ex2=$?
+
+        if [[ "$ex2" != "0" ]]
+        then
+
+            exit
+
+        fi
+
+    fi
+
+fi  
+
+pkexec env DEBIAN_FRONTEND=gnome apt install -y "$file" | zenity --window-icon=package --title="Package Installer" --progress --pulsate --text="Installing $package_display_name..." --no-cancel --auto-close
+
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+current_version="$(apt show "$package" | grep Version: | awk '{print $2}')"
+
+deb_version="$(dpkg -I "$file" | grep Version: | awk '{print $2}')"
+
+if [[ " ${installed_packages[@]} " == *" $package "* ]] && [[ "$current_version" == "$deb_version" ]] #if package installed successfully
+then
+
+    yad --window-icon=package --image=emblem-default --title="Package Installer" --text="$package_display_name was installed successfully." --button="Dismiss"
+
+else #if package was not installed successfully
+
+    yad --window-icon=package --image=emblem-important --title="Package Installer" --text="Failed to install $package_display_name. Please double check your internet connection and try again later." --button="Dismiss"
+
+fi

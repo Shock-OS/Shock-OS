@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=shock-release-upgrader.desktop
+Exec=sudo shock-release-upgrader
+Name[en_US]=shock-release-upgrader.desktop
+Type=Application
+Terminal=false
+X-GNOME-Autostart-Phase=Desktop
