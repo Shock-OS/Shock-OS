@@ -490,7 +490,7 @@ do
 
 		done
 
-		if ((${#search_results_prep_full[@]}>rows_per_page))
+		if ((${#search_results_prep_full[@]}>rows_per_page)) && [[ "$((page+1))" != "$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" ]] #if not on the last page
 		then
 
 		    if ((page>0))

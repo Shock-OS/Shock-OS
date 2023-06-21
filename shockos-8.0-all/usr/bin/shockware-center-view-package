@@ -78,7 +78,7 @@ else #if normal package
 
     fi
 
-    description="$(echo "$details" | grep -A10 Description:)"
+    description="$(echo "$details" | grep -A 10000 Description:)"
 
     version="$(echo "$details" | grep Version:)"
 
@@ -166,7 +166,7 @@ else
 
 fi
 
-description=$(grep -A 10 "<id>$id</id>" /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep "<description>" | sed -e 's/<[^>]*>//g' -e 's/^[[:space:]]*//')
+description=$(grep -A 10000 "<id>$id</id>" /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep "<description>" | head -n1 | sed -e 's/<[^>]*>//g' -e 's/^[[:space:]]*//')
 
 tmpfile2="$(mktemp)"
 
@@ -249,7 +249,7 @@ then
 
 	end_loading
 
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="APT package" --width=400 --height=300 --image="$apt_icon" --text-info --filename="$tmpfile" $irbuttons_apt
+	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="APT package" --width=830 --height=300 --image="$apt_icon" --text-info --filename="$tmpfile" $irbuttons_apt
 
 	ex=$?
 
@@ -279,7 +279,7 @@ then
 
 	end_loading
 
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="Flatpak application" --width=400 --height=300 --image="$icon" --text-info --filename="$tmpfile2" $irbuttons_flatpak
+	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="Flatpak application" --width=830 --height=300 --image="$icon" --text-info --wrap --filename="$tmpfile2" $irbuttons_flatpak
 
 	ex=$?
 
@@ -310,7 +310,7 @@ else #if both
 
     flatpak_fetch_info
 
-    yad --plug=$key --tabnum=2 --image="$icon" --text-info --filename="$tmpfile2" &
+    yad --plug=$key --tabnum=2 --image="$icon" --text-info --wrap --filename="$tmpfile2" &
 
     end_loading
 
@@ -340,7 +340,7 @@ else #if both
 
     fi
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="$full_name is available from both APT and Flatpak." --width=400 --height=300 --notebook --key=$key --tab="APT" --tab="Flatpak" "$irbuttons_apt" "$irbuttons_apt_2" "$irbuttons_flatpak" "$irbuttons_flatpak_2"
+    yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="$full_name is available from both APT and Flatpak." --width=830 --height=300 --notebook --key=$key --tab="APT" --tab="Flatpak" "$irbuttons_apt" "$irbuttons_apt_2" "$irbuttons_flatpak" "$irbuttons_flatpak_2"
 
     ex=$?
 
