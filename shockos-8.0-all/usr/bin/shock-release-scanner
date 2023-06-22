@@ -64,7 +64,11 @@ then
     if [[ "$ex" == "0" ]] #If 'Yes, proceed to upgrade' was clicked
     then
 
+        dconf write /org/mate/desktop/lockdown/disable-log-out "true" # Stops the user from accessing the shutdown menu while the system is being upgraded.
+
         pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shock-release-upgrader
+
+        dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" # Allows the user to access the shutdown menu.
 
     fi
 
