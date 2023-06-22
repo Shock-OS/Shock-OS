@@ -1,0 +1,71 @@
+#!/bin/bash
+
+#This script checks for an available upgrade to a newer version of Shock OS and notifies the user if one is available
+
+if [[ -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]]
+then
+
+    echo "Checking for and upgrading to new releases of Shock OS is currently disabled. To re-enable this functionality, go to the Update Manager -> Settings and check the box that says 'Notify me of new versions of Shock OS'. Exiting..."
+
+    exit
+
+fi
+
+current_version="$(apt show shock-os-metapackage | grep Version: | awk '{print $2}')"
+
+if [[ "$current_version" == *"."* ]]
+then
+
+    current_version="${current_version%%.*}"
+
+fi
+
+rm ~/.cache/shock-release-scanner/codenames
+
+wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/codenames -P ~/.cache/shock-release-scanner
+
+if  [[ ! -f ~/.cache/shock-release-scanner/codenames ]]
+then
+
+    echo "An internet connection is required. Exiting..."
+
+    exit
+
+fi
+
+latest_version="$(cat ~/.cache/shock-release-scanner/codenames | wc -l)"
+
+if ((latest_version>current_version))
+then
+
+    upgrto_version=$((current_version+1))
+
+    upgrto_version_codename="$(sed -n "$upgrto_version"p ~/.cache/shock-release-scanner/codenames)"
+
+    if ((upgrto_version<10))
+    then
+
+	    upgrto_version_display_name="$upgrto_version.0"
+
+    else
+
+	    upgrto_version_display_name="$upgrto_version"
+
+    fi
+
+    zenity --notification --text="The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available."
+
+    yad --notification --image=/usr/share/shock/shock-release-upgrader.svg --icon-size=48 --text="The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available. Click to upgrade."
+
+    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --width=100 --title="Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Are you sure you would like to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename at this time? If not, you can always choose to upgrade at a later time." --button="Yes, proceed to upgrade"\!gtk-ok --button="No, abort upgrade"\!gtk-cancel
+
+    ex=$?
+
+    if [[ "$ex" == "0" ]] #If 'Yes, proceed to upgrade' was clicked
+    then
+
+        pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shock-release-upgrader
+
+    fi
+
+fi

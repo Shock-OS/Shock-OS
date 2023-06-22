@@ -84,7 +84,7 @@ mpg123 /usr/share/shock/startup-sound/* #this command plays the startup sound
 
 shock-welcome &
 
-while true
+while true #check for updates
 do
 
     shock-os-update-manager
@@ -93,10 +93,10 @@ do
 
 done &
 
-while true
+while true #check for available upgrades
 do
 
-    sudo shock-release-upgrader
+    shock-release-scanner
 
     sleep 900
 
