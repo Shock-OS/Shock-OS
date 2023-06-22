@@ -168,9 +168,20 @@ fi
 
 description=$(grep -A 10000 "<id>$id</id>" /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep "<description>" | head -n1 | sed -e 's/<[^>]*>//g' -e 's/^[[:space:]]*//')
 
+if [[ -n "$description" ]] #if description found
+then
+
+    description="Description: $description"
+
+else #if no description found
+
+    description="No description found."
+
+fi
+
 tmpfile2="$(mktemp)"
 
-echo "Description: $description" | tee "$tmpfile2"
+echo "$description" | tee "$tmpfile2"
 
 }
 
