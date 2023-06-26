@@ -26,7 +26,7 @@ fi
 
 }
 
-yad --window-icon=system-users --title="Users" --text="Would you like to add or remove users?" --button="Add" --button="Remove" --button="Advanced" --button="Cancel" --buttons-layout=center
+yad --window-icon=system-users --title="Users" --text="Would you like to add or remove users?" --button="Add"\!add --button="Remove"\!remove --button="Advanced"\!gnome-settings --button="Cancel"\!gtk-cancel --buttons-layout=center
 
 action=$?
 
@@ -52,7 +52,7 @@ then
         - at least eight characters
         - both lower and upper case letters
         - numbers
-        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --field="":LBL "" --field="The privilages of child profiles can be managed in the 'Parental Controls' app. Screen time limits can be imposed on child profiles. Child profiles cannot gain root access or use the 'sudo' command.":LBL "" --field="Child Profile":CHK "$kidprofile" --separator='`' --button="Create User")
+        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --field="":LBL "" --field="The privilages of child profiles can be managed in the 'Parental Controls' app. Screen time limits can be imposed on child profiles. Child profiles cannot gain root access or use the 'sudo' command.":LBL "" --field="Child Profile":CHK "$kidprofile" --separator='`' --button="Create User"\!add)
 
         cnu=$?
 
@@ -76,7 +76,7 @@ then
             if [[ "$(grep -o '`' <<<"$nui" | wc -l)" != "9" ]]
             then
 
-                yad --window-icon=system-users --title="Unsupported Character" --text='You cannot use the "`" character in any field. Please try again.' --button="Retry"
+                yad --window-icon=system-users --title="Unsupported Character" --text='You cannot use the "`" character in any field. Please try again.' --button="Retry"\!edit-undo
 
                 detect_exit
 
@@ -95,7 +95,7 @@ then
             elif [[ -z "$x" ]] || [[ "$x" == *" "* ]]
             then
 
-                yad --window-icon=system-users --title="Invalid Username" --text="Your username cannot be empty or contain spaces. Please try again." --button="Retry"
+                yad --window-icon=system-users --title="Invalid Username" --text="Your username cannot be empty or contain spaces. Please try again." --button="Retry"\!edit-undo
 
                 detect_exit
 
@@ -106,7 +106,7 @@ then
             elif [[ -d /home/$x ]]
             then
 
-                yad --window-icon=system-users --title="User Already Exists" --text="The username '$x' is already taken. Please choose a different one." --button="Retry"
+                yad --window-icon=system-users --title="User Already Exists" --text="The username '$x' is already taken. Please choose a different one." --button="Retry"\!edit-undo
 
                 detect_exit
 
@@ -117,7 +117,7 @@ then
             elif [[ "$(expr "$x" : "^[a-z][-a-z0-9_]*\$" )" == "0" ]] #if username doesn't match the regular expression configured via the NAME_REGEX variable
             then
 
-                yad --window-icon=system-users --title="Invalid Username" --text="That username does not meet the necessary requirements. Usernames must start with a lowercase letter and can only contain lowercase letters, digits, hyphens and underscores." --button="Retry"
+                yad --window-icon=system-users --title="Invalid Username" --text="That username does not meet the necessary requirements. Usernames must start with a lowercase letter and can only contain lowercase letters, digits, hyphens and underscores." --button="Retry"\!edit-undo
 
                 detect_exit
 
@@ -128,7 +128,7 @@ then
             elif [[ -z "$full_name" ]] || ! [[ $full_name = *[!\ ]* ]]
             then
 
-                yad --window-icon=system-users --title="Invalid Full Name" --text="Your full name cannot be empty or only consist of spaces. Please try again." --button="Retry"
+                yad --window-icon=system-users --title="Invalid Full Name" --text="Your full name cannot be empty or only consist of spaces. Please try again." --button="Retry"\!edit-undo
 
                 detect_exit
 
@@ -139,7 +139,7 @@ then
             elif [[ -z "$pa1" || "$pa1" == *" "* ]]
             then
 
-                yad --window-icon=system-users --title="Invalid Password" --text="Your password cannot be empty or contain spaces. Please try again." --button="Retry"
+                yad --window-icon=system-users --title="Invalid Password" --text="Your password cannot be empty or contain spaces. Please try again." --button="Retry"\!edit-undo
 
                 detect_exit
 
@@ -150,7 +150,7 @@ then
             elif [[ "$pa1" != "$pa2" ]]
             then
 
-                yad --window-icon=system-users --title="Passwords Did Not Match" --text="Oops! The passwords did not match. Please try again." --button="Retry"
+                yad --window-icon=system-users --title="Passwords Did Not Match" --text="Oops! The passwords did not match. Please try again." --button="Retry"\!edit-undo
 
                 detect_exit
 
@@ -174,9 +174,9 @@ then
 
         x=$(echo "$x" | tr -cd '[:alnum:]._-') #this command removes all numbers
 
-        sudo adduser --disabled-password --gecos "$full_name" $x #the user has been created
+        adduser --disabled-password --gecos "$full_name" $x #the user has been created
 
-        sudo echo "$x:$pa1" | sudo chpasswd
+        echo "$x:$pa1" | chpasswd
 
         pa1=""
 
@@ -185,19 +185,17 @@ then
         if [[ "$kidprofile" == "TRUE" ]]
         then
 
-            sudo usermod -a -G adm,dialout,cdrom,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $x #the user has been added to the required groups (excluding sudo)
+            groupadd shock-child
 
-            sudo touch /home/$x/.shock_kidprofile
-
-            sudo chattr +i /home/$x/.shock_kidprofile
+            usermod -a -G adm,dialout,cdrom,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio,shock-child $x #the user has been added to the required groups (excluding sudo)
 
         else
 
-            sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $x #the user has been added to the required groups
+            usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $x #the user has been added to the required groups
 
         fi
 
-        yad --window-icon=system-users --title="User Created Successfully" --text="Congratulations! You have successfully created the user '$x'." --button="Dismiss"
+        yad --window-icon=system-users --title="User Created Successfully" --text="Congratulations! You have successfully created the user '$x'." --button="Dismiss"\!gtk-quit
 
 elif [[ "$action" == "1" ]] #remove
 then
@@ -237,20 +235,20 @@ then
     until [[ "$urs" == "yes" ]]
     do
 
-        output=$(yad --window-icon=system-users --title="Remove User" --buttons-layout=center --text="Please select the user you would like to remove below:" --form --field="":CB "$userlist" --button="Next")
+        output=$(yad --window-icon=system-users --title="Remove User" --buttons-layout=center --text="Please select the user you would like to remove below:" --form --field="":CB "$userlist" --button="Next"\!go-next)
 
         detect_exit
 
         user_to_remove=$(echo "$output" | awk -F'|' '{print $1}')
 
-        yad --window-icon=system-users --title="Remove User" --text="You are about to remove the user '$user_to_remove'. THIS ACTION IS IRREVERSABLE AND WILL ERASE ALL THEIR DATA. Are you sure you would like to delete '$user_to_remove'?" --button="DELETE USER" --button="Cancel"
+        yad --window-icon=system-users --title="Remove User" --text="You are about to remove the user '$user_to_remove'. THIS ACTION IS IRREVERSABLE AND WILL ERASE ALL THEIR DATA. Are you sure you would like to delete '$user_to_remove'?" --button="DELETE USER"\!remove --button="Cancel"\!gtk-cancel
 
         rdu=$?
 
         if [[ "$rdu" != "0" ]]
         then
 
-            yad --window-icon=system-users --title="Operation Aborted" --text="The user '$user_to_remove' was not removed. No changes were made to your system." --button="Dismiss"
+            yad --window-icon=system-users --title="Operation Aborted" --text="The user '$user_to_remove' was not removed. No changes were made to your system." --button="Dismiss"\!gtk-quit
 
             exit
 
@@ -261,7 +259,7 @@ then
         if [[ "$(w | grep x-session-manager | awk '{print " "$1" "}')" == *" $user_to_remove "* ]]
         then
 
-            yad --window-icon=system-users --title="Cannot Remove User" --text="You cannot remove the user '$user_to_remove' because they are currently logged in." --button="Retry"
+            yad --window-icon=system-users --title="Cannot Remove User" --text="You cannot remove the user '$user_to_remove' because they are currently logged in." --button="Retry"\!edit-undo
 
             detect_exit
 
@@ -270,14 +268,14 @@ then
         elif [[ "$(ps -u $user_to_remove)" == *":"* ]]
         then
 
-            yad --window-icon=system-users --title="Cannot Remove User" --text="The user '$user_to_remove' cannot be removed because they have been logged in and are still occupied by some system processes. To delete this user, reboot the system (without loggin in as '$user_to_remove') and try again." --button="Dismiss"
+            yad --window-icon=system-users --title="Cannot Remove User" --text="The user '$user_to_remove' cannot be removed because they have been logged in and are still occupied by some system processes. To delete this user, reboot the system (without loggin in as '$user_to_remove') and try again." --button="Dismiss"\!gtk-quit
 
             exit
 
-        elif ! [[ -d /home/$utd ]]
+        elif ! [[ -d /home/"$user_to_remove" ]]
         then
 
-            yad --window-icon=system-users --title="Cannot Remove User" --text="The user '$user_to_remove' does not exist." --button="Retry"
+            yad --window-icon=system-users --title="Cannot Remove User" --text="The user '$user_to_remove' does not exist." --button="Retry"\!edit-undo
 
             detect_exit
 
@@ -289,27 +287,15 @@ then
 
     #removing restricting child profile files if they exist... (ignore errors from these lines if user being removed is not a child profile)
 
-    sudo chattr -i /home/$user_to_remove/.shock_kidprofile
+    chattr -R -i /usr/share/shock-pcstl/"$user_to_remove"
 
-    sudo chattr -i /home/$utr/.shock_screen_time_limit
-
-    sudo rm /home/$user_to_remove/.shock_kidprofile
-
-    sudo rm /home/$utr/.shock_screen_time_limit
-
-    sudo rm /usr/bin/shock-$utr-pcstl
-
-    sudo rm /etc/sudoers.d/shock-$utr-pcstl
-
-    sudo chattr -R -i /home/$utr/.shock_pcstl
-
-    sudo rm -r /home/$utr/.shock_pcstl
+    rm -r /usr/share/shock-pcstl/"$user_to_remove"
 
     #child profile files removed
 
-    sudo deluser --remove-home $user_to_remove
+    deluser --remove-home $user_to_remove
 
-    yad --window-icon=system-users --title="User Successfully Removed" --text="Congratulations! The user '$user_to_remove' has successfully been removed." --button="Dismiss"
+    yad --window-icon=system-users --title="User Successfully Removed" --text="Congratulations! The user '$user_to_remove' has successfully been removed." --button="Dismiss"\!gtk-quit
 
 elif [[ "$action" == "2" ]]
 then

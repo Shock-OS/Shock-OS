@@ -592,7 +592,7 @@ do
     elif [[ "$ex" == "2" ]] #categories
     then
 
-        output=$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --list --no-headers --width=400 --height=300 --column="Icon":IMG --column="Category" open-menu-symbolic "All Applications" applications-accessories Accessories applications-games Games applications-graphics Graphics applications-internet Internet applications-office Office applications-development Programming applications-science Education applications-multimedia Multimedia applications-system "System Tools" --button="Go")
+        output=$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --list --no-headers --width=400 --height=300 --column="Icon":IMG --column="Category" open-menu-symbolic "All Applications" applications-accessories Accessories applications-games Games applications-graphics Graphics applications-internet Internet applications-office Office applications-development Programming applications-science Education applications-multimedia Multimedia applications-system "System Tools" --button="Go"\!go-next)
 
         ex=$?
 

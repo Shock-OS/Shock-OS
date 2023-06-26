@@ -39,7 +39,7 @@ do
 			if (($(ls /usr/share/shock-os-imager/cached-images/ | wc -l)>0)) #if there are cached images available
 			then
 
-				yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-important --title="Shock OS Imager" --text="There is no internet connection, but cached images are available. Please either reconnect to the internet and hit 'Retry', or continue with only cached images." --button="Continue with Cached Images Only" --button="Retry"
+				yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-important --title="Shock OS Imager" --text="There is no internet connection, but cached images are available. Please either reconnect to the internet and hit 'Retry', or continue with only cached images." --button="Continue with Cached Images Only"\!go-next --button="Retry"\!edit-undo
 
 				ex=$?
 
@@ -57,7 +57,7 @@ do
 
 			else
 
-				yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-important --title="Shock OS Imager" --text="There is no internet connection, and no cached images are available. Please reconnect to the internet and hit 'Retry'." --button="Retry"
+				yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-important --title="Shock OS Imager" --text="There is no internet connection, and no cached images are available. Please reconnect to the internet and hit 'Retry'." --button="Retry"\!edit-undo
 
 				ex=$?
 
@@ -182,7 +182,7 @@ do
     if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)>0))
     then
 
-        cached_images_button='--button=Delete Cached Images!gtk-delete:30'
+        cached_images_button='--button=Delete Cached Images!gtk-delete:30'\!remove
 
     else
 
@@ -214,7 +214,7 @@ do
 
         fi
 
-        yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="$rmci_text" --button="Yes, remove" --button="No, keep"
+        yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="$rmci_text" --button="Yes, remove"\!gtk-ok --button="No, keep"\!gtk-cancel
 
         ex=$?
 
@@ -223,7 +223,7 @@ do
 
             rm -rf /usr/share/shock-os-imager/cached-images/*
 
-            yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-default --title="Shock OS Imager" --text="All cached images have been successfully removed." --button="Dismiss"
+            yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-default --title="Shock OS Imager" --text="All cached images have been successfully removed." --button="Dismiss"\!gtk-quit
 
         fi
 
@@ -308,7 +308,7 @@ then
 				if [[ ! -f /usr/share/shock-os-imager/images ]]
 				then
 
-					yad --window-icon=/usr/share/shock-os-imager/icon.svg --window-icon=emblem-important --text="You are not connected to the internet, and an image for the Shock OS version you selected is not cached. Please either connect to the internet and hit 'Retry', or cancel." --button="Retry" --button="Cancel"
+					yad --window-icon=/usr/share/shock-os-imager/icon.svg --window-icon=emblem-important --text="You are not connected to the internet, and an image for the Shock OS version you selected is not cached. Please either connect to the internet and hit 'Retry', or cancel." --button="Retry"\!edit-undo --button="Cancel"\!gtk-cancel
 
 					ex=$?
 
@@ -336,7 +336,7 @@ then
 		if [[ ! -f /usr/share/shock-os-imager/cached-images/$filename ]] #if download failed
 		then
 
-			yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="The download failed or was interrupted. The operation has been aborted." --button="Dismiss"
+			yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="The download failed or was interrupted. The operation has been aborted." --button="Dismiss"\!gtk-quit
 
 			exit
 
@@ -366,7 +366,7 @@ then
 
 	zenity --notification --title="Flashing Complete" --text="$image_to_flash_display has successfully been flashed to $target_drive_display_name."
 
-	yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Congratulations! $image_to_flash_display has successfully been flashed to $target_drive_display_name. Thank you and enjoy!" --button="Dismiss"
+	yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Congratulations! $image_to_flash_display has successfully been flashed to $target_drive_display_name. Thank you and enjoy!" --button="Dismiss"\!gtk-quit
 
 elif [[ "$ex" != "10" ]]
 then

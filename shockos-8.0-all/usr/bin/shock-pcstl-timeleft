@@ -5,15 +5,22 @@
 while true
 do
 
-    minutes=$(cat /home/$(whoami)/.shock_screen_time_limit)
+    minutes=$(cat /usr/share/shock-pcstl/"$(whoami)"/shock-screen-time-limit)
 
-    tau=$(cat /home/$(whoami)/.shock_pcstl/"$(date "+%F")")
+    remaining="$(cat /usr/share/shock-pcstl/"$(whoami)"/today/"$(date "+%F")") minutes"
 
-    yad --window-icon=/shock/parental-controls.png --title="Screen Time Limit" --text="Your parent/guardian/administrator has set a daily screen time limit on your profile.
+    if [[ "$remaining" == "1 minutes" ]]
+    then
 
-    Total daily limit: $minutes minutes
+        remaining="1 minute"
 
-    Time remaining: $tau minutes" --buttons-layout=edge --button="Refresh" --button="Dismiss"
+    fi
+
+    yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="Your parent/guardian/administrator has set a daily screen time limit on your profile.
+
+Total daily limit: $minutes minutes
+
+Time remaining: $remaining" --buttons-layout=edge --button="Refresh"\!gtk-refresh --button="Dismiss"\!gtk-quit
 
     ex=$?
 

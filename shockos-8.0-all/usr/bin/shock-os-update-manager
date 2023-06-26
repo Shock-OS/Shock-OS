@@ -172,7 +172,7 @@ then
 
         end_loading
 
-        yad --window-icon=emblem-default --image=emblem-default --buttons-layout=edge --title="Update Manager" --text="Your system is up to date." --button="Settings"\!gnome-settings --button="Dismiss" --width=300
+        yad --window-icon=emblem-default --image=emblem-default --buttons-layout=edge --title="Update Manager" --text="Your system is up to date." --button="Settings"\!gnome-settings --button="Dismiss"\!gtk-quit --width=300
 
         ex=$?
 
@@ -383,11 +383,11 @@ do
 	        if [[ "$updates_cancelled" == "TRUE" ]] || ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
 	        then
 
-		        yad --window-icon=emblem-important --image=emblem-important --title="Update Manager" --text="Failed to install the updates. Please double check your internet connection and try again later." --button="Dismiss" --width=400
+		        yad --window-icon=emblem-important --image=emblem-important --title="Update Manager" --text="Failed to install the updates. Please double check your internet connection and try again later." --button="Dismiss"\!gtk-quit --width=400
 
 	        else
 
-		        yad --window-icon=emblem-default --image=emblem-default --title="Update Manager" --text="Your system is up to date." --button="Dismiss" --width=300
+		        yad --window-icon=emblem-default --image=emblem-default --title="Update Manager" --text="Your system is up to date." --button="Dismiss"\!gtk-quit --width=300
 
 	        fi
 

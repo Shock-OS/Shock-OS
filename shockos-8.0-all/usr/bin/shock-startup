@@ -70,7 +70,7 @@ then
 
     sudo rm /usr/share/shock/setupvalue
 
-    sudo rm /etc/sudoers.d/initsetup_rootpriv #this command removes elevated privilages as they are no longer required.
+    sudo rm /etc/sudoers.d/initsetup-rootpriv #this command removes elevated privilages as they are no longer required.
 
     echo "Finalizing setup..."
 
@@ -93,12 +93,26 @@ do
 
 done &
 
-while true #check for available upgrades
+while true #check for available system upgrades
 do
 
     shock-release-scanner
 
     sleep 900
 
-done
+done &
+
+if [[ " $(groups "$(whoami)") " == *" shock-child "* ]] && [[ -f /usr/share/shock-pcstl/"$(whoami)"/shock-screen-time-limit ]] #if account is a child profile with a screen time limit set
+then
+
+    yad --notification --image=/usr/share/shock/parental-controls.png --text='Screen time limit is enabled for this user.' --icon-size=48 --command='' --menu='Remaining Time!shock-pcstl-timeleft!time' &
+
+    sudo shock-pcstl-daemon "$(whoami)"
+
+fi
+
+    
+
+
+
 

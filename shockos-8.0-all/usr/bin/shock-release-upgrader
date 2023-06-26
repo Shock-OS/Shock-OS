@@ -156,7 +156,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
     else
 
-	    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --image=emblem-important --title="Upgrade Failed" --text="Failed to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please try again later." --button="Dismiss"
+	    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --image=emblem-important --title="Upgrade Failed" --text="Failed to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please try again later." --button="Dismiss"\!gtk-quit
 
     fi
 

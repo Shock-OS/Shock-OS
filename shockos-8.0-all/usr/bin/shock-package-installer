@@ -25,14 +25,14 @@ arch="$(dpkg -I "$file" | grep Architecture: | awk '{print $2}')"
 if ! [[ "$arch" == "all" || "$arch" == *"arm"* ]] #if not an ARM package
 then
 
-    yad --window-icon=package --image=emblem-important --width=400 --title="Package Installer" --text="$(basename "$file") is in an architecture that is incompatible with your system. Please use an ARM (armhf or arm64) version of the package if possible. i386 and amd64 packages will NOT work." --button="Dismiss"
+    yad --window-icon=package --image=emblem-important --width=400 --title="Package Installer" --text="$(basename "$file") is in an architecture that is incompatible with your system. Please use an ARM (armhf or arm64) version of the package if possible. i386 and amd64 packages will NOT work." --button="Dismiss"\!gtk-quit
 
     exit
 
 elif [[ "$(getconf LONG_BIT)" == "32" ]] && ! [[ "$arch" == "all" || "$arch" == *"armhf"* ]] #if it is an ARM package, check for compatibility on 32-bit systems (32-bit)
 then
 
-    yad --window-icon=package --image=emblem-important --width=400 --title="Package Installer" --text="$(basename "$file") is a 64-bit package (arm64), but your system is only 32-bit (armhf). Please use a 32-bit (armhf) version of the package if possible." --button="Dismiss"
+    yad --window-icon=package --image=emblem-important --width=400 --title="Package Installer" --text="$(basename "$file") is a 64-bit package (arm64), but your system is only 32-bit (armhf). Please use a 32-bit (armhf) version of the package if possible." --button="Dismiss"\!gtk-quit
 
     exit
 
@@ -109,10 +109,10 @@ deb_version="$(dpkg -I "$file" | grep Version: | awk '{print $2}')"
 if [[ " ${installed_packages[@]} " == *" $package "* ]] && [[ "$current_version" == "$deb_version" ]] #if package installed successfully
 then
 
-    yad --window-icon=package --image=emblem-default --title="Package Installer" --text="$package_display_name was installed successfully." --button="Dismiss"
+    yad --window-icon=package --image=emblem-default --title="Package Installer" --text="$package_display_name was installed successfully." --button="Dismiss"\!gtk-quit
 
 else #if package was not installed successfully
 
-    yad --window-icon=package --image=emblem-important --title="Package Installer" --text="Failed to install $package_display_name. Please double check your internet connection and try again later." --button="Dismiss"
+    yad --window-icon=package --image=emblem-important --title="Package Installer" --text="Failed to install $package_display_name. Please double check your internet connection and try again later." --button="Dismiss"\!gtk-quit
 
 fi

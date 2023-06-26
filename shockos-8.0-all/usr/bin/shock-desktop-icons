@@ -39,7 +39,7 @@ network=$(sed -n 5p ~/.config/shock-desktop-icons)
 
 mounted_volumes=$(sed -n 6p ~/.config/shock-desktop-icons)
 
-output=$(yad --title="Desktop Icons" --window-icon=emblem-desktop --form --field="Show Desktop Icons":CHK "$show_desktop_icons" --field="The following options will only apply if desktop icons are enabled:":LBL '' --field="Computer":CHK "$computer" --field="Home":CHK "$home" --field="Trash":CHK "$trash" --field="Network":CHK "$network" --field="Mounted Volumes":CHK "$mounted_volumes" --button="Apply")
+output=$(yad --title="Desktop Icons" --window-icon=emblem-desktop --form --field="Show Desktop Icons":CHK "$show_desktop_icons" --field="The following options will only apply if desktop icons are enabled:":LBL '' --field="Computer":CHK "$computer" --field="Home":CHK "$home" --field="Trash":CHK "$trash" --field="Network":CHK "$network" --field="Mounted Volumes":CHK "$mounted_volumes" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
 
 ex=$?
 

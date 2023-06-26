@@ -104,7 +104,7 @@ else
 
 fi
 
-yad --width=320 --text-align=center --buttons-layout=center --title="Desktop Background" --window-icon="background" --text="Please choose a background style:" --button="Single Image" --button="Slideshow"
+yad --width=320 --text-align=center --buttons-layout=center --title="Desktop Background" --window-icon="background" --text="Please choose a background style:" --button="Single Image"\!image-x-generic --button="Slideshow"\!folder-images
 
 wt=$?
 
@@ -116,7 +116,7 @@ then
     until [[ "$wallpaper_is_image" == "yes" ]]
     do
     
-        choose=$(yad --width=300 --title="Single Image Background" --window-icon="background" --form --field="Image:":FL "$current_wallpaper" --field="Style:":CB "$style_input_siw" --button="Reset to Default":1 --button="Apply":0)
+        choose=$(yad --width=300 --title="Single Image Background" --window-icon="background" --form --field="Image:":FL "$current_wallpaper" --field="Style:":CB "$style_input_siw" --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0 --button="Cancel"\!gtk-cancel:2)
 
         ex=$?
 
@@ -174,7 +174,7 @@ then
 
             else
 
-                yad --window-icon="background" --title="Not an Image" --text="The file you selected does not appear to be an image." --button="Dismiss"
+                yad --window-icon="background" --title="Not an Image" --text="The file you selected does not appear to be an image." --button="Dismiss"\!gtk-quit
 
             fi
 
@@ -194,7 +194,7 @@ then
     until (( $dc > 1 )) && [[ "$dci" == *"image"* ]]
     do
 
-        choose=$(yad --form --width=400 --height=200 --window-icon=background --title="Slideshow Background" --field="Folder containing images:":DIR "$current_directory" --field="Delay (minutes):":NUM "$current_delay"'!1..100!1' --field="Style:":CB "$style_input" --field="Play images in random order":CHK "$current_random_inorder" --button="Apply")
+        choose=$(yad --form --width=400 --height=200 --window-icon=background --title="Slideshow Background" --field="Folder containing images:":DIR "$current_directory" --field="Delay (minutes):":NUM "$current_delay"'!1..100!1' --field="Style:":CB "$style_input" --field="Play images in random order":CHK "$current_random_inorder" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
 
         ex=$?
 
@@ -233,12 +233,12 @@ then
         if [[ "$dci" != *"image"* ]]
         then
 
-            yad --window-icon="background" --title="No Images Found" --text="The directory you selected does not appear to contain images. The directory must contain at least two images for a slideshow background." --button="Retry"
+            yad --window-icon="background" --title="No Images Found" --text="The directory you selected does not appear to contain images. The directory must contain at least two images for a slideshow background." --button="Retry"\!edit-undo
 
         elif (( $dc <= 1 ))
         then
 
-            yad --window-icon="background" --title="Not Enough Images" --text="The directory you selected does not contain enough images. The directory must contain at least two images for a slideshow background." --button="Retry"
+            yad --window-icon="background" --title="Not Enough Images" --text="The directory you selected does not contain enough images. The directory must contain at least two images for a slideshow background." --button="Retry"\!edit-undo
 
         fi
 

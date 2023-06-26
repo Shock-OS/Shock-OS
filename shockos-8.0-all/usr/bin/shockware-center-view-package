@@ -47,7 +47,7 @@ then
 
         end_loading
 
-        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="$full_name is not available." --button="Dismiss"
+        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="$full_name is not available." --button="Dismiss"\!gtk-quit
 
         exit
 
@@ -104,7 +104,7 @@ $package &
 
 function apt_remove() {
 
-yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove" --button="No, keep"
+yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!gtk-remove --button="No, keep"\!gtk-cancel
 
 ex=$?
 
@@ -118,11 +118,11 @@ then
     if [[ " ${installed_packages[@]} " != *" $package "* ]] #if removed successfully
     then
 
-        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully removed." --button="Dismiss"
+        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully removed." --button="Dismiss"\!gtk-quit
 
     else
 
-        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to remove $full_name$both." --button="Dismiss"
+        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to remove $full_name$both." --button="Dismiss"\!gtk-quit
 
     fi
 
@@ -139,11 +139,11 @@ installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #Chat
 if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed successfully
 then
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully installed." --button="Dismiss"
+    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully installed." --button="Dismiss"\!gtk-quit
 
 else
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $full_name$both. Please double check your internet connection and try again later." --button="Dismiss"
+    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $full_name$both. Please double check your internet connection and try again later." --button="Dismiss"\!gtk-quit
 
 fi
 
@@ -193,7 +193,7 @@ flatpak run "$id" &
 
 function flatpak_remove() {
 
-yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove" --button="No, keep"
+yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!remove --button="No, keep"\!gtk-cancel
 
 ex=$?
 
@@ -207,11 +207,11 @@ then
     if [[ " ${installed_flatpaks[@]} " != *" $id "* ]] #if removed successfully
     then
 
-        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully removed." --button="Dismiss"
+        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully removed." --button="Dismiss"\!gtk-quit
 
     else
 
-        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to remove $full_name$both." --button="Dismiss"
+        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to remove $full_name$both." --button="Dismiss"\!gtk-quit
 
     fi
 
@@ -228,11 +228,11 @@ installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
 if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed successfully
 then
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully installed." --button="Dismiss"
+    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully installed." --button="Dismiss"\!gtk-quit
 
 else
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $full_name$both. Please double check your internet connection and try again later." --button="Dismiss"
+    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $full_name$both. Please double check your internet connection and try again later." --button="Dismiss"\!gtk-quit
 
 fi
 
