@@ -120,6 +120,8 @@ then
 
     mkdir -p /usr/share/shock-pcstl/"$utr"
 
+    chattr -i /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit
+
     echo "$minutes" | tee /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit
 
     chattr +i /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit

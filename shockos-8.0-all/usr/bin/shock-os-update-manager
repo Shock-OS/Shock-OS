@@ -101,22 +101,9 @@ function install_updates() {
 
 pkexec env DEBIAN_FRONTEND=gnome apt upgrade -y
 
-ex=$?
-
-if [[ "$ex" != "0" ]]
-then
-
-updates_cancelled="TRUE"
-
-else
-
-updates_cancelled="FALSE"
-
 flatpak update -y
 
 fetch_updates
-
-fi
 
 }
 
@@ -378,9 +365,7 @@ do
 
 	        install_updates | zenity --window-icon=system-software-update --title="Update Manager" --text="Installing updates..." --progress --pulsate --auto-close --no-cancel
 
-            all_updates=($(printf "%s\n" "${all_updates[@]}" | sort))
-
-	        if [[ "$updates_cancelled" == "TRUE" ]] || ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
+	        if ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
 	        then
 
 		        yad --window-icon=emblem-important --image=emblem-important --title="Update Manager" --text="Failed to install the updates. Please double check your internet connection and try again later." --button="Dismiss"\!gtk-quit --width=400

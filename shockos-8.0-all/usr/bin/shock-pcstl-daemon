@@ -93,6 +93,32 @@ then
         if [[ "$(view-current-user)" == "$runuser" ]]
         then
 
+            if [[ "$(cat /usr/share/shock-pcstl/"$runuser"/shock-screen-time-limit)" != "$daily_limit" ]] #if daily limit changed
+            then
+
+                already_used_time=$((daily_limit-minutes))
+
+                daily_limit="$(cat /usr/share/shock-pcstl/"$runuser"/shock-screen-time-limit)"
+
+                minutes=$((daily_limit-already_used_time))
+
+            fi
+
+            if [[ ! -f /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)" ]] #if new day, then restart timer
+            then
+
+                minutes="$daily_limit"
+
+                chattr -R -i /usr/share/shock-pcstl/"$runuser"/today
+
+                rm -r /usr/share/shock-pcstl/"$runuser"/today/*
+
+                echo "$minutes" | tee /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
+
+                chattr -R +i /usr/share/shock-pcstl/"$runuser"/today
+
+            fi          
+
             minutes=$((minutes-1))
 
             chattr -R -i /usr/share/shock-pcstl/"$runuser"/today

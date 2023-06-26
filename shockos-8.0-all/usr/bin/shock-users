@@ -200,42 +200,12 @@ then
 elif [[ "$action" == "1" ]] #remove
 then
 
-    userlist=""
-
-    users_on_sys=(/home/*)
-
-    users_num=$(ls /home | wc -l)
-
-    current_user=0
-
-    while (( $current_user < $users_num ))
-    do
-
-        newbutton="${users_on_sys[$current_user]}"
-
-        newbutton="${newbutton##*/}"
-
-        if [[ -z $userlist ]]
-        then
-
-            userlist="$newbutton"
-
-        else
-
-            userlist="$userlist!$newbutton"
-
-        fi
-
-        let current_user++
-
-    done
-
     urs="no"
 
     until [[ "$urs" == "yes" ]]
     do
 
-        output=$(yad --window-icon=system-users --title="Remove User" --buttons-layout=center --text="Please select the user you would like to remove below:" --form --field="":CB "$userlist" --button="Next"\!go-next)
+        output=$(yad --window-icon=system-users --title="Remove User" --buttons-layout=center --text="Please select the user you would like to remove below:" --list --column="Username" $(ls /home) --button="Next"\!go-next)
 
         detect_exit
 
