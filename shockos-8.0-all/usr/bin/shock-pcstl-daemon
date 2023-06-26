@@ -49,6 +49,8 @@ done
 if [[ " $(groups "$runuser") " == *" shock-child "* ]] && [[ -f /usr/share/shock-pcstl/"$runuser"/shock-screen-time-limit ]] #if account is a child profile with a screen time limit set
 then
 
+    sudo ntpdate -u pool.ntp.org #synchronizes the time if the system is connected to the internet
+
     mkdir -p /usr/share/shock-pcstl/"$runuser"/today
 
     daily_limit="$(cat /usr/share/shock-pcstl/"$runuser"/shock-screen-time-limit)"

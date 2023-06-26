@@ -275,7 +275,7 @@ do
 
 		        fi
 		        
-		        update_list+=("\"$icon\"" "\"$name\"")
+		        update_list+=("\"$icon\"" "\"$name\"" "\"A\"")
 
 	        else #if APT package
 
@@ -301,7 +301,7 @@ do
 
                 fi
 
-		        update_list+=("\"$icon\"" "\"$name\"")
+		        update_list+=("\"$icon\"" "\"$name\"" "\"A\"")
 
 	        fi
 
@@ -334,7 +334,7 @@ do
 
         fi
 
-        yadlist="yad --window-icon=system-software-update --title=\"Update Manager\" --width=800 --height=500 --text=\"Updates are available for the following apps/packages:\" --list --dclick-action=shock-os-update-manager-view-package --no-click --buttons-layout=edge --column=\"Icon\":IMG --column=\"Name\" $page_buttons --button=\"Settings\"\!gnome-settings:1 --button=\"Install Updates\"\!system-software-update:2 ${update_list[@]}"
+        yadlist="yad --window-icon=system-software-update --title=\"Update Manager\" --width=800 --height=500 --text=\"Updates are available for the following apps/packages:\" --list --dclick-action=shock-os-update-manager-view-package --no-click --buttons-layout=edge --column=\"Icon\":IMG --column=\"Name\" --column=\"Type\":HD $page_buttons --button=\"Settings\"\!gnome-settings:1 --button=\"Install Updates\"\!system-software-update:2 ${update_list[@]}"
 
         end_loading
 
