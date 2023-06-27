@@ -46,6 +46,29 @@ done
 
 #THE VIEW CURRENT USER FUNCTION ENDS
 
+pcstl_cusessions=0
+
+for i in $(ps aux | grep root)
+do
+
+    if [[ "$(echo "$i" | awk '{print $1}')" == "root" ]] && [[ "$i" == *"sudo shock-pcstl-daemon $runuser"* ]]
+    then
+
+        pcstl_cusessions=$((pcstl_cusessions+1))
+
+    fi
+
+done
+
+if ((pcstl_cusessions>1))
+then
+
+    exit
+
+fi
+
+#the above for and if loops exit the script if it is already running for this user.      
+
 if [[ " $(groups "$runuser") " == *" shock-child "* ]] && [[ -f /usr/share/shock-pcstl/"$runuser"/shock-screen-time-limit ]] #if account is a child profile with a screen time limit set
 then
 
@@ -93,22 +116,13 @@ then
         if [[ "$(view-current-user)" == "$runuser" ]]
         then
 
-            if [[ "$(cat /usr/share/shock-pcstl/"$runuser"/shock-screen-time-limit)" != "$daily_limit" ]] #if daily limit changed
-            then
-
-                already_used_time=$((daily_limit-minutes))
-
-                daily_limit="$(cat /usr/share/shock-pcstl/"$runuser"/shock-screen-time-limit)"
-
-                minutes=$((daily_limit-already_used_time))
-
-            fi
-
-            if [[ ! -f /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)" ]] #if new day, then restart timer
+            if [[ ! -f /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)" ]] #if new day, or screen time limit has been changed, then restart timer
             then
 
                 if [[ -d /usr/share/shock-pcstl/"$runuser" ]]
                 then
+
+                    daily_limit="$(cat /usr/share/shock-pcstl/"$runuser"/shock-screen-time-limit)"
 
                     minutes="$daily_limit"
 

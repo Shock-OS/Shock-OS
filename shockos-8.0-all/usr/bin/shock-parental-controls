@@ -116,13 +116,26 @@ then
 
     mkdir -p /usr/share/shock-pcstl/"$utr"
 
+    chattr -R -i /usr/share/shock-pcstl/"$utr"/today
+
+    rm -r /usr/share/shock-pcstl/"$utr"/today
+
     chattr -i /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit
 
     echo "$minutes" | tee /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit
 
     chattr +i /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit
 
-    yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="A daily screen time limit of $minutes minutes has been set for $utr." --button="Dismiss"\!gtk-quit
+    if [[ "$ex3" == "0" ]] #if overwriting
+    then
+
+        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="The daily screen time limit for the user $utr has been changed to $minutes minutes. If they are logged in, their timer will be restarted." --button="Dismiss"\!gtk-quit
+
+    else
+
+        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="A daily screen time limit of $minutes minutes has been set for $utr. This will take effect the next time they log in." --button="Dismiss"\!gtk-quit
+
+    fi
 
     #the time limit patch ends
 
