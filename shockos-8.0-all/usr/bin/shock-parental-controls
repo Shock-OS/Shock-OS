@@ -114,10 +114,6 @@ then
 
     minutes=$(echo "$minutes" | sed 's/|//')
 
-    chattr -R -i /usr/share/shock-pcstl/"$utr"/today
-
-    rm -r /usr/share/shock-pcstl/"$utr"/today
-
     mkdir -p /usr/share/shock-pcstl/"$utr"
 
     chattr -i /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit

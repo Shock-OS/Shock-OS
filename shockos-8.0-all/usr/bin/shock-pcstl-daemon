@@ -107,15 +107,26 @@ then
             if [[ ! -f /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)" ]] #if new day, then restart timer
             then
 
-                minutes="$daily_limit"
+                if [[ -d /usr/share/shock-pcstl/"$runuser" ]]
+                then
 
-                chattr -R -i /usr/share/shock-pcstl/"$runuser"/today
+                    minutes="$daily_limit"
 
-                rm -r /usr/share/shock-pcstl/"$runuser"/today/*
+                    chattr -R -i /usr/share/shock-pcstl/"$runuser"/today
 
-                echo "$minutes" | tee /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
+                    rm -r /usr/share/shock-pcstl/"$runuser"/today/*
 
-                chattr -R +i /usr/share/shock-pcstl/"$runuser"/today
+                    echo "$minutes" | tee /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
+
+                    chattr -R +i /usr/share/shock-pcstl/"$runuser"/today
+
+                else #if screen time limit has been removed for this user
+
+                    kill -9 "$2"
+
+                    exit
+
+                fi
 
             fi          
 

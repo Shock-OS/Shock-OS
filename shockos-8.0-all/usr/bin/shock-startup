@@ -119,9 +119,9 @@ done & killpid_srs=$!
 if [[ " $(groups "$(whoami)") " == *" shock-child "* ]] && [[ -f /usr/share/shock-pcstl/"$(whoami)"/shock-screen-time-limit ]] #if account is a child profile with a screen time limit set
 then
 
-    yad --notification --image=/usr/share/shock/parental-controls.png --text='Screen time limit is enabled for this user.' --icon-size=48 --command='' --menu='Remaining Time!shock-pcstl-timeleft!time' &
+    yad --notification --image=/usr/share/shock/parental-controls.png --text='Screen time limit is enabled for this user.' --icon-size=48 --command='' --menu='Remaining Time!shock-pcstl-timeleft!time' & killpid_pcstld=$!
 
-    sudo shock-pcstl-daemon "$(whoami)"
+    sudo shock-pcstl-daemon "$(whoami)" "$killpid_pcstld"
 
 fi
 
