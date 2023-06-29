@@ -2,33 +2,15 @@
 
 #this script is the applicaton that sets wallpapers (both single image and slideshow)
 
-# NORMAL (SINGLE IMAGE) WALLPAPER config file lines in order
-#1: wallpaper image path
-#2: style
-
-# SLIDESHOW WALLPAPER config file lines in order
-#1: $directory
-#2: $delay
-#3: $random_inorder
-#4: style
-
 if [[ -f ~/.config/shock_slideshow_wallpaper ]]
 then
 
-    current_directory=$(sed -n 1p ~/.config/shock_slideshow_wallpaper)
-
-    current_delay=$(sed -n 2p ~/.config/shock_slideshow_wallpaper)
-
-    current_random_inorder=$(sed -n 3p ~/.config/shock_slideshow_wallpaper)
-
-    current_style=$(sed -n 4p ~/.config/shock_slideshow_wallpaper)
+    eval $(cat ~/.config/shock_slideshow_wallpaper)
 
 elif [[ -f ~/.config/shock-wallpaper ]]
 then
 
-    current_wallpaper=$(sed -n 1p ~/.config/shock-wallpaper)
-
-    current_style_siw=$(sed -n 2p ~/.config/shock-wallpaper)
+    eval $(cat ~/.config/shock-wallpaper)
 
 fi
 
@@ -164,9 +146,9 @@ then
 
                 touch ~/.config/shock-wallpaper
 
-                echo "$siw" | tee ~/.config/shock-wallpaper
+                echo "siw=\"$siw\"
 
-                echo "$style" | tee -a ~/.config/shock-wallpaper
+style=\"$style\"" | tee ~/.config/shock-wallpaper
 
                 dconf write /org/mate/desktop/background/picture-options "'$style'"
 
@@ -248,25 +230,42 @@ then
 
     touch ~/.config/shock_slideshow_wallpaper
 
-    echo "$directory" | tee ~/.config/shock_slideshow_wallpaper
+    echo "directory=\"$directory\"
 
-    echo "$delay" | tee -a ~/.config/shock_slideshow_wallpaper
+delay=\"$delay\"
 
-    echo "$random_inorder" | tee -a ~/.config/shock_slideshow_wallpaper
+random_inorder=\"$random_inorder\"
 
-    echo "$style" | tee -a ~/.config/shock_slideshow_wallpaper
+style=\"$style\"" | tee ~/.config/shock_slideshow_wallpaper
 
     if [[ "$random_inorder" == 'TRUE' ]] #random
     then
 
-        ws="$directory/$(ls "$directory" | shuf -n 1)"
+        until [[ "$fii" == *"image"* ]]
+        do
+
+            ws="$directory/$(ls "$directory" | shuf -n 1)"
+
+            fii=$(file "$ws")
+
+        done
 
     elif [[ "$random_inorder" == 'FALSE' ]] #in order
     then
 
-        xfile=("$directory"/*)
+        for ws in "$directory"/*
+        do
 
-        ws=${xfile[0]}
+            fii=$(file "$ws")
+
+            if [[ "$fii" == *"image"* ]]
+            then
+
+                break
+
+            fi
+
+        done
 
     fi
 

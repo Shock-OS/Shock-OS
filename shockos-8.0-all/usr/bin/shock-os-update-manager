@@ -103,8 +103,6 @@ pkexec env DEBIAN_FRONTEND=gnome apt upgrade -y
 
 flatpak update -y
 
-fetch_updates
-
 }
 
 rows_per_page=100
@@ -364,6 +362,8 @@ do
         then
 
 	        install_updates | zenity --window-icon=system-software-update --title="Update Manager" --text="Installing updates..." --progress --pulsate --auto-close --no-cancel
+
+            fetch_updates
 
 	        if ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
 	        then
