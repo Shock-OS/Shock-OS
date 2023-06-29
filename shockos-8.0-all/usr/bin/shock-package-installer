@@ -9,8 +9,17 @@ then
 
 fi
 
-if [[ -z "$file" ]]
+if [[ -d "$file" ]] #if a directory was selected instead of a file
 then
+
+    yad --window-icon=package --image=emblem-important --width=400 --title="Package Installer" --text="$(basename "$file") is a folder, not a .deb package." --button="Dismiss"\!gtk-quit
+
+    exit
+
+elif [[ "$file" != *".deb" ]] #if not a .deb package
+then
+
+    yad --window-icon=package --image=emblem-important --width=400 --title="Package Installer" --text="$(basename "$file") is not a .deb package." --button="Dismiss"\!gtk-quit
 
     exit
 

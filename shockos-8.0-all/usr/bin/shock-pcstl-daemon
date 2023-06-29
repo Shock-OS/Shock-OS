@@ -51,7 +51,7 @@ pcstl_cusessions=0
 for i in $(ps aux | grep root)
 do
 
-    if [[ "$(echo "$i" | awk '{print $1}')" == "root" ]] && [[ "$i" == *"sudo shock-pcstl-daemon $runuser"* ]]
+    if [[ "$(echo "$i" | awk '{print $1}')" == "root" ]] && [[ " $i " == *" sudo shock-pcstl-daemon $runuser "* ]]
     then
 
         pcstl_cusessions=$((pcstl_cusessions+1))
@@ -113,36 +113,38 @@ then
 
         sleep 60
 
-        if [[ "$(view-current-user)" == "$runuser" ]]
+        if [[ ! -f /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)" ]] #if new day, or screen time limit has been changed, then restart timer
         then
 
-            if [[ ! -f /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)" ]] #if new day, or screen time limit has been changed, then restart timer
+            if [[ -d /usr/share/shock-pcstl/"$runuser" ]]
             then
 
-                if [[ -d /usr/share/shock-pcstl/"$runuser" ]]
-                then
+                daily_limit="$(cat /usr/share/shock-pcstl/"$runuser"/shock-screen-time-limit)"
 
-                    daily_limit="$(cat /usr/share/shock-pcstl/"$runuser"/shock-screen-time-limit)"
+                minutes="$daily_limit"
 
-                    minutes="$daily_limit"
+                chattr -R -i /usr/share/shock-pcstl/"$runuser"/today
 
-                    chattr -R -i /usr/share/shock-pcstl/"$runuser"/today
+                rm -r /usr/share/shock-pcstl/"$runuser"/today/*
 
-                    rm -r /usr/share/shock-pcstl/"$runuser"/today/*
+                mkdir -p /usr/share/shock-pcstl/"$runuser"/today
 
-                    echo "$minutes" | tee /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
+                echo "$minutes" | tee /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
 
-                    chattr -R +i /usr/share/shock-pcstl/"$runuser"/today
+                chattr -R +i /usr/share/shock-pcstl/"$runuser"/today
 
-                else #if screen time limit has been removed for this user
+            else #if screen time limit has been removed for this user
 
-                    kill -9 "$2"
+                kill -9 "$2"
 
-                    exit
+                exit
 
-                fi
+            fi
 
-            fi          
+        fi  
+
+        if [[ "$(view-current-user)" == "$runuser" ]]
+        then
 
             minutes=$((minutes-1))
 

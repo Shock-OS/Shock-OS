@@ -13,42 +13,30 @@ fi
 
 #the root check element ends
 
-userlist=""
+IFS=$'\n'
 
-users_on_sys=(/home/*)
+userlist=()
 
-users_num=$(ls /home | wc -l)
-
-current_user=0
-
-while (( $current_user < $users_num ))
+for i in $(ls /home)
 do
 
-      newbutton="${users_on_sys[$current_user]}"
+    if [[ " $(groups "$i") " == *" shock-child "* ]]
+    then
 
-      newbutton="${newbutton##*/}"
+        if [[ -z "$userlist" ]]
+        then
 
-      if [[ " $(groups "$newbutton") " == *" shock-child "* ]]
-      then
+            userlist="$(getent passwd "$i" | awk -F ':' '{gsub(/,/, "", $5); print $5}') ("$i")"
+        
+        else
 
-          if [[ -z "$userlist" ]]
-          then
+            userlist+="!$(getent passwd "$i" | awk -F ':' '{gsub(/,/, "", $5); print $5}') ("$i")"
 
-            userlist="$newbutton"
+        fi
 
-          else
-
-            userlist="$userlist!$newbutton"
-
-          fi
-
-      fi
-
-      let current_user++
+    fi
 
 done
-
-echo $userlist
 
 if [[ -z "$userlist" ]]
 then
@@ -61,7 +49,9 @@ fi
 
 output=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="You can manage the limits and restrictions of child profiles." --form --field="Child Profile:":CB "$userlist" --field="Restriction:":CB 'Screen Time Limit' --button="Next"\!go-next)
 
-utr=$(echo "$output" | awk -F'|' '{print $1}')
+utr_display_name=$(echo "$output" | awk -F'|' '{print $1}')
+
+utr=$(echo "$utr_display_name" | grep -o -P '(?<=\().*?(?=\))')
 
 limit=$(echo "$output" | awk -F'|' '{print $2}')
 
@@ -89,7 +79,7 @@ then
 
             rm -r /usr/share/shock-pcstl/"$utr"
 
-            yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="The scree time limit for the user '$utr' was removed successfully." --button="Dismiss"\!gtk-quit
+            yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="The screen time limit for the user '$utr_display_name' was removed successfully." --button="Dismiss"\!gtk-quit
 
             exit
 
@@ -99,7 +89,7 @@ then
 
     #the time limit patch begins
 
-    minutes=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="You can set a daily screen time limit for $utr." --form --field="Daily screen time limit (in minutes):":NUM '120!10..1440' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+    minutes=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="You can set a daily screen time limit for $utr_display_name." --form --field="Daily screen time limit (in minutes):":NUM '120!10..1440' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
 
     ex4=$?
 
@@ -129,11 +119,11 @@ then
     if [[ "$ex3" == "0" ]] #if overwriting
     then
 
-        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="The daily screen time limit for the user $utr has been changed to $minutes minutes. If they are logged in, their timer will be restarted." --button="Dismiss"\!gtk-quit
+        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="The daily screen time limit for the user $utr_display_name has been changed to $minutes minutes. If they have been logged in today, their timer will be restarted." --button="Dismiss"\!gtk-quit
 
     else
 
-        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="A daily screen time limit of $minutes minutes has been set for $utr. This will take effect the next time they log in." --button="Dismiss"\!gtk-quit
+        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="A daily screen time limit of $minutes minutes has been set for $utr_display_name. This will take effect the next time they log in." --button="Dismiss"\!gtk-quit
 
     fi
 

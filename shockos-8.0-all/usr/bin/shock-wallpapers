@@ -174,7 +174,7 @@ then
 
             else
 
-                yad --window-icon="background" --title="Not an Image" --text="The file you selected does not appear to be an image." --button="Dismiss"\!gtk-quit
+                yad --window-icon="background" --image=emblem-important --title="Not an Image" --text="The file you selected does not appear to be an image." --button="Dismiss"\!gtk-quit
 
             fi
 
@@ -233,12 +233,12 @@ then
         if [[ "$dci" != *"image"* ]]
         then
 
-            yad --window-icon="background" --title="No Images Found" --text="The directory you selected does not appear to contain images. The directory must contain at least two images for a slideshow background." --button="Retry"\!edit-undo
+            yad --window-icon="background" --image=emblem-important --title="No Images Found" --text="The directory you selected does not appear to contain images. The directory must contain at least two images for a slideshow background." --button="Retry"\!edit-undo
 
         elif (( $dc <= 1 ))
         then
 
-            yad --window-icon="background" --title="Not Enough Images" --text="The directory you selected does not contain enough images. The directory must contain at least two images for a slideshow background." --button="Retry"\!edit-undo
+            yad --window-icon="background" --image=emblem-important --title="Not Enough Images" --text="The directory you selected does not contain enough images. The directory must contain at least two images for a slideshow background." --button="Retry"\!edit-undo
 
         fi
 

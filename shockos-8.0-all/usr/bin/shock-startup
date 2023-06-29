@@ -96,7 +96,7 @@ kill -9 "$killpid_srs"
 
 #THE CLEANUP FUNCTION ENDS
 
-trap cleanup EXIT
+trap cleanup EXIT SIGINT SIGTERM
 
 while true #check for updates
 do

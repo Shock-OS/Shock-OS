@@ -17,4 +17,6 @@ yad --notification --image=/usr/share/shock/auto-updates.svg --icon-size=48 --te
 
 sudo apt upgrade -y
 
+flatpak update -y
+
 kill -9 "$killpid"
