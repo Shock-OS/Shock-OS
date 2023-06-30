@@ -35,17 +35,11 @@ do
 
 done
 
-#cp -rf /usr/share/shock/icons/* /usr/share/icons #DEBUG
-
 #the above command replaces GNOME and MATE start menu icons with the Shock OS logo
 
-cp -r /usr/share/shock/icons/Adwaita/scalable/places/mate-logo.svg /usr/share/mate-menu/icons
+cp -r /usr/share/shock-themes/scalable/mate-logo.svg /usr/share/mate-menu/icons
 
 #the above command sets the start menu icon to the Shock OS logo
-
-#cp -r /usr/share/shock/themes/* /usr/share/themes
-
-#the above command copies the Shock OS appearance theme to the themes folder
 
 cp -r /usr/share/shock/panel/* /usr/share/mate-panel/layouts
 

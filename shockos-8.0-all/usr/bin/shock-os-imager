@@ -1,7 +1,5 @@
 #!/bin/bash
 
-runuser=$1
-
 #the root check element begins
 
 if [[ "$(id -u)" != "0" ]]
@@ -95,89 +93,57 @@ do
 
 	fi
 
-	lsblk | grep /media | grep -oP "sd[a-z]" | awk '{print "/dev/"$1}' | sort | uniq | tee /tmp/shock-os-imager-"$runuser"-drives
+	drives=($(lsblk | grep /media | grep -oP "sd[a-z]" | awk '{print "/dev/"$1}' | sort -u))
 
-	counter=1
+    drives_selection=""
 
-	drives=""
+    for i in "${drives[@]}"
+    do
 
-	success="yes"
+        drive_label=""
 
-	until [[ "$success" == "no" ]]
-	do
+        for a in {1..1000}
+        do
 
-		current_line=$(sed -n "$counter"p /tmp/shock-os-imager-"$runuser"-drives)
+            eval $(sudo blkid "$i$a" | grep "LABEL=")
 
-		if [[ -z "$current_line" ]]
-		then
+            if [[ -z "$LABEL" ]]
+            then
 
-		    success="no"
+                break
 
-		fi
+            elif [[ -z "$drive_label" ]]
+            then
 
-		echo "counter: $counter" #DEBUG
+                drive_label="$LABEL"
 
-		echo "current_line: $current_line" #DEBUG
+            else
 
-		if ! [[ -z "$current_line" ]]
-		then
+                drive_label+="!$LABEL"
 
-		    current_label="5555"
+            fi
 
-		    label_part_counter=1
+        done
 
-		    label=""
+        if [[ -z "$drive_label" ]]
+        then
 
-		    until [[ -z "$current_label" ]]
-		    do
+            drive_label="NO LABEL"
 
-		        current_label=$(sudo blkid "$current_line""$label_part_counter")
+        fi
 
-		        if [[ "$current_label" == *"LABEL="* ]]
-		        then
+        if [[ -z "$drives_selection" ]]
+        then
 
-		            current_label="${current_label#*:}"
+            drives_selection="$i ($drive_label)"
 
-		            eval "$current_label"
+        else
 
-		            if [[ -z "$label" ]]
-		            then
+            drives_selection+='!'"$i ($drive_label)"
 
-		                label="$LABEL"
+        fi
 
-		            else
-
-		                label="$label,$LABEL"
-
-		            fi
-
-		        elif [[ -z "$label" ]]
-		        then
-
-		            label="NO LABEL"
-
-		        fi
-
-		        let label_part_counter++
-
-		    done
-
-		    if [[ -z "$drives" ]]
-		    then
-
-		        drives="$current_line ($label)"
-
-		    else
-
-		        drives="$drives!$current_line ($label)"
-
-		    fi
-
-		fi
-
-		let counter++
-
-	done
+    done
 
     if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)>0))
     then
@@ -190,7 +156,7 @@ do
 
     fi
 
-	output="$(yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Install Shock OS onto an external storage device." --form --field="SD card/USB drive:":CB "$drives" --field="Shock OS version:":CB "$images" "$cached_images_button" --button="Refresh"\!gtk-refresh:10 --button="Flash"\!start-here:20)"
+	output="$(yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Install Shock OS onto an external storage device." --form --field="SD card/USB drive:":CB "$drives" --field="Shock OS version:":CB "$images" "$cached_images_button" --button="Refresh"\!gtk-refresh:10 --button="Flash"\!/usr/share/shock-os-imager/shock-logo.svg:20)"
 
 	ex=$?
 

@@ -2,10 +2,10 @@
 
 #this script is designed to shuffle between wallpapers when the user has set a slideshow wallpaper
 
-if [[ -f ~/.config/shock_slideshow_wallpaper ]]
+if [[ -f ~/.config/shock-slideshow-wallpaper ]]
 then
 
-    eval $(cat ~/.config/shock_slideshow_wallpaper)
+    eval $(cat ~/.config/shock-slideshow-wallpaper)
 
     if [[ "$random_inorder" == 'FALSE' ]] #in order
     then

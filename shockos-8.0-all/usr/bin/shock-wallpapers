@@ -2,10 +2,10 @@
 
 #this script is the applicaton that sets wallpapers (both single image and slideshow)
 
-if [[ -f ~/.config/shock_slideshow_wallpaper ]]
+if [[ -f ~/.config/shock-slideshow-wallpaper ]]
 then
 
-    eval $(cat ~/.config/shock_slideshow_wallpaper)
+    eval $(cat ~/.config/shock-slideshow-wallpaper)
 
 elif [[ -f ~/.config/shock-wallpaper ]]
 then
@@ -98,7 +98,7 @@ then
     until [[ "$wallpaper_is_image" == "yes" ]]
     do
     
-        choose=$(yad --width=300 --title="Single Image Background" --window-icon="background" --form --field="Image:":FL "$current_wallpaper" --field="Style:":CB "$style_input_siw" --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0 --button="Cancel"\!gtk-cancel:2)
+        choose=$(yad --width=300 --title="Single Image Background" --window-icon="background" --form --field="Image:":FL "$siw" --field="Style:":CB "$style_input_siw" --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0 --button="Cancel"\!gtk-cancel:2)
 
         ex=$?
 
@@ -107,7 +107,7 @@ then
 
             killall shock-slideshow-wallpaper
 
-            rm ~/.config/shock_slideshow_wallpaper
+            rm ~/.config/shock-slideshow-wallpaper
 
             rm ~/.config/shock-wallpaper
 
@@ -142,11 +142,11 @@ then
 
                 killall shock-slideshow-wallpaper
 
-                rm ~/.config/shock_slideshow_wallpaper
+                rm ~/.config/shock-slideshow-wallpaper
 
                 touch ~/.config/shock-wallpaper
 
-                echo "siw=\"$siw\"
+                echo "siw='$siw'
 
 style=\"$style\"" | tee ~/.config/shock-wallpaper
 
@@ -176,7 +176,7 @@ then
     until (( $dc > 1 )) && [[ "$dci" == *"image"* ]]
     do
 
-        choose=$(yad --form --width=400 --height=200 --window-icon=background --title="Slideshow Background" --field="Folder containing images:":DIR "$current_directory" --field="Delay (minutes):":NUM "$current_delay"'!1..100!1' --field="Style:":CB "$style_input" --field="Play images in random order":CHK "$current_random_inorder" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+        choose=$(yad --form --width=400 --height=200 --window-icon=background --title="Slideshow Background" --field="Folder containing images:":DIR "$directory" --field="Delay (minutes):":NUM "$delay"'!1..100!1' --field="Style:":CB "$style_input" --field="Play images in random order":CHK "$random_inorder" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
 
         ex=$?
 
@@ -228,15 +228,15 @@ then
 
     rm ~/.config/shock-wallpaper
 
-    touch ~/.config/shock_slideshow_wallpaper
+    touch ~/.config/shock-slideshow-wallpaper
 
-    echo "directory=\"$directory\"
+    echo "directory='$directory'
 
 delay=\"$delay\"
 
 random_inorder=\"$random_inorder\"
 
-style=\"$style\"" | tee ~/.config/shock_slideshow_wallpaper
+style=\"$style\"" | tee ~/.config/shock-slideshow-wallpaper
 
     if [[ "$random_inorder" == 'TRUE' ]] #random
     then
