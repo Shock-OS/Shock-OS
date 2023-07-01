@@ -218,13 +218,11 @@ then
         for i in $(ls /home)
         do
 
-            user_list+=("\"$(getent passwd "$i" | awk -F ':' '{gsub(/,/, "", $5); print $5}') ("$i")\"" "\"$i\"")
+            user_list+=("$(getent passwd "$i" | awk -F ':' '{gsub(/,/, "", $5); print $5}') ("$i")" "$i")
 
         done
 
-        yad_list="yad --window-icon=system-users --title=\"Remove User\" --buttons-layout=center --text=\"Please select the user you would like to remove below:\" --list --column=\"Name\" --column=\"Username\":HD ${user_list[@]} --button=\"Next\"\!go-next"
-
-        output=$(eval $yad_list)
+        output="$(yad --window-icon=system-users --title="Remove User" --buttons-layout=center --text="Please select the user you would like to remove below:" --list --no-headers --column="Name" --column="Username":HD "${user_list[@]}" --button="Next"\!go-next)"
 
         detect_exit
 

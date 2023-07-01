@@ -1,9 +1,11 @@
 #!/bin/bash
 
+IFS=$'\n'
+
 while true
 do
 
-	yadlist="start-here \"The default Shock OS look and feel\" Default"
+	yadlist=("start-here" "The default Shock OS look and feel" "Default")
 
 	if (($(ls ~/.themes | wc -l)>0))
 	then
@@ -14,11 +16,11 @@ do
             if [[ "$(basename "$(ls -d "$i"/*/)")" == "metacity-1" ]]
             then
 
-			    yadlist+=" gnome-settings-theme \"Metacity theme\" \"$(basename "$i")\" "
+			    yadlist+=("gnome-settings-theme" "Metacity theme" "$(basename "$i")")
 
             else
 
-                yadlist+=" gnome-settings-theme \"Theme pack\" \"$(basename "$i")\" "
+                yadlist+=("gnome-settings-theme" "Theme pack" "$(basename "$i")")
 
             fi
 
@@ -32,7 +34,7 @@ do
 		if  [[ -d "$(find "$i" -name places | head -n1)" || -d "$(find "$i" -name status | head -n1)" ]] && [[ "$(cat "$i/index.theme")" == *"[Icon Theme]"* ]]
 		then
 
-			yadlist+=" folder-images \"Icon pack\" \"$(basename "$i")\" "
+			yadlist+=("folder-images" "Icon pack" "$(basename "$i")")
 
 		fi
 
@@ -44,15 +46,14 @@ do
 		if  [[ -d "$(find "$i" -name cursors | head -n1)" ]] || [[ -f "$i/cursors.theme" ]]
 		then
 
-			yadlist+=" input-mouse \"Cursor pack\" \"$(basename "$i")\" "
+			yadlist+=("input-mouse" "Cursor pack" "$(basename "$i")")
 
 		fi
 
 	done
 
-	yad="yad --window-icon=gnome-settings-theme --title=\"Themes\" --text=\"Install, remove, rename or use themes, icons and cursors.\" --list --column=\"Type\":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=4 --height=300 --buttons-layout=spread --button=\"Browse\"\!applications-internet --button=\"Install\"\!add --button=\"Remove\"\!remove --button=\"Rename\"\!gtk-edit --button=\"Use\"\!dialog-ok $(echo "$yadlist")"
-
-	output="$(eval $yad)"
+	output="$(yad --window-icon=gnome-settings-theme --title="Themes" --text="Install, remove, rename or use themes, icons and cursors." --list --column="Type":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=4 --height=300 --buttons-layout=spread --button="Browse"\!applications-internet --button="Install"\!add --button="Remove"\!remove --button="Rename"\!gtk-edit --button="Use"\!dialog-ok "${yadlist[@]}"
+)"
 
 	ex=$?
 
