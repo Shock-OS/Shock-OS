@@ -119,6 +119,16 @@ do
 
                     cd "$itd"
 
+                    for i in $(find . -name index.theme)
+                    do
+                        inherit_line=$(grep -m 1 -e '^Inherits=' "$i")
+
+                        sed -i "s|^Inherits=.*|$inherit_line,shock-light-blue,shock-dark-blue|" "$i"
+
+                    done
+
+                    #the above for loop sets the Shock OS theme as a fallback theme
+
                 elif [[ -d "$mtd" ]]
                 then
 
