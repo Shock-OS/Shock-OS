@@ -123,7 +123,9 @@ do
                     do
                         inherit_line=$(grep -m 1 -e '^Inherits=' "$i")
 
-                        sed -i "s|^Inherits=.*|$inherit_line,shock-light-blue,shock-dark-blue|" "$i"
+                        inherit_line=$(echo "$inherit_line" | sed 's/,Adwaita//; s/,hicolor//') #removes Adwaita and hicolor (so they can be put at the end)
+
+                        sed -i "s|^Inherits=.*|$inherit_line,shock-light-blue,shock-dark-blue,Adwaita,hicolor|" "$i"
 
                     done
 
