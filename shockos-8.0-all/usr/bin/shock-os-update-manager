@@ -321,7 +321,7 @@ do
 
         end_loading
 
-        yad --window-icon=system-software-update --title="Update Manager" --width=800 --height=500 --text="Updates are available for the following apps/packages:" --list --dclick-action=shock-os-update-manager-view-package --no-click --buttons-layout=edge --column="Icon":IMG --column="Name" --column="Type":HD $page_buttons --button="Settings"\!gnome-settings:1 --button="Install Updates"\!system-software-update:2 "${update_list[@]}"
+        yad --window-icon=system-software-update --title="Update Manager" --width=800 --height=500 --text="Updates are available for the following apps/packages:" --list --dclick-action=shock-os-update-manager-view-package --no-click --buttons-layout=edge --column="Type":IMG --column="Name" --column="Type":HD $page_buttons --button="Settings"\!gnome-settings:1 --button="Install Updates"\!system-software-update:2 "${update_list[@]}"
 
         ex=$?
 
@@ -361,7 +361,11 @@ do
 
 	        install_updates | zenity --window-icon=system-software-update --title="Update Manager" --text="Installing updates..." --progress --pulsate --auto-close --no-cancel
 
+            yad --window-icon=system-software-update --title="Update Manager" --progress-text="Refreshing cache..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & refresh_killpid=$!
+
             fetch_updates
+
+            kill -9 $refresh_killpid
 
 	        if ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
 	        then

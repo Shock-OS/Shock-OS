@@ -300,7 +300,5 @@ Enable=1" | tee /etc/plymouth/plymouthd.conf
 
 #the splash screen patch ends
 
-pip install pyyaml
-
 
 

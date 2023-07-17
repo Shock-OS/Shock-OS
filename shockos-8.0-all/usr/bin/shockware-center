@@ -444,7 +444,7 @@ do
 			        if [[ -n "$dup_icon" ]]
 			        then
 
-                        search_results+=("$dup_icon" "$name" "B" "$package_name" "$icon")
+                        search_results+=("\"$dup_icon\"" "\"$name\"" "\"B\"" "\"$package_name\"" "\"$icon\"")
 
 			        fi
 
@@ -453,7 +453,7 @@ do
 				    if [[ -f "$icon" ]]
 				    then
 
-					    search_results+=("$icon" "$name" "F" "N/A" "$icon")
+					    search_results+=("\"$icon\"" "\"$name\"" "\"F\"" "\"N/A\"" "\"$icon\"")
 
 				    fi
 
@@ -482,7 +482,7 @@ do
 				if [[ -n "$icon" ]]
 				then
 
-					search_results+=("$icon" "$name" "A" "$package_name" "N/A")
+					search_results+=("$icon" "\"$name\"" "\"A\"" "\"$package_name\"" "\"N/A\"")
 
 				fi
 
@@ -517,7 +517,7 @@ do
 
         end_loading
 
-		yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Page $((page+1)) of $(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1)). Category: $category. Double-click on an app to install/remove it." --width=800 --height=500 --buttons-layout=spread --list --dclick-action=shockware-center-view-package --column="Icon":IMG --column="Name" --column="Type":HD --column="Icon (only for Flatpaks when clicked on)":HD --column="Flatpak ID column (only used for duplicate packages)":HD --button="Settings"\!gnome-settings:1 --button="Categories"\!open-menu-symbolic:2 --button="Search"\!gtk-find:3 $page_buttons "${search_results[@]}"
+		eval "yad --window-icon=/usr/share/shockware-center/icon.svg --title=\"Shockware Center\" --text=\"Page $((page+1)) of $(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1)). Category: $category. Double-click on an app to install/remove it.\" --width=800 --height=500 --buttons-layout=spread --list --dclick-action=shockware-center-view-package --column=\"Icon\":IMG --column=\"Name\" --column=\"Type\":HD --column=\"Icon (only for Flatpaks when clicked on)\":HD --column=\"Flatpak ID column (only used for duplicate packages)\":HD --button=\"Settings\"\!gnome-settings:1 --button=\"Categories\"\!open-menu-symbolic:2 --button=\"Search\"\!gtk-find:3 $page_buttons ${search_results[@]}"
 
 		ex=$?
 
@@ -536,7 +536,7 @@ do
 	elif [[ "$ex" == "50" ]] #jump
 	then
 
-		jump_page=$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button="Jump"\!gtk-jump-to-ltr)
+		jump_page=$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
 
 		ex=$?
 
