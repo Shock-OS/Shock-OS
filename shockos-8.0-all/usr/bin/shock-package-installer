@@ -49,6 +49,8 @@ fi
 
 package=$(echo "$package" | awk '{print tolower($0)}') #this command makes all the letters lowercase
 
+action="install"
+
 installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
 if [[ " ${installed_packages[@]} " == *" $package "* ]] #if package is already installed, then check for updates
@@ -65,11 +67,16 @@ then
     if [[ "$ex" == "0" ]] #deb is an upgrade
     then
 
-        yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, but $(basename "$file") contains an upgraded version of it. Would you like to upgrade?" --button="Yes, upgrade"\!gtk-ok --button="No, cancel"\!gtk-cancel
+        yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, but $(basename "$file") contains an upgraded version of it. Would you like to upgrade or remove $package_display_name?" --button="Upgrade"\!gtk-ok --button="Remove"\!remove --button="Cancel"\!gtk-cancel
 
         ex2=$?
 
-        if [[ "$ex2" != "0" ]]
+        if [[ "$ex2" == "1" ]]
+        then
+
+            action="remove"
+
+        elif [[ "$ex2" != "0" ]]
         then
 
             exit
@@ -79,11 +86,21 @@ then
     elif [[ "$current_version" == "$deb_version" ]] #if versions are the same
     then
 
-        yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, and $(basename "$file") contains the same version you have installed. Installing the software again is unnecessary in most cases. Would you like to install the software again anyway?" --button="Yes, install again"\!gtk-ok --button="No, cancel"\!gtk-cancel
+        yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, and $(basename "$file") contains the same version you have installed. Reinstalling the software is unnecessary in most cases. Would you like to reinstall or remove $package_display_name?" --button="Reinstall"\!gtk-refresh --button="Remove"\!remove --button="Cancel"\!gtk-cancel
 
         ex2=$?
 
-        if [[ "$ex2" != "0" ]]
+        if [[ "$ex2" == "0" ]]
+        then
+
+            action="reinstall"
+
+        elif [[ "$ex2" == "1" ]]
+        then
+
+            action="remove"
+
+        elif [[ "$ex2" != "0" ]]
         then
 
             exit
@@ -92,11 +109,21 @@ then
 
     else #if deb is a downgrade
     
-        yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, and $(basename "$file") contains an older version of the software. Downgrading is not recommended in most cases. Would you like to downgrade the software anyway?" --button="Yes, downgrade"\!gtk-ok --button="No, cancel"\!gtk-cancel
+        yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, and $(basename "$file") contains an older version of the software. Downgrading is not recommended in most cases. Would you like to downgrade or remove $package_display_name?" --button="Downgrade"\!gtk-revert --button="Remove"\!remove --button="Cancel"\!gtk-cancel
 
         ex2=$?
 
-        if [[ "$ex2" != "0" ]]
+        if [[ "$ex2" == "0" ]]
+        then
+
+            action="reinstall"
+
+        elif [[ "$ex2" == "1" ]]
+        then
+
+            action="remove"
+
+        elif [[ "$ex2" != "0" ]]
         then
 
             exit
@@ -107,7 +134,7 @@ then
 
 fi  
 
-pkexec env DEBIAN_FRONTEND=gnome apt install -y "$file" | zenity --window-icon=package --title="Package Installer" --progress --pulsate --text="Installing $package_display_name..." --no-cancel --auto-close
+pkexec env DEBIAN_FRONTEND=gnome apt "$action" -y "$file" | zenity --window-icon=package --title="Package Installer" --progress --pulsate --text="Installing $package_display_name..." --no-cancel --auto-close
 
 installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
