@@ -129,6 +129,8 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
     fi
 
+    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Refreshing..." --progress-text="Refreshing..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
+
     rm -rf /usr/share/shock-release-upgrader/upgrades/* #cleans the system of the no-longer-needed upgrade files
 
     current_version="$(apt show shock-os-metapackage | grep Version: | awk '{print $2}')"
@@ -139,6 +141,8 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
         current_version="${current_version%%.*}"
 
     fi
+
+    kill -9 $killpid
 
     if ((current_version==upgrto_version))
     then
