@@ -175,9 +175,13 @@ then
 elif ((${#all_updates[@]}==1))
 then
 
-    text="${#all_updates[@]} update is available. Click to install it."
+    window_text="1 update is available."
+
+    text="1 update is available. Click to install it."
 
 else
+
+    window_text="${#all_updates[@]} updates are available."
 
     text="${#all_updates[@]} updates are available. Click to install them."
 
@@ -321,7 +325,7 @@ do
 
         end_loading
 
-        yad --window-icon=system-software-update --title="Update Manager" --width=800 --height=500 --text="Updates are available for the following apps/packages:" --list --dclick-action=shock-os-update-manager-view-package --no-click --buttons-layout=edge --column="Type":IMG --column="Name" --column="Type":HD $page_buttons --button="Settings"\!gnome-settings:1 --button="Install Updates"\!system-software-update:2 "${update_list[@]}"
+        yad --window-icon=system-software-update --title="Update Manager" --width=800 --height=500 --text="$window_text" --list --dclick-action=shock-os-update-manager-view-package --no-click --buttons-layout=edge --column="Type":IMG --column="Name" --column="Type":HD $page_buttons --button="Settings"\!gnome-settings:1 --button="Install Updates"\!system-software-update:2 "${update_list[@]}"
 
         ex=$?
 
