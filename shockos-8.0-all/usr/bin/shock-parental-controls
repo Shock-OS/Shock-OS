@@ -41,7 +41,7 @@ done
 if [[ -z "$userlist" ]]
 then
 
-    yad --window-icon=/usr/share/shock/parental-controls.png --width=400 --title="Parental Controls" --text="There are currently no child profiles on your system. To add a child profile, create a new user through the 'Users' application and tick the  'Child Profile' checkbox." --button="Dismiss"\!gtk-quit
+    yad --window-icon=/usr/share/shock/parental-controls.png --width=400 --title="Parental Controls" --text="There are currently no child profiles on your system. To add a child profile, create a new user through the 'Users' application and tick the 'Child Profile' checkbox." --button="Dismiss"\!gtk-quit
 
     exit
 

@@ -15,11 +15,38 @@ fi
 
 clear
 
-sudo dpkg-reconfigure tzdata #this will allow the user to select their country and timezone
+ex=""
 
-sudo dpkg-reconfigure locales #this will allow the user to select their locale
+until [[ "$ex" == "0" ]]
+do
 
-sudo dpkg-reconfigure keyboard-configuration #this will allow the user to select their keyboard layout
+    sudo dpkg-reconfigure tzdata #this will allow the user to select their country and timezone
+
+    ex=$?
+
+done
+
+ex=""
+
+until [[ "$ex" == "0" ]]
+do
+
+    sudo dpkg-reconfigure locales #this will allow the user to select their locale
+
+    ex=$?
+
+done
+
+ex=""
+
+until [[ "$ex" == "0" ]]
+do
+
+    sudo dpkg-reconfigure keyboard-configuration #this will allow the user to select their keyboard layout
+
+    ex=$?
+
+done
 
 sleep 1
 

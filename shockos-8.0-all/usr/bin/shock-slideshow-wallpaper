@@ -24,9 +24,7 @@ then
             if ((current>amount))
             then
 
-                echo "ERROR CODE 1"
-
-                exit
+                exit 1
 
             fi
 

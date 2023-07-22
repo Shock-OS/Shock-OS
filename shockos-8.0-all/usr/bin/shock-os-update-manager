@@ -374,7 +374,7 @@ do
 	        if ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
 	        then
 
-		        yad --window-icon=emblem-important --image=emblem-important --title="Update Manager" --text="Failed to install the updates. Please double check your internet connection and try again later." --button="Dismiss"\!gtk-quit --width=400
+		        zenity --error --text="Failed to install the updates. Please double check your internet connection and try again later." --ok-label="Exit"
 
 	        else
 

@@ -180,7 +180,7 @@ then
 
         x=$(echo "$x" | tr -cd '[:alnum:]._-') #this command removes all numbers
 
-        adduser --disabled-password --gecos "$full_name" $x #the user has been created
+        adduser --disabled-password --gecos "$full_name" $x || (zenity --error --text="Failed to create a new user. The program will now exit." --ok-label="Exit" ; kill $$) #the user has been created
 
         echo "$x:$pa1" | chpasswd
 
@@ -191,13 +191,13 @@ then
         if [[ "$kidprofile" == "TRUE" ]]
         then
 
-            groupadd shock-child
+            groupadd shock-child || (zenity --error --text="Failed to create the 'shock-child' group. The program will now exit." --ok-label="Exit" ; kill $$)
 
-            usermod -a -G adm,dialout,cdrom,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio,shock-child $x #the user has been added to the required groups (excluding sudo)
+            usermod -a -G adm,dialout,cdrom,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio,shock-child $x || (zenity --error --text="Failed to add the user to the required groups. The program will now exit." --ok-label="Exit" ; kill $$) #the user has been added to the required groups (excluding sudo)
 
         else
 
-            usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $x #the user has been added to the required groups
+            usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $x || (zenity --error --text="Failed to add the user to the required groups. The program will now exit." --ok-label="Exit" ; kill $$) #the user has been added to the required groups
 
         fi
 
@@ -282,7 +282,7 @@ then
 
     #child profile files removed
 
-    deluser --remove-home $user_to_remove
+    deluser --remove-home $user_to_remove || (zenity --error --text="Failed to remove $user_to_remove. The program will now exit." --ok-label="Exit" ; kill $$)
 
     yad --window-icon=system-users --title="User Successfully Removed" --text="Congratulations! The user '$user_to_remove_display_name' has successfully been removed." --button="Dismiss"\!gtk-quit
 

@@ -12,9 +12,7 @@ then
 elif [[ -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]]
 then
 
-    echo "Checking for and upgrading to new releases of Shock OS is currently disabled. To re-enable this functionality, go to the Update Manager -> Settings and check the box that says 'Notify me of new versions of Shock OS'. Exiting..."
-
-    zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Upgrading is Disabled" --text="Checking for and upgrading to new releases of Shock OS is currently disabled. To re-enable this functionality, go to the Update Manager -> Settings, check the box that says 'Notify me of new versions of Shock OS', and try again later." --ok-label="Dismiss"
+    zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Upgrading is Disabled" --text="Checking for and upgrading to new releases of Shock OS is currently disabled. To re-enable this functionality, go to the Update Manager -> Settings, check the box that says 'Notify me of new versions of Shock OS', and try again later." --ok-label="Exit"
 
     exit
 
@@ -42,7 +40,7 @@ then
 
     zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="No Internet" --text="An internet connection is required to upgrade. Please verify that your internet connection is stable and reliable and try again later." --ok-label="Dismiss"
 
-    exit
+    exit 1
 
 fi
 
@@ -91,11 +89,11 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
     rm -rf /usr/share/shock-release-upgrader/upgrades/*
 
-    wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version.zip"/download -P /usr/share/shock-release-upgrader/upgrades 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --no-cancel --auto-close
+    (wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version.zip"/download -P /usr/share/shock-release-upgrader/upgrades 2>&1 || (zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack." --ok-label="Exit" ; kill $$)) | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --no-cancel --auto-close --auto-kill
 
     cd /usr/share/shock-release-upgrader/upgrades
 
-    unp -f download 2>&1 | yad --center --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Unpacking the Upgrade Pack..." --text="Unpacking the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." -no-buttons --no-escape --undecorated --auto-close --progress --pulsate --progress-text="" --no-buttons
+    (unp -f download 2>&1 || (zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Unpack" --text="Failed to unpack the upgrade pack." --ok-label="Exit" ; kill $$)) | yad --center --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Unpacking the Upgrade Pack..." --text="Unpacking the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." -no-buttons --no-escape --undecorated --auto-close --auto-kill --progress --pulsate --progress-text="" --no-buttons
 
     rm download
 
@@ -103,7 +101,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
     chmod --recursive 755 $upgrto_version/DEBIAN
 
-    dpkg-deb --build -Zxz "$upgrto_version" 2>&1 | yad --center --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." -no-buttons --no-escape --undecorated --auto-close --progress --pulsate --progress-text="" --no-buttons
+    (dpkg-deb --build -Zxz "$upgrto_version" 2>&1 || (zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Upgrade" --text="Failed to package the upgrade." --ok-label="Exit" ; kill $$)) | yad --center --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." -no-buttons --no-escape --undecorated --auto-close --auto-kill --progress --pulsate --progress-text="" --no-buttons
 
     sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader/upgrades
 
@@ -116,7 +114,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
     fi
 
-    sudo env DEBIAN_FRONTEND=gnome apt install -y ./"$upgrto_version.deb" 2>&1 | yad --center --progress --pulsate --auto-close --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
+    (sudo env DEBIAN_FRONTEND=gnome apt install -y ./"$upgrto_version.deb" 2>&1 || (zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Install Update" --text="Failed to install the upgrade pack." --ok-label="Exit" ; kill $$)) | yad --center --progress --pulsate --auto-close --auto-kill --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
 
     sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader/upgrades
 
@@ -129,7 +127,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
     fi
 
-    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Refreshing..." --progress-text="Refreshing..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
+    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Refreshing..." --progress-text="Refreshing..." --center --progress --pulsate --undecorated --no-buttons --skip-taskbar & killpid=$!
 
     rm -rf /usr/share/shock-release-upgrader/upgrades/* #cleans the system of the no-longer-needed upgrade files
 
