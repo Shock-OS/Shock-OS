@@ -297,7 +297,15 @@ then
 
 		echo "$url" #DEBUG
 
-		(wget "$url" -P /usr/share/shock-os-imager/cached-images 2>&1 || (zenity --error --text="Failed to download $image_to_flash_display. The program will now exit." --ok-label="Exit" ; kill $$)) | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-os-imager/icon.svg --progress --title="Downloading $image_to_flash_display" --width=310 --text="Downloading $image_to_flash_display. This may take a while..." --no-cancel --auto-close --auto-kill
+		{
+
+        wget "$url" -P /usr/share/shock-os-imager/cached-images 2>&1 || {
+
+            zenity --error --text="Failed to download $image_to_flash_display. The program will now exit." --ok-label="Exit" ; kill $$
+
+            }
+
+        } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-os-imager/icon.svg --progress --title="Downloading $image_to_flash_display" --width=310 --text="Downloading $image_to_flash_display. This may take a while..." --no-cancel --auto-close --auto-kill
 
 		mv /usr/share/shock-os-imager/cached-images/download /usr/share/shock-os-imager/cached-images/$filename
 
@@ -321,7 +329,48 @@ then
 
 	done | zenity --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Unmounting file systems on $target_device..." --progress --pulsate --no-cancel --auto-close
 
-	(sudo unxz -c /usr/share/shock-os-imager/cached-images/"$filename" || (zenity --error --text="An error occurred when extracting the image. The program will now exit." ; kill $$)) | (sudo dd of=$target_drive bs=4M status=progress || (zenity --error --text="An error occurred when writing the image. The program will now exit." ; kill $$)) | zenity --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes..." --progress --pulsate --auto-close --auto-kill --no-cancel
+#THE WRITE SEGMENT BEGINS
+
+    # Launch the command in the background and capture its PID
+    sudo unxz -c /usr/share/shock-os-imager/cached-images/"$filename" | sudo dd of=$target_drive bs=4M status=progress > /dev/null 2>&1 & command_pid=$!
+
+    # Show the progress window using yad
+    {
+
+    zenity --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes..." --progress --pulsate --width=300 --height=100 --cancel-label="Cancel"
+
+    ex=$?
+
+    if [[ "$ex" != "0" ]]
+    then
+
+        kill -9 "$command_pid"
+        
+    fi
+
+    } &
+
+    # Capture the yad progress window's PID
+    yad_pid=$!
+
+    # Wait for the command to finish
+    wait "$command_pid"
+
+    # Get the command's exit code
+    ex=$?
+
+    # Close the yad progress window (if it's still open)
+    kill "$yad_pid"
+
+    # Check if the command exited with a non-zero code and show an error message if needed
+    if [[ "$ex" != "0" ]]
+    then
+
+        zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="An error occurred when writing the image. The program will now exit." --ok-label="Exit" ; kill $$
+
+    fi
+
+#THE WRITE SEGMENT ENDS
 
 	zenity --notification --title="Flashing Complete" --text="$image_to_flash_display has successfully been flashed to $target_drive_display_name."
 

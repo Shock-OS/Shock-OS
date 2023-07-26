@@ -64,7 +64,7 @@ then
 
     fi
 
-    zenity --info --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Prepare to Upgrade" --text="Before upgrading, please make sure of the following:
+    zenity --question --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Prepare to Upgrade" --text="Before upgrading, please make sure of the following:
 
 1. The system is connected to a constant power supply.
 
@@ -74,7 +74,7 @@ then
 
 NOTE: The logout and power options in the start menu will be temporarily disabled while upgrading because powering off the machine during the upgrade process is highly discouraged and may render your system unusable.
 
-Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Continue"
+Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename" --cancel-label="Cancel"
 
     ex=$?
 
@@ -89,11 +89,60 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
     rm -rf /usr/share/shock-release-upgrader/upgrades/*
 
-    (wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version.zip"/download -P /usr/share/shock-release-upgrader/upgrades 2>&1 || (zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack." --ok-label="Exit" ; kill $$)) | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --no-cancel --auto-close --auto-kill
+    {
+
+    wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version.zip"/download -P /usr/share/shock-release-upgrader/upgrades 2>&1 || {
+
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit" ; exit 1
+
+        }
+
+    } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --auto-close --auto-kill --cancel-label="Cancel Upgrade"
 
     cd /usr/share/shock-release-upgrader/upgrades
 
-    (unp -f download 2>&1 || (zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Unpack" --text="Failed to unpack the upgrade pack." --ok-label="Exit" ; kill $$)) | yad --center --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Unpacking the Upgrade Pack..." --text="Unpacking the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." -no-buttons --no-escape --undecorated --auto-close --auto-kill --progress --pulsate --progress-text="" --no-buttons
+#THE UNP SEGMENT BEGINS
+
+    # Launch the command in the background and capture its PID
+    unp -f download > /dev/null 2>&1 & command_pid=$!
+
+    # Show the progress window using yad
+    {
+
+    zenity --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Unpacking the Upgrade Pack" --text="Unpacking the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --progress --pulsate --width=300 --height=100 --cancel-label="Cancel Upgrade"
+
+    ex=$?
+
+    if [[ "$ex" != "0" ]]
+    then
+
+        kill -9 "$command_pid"
+        
+    fi
+
+    } &
+
+    # Capture the yad progress window's PID
+    yad_pid=$!
+
+    # Wait for the command to finish
+    wait "$command_pid"
+
+    # Get the command's exit code
+    ex=$?
+
+    # Close the yad progress window (if it's still open)
+    kill "$yad_pid"
+
+    # Check if the command exited with a non-zero code and show an error message if needed
+    if [[ "$ex" != "0" ]]
+    then
+
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Unpack" --text="Failed to unpack the upgrade pack. The upgrade has been cancelled." --ok-label="Exit" ; exit 1
+
+    fi
+
+#THE UNP SEGMENT ENDS
 
     rm download
 
@@ -101,7 +150,48 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
     chmod --recursive 755 $upgrto_version/DEBIAN
 
-    (dpkg-deb --build -Zxz "$upgrto_version" 2>&1 || (zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Upgrade" --text="Failed to package the upgrade." --ok-label="Exit" ; kill $$)) | yad --center --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." -no-buttons --no-escape --undecorated --auto-close --auto-kill --progress --pulsate --progress-text="" --no-buttons
+#THE DPKG-DEB SEGMENT BEGINS
+
+    # Launch the command in the background and capture its PID
+    dpkg-deb --build -Zxz "$upgrto_version" > /dev/null 2>&1 & command_pid=$!
+
+    # Show the progress window using yad
+    {
+
+    zenity --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --progress --pulsate --width=300 --height=100 --cancel-label="Cancel Upgrade"
+
+    ex=$?
+
+    if [[ "$ex" != "0" ]]
+    then
+
+        kill -9 "$command_pid"
+        
+    fi
+
+    } &
+
+    # Capture the yad progress window's PID
+    yad_pid=$!
+
+    # Wait for the command to finish
+    wait "$command_pid"
+
+    # Get the command's exit code
+    ex=$?
+
+    # Close the yad progress window (if it's still open)
+    kill "$yad_pid"
+
+    # Check if the command exited with a non-zero code and show an error message if needed
+    if [[ "$ex" != "0" ]]
+    then
+
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Upgrade" --text="Failed to package the upgrade. The upgrade has been cancelled." --ok-label="Exit" ; exit 1
+
+    fi
+
+#THE DPKG-DEB SEGMENT ENDS
 
     sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader/upgrades
 
@@ -114,7 +204,48 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Co
 
     fi
 
-    (sudo env DEBIAN_FRONTEND=gnome apt install -y ./"$upgrto_version.deb" 2>&1 || (zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Install Update" --text="Failed to install the upgrade pack." --ok-label="Exit" ; kill $$)) | yad --center --progress --pulsate --auto-close --auto-kill --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --no-buttons --no-escape --undecorated --progress-text=""
+#THE APT INSTALL SEGMENT BEGINS
+
+    # Launch the command in the background and capture its PID
+    sudo env DEBIAN_FRONTEND=gnome apt install -y ./"$upgrto_version.deb" > /dev/null 2>&1 & command_pid=$!
+
+    # Show the progress window using yad
+    {
+
+    zenity --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --progress --pulsate --width=300 --height=100 --cancel-label="Cancel Upgrade"
+
+    ex=$?
+
+    if [[ "$ex" != "0" ]]
+    then
+
+        kill -9 "$command_pid"
+        
+    fi
+
+    } &
+
+    # Capture the yad progress window's PID
+    yad_pid=$!
+
+    # Wait for the command to finish
+    wait "$command_pid"
+
+    # Get the command's exit code
+    ex=$?
+
+    # Close the yad progress window (if it's still open)
+    kill "$yad_pid"
+
+    # Check if the command exited with a non-zero code and show an error message if needed
+    if [[ "$ex" != "0" ]]
+    then
+
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Upgrade" --text="Failed to install the upgrade pack. The upgrade has been cancelled." --ok-label="Exit" ; exit 1
+
+    fi
+
+#THE APT INSTALL SEGMENT ENDS
 
     sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader/upgrades
 
