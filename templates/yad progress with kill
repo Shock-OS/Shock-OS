@@ -8,7 +8,7 @@
     # Show the progress window using yad
     {
 
-    zenity --window-icon=ICON HERE --title="TITLE HERE" --text="TEXT HERE" --progress --pulsate --width=300 --height=100 --cancel-label="Cancel"
+    yad --window-icon=ICON HERE --title="TITLE HERE" --text="TEXT HERE" --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1
 
     ex=$?
 
