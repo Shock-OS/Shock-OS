@@ -97,7 +97,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
         }
 
-    } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --auto-close --auto-kill --cancel-label="Cancel Upgrade"
+    } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --progress --pulsate --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!gtk-cancel:1
 
     cd /usr/share/shock-release-upgrader/upgrades
 
