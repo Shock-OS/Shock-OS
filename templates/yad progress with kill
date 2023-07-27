@@ -21,9 +21,6 @@
 
     } &
 
-    # Capture the yad progress window's PID
-    yad_pid=$!
-
     # Wait for the command to finish
     wait "$command_pid"
 
@@ -31,7 +28,7 @@
     ex=$?
 
     # Close the yad progress window (if it's still open)
-    kill "$yad_pid"
+    pkill -f "PASTE YAD COMMAND WITH NO QUOTES OR BACKSLASHES"
 
     # Check if the command exited with a non-zero code and show an error message if needed
     if [[ "$ex" != "0" ]]

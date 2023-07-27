@@ -93,7 +93,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
     wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version.zip"/download -P /usr/share/shock-release-upgrader/upgrades 2>&1 || {
 
-        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit" ; exit 1
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit" ; kill $$
 
         }
 
@@ -122,9 +122,6 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
     } &
 
-    # Capture the yad progress window's PID
-    yad_pid=$!
-
     # Wait for the command to finish
     wait "$command_pid"
 
@@ -132,13 +129,13 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
     ex=$?
 
     # Close the yad progress window (if it's still open)
-    kill "$yad_pid"
+    pkill -f "yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title=Unpacking the Upgrade Pack --text=Unpacking the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while... --progress --pulsate --progress-text= --width=300 --height=100 --center --fixed --button=Cancel Upgrade!gtk-cancel:1"
 
     # Check if the command exited with a non-zero code and show an error message if needed
     if [[ "$ex" != "0" ]]
     then
 
-        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Unpack" --text="Failed to unpack the upgrade pack. The upgrade has been cancelled." --ok-label="Exit" ; exit 1
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Unpack" --text="Failed to unpack the upgrade pack. The upgrade has been cancelled." --ok-label="Exit" ; kill $$
 
     fi
 
@@ -171,9 +168,6 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
     } &
 
-    # Capture the yad progress window's PID
-    yad_pid=$!
-
     # Wait for the command to finish
     wait "$command_pid"
 
@@ -181,13 +175,13 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
     ex=$?
 
     # Close the yad progress window (if it's still open)
-    kill "$yad_pid"
+    pkill -f "yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title=Preparing to Upgrade... --text=Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while... --progress --pulsate --progress-text= --width=300 --height=100 --center --fixed --button=Cancel Upgrade!gtk-cancel:1"
 
     # Check if the command exited with a non-zero code and show an error message if needed
     if [[ "$ex" != "0" ]]
     then
 
-        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Upgrade" --text="Failed to package the upgrade. The upgrade has been cancelled." --ok-label="Exit" ; exit 1
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Upgrade" --text="Failed to package the upgrade. The upgrade has been cancelled." --ok-label="Exit" ; kill $$
 
     fi
 
@@ -225,9 +219,6 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
     } &
 
-    # Capture the yad progress window's PID
-    yad_pid=$!
-
     # Wait for the command to finish
     wait "$command_pid"
 
@@ -235,13 +226,13 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
     ex=$?
 
     # Close the yad progress window (if it's still open)
-    kill "$yad_pid"
+    pkill -f "yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title=Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename --text=Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while... --progress --pulsate --progress-text= --width=300 --height=100 --center --fixed --button=Cancel Upgrade!gtk-cancel:1"
 
     # Check if the command exited with a non-zero code and show an error message if needed
     if [[ "$ex" != "0" ]]
     then
 
-        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Upgrade" --text="Failed to install the upgrade pack. The upgrade has been cancelled." --ok-label="Exit" ; exit 1
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Upgrade" --text="Failed to install the upgrade pack. The upgrade has been cancelled." --ok-label="Exit" ; kill $$
 
     fi
 

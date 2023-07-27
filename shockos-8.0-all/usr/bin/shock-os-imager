@@ -350,9 +350,6 @@ then
 
     } &
 
-    # Capture the yad progress window's PID
-    yad_pid=$!
-
     # Wait for the command to finish
     wait "$command_pid"
 
@@ -360,7 +357,7 @@ then
     ex=$?
 
     # Close the yad progress window (if it's still open)
-    kill "$yad_pid"
+    pkill -f "yad --window-icon=/usr/share/shock-os-imager/icon.svg --title=Shock OS Imager --text=Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes... --progress --pulsate --progress-text= --width=300 --height=100 --center --fixed --button=Cancel Upgrade!gtk-cancel:1"
 
     # Check if the command exited with a non-zero code and show an error message if needed
     if [[ "$ex" != "0" ]]
