@@ -332,7 +332,11 @@ then
 #THE WRITE SEGMENT BEGINS
 
     # Launch the command in the background and capture its PID
-    sudo unxz -c /usr/share/shock-os-imager/cached-images/"$filename" | sudo dd of=$target_drive bs=4M status=progress > /dev/null 2>&1 & command_pid=$!
+    {
+
+    sudo unxz -c /usr/share/shock-os-imager/cached-images/"$filename" | sudo dd of=$target_drive bs=4M status=progress
+
+    } > /dev/null 2>&1 & command_pid=$!
 
     # Show the progress window using yad
     {
