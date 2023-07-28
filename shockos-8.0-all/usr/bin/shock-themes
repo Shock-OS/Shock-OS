@@ -119,6 +119,8 @@ do
 
                     cd "$itd"
 
+                    cd ..
+
                     for i in $(find . -name index.theme)
                     do
                         inherit_line=$(grep -m 1 -e '^Inherits=' "$i")
@@ -136,15 +138,21 @@ do
 
                     cd "$mtd"
 
+                    cd ..
+
                 elif [[ -d "$gtkd" ]]
                 then
 
                     cd "$gtkd"
 
+                    cd ..
+
                 elif [[ -d "$sid" ]]
                 then
 
                     cd "$sid"
+
+                    cd ..
 
                 else
 
@@ -156,8 +164,6 @@ do
 
                 if [[ "$found_dir" == "TRUE" ]]
                 then
-
-                    cd ..
 
                     for a in /usr/share/shock-themes/16x16/*
                     do

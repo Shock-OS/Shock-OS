@@ -327,7 +327,7 @@ then
 
 		umount "$target_drive$i"
 
-	done | zenity --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Unmounting file systems on $target_device..." --progress --pulsate --no-cancel --auto-close
+	done
 
 #THE WRITE SEGMENT BEGINS
 
