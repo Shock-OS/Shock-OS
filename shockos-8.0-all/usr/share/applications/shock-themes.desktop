@@ -2,7 +2,7 @@
 Version=1
 Name=Themes
 GenericName=Themes
-Comment=Change the desktop theme and accent color
+Comment=Customize the look and feel of your desktop
 Exec=shock-themes
 TryExec=shock-themes
 Icon=gnome-settings-theme

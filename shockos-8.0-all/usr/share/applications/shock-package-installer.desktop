@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Package Installer
 GenericName=Package Installer
-Comment=Install and view software packages
+Comment=Install, reinstall or remove .deb packages
 Exec=shock-package-installer %f
 Icon=package
 Terminal=false
