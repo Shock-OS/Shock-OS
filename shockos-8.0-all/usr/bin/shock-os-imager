@@ -24,9 +24,7 @@ success2="FALSE"
 until [[ "$success2" == "TRUE" ]]
 do
 
-	internet="yes"
-
-	until [[ -f /usr/share/shock-os-imager/images ]] || [[ "$internet" == "no" ]]
+	until [[ -f /usr/share/shock-os-imager/images ]]
 	do
 
 		wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/images -P /usr/share/shock-os-imager
@@ -34,37 +32,14 @@ do
 		if [[ ! -f /usr/share/shock-os-imager/images ]]
 		then
 
-			if (($(ls /usr/share/shock-os-imager/cached-images/ | wc -l)>0)) #if there are cached images available
+			yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-important --title="Shock OS Imager" --text="Shock OS Imager requires an internet connection. Please reconnect to the internet and hit 'Retry'." --button="Retry"\!edit-undo
+
+			ex=$?
+
+			if [[ "$ex" != "0" ]]
 			then
 
-				yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-important --title="Shock OS Imager" --text="There is no internet connection, but cached images are available. Please either reconnect to the internet and hit 'Retry', or continue with only cached images." --button="Continue with Cached Images Only"\!go-next --button="Retry"\!edit-undo
-
-				ex=$?
-
-				if [[ "$ex" == "0" ]]
-				then
-
-					internet="no"
-
-				elif [[ "$ex" != "1" ]]
-				then
-
-					exit
-
-				fi
-
-			else
-
-				yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-important --title="Shock OS Imager" --text="There is no internet connection, and no cached images are available. Please reconnect to the internet and hit 'Retry'." --button="Retry"\!edit-undo
-
-				ex=$?
-
-				if [[ "$ex" != "0" ]]
-				then
-
-					exit
-
-				fi
+				exit
 
 			fi
 
@@ -72,26 +47,7 @@ do
 
 	done
 
-	if [[ "$internet" == "yes" ]]
-	then
-
-		rm /usr/share/shock-os-imager/images-offline
-
-		cp /usr/share/shock-os-imager/images /usr/share/shock-os-imager/images-offline
-
-		rm /usr/share/shock-os-imager/find-cached-images
-
-		wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/find-cached-images -P /usr/share/shock-os-imager
-
-		eval "$(cat /usr/share/shock-os-imager/images)"
-
-	else
-
-		eval "$(cat /usr/share/shock-os-imager/images-offline)"
-
-		eval "$(cat /usr/share/shock-os-imager/find-cached-images)"
-
-	fi
+	eval "$(cat /usr/share/shock-os-imager/images)"
 
 	drives=($(lsblk | grep /media | grep -oP "sd[a-z]" | awk '{print "/dev/"$1}' | sort -u))
 
@@ -265,34 +221,6 @@ then
 	if [[ ! -f /usr/share/shock-os-imager/cached-images/$filename ]] #if Shock OS image is not already downloaded
 	then
 
-		if [[ "$internet" == "no" ]]
-		then
-
-			until [[ -f /usr/share/shock-os-imager/images ]]
-			do
-
-				wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/images -P /usr/share/shock-os-imager
-
-				if [[ ! -f /usr/share/shock-os-imager/images ]]
-				then
-
-					yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-important --width=400 --title="No Internet" --text="You are not connected to the internet, and an image for the Shock OS version you selected is not cached. Please either connect to the internet and hit 'Retry', or cancel." --button="Retry"\!edit-undo --button="Cancel"\!gtk-cancel
-
-					ex=$?
-
-					if [[ "$ex" != "0" ]]
-					then
-
-						exit
-
-					fi
-
-				fi
-
-			done
-
-		fi
-
 		mkdir -p /usr/share/shock-os-imager/cached-images
 
 		echo "$url" #DEBUG
@@ -305,11 +233,78 @@ then
 
             }
 
-        } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-os-imager/icon.svg --progress --title="Downloading $image_to_flash_display" --width=310 --text="Downloading $image_to_flash_display. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --button="Cancel"\!gtk-cancel:1
+        } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-os-imager/icon.svg --progress --title="Downloading $image_to_flash_display" --width=310 --text="Downloading $image_to_flash_display. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel"\!gtk-cancel:1
 
 		mv /usr/share/shock-os-imager/cached-images/download /usr/share/shock-os-imager/cached-images/$filename
 
 	fi
+
+#THE VERIFICATION SEGMENT BEGINS
+
+    # Launch the command in the background and capture its PID
+    {
+
+    mkdir -p /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Could Not Refresh Cache" --text="The directory /usr/share/shock-os-imager/sha256sums does not exist and could not be created." --ok-label="Exit"; kill $$; }
+
+    rm -rf /usr/share/shock-os-imager/sha256sums/* || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Could Not Refresh Cache" --text="Failed to remove files from /usr/share/shock-os-imager/sha256sums." --ok-label="Exit"; kill $$; }
+
+    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/shockos.asc -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Verify Image" --text="Failed to download the GPG key to verify the image." --ok-label="Exit"; kill $$; }
+
+    gpg --import /usr/share/shock-os-imager/sha256sums/shockos.asc || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Import Key" --text="Failed to import the GPG key to verify the image." --ok-label="Exit"; kill $$; }
+
+    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/sha256sums -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Fetch sha256sums" --text="Failed to fetch the sha256sums to verify the image." --ok-label="Exit"; kill $$; }
+
+    wget https://github.com/Shock-OS/shock-os-imager/raw/main/sha256sums.sig -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Fetch sha256sums.sig" --text="Failed to fetch the sha256sums.sig to verify the image." --ok-label="Exit"; kill $$; }
+
+    if [[ "$(gpg --verify /usr/share/shock-os-imager/sha256sums/sha256sums.sig /usr/share/shock-os-imager/sha256sums/sha256sums 2>&1 | grep 'Primary key fingerprint:')" != "Primary key fingerprint: 9515 D970 4C1B 1B3B 58CB  606D D2EA 4E12 F633 2179" ]]
+    then
+
+        zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Invalid sha256sums" --text="sha256sums has been tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --ok-label="Exit"
+
+        pkill -f "yad --window-icon=/usr/share/shock-os-imager/icon.svg --title=Verifying the Image --text=Verifying $filename... --progress --pulsate --progress-text= --width=300 --height=100 --button=Cancel!gtk-cancel:1"
+
+        kill $$
+
+    fi
+
+    eval "$(cat /usr/share/shock-os-imager/sha256sums/sha256sums)"
+
+    sha256sum="${!image_to_flash}"
+
+    if [[ "$(sha256sum -b /usr/share/shock-os-imager/cached-images/$filename | cut -d' ' -f1)" != "$sha256sum" ]]
+    then
+
+        zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Invalid Image" --text="$filename was tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --ok-label="Exit"
+
+        kill $$
+
+    fi
+
+    } > /dev/null 2>&1 & command_pid=$!
+
+    # Show the progress window using yad
+    {
+
+    yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Verifying the Image" --text="Verifying $filename..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1
+
+    ex=$?
+
+    if [[ "$ex" != "0" ]]
+    then
+
+        kill -9 "$command_pid"
+        
+    fi
+
+    } &
+
+    # Wait for the command to finish
+    wait "$command_pid"
+
+    # Close the yad progress window (if it's still open)
+    pkill -f "yad --window-icon=/usr/share/shock-os-imager/icon.svg --title=Verifying the Image --text=Verifying $filename... --progress --pulsate --progress-text= --width=300 --height=100 --button=Cancel!gtk-cancel:1"
+
+#THE VERIFICATION SEGMENT ENDS
 
     if [[ -z "$(lsblk -o PATH | grep -w $target_drive)" ]] #if error reading the device (perhaps it was unplugged)
     then
@@ -332,11 +327,7 @@ then
 #THE WRITE SEGMENT BEGINS
 
     # Launch the command in the background and capture its PID
-    {
-
-    sudo unxz -c /usr/share/shock-os-imager/cached-images/"$filename" | sudo dd of=$target_drive bs=4M status=progress
-
-    } > /dev/null 2>&1 & command_pid=$!
+    { sudo unxz -c /usr/share/shock-os-imager/cached-images/"$filename" | sudo dd of=$target_drive bs=4M status=progress; } > /dev/null 2>&1 & command_pid=$!
 
     # Show the progress window using yad
     {
@@ -361,7 +352,7 @@ then
     ex=$?
 
     # Close the yad progress window (if it's still open)
-    pkill -f "yad --window-icon=/usr/share/shock-os-imager/icon.svg --title=Shock OS Imager --text=Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes... --progress --pulsate --progress-text= --width=300 --height=100 --center --fixed --button=Cancel!gtk-cancel:1"
+    pkill -f "yad --window-icon=/usr/share/shock-os-imager/icon.svg --title=Shock OS Imager --text=Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes... --progress --pulsate --progress-text= --width=300 --height=100 --center --fixed --button=Cancel\!gtk-cancel:1"
 
     # Check if the command exited with a non-zero code and show an error message if needed
     if [[ "$ex" != "0" ]]

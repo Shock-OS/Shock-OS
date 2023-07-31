@@ -89,22 +89,66 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
     rm -rf /usr/share/shock-release-upgrader/upgrades/*
 
-    {
-
-    wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version.zip"/download -P /usr/share/shock-release-upgrader/upgrades 2>&1 || {
-
-        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit" ; kill $$
-
-        }
-
-    } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!gtk-cancel:1
+    { wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
 
     cd /usr/share/shock-release-upgrader/upgrades
+
+#THE VERIFICATION SEGMENT BEGINS
+
+    # Launch the command in the background and capture its PID
+    {
+
+    mkdir -p /usr/share/shock-release-upgrader/verify || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Could Not Refresh Cache" --text="The directory /usr/share/shock-release-upgrader/verify does not exist and could not be created." --ok-label="Exit"; kill $$; }
+
+    rm -rf /usr/share/shock-release-upgrader/verify/* || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Could Not Refresh Cache" --text="Failed to remove files from /usr/share/shock-release-upgrader/verify." --ok-label="Exit"; kill $$; }
+
+    wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/shockos.asc -P /usr/share/shock-release-upgrader/verify || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Failed to Verify Image" --text="Failed to download the GPG key to verify the image." --ok-label="Exit"; kill $$; }
+
+    gpg --import /usr/share/shock-release-upgrader/verify/shockos.asc || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Failed to Import Key" --text="Failed to import the GPG key to verify the image." --ok-label="Exit"; kill $$; }
+
+    wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version".zip.sig -P /usr/share/shock-release-upgrader/verify || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Failed to Fetch Signature" --text="Failed to fetch the signature to verify the image." --ok-label="Exit"; kill $$; }
+
+    if [[ "$(gpg --verify /usr/share/shock-release-upgrader/verify/"$upgrto_version".zip.sig /usr/share/shock-release-upgrader/upgrades/"$upgrto_version".zip 2>&1 | grep 'Primary key fingerprint:')" != "Primary key fingerprint: 9515 D970 4C1B 1B3B 58CB  606D D2EA 4E12 F633 2179" ]]
+    then
+
+        zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Invalid Upgrade Pack" --text="The upgrade pack has been tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --ok-label="Exit"
+
+        pkill -f "yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --title=Verifying --text=Verifying the upgrade pack... --progress --pulsate --progress-text= --width=300 --height=100 --button=Cancel\!gtk-cancel:1"
+
+        kill $$
+
+    fi
+
+    } > /dev/null 2>&1 & command_pid=$!
+
+    # Show the progress window using yad
+    {
+
+    yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Verifying" --text="Verifying the upgrade pack..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1
+
+    ex=$?
+
+    if [[ "$ex" != "0" ]]
+    then
+
+        kill -9 "$command_pid"
+        
+    fi
+
+    } &
+
+    # Wait for the command to finish
+    wait "$command_pid"
+
+    # Close the yad progress window (if it's still open)
+    pkill -f "yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --title=Verifying --text=Verifying the upgrade pack... --progress --pulsate --progress-text= --width=300 --height=100 --button=Cancel\!gtk-cancel:1"
+
+#THE VERIFICATION SEGMENT ENDS
 
 #THE UNP SEGMENT BEGINS
 
     # Launch the command in the background and capture its PID
-    unp -f download > /dev/null 2>&1 & command_pid=$!
+    unp -f "$upgrto_version.zip" > /dev/null 2>&1 & command_pid=$!
 
     # Show the progress window using yad
     {
@@ -140,10 +184,6 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
     fi
 
 #THE UNP SEGMENT ENDS
-
-    rm download
-
-    mv * $upgrto_version
 
     chmod --recursive 755 $upgrto_version/DEBIAN
 
@@ -187,14 +227,12 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
 #THE DPKG-DEB SEGMENT ENDS
 
-    sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/$upgrto_version-preupgr-script -P /usr/share/shock-release-upgrader/upgrades
-
-    if [[ -f /usr/share/shock-release-upgrader/upgrades/$upgrto_version-preupgr-script ]]
+    if [[ -f /usr/share/shock-release-upgrader/upgrades/preupgr ]]
     then
 
-        chmod +x /usr/share/shock-release-upgrader/upgrades/$upgrto_version-preupgr-script
+        chmod +x /usr/share/shock-release-upgrader/upgrades/preupgr
 
-        sudo /usr/share/shock-release-upgrader/upgrades/$upgrto_version-preupgr-script
+        sudo /usr/share/shock-release-upgrader/upgrades/preupgr
 
     fi
 
@@ -238,14 +276,12 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
 #THE APT INSTALL SEGMENT ENDS
 
-    sudo wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/$upgrto_version-postupgr-script -P /usr/share/shock-release-upgrader/upgrades
-
-    if [[ -f /usr/share/shock-release-upgrader/upgrades/$upgrto_version-postupgr-script ]]
+    if [[ -f /usr/share/shock-release-upgrader/upgrades/postupgr ]]
     then
 
-        chmod +x /usr/share/shock-release-upgrader/upgrades/$upgrto_version-postupgr-script
+        chmod +x /usr/share/shock-release-upgrader/upgrades/postupgr
 
-        sudo /usr/share/shock-release-upgrader/upgrades/$upgrto_version-postupgr-script
+        sudo /usr/share/shock-release-upgrader/upgrades/postupgr
 
     fi
 
