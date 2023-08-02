@@ -261,7 +261,7 @@ then
 
         zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Invalid sha256sums" --text="sha256sums has been tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --ok-label="Exit"
 
-        pkill -f "yad --window-icon=/usr/share/shock-os-imager/icon.svg --title=Verifying the Image --text=Verifying $filename... --progress --pulsate --progress-text= --width=300 --height=100 --button=Cancel!gtk-cancel:1"
+        kill "$yad_pid"
 
         kill $$
 
@@ -282,27 +282,35 @@ then
 
     } > /dev/null 2>&1 & command_pid=$!
 
-    # Show the progress window using yad
-    {
+    # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Verifying the Image" --text="Verifying $filename..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1
+    yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Verifying the Image" --text="Verifying $filename..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
 
+    # Wait for either the command to finish or the YAD window to close
+    wait -n "$command_pid" "$yad_pid"
+
+    # Get the command's exit code
     ex=$?
 
+    # Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
+    if ps -p "$command_pid"
+    then
+
+        kill "$command_pid"
+
+    else
+
+        kill "$yad_pid"
+
+    fi
+
+    # Check if the command exited with a non-zero code and show an error message if needed
     if [[ "$ex" != "0" ]]
     then
 
-        kill -9 "$command_pid"
-        
+        zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="The verification has been cancelled. The program will now exit." --ok-label="Exit" ; kill $$
+
     fi
-
-    } &
-
-    # Wait for the command to finish
-    wait "$command_pid"
-
-    # Close the yad progress window (if it's still open)
-    pkill -f "yad --window-icon=/usr/share/shock-os-imager/icon.svg --title=Verifying the Image --text=Verifying $filename... --progress --pulsate --progress-text= --width=300 --height=100 --button=Cancel!gtk-cancel:1"
 
 #THE VERIFICATION SEGMENT ENDS
 
@@ -329,30 +337,27 @@ then
     # Launch the command in the background and capture its PID
     { sudo unxz -c /usr/share/shock-os-imager/cached-images/"$filename" | sudo dd of=$target_drive bs=4M status=progress; } > /dev/null 2>&1 & command_pid=$!
 
-    # Show the progress window using yad
-    {
+    # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel"\!gtk-cancel:1
+    yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
 
-    ex=$?
-
-    if [[ "$ex" != "0" ]]
-    then
-
-        kill -9 "$command_pid"
-        
-    fi
-
-    } &
-
-    # Wait for the command to finish
-    wait "$command_pid"
+    # Wait for either the command to finish or the YAD window to close
+    wait -n "$command_pid" "$yad_pid"
 
     # Get the command's exit code
     ex=$?
 
-    # Close the yad progress window (if it's still open)
-    pkill -f "yad --window-icon=/usr/share/shock-os-imager/icon.svg --title=Shock OS Imager --text=Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes... --progress --pulsate --progress-text= --width=300 --height=100 --center --fixed --button=Cancel\!gtk-cancel:1"
+   # Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
+    if ps -p "$command_pid"
+    then
+
+        kill "$command_pid"
+
+    else
+
+        kill "$yad_pid"
+
+    fi
 
     # Check if the command exited with a non-zero code and show an error message if needed
     if [[ "$ex" != "0" ]]

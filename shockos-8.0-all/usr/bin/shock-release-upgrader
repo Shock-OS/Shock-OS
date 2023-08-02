@@ -113,7 +113,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
         zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Invalid Upgrade Pack" --text="The upgrade pack has been tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --ok-label="Exit"
 
-        pkill -f "yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --title=Verifying --text=Verifying the upgrade pack... --progress --pulsate --progress-text= --width=300 --height=100 --button=Cancel\!gtk-cancel:1"
+        kill "$yad_pid"
 
         kill $$
 
@@ -121,27 +121,35 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
     } > /dev/null 2>&1 & command_pid=$!
 
-    # Show the progress window using yad
-    {
+    # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Verifying" --text="Verifying the upgrade pack..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1
+    yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Verifying" --text="Verifying the upgrade pack..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
 
+    # Wait for either the command to finish or the YAD window to close
+    wait -n "$command_pid" "$yad_pid"
+
+    # Get the command's exit code
     ex=$?
 
+     # Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
+    if ps -p "$command_pid"
+    then
+
+        kill "$command_pid"
+
+    else
+
+        kill "$yad_pid"
+
+    fi
+
+    # Check if the command exited with a non-zero code and show an error message if needed
     if [[ "$ex" != "0" ]]
     then
 
-        kill -9 "$command_pid"
-        
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Verification Cancelled" --text="The verification has been cancelled. The upgrade has been cancelled." --ok-label="Exit" ; kill $$
+
     fi
-
-    } &
-
-    # Wait for the command to finish
-    wait "$command_pid"
-
-    # Close the yad progress window (if it's still open)
-    pkill -f "yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --title=Verifying --text=Verifying the upgrade pack... --progress --pulsate --progress-text= --width=300 --height=100 --button=Cancel\!gtk-cancel:1"
 
 #THE VERIFICATION SEGMENT ENDS
 
@@ -150,30 +158,27 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
     # Launch the command in the background and capture its PID
     unp -f "$upgrto_version.zip" > /dev/null 2>&1 & command_pid=$!
 
-    # Show the progress window using yad
-    {
+    # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Unpacking the Upgrade Pack" --text="Unpacking the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!gtk-cancel:1
+    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Unpacking the Upgrade Pack" --text="Unpacking the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!gtk-cancel:1 & yad_pid=$!
 
-    ex=$?
-
-    if [[ "$ex" != "0" ]]
-    then
-
-        kill -9 "$command_pid"
-        
-    fi
-
-    } &
-
-    # Wait for the command to finish
-    wait "$command_pid"
+    # Wait for either the command to finish or the YAD window to close
+    wait -n "$command_pid" "$yad_pid"
 
     # Get the command's exit code
     ex=$?
 
-    # Close the yad progress window (if it's still open)
-    pkill -f "yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title=Unpacking the Upgrade Pack --text=Unpacking the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while... --progress --pulsate --progress-text= --width=300 --height=100 --center --fixed --button=Cancel Upgrade!gtk-cancel:1"
+    # Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
+    if ps -p "$command_pid"
+    then
+
+        kill "$command_pid"
+
+    else
+
+        kill "$yad_pid"
+
+    fi
 
     # Check if the command exited with a non-zero code and show an error message if needed
     if [[ "$ex" != "0" ]]
@@ -192,30 +197,27 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
     # Launch the command in the background and capture its PID
     dpkg-deb --build -Zxz "$upgrto_version" > /dev/null 2>&1 & command_pid=$!
 
-    # Show the progress window using yad
-    {
+    # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!gtk-cancel:1
+    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!gtk-cancel:1 & yad_pid=$!
 
-    ex=$?
-
-    if [[ "$ex" != "0" ]]
-    then
-
-        kill -9 "$command_pid"
-        
-    fi
-
-    } &
-
-    # Wait for the command to finish
-    wait "$command_pid"
+    # Wait for either the command to finish or the YAD window to close
+    wait -n "$command_pid" "$yad_pid"
 
     # Get the command's exit code
     ex=$?
 
-    # Close the yad progress window (if it's still open)
-    pkill -f "yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title=Preparing to Upgrade... --text=Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while... --progress --pulsate --progress-text= --width=300 --height=100 --center --fixed --button=Cancel Upgrade!gtk-cancel:1"
+    # Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
+    if ps -p "$command_pid"
+    then
+
+        kill "$command_pid"
+
+    else
+
+        kill "$yad_pid"
+
+    fi
 
     # Check if the command exited with a non-zero code and show an error message if needed
     if [[ "$ex" != "0" ]]
@@ -241,30 +243,27 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
     # Launch the command in the background and capture its PID
     sudo env DEBIAN_FRONTEND=gnome apt install -y ./"$upgrto_version.deb" > /dev/null 2>&1 & command_pid=$!
 
-    # Show the progress window using yad
-    {
+    # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!gtk-cancel:1
+    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!gtk-cancel:1 & yad_pid=$!
 
-    ex=$?
-
-    if [[ "$ex" != "0" ]]
-    then
-
-        kill -9 "$command_pid"
-        
-    fi
-
-    } &
-
-    # Wait for the command to finish
-    wait "$command_pid"
+    # Wait for either the command to finish or the YAD window to close
+    wait -n "$command_pid" "$yad_pid"
 
     # Get the command's exit code
     ex=$?
 
-    # Close the yad progress window (if it's still open)
-    pkill -f "yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title=Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename --text=Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while... --progress --pulsate --progress-text= --width=300 --height=100 --center --fixed --button=Cancel Upgrade!gtk-cancel:1"
+    # Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
+    if ps -p "$command_pid"
+    then
+
+        kill "$command_pid"
+
+    else
+
+        kill "$yad_pid"
+
+    fi
 
     # Check if the command exited with a non-zero code and show an error message if needed
     if [[ "$ex" != "0" ]]

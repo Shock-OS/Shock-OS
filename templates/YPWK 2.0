@@ -1,0 +1,38 @@
+#!/bin/bash
+
+#THE COMMAND_HERE SEGMENT BEGINS
+
+    # Launch the command in the background and capture its PID
+    COMMAND_HERE > /dev/null 2>&1 & command_pid=$!
+
+    # Show the progress window using YAD
+
+    yad --window-icon=ICON HERE --title="TITLE HERE" --text="TEXT HERE" --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
+
+    # Wait for either the command to finish or the YAD window to close
+    wait -n "$command_pid" "$yad_pid"
+
+    # Get the command's exit code
+    ex=$?
+
+    # Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
+    if ps -p "$command_pid"
+    then
+
+        kill "$command_pid"
+
+    else
+
+        kill "$yad_pid"
+
+    fi
+
+    # Check if the command exited with a non-zero code and show an error message if needed
+    if [[ "$ex" != "0" ]]
+    then
+
+        zenity --error --window-icon=ICON HERE --title="ERROR" --text="TEXT HERE" --ok-label="Exit" ; kill $$
+
+    fi
+
+#THE COMMAND_HERE SEGMENT ENDS
