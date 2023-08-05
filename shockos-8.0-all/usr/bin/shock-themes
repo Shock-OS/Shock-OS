@@ -125,9 +125,28 @@ do
                     do
                         inherit_line=$(grep -m 1 -e '^Inherits=' "$i")
 
-                        inherit_line=$(echo "$inherit_line" | sed 's/,Adwaita//; s/,hicolor//') #removes Adwaita and hicolor (so they can be put at the end)
+                        inherit_line=$(echo "$inherit_line" | sed 's/,Adwaita//') #removes Adwaita
 
-                        sed -i "s|^Inherits=.*|$inherit_line,shock-light-blue,shock-dark-blue,Adwaita,hicolor|" "$i"
+                        inherit_line=$(echo "$inherit_line" | sed 's/Adwaita,//') #removes Adwaita
+
+                        inherit_line=$(echo "$inherit_line" | sed 's/Adwaita//') #removes Adwaita
+
+                        inherit_line=$(echo "$inherit_line" | sed 's/,hicolor//') #removes hicolor
+
+                        inherit_line=$(echo "$inherit_line" | sed 's/hicolor,//') #removes hicolor
+
+                        inherit_line=$(echo "$inherit_line" | sed 's/hicolor//') #removes hicolor
+
+                        if [[ "${#inherit_line}" == "9" ]] #if no fallback themes
+                        then
+
+                            sed -i "s|^Inherits=.*|Inherits=shock-light-blue,shock-dark-blue,Adwaita,hicolor|" "$i"
+
+                        else
+
+                            sed -i "s|^Inherits=.*|$inherit_line,shock-light-blue,shock-dark-blue,Adwaita,hicolor|" "$i"
+
+                        fi
 
                     done
 
