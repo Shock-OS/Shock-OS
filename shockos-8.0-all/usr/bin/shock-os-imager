@@ -114,7 +114,7 @@ do
 
     fi
 
-	output="$(yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Install Shock OS onto an external storage device." --form --field="SD card/USB drive:":CB "$drives_selection" --field="Shock OS version:":CB "$images" "$cached_images_button" --button="Refresh"\!gtk-refresh:10 --button="Flash"\!/usr/share/shock-os-imager/shock-logo.svg:20)"
+	output="$(yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Install Shock OS onto an external storage device." --form --field="SD card/USB drive:":CB "$drives_selection" --field="Shock OS version:":CB "$images" "$cached_images_button" --button="Refresh"\!gtk-refresh:10 --button="Flash"\!/usr/share/shock/shock-logo.svg:20)"
 
 	ex=$?
 
@@ -244,26 +244,24 @@ then
     # Launch the command in the background and capture its PID
     {
 
-    mkdir -p /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Could Not Refresh Cache" --text="The directory /usr/share/shock-os-imager/sha256sums does not exist and could not be created." --ok-label="Exit"; kill $$; }
+    mkdir -p /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Could Not Refresh Cache" --text="The directory /usr/share/shock-os-imager/sha256sums does not exist and could not be created." --ok-label="Exit"; exit 1; }
 
-    rm -rf /usr/share/shock-os-imager/sha256sums/* || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Could Not Refresh Cache" --text="Failed to remove files from /usr/share/shock-os-imager/sha256sums." --ok-label="Exit"; kill $$; }
+    rm -rf /usr/share/shock-os-imager/sha256sums/* || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Could Not Refresh Cache" --text="Failed to remove files from /usr/share/shock-os-imager/sha256sums." --ok-label="Exit"; exit 1; }
 
-    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/shockos.asc -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Verify Image" --text="Failed to download the GPG key to verify the image." --ok-label="Exit"; kill $$; }
+    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/shockos.asc -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Verify Image" --text="Failed to download the GPG key to verify the image." --ok-label="Exit"; exit 1; }
 
-    gpg --import /usr/share/shock-os-imager/sha256sums/shockos.asc || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Import Key" --text="Failed to import the GPG key to verify the image." --ok-label="Exit"; kill $$; }
+    gpg --import /usr/share/shock-os-imager/sha256sums/shockos.asc || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Import Key" --text="Failed to import the GPG key to verify the image." --ok-label="Exit"; exit 1; }
 
-    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/sha256sums -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Fetch sha256sums" --text="Failed to fetch the sha256sums to verify the image." --ok-label="Exit"; kill $$; }
+    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/sha256sums -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Fetch sha256sums" --text="Failed to fetch the sha256sums to verify the image." --ok-label="Exit"; exit 1; }
 
-    wget https://github.com/Shock-OS/shock-os-imager/raw/main/sha256sums.sig -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Fetch sha256sums.sig" --text="Failed to fetch the sha256sums.sig to verify the image." --ok-label="Exit"; kill $$; }
+    wget https://github.com/Shock-OS/shock-os-imager/raw/main/sha256sums.sig -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Fetch sha256sums.sig" --text="Failed to fetch the sha256sums.sig to verify the image." --ok-label="Exit"; exit 1; }
 
     if [[ "$(gpg --verify /usr/share/shock-os-imager/sha256sums/sha256sums.sig /usr/share/shock-os-imager/sha256sums/sha256sums 2>&1 | grep 'Primary key fingerprint:')" != "Primary key fingerprint: 9515 D970 4C1B 1B3B 58CB  606D D2EA 4E12 F633 2179" ]]
     then
 
         zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Invalid sha256sums" --text="sha256sums has been tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --ok-label="Exit"
 
-        kill "$yad_pid"
-
-        kill $$
+        exit 1
 
     fi
 
@@ -276,7 +274,7 @@ then
 
         zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Invalid Image" --text="$filename was tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --ok-label="Exit"
 
-        kill $$
+        exit 1
 
     fi
 
@@ -308,7 +306,9 @@ then
     if [[ "$ex" != "0" ]]
     then
 
-        zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="The verification has been cancelled. The program will now exit." --ok-label="Exit" ; kill $$
+        zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="The verification has been cancelled. The program will now exit." --ok-label="Exit"
+
+        kill $$
 
     fi
 
@@ -363,7 +363,9 @@ then
     if [[ "$ex" != "0" ]]
     then
 
-        zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="An error occurred when writing the image. The program will now exit." --ok-label="Exit" ; kill $$
+        zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="An error occurred when writing the image. The program will now exit." --ok-label="Exit"
+
+        kill $$
 
     fi
 

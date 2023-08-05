@@ -98,24 +98,22 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
     # Launch the command in the background and capture its PID
     {
 
-    mkdir -p /usr/share/shock-release-upgrader/verify || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Could Not Refresh Cache" --text="The directory /usr/share/shock-release-upgrader/verify does not exist and could not be created." --ok-label="Exit"; kill $$; }
+    mkdir -p /usr/share/shock-release-upgrader/verify || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Could Not Refresh Cache" --text="The directory /usr/share/shock-release-upgrader/verify does not exist and could not be created." --ok-label="Exit"; exit 1; }
 
-    rm -rf /usr/share/shock-release-upgrader/verify/* || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Could Not Refresh Cache" --text="Failed to remove files from /usr/share/shock-release-upgrader/verify." --ok-label="Exit"; kill $$; }
+    rm -rf /usr/share/shock-release-upgrader/verify/* || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Could Not Refresh Cache" --text="Failed to remove files from /usr/share/shock-release-upgrader/verify." --ok-label="Exit"; exit 1; }
 
-    wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/shockos.asc -P /usr/share/shock-release-upgrader/verify || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Failed to Verify Image" --text="Failed to download the GPG key to verify the image." --ok-label="Exit"; kill $$; }
+    wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/shockos.asc -P /usr/share/shock-release-upgrader/verify || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Failed to Verify Image" --text="Failed to download the GPG key to verify the image." --ok-label="Exit"; exit 1; }
 
-    gpg --import /usr/share/shock-release-upgrader/verify/shockos.asc || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Failed to Import Key" --text="Failed to import the GPG key to verify the image." --ok-label="Exit"; kill $$; }
+    gpg --import /usr/share/shock-release-upgrader/verify/shockos.asc || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Failed to Import Key" --text="Failed to import the GPG key to verify the image." --ok-label="Exit"; exit 1; }
 
-    wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version".zip.sig -P /usr/share/shock-release-upgrader/verify || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Failed to Fetch Signature" --text="Failed to fetch the signature to verify the image." --ok-label="Exit"; kill $$; }
+    wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version".zip.sig -P /usr/share/shock-release-upgrader/verify || { zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Failed to Fetch Signature" --text="Failed to fetch the signature to verify the image." --ok-label="Exit"; exit 1; }
 
     if [[ "$(gpg --verify /usr/share/shock-release-upgrader/verify/"$upgrto_version".zip.sig /usr/share/shock-release-upgrader/upgrades/"$upgrto_version".zip 2>&1 | grep 'Primary key fingerprint:')" != "Primary key fingerprint: 9515 D970 4C1B 1B3B 58CB  606D D2EA 4E12 F633 2179" ]]
     then
 
         zenity --error --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Invalid Upgrade Pack" --text="The upgrade pack has been tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --ok-label="Exit"
 
-        kill "$yad_pid"
-
-        kill $$
+        exit 1
 
     fi
 
@@ -147,7 +145,9 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
     if [[ "$ex" != "0" ]]
     then
 
-        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Verification Cancelled" --text="The verification has been cancelled. The upgrade has been cancelled." --ok-label="Exit" ; kill $$
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Verification Cancelled" --text="The upgrade has been cancelled." --ok-label="Exit"
+
+        kill $$
 
     fi
 
@@ -184,7 +184,9 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
     if [[ "$ex" != "0" ]]
     then
 
-        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Unpack" --text="Failed to unpack the upgrade pack. The upgrade has been cancelled." --ok-label="Exit" ; kill $$
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Unpack" --text="Failed to unpack the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"
+
+        kill $$
 
     fi
 
@@ -223,7 +225,9 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
     if [[ "$ex" != "0" ]]
     then
 
-        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Upgrade" --text="Failed to package the upgrade. The upgrade has been cancelled." --ok-label="Exit" ; kill $$
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Upgrade" --text="Failed to package the upgrade. The upgrade has been cancelled." --ok-label="Exit"
+
+        kill $$
 
     fi
 
@@ -269,7 +273,9 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
     if [[ "$ex" != "0" ]]
     then
 
-        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Upgrade" --text="Failed to install the upgrade pack. The upgrade has been cancelled." --ok-label="Exit" ; kill $$
+        zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Failed to Upgrade" --text="Failed to install the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"
+
+        kill $$
 
     fi
 

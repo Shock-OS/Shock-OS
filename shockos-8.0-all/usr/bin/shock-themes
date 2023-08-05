@@ -5,7 +5,7 @@ IFS=$'\n'
 while true
 do
 
-	yadlist=("start-here" "The default Shock OS look and feel" "Default")
+	yadlist=("/usr/share/shock/shock-logo.svg" "The default Shock OS look and feel" "Default")
 
 	if (($(ls ~/.themes | wc -l)>0))
 	then
@@ -13,7 +13,7 @@ do
 		for i in ~/.themes/* #list all themes
 		do
 
-            if [[ "$(basename "$(ls -d "$i"/*/)")" == "metacity-1" ]]
+            if [[ "$(ls -d "$i"/*/)" == "${i}/metacity-1/" ]]
             then
 
 			    yadlist+=("gnome-settings-theme" "Metacity theme" "$(basename "$i")")

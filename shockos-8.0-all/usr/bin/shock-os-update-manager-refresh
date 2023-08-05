@@ -11,92 +11,94 @@ then
 
 fi
 
+apt_appstream_dir="/var/lib/app-info" #Change line to fit the system configuration if needed
+
 sudo apt update
 
-sudo mkdir -p /var/lib/app-info/xml
+sudo mkdir -p "$apt_appstream_dir"/xml
 
 if [[ "$(getconf LONG_BIT)" == "32" ]] #if 32-bit system
 then
 
     codename="$(lsb_release -cs)"
 
-    sudo mkdir -p /var/lib/app-info/yaml
+    sudo mkdir -p "$apt_appstream_dir"/yaml
 
-    sudo mkdir -p /var/lib/app-info/icons/debian-"$codename"-contrib/48x48
+    sudo mkdir -p "$apt_appstream_dir"/icons/debian-"$codename"-contrib/48x48
 
-    sudo mkdir -p /var/lib/app-info/icons/debian-"$codename"-main/48x48
+    sudo mkdir -p "$apt_appstream_dir"/icons/debian-"$codename"-main/48x48
 
-    sudo mkdir -p /var/lib/app-info/icons/debian-"$codename"-non-free/48x48
+    sudo mkdir -p "$apt_appstream_dir"/icons/debian-"$codename"-non-free/48x48
 
-    sudo mkdir -p /var/lib/app-info/icons/debian-"$codename"-contrib/64x64
+    sudo mkdir -p "$apt_appstream_dir"/icons/debian-"$codename"-contrib/64x64
 
-    sudo mkdir -p /var/lib/app-info/icons/debian-"$codename"-main/64x64
+    sudo mkdir -p "$apt_appstream_dir"/icons/debian-"$codename"-main/64x64
 
-    sudo mkdir -p /var/lib/app-info/icons/debian-"$codename"-non-free/64x64
+    sudo mkdir -p "$apt_appstream_dir"/icons/debian-"$codename"-non-free/64x64
 
-    if [[ "$(sudo wget https://appstream.debian.org/data/"$codename"/contrib/icons-48x48.tar.gz -P /var/lib/app-info/icons/debian-"$codename"-contrib/48x48 2>&1)" != *"fail"* ]]
+    if [[ "$(sudo wget https://appstream.debian.org/data/"$codename"/contrib/icons-48x48.tar.gz -P "$apt_appstream_dir"/icons/debian-"$codename"-contrib/48x48 2>&1)" != *"fail"* ]]
     then
 
-        sudo wget https://appstream.debian.org/data/"$codename"/main/icons-48x48.tar.gz -P /var/lib/app-info/icons/debian-"$codename"-main/48x48
+        sudo wget https://appstream.debian.org/data/"$codename"/main/icons-48x48.tar.gz -P "$apt_appstream_dir"/icons/debian-"$codename"-main/48x48
 
-        sudo wget https://appstream.debian.org/data/"$codename"/non-free/icons-48x48.tar.gz -P /var/lib/app-info/icons/debian-"$codename"-non-free/48x48
+        sudo wget https://appstream.debian.org/data/"$codename"/non-free/icons-48x48.tar.gz -P "$apt_appstream_dir"/icons/debian-"$codename"-non-free/48x48
 
-        sudo wget https://appstream.debian.org/data/"$codename"/contrib/icons-64x64.tar.gz -P /var/lib/app-info/icons/debian-"$codename"-contrib/64x64
+        sudo wget https://appstream.debian.org/data/"$codename"/contrib/icons-64x64.tar.gz -P "$apt_appstream_dir"/icons/debian-"$codename"-contrib/64x64
 
-        sudo wget https://appstream.debian.org/data/"$codename"/main/icons-64x64.tar.gz -P /var/lib/app-info/icons/debian-"$codename"-main/64x64
+        sudo wget https://appstream.debian.org/data/"$codename"/main/icons-64x64.tar.gz -P "$apt_appstream_dir"/icons/debian-"$codename"-main/64x64
 
-        sudo wget https://appstream.debian.org/data/"$codename"/non-free/icons-64x64.tar.gz -P /var/lib/app-info/icons/debian-"$codename"-non-free/64x64
+        sudo wget https://appstream.debian.org/data/"$codename"/non-free/icons-64x64.tar.gz -P "$apt_appstream_dir"/icons/debian-"$codename"-non-free/64x64
 
-        cd /var/lib/app-info/icons/debian-"$codename"-contrib/48x48
-
-        sudo unp -f *.gz
-
-        sudo rm *.gz
-
-        cd /var/lib/app-info/icons/debian-"$codename"-main/48x48
+        cd "$apt_appstream_dir"/icons/debian-"$codename"-contrib/48x48
 
         sudo unp -f *.gz
 
         sudo rm *.gz
 
-        cd /var/lib/app-info/icons/debian-"$codename"-non-free/48x48
+        cd "$apt_appstream_dir"/icons/debian-"$codename"-main/48x48
 
         sudo unp -f *.gz
 
         sudo rm *.gz
 
-        cd /var/lib/app-info/icons/debian-"$codename"-contrib/64x64
+        cd "$apt_appstream_dir"/icons/debian-"$codename"-non-free/48x48
 
         sudo unp -f *.gz
 
         sudo rm *.gz
 
-        cd /var/lib/app-info/icons/debian-"$codename"-main/64x64
+        cd "$apt_appstream_dir"/icons/debian-"$codename"-contrib/64x64
 
         sudo unp -f *.gz
 
         sudo rm *.gz
 
-        cd /var/lib/app-info/icons/debian-"$codename"-non-free/64x64
+        cd "$apt_appstream_dir"/icons/debian-"$codename"-main/64x64
 
         sudo unp -f *.gz
 
         sudo rm *.gz
 
-        sudo wget https://appstream.debian.org/data/"$codename"/contrib/Components-armhf.yml.gz -O /var/lib/app-info/yaml/debian-"$codename"-contrib-Components-armhf.yml.gz
+        cd "$apt_appstream_dir"/icons/debian-"$codename"-non-free/64x64
 
-        sudo wget https://appstream.debian.org/data/"$codename"/main/Components-armhf.yml.gz -O /var/lib/app-info/yaml/debian-"$codename"-main-Components-armhf.yml.gz
+        sudo unp -f *.gz
 
-        sudo wget https://appstream.debian.org/data/"$codename"/non-free/Components-armhf.yml.gz -O /var/lib/app-info/yaml/debian-"$codename"-non-free-Components-armhf.yml.gz
+        sudo rm *.gz
+
+        sudo wget https://appstream.debian.org/data/"$codename"/contrib/Components-armhf.yml.gz -O "$apt_appstream_dir"/yaml/debian-"$codename"-contrib-Components-armhf.yml.gz
+
+        sudo wget https://appstream.debian.org/data/"$codename"/main/Components-armhf.yml.gz -O "$apt_appstream_dir"/yaml/debian-"$codename"-main-Components-armhf.yml.gz
+
+        sudo wget https://appstream.debian.org/data/"$codename"/non-free/Components-armhf.yml.gz -O "$apt_appstream_dir"/yaml/debian-"$codename"-non-free-Components-armhf.yml.gz
 
     fi
 
 fi
 
-for i in /var/lib/app-info/yaml/*
+for i in "$apt_appstream_dir"/yaml/*
 do
 
-    sudo appstreamcli convert "$i" /var/lib/app-info/xml/"$(basename "$i")".xml
+    sudo appstreamcli convert "$i" "$apt_appstream_dir"/xml/"$(basename "$i")".xml
 
 done
 

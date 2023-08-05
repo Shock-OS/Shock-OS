@@ -65,7 +65,7 @@ kill -9 $killpid
 
 #THE LOADING FUNCTIONS END
 
-if (($(ls /var/lib/app-info/xml | wc -l)<1))
+if (($(ls "$apt_appstream_dir"/xml | wc -l)<1))
 then
 
     sudo shock-os-update-manager-refresh
@@ -85,17 +85,19 @@ else
 
 fi
 
-#all_packages=($(find /var/lib/app-info/icons/*/* -type f -printf '%f\n' | cut -d'_' -f1 | sort -u | awk '{ printf "\"%s\"\n", $0 }')) #ChatGPT
+#APPSTREAM DIRECTORIES BEGIN
 
-#all_packages_icons=($(find /var/lib/app-info/icons/*/* -type f | sed 's/.*/"&"/' | sort -u)) #ChatGPT
+#Change these directories if needed to fit the system appstream configuration
 
-appstream_icons_dir="/var/lib/flatpak/appstream/flathub/$arch/active/icons/64x64"
+flatpak_appstream_dir="/var/lib/flatpak/appstream/flathub/$arch"
 
-#IFS=$'\n' read -d '' -ra all_flatpaks <<< "$(flatpak remote-ls --all --app --columns=name | awk '{print "\""$0" [FLATPAK]\""}' RS='\n')" #ChatGPT
+apt_appstream_dir="/var/lib/app-info"
 
-all_flatpaks=($(grep -o '<component type="desktop[^"]*">\|<name>[^<]*</name>' "/var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml" | sed -n '/<component type="desktop[^"]*">/{n; s/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/; p}')) #ChatGPT
+#APPSTREAM DIRECTORIES END
 
-all_packages=($(grep -oh '<component type="desktop[^"]*">\|<name>[^<]*</name>' /var/lib/app-info/xml/*.xml | sed -n '/<component type="desktop[^"]*">/{n; s/<name>\([^<]*\)<\/name>/"\1 [APT]"/; p}' | sort -u)) #ChatGPT
+all_flatpaks=($(grep -o '<component type="desktop[^"]*">\|<name>[^<]*</name>' "$flatpak_appstream_dir/active/appstream.xml" | sed -n '/<component type="desktop[^"]*">/{n; s/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/; p}')) #ChatGPT
+
+all_packages=($(grep -oh '<component type="desktop[^"]*">\|<name>[^<]*</name>' "$apt_appstream_dir"/xml/*.xml | sed -n '/<component type="desktop[^"]*">/{n; s/<name>\([^<]*\)<\/name>/"\1 [APT]"/; p}' | sort -u)) #ChatGPT
 
 all_duplicates=()
 
@@ -138,181 +140,181 @@ do
         if [[ "$category" == "Accessories" ]]
         then
 
-            all_flatpaks_proxy=($(grep -B 10 '<category>*Utilit*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Utilit*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Accessibility*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Accessibility*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Archiving*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Archiving*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Calculator*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Calculator*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Clock*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Clock*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Maps*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Maps*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Recorder*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Recorder*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Text*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Text*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_packages_proxy=($(grep -B 50 '<category>*Utility*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy=($(grep -B 50 '<category>*Utility*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*TextEditor*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*TextEditor*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
         elif [[ "$category" == "Games" ]]
         then
 
-            all_flatpaks_proxy=($(grep -B 10 '<category>*Game*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Game*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Adventure*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Adventure*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Amusement*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Amusement*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Emulat*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Emulat*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_packages_proxy=($(grep -B 50 '<category>*Game*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy=($(grep -B 50 '<category>*Game*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Emulator*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Emulator*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
         elif [[ "$category" == "Graphics" ]]
         then
 
-            all_flatpaks_proxy=($(grep -B 10 '<category>*Graphics*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Graphics*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Art*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Art*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_packages_proxy=($(grep -B 50 '<category>*Graphics*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy=($(grep -B 50 '<category>*Graphics*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
         elif [[ "$category" == "Internet" ]]
         then
 
-            all_flatpaks_proxy=($(grep -B 10 '<category>*Network*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Network*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Chat*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Chat*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Communication*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Communication*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Email*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Email*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Feed*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Feed*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*InstantMessaging*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*InstantMessaging*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Remote*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Remote*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_packages_proxy=($(grep -B 50 '<category>*Network*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy=($(grep -B 50 '<category>*Network*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Email*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Email*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*InstantMessaging*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*InstantMessaging*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
         elif [[ "$category" == "Office" ]]
         then
 
-            all_flatpaks_proxy=($(grep -B 10 '<category>*Office*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Office*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Calendar*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Calendar*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Chart*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Chart*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*ContactManagement*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*ContactManagement*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Database*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Database*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Dictionary*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Dictionary*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Productivity*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Productivity*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_packages_proxy=($(grep -B 50 '<category>*Office*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy=($(grep -B 50 '<category>*Office*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Calendar*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Calendar*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Dictionary*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Dictionary*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
         elif [[ "$category" == "Programming" ]]
         then
 
-            all_flatpaks_proxy=($(grep -B 10 '<category>*Development*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Development*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_packages_proxy=($(grep -B 50 '<category>*Development*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy=($(grep -B 50 '<category>*Development*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*IDE*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*IDE*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
         elif [[ "$category" == "Education" ]]
         then
 
-            all_flatpaks_proxy=($(grep -B 10 '<category>*Education*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Education*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Science*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Science*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Astronomy*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Astronomy*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Biology*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Biology*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Chemistry*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Chemistry*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Engineering*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Engineering*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Geography*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Geography*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Geoscience*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Geoscience*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Literature*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Literature*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Math*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Math*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_packages_proxy=($(grep -B 50 '<category>*Education*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy=($(grep -B 50 '<category>*Education*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Science*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Science*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Biology*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Biology*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Literature*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Literature*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Math*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Math*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
         elif [[ "$category" == "Multimedia" ]]
         then
 
-            all_flatpaks_proxy=($(grep -B 10 '<category>*Audio*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Audio*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Animation*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Animation*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Music*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Music*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*Video*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Video*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_packages_proxy=($(grep -B 50 '<category>*Audio*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy=($(grep -B 50 '<category>*Audio*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*DiscBurning*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*DiscBurning*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Mixer*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Mixer*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Music*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Music*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Photography*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Photography*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Player*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Player*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Video*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Video*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*Viewer*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*Viewer*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
         elif [[ "$category" == "System Tools" ]]
         then
 
-            all_flatpaks_proxy=($(grep -B 10 '<category>*Settings*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Settings*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*System*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*System*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_flatpaks_proxy+=($(grep -B 10 '<category>*File*</category>' /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*File*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
 
-            all_packages_proxy=($(grep -B 50 '<category>*Settings*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy=($(grep -B 50 '<category>*Settings*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*System*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*System*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*File*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*File*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
-            all_packages_proxy+=($(grep -B 50 '<category>*PackageManager*</category>' /var/lib/app-info/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+            all_packages_proxy+=($(grep -B 50 '<category>*PackageManager*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
 
         fi
 
@@ -412,7 +414,7 @@ do
 
 				#name="${name%\"}"
 
-				icon="$(grep -B 5 "<name>$name</name>" /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep '<id>' | awk -F'[<>]' '{print $3}')"
+				icon="$(grep -B 5 "<name>$name</name>" "$flatpak_appstream_dir"/active/appstream.xml | grep '<id>' | awk -F'[<>]' '{print $3}')"
 
 				icon="${icon%% *}"
 
@@ -425,19 +427,19 @@ do
 
 				fi
 
-				icon="$appstream_icons_dir/$icon.png"
+				icon="$flatpak_appstream_dir/active/icons/64x64/$icon.png"
 
                 if [[ " ${all_duplicates[@]} " == *" ${i::-11} [BOTH]\" "* ]] && [[ "$show_duplicates" == "TRUE" ]] #if duplicate application (both APT and Flatpak) and both Flatpak and APT packages are shown.
                 then
 
-                    package_name="$(grep -A 10000 "<name>$name</name>" /var/lib/app-info/xml/*.xml | grep '<pkgname>' | head -n1 | awk -F'[<>]' '{print $3}')"
+                    package_name="$(grep -A 10000 "<name>$name</name>" "$apt_appstream_dir"/xml/*.xml | grep '<pkgname>' | head -n1 | awk -F'[<>]' '{print $3}')"
 
-                    dup_icon="$(find /var/lib/app-info/icons/*/64x64/"$package_name"_* | head -1)" #prefer 64x64 icons (uses APT icon)
+                    dup_icon="$(find "$apt_appstream_dir"/icons/*/64x64/"$package_name"_* | head -1)" #prefer 64x64 icons (uses APT icon)
 
                     if [[ -z "$dup_icon" ]]
                     then
 
-                        dup_icon="$(find /var/lib/app-info/icons/*/*/"$package_name"_* | head -1)"
+                        dup_icon="$(find "$apt_appstream_dir"/icons/*/*/"$package_name"_* | head -1)"
 
                     fi
 
@@ -468,14 +470,14 @@ do
 
 				#name="${name%\"}"
 
-                package_name="$(grep -A 10000 "<name>$name</name>" /var/lib/app-info/xml/*.xml | grep '<pkgname>' | head -n1 | awk -F'[<>]' '{print $3}')"
+                package_name="$(grep -A 10000 "<name>$name</name>" "$apt_appstream_dir"/xml/*.xml | grep '<pkgname>' | head -n1 | awk -F'[<>]' '{print $3}')"
 
-				icon="$(find /var/lib/app-info/icons/*/64x64/"$package_name"_* | head -1)" #prefer 64x64 icons
+				icon="$(find "$apt_appstream_dir"/icons/*/64x64/"$package_name"_* | head -1)" #prefer 64x64 icons
 
                 if [[ -z "$icon" ]]
                 then
 
-                    icon="$(find /var/lib/app-info/icons/*/*/"$package_name"_* | head -1)"
+                    icon="$(find "$apt_appstream_dir"/icons/*/*/"$package_name"_* | head -1)"
 
                 fi
 
