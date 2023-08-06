@@ -353,6 +353,8 @@ then
 
         kill "$command_pid"
 
+        eject "$target_drive"
+
     else
 
         kill "$yad_pid"
