@@ -88,15 +88,17 @@ shock-welcome &
 
 function cleanup() {
 
-kill -9 "$killpid_soum"
+killall shock-os-update-manager
 
-kill -9 "$killpid_srs"
+killall shock-release-upgrader
+
+killall yad
 
 }
 
 #THE CLEANUP FUNCTION ENDS
 
-trap cleanup EXIT SIGINT SIGTERM
+trap cleanup EXIT SIGINT SIGTERM SIGKILL
 
 while true #check for updates
 do
