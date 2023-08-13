@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Package Installer
+GenericName=Package Installer
+Comment=Install, reinstall, or remove .deb packages
+Exec=shock-package-installer %f
+Icon=package
+Terminal=false
+Type=Application
+Categories=System;
+MimeType=application/vnd.debian.binary-package;
+Keywords=package;apt;dpkg;install;deb
+Name[en_US]=Package Installer

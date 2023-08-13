@@ -1,0 +1,643 @@
+#!/bin/bash
+
+IFS=$'\n'
+
+splash_killed="FALSE"
+
+category="All Applications"
+
+yad --fixed --picture --filename=/usr/share/shockware-center/shockware-loader.png --size=fit --width=1000 --height=397 --undecorated --no-buttons --skip-taskbar & splash_kilpid=$!
+
+#READ/WRITE SETTINGS BEGINS
+
+function read_settings() {
+
+if [[ -e ~/.config/shockware-center ]]
+then
+
+	eval "$(cat ~/.config/shockware-center)"
+
+else
+
+	touch ~/.config/shockware-center
+
+	echo 'rows_per_page=100
+
+show_apt_packages=TRUE
+
+show_flatpaks=TRUE' | tee ~/.config/shockware-center
+
+	rows_per_page="100"
+
+	show_apt_packages="TRUE"
+
+	show_flatpaks="TRUE"
+
+fi
+
+}
+
+function write_settings() {
+
+echo "rows_per_page=$rows_per_page
+
+show_apt_packages=$show_apt_packages
+
+show_flatpaks=$show_flatpaks" | tee ~/.config/shockware-center
+
+}
+
+#READ/WRITE SETTINGS ENDS
+
+#THE LOADING FUNCTIONS BEGIN
+
+function start_loading() {
+
+yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Loading..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
+
+}
+
+function end_loading() {
+
+kill -9 $killpid
+
+}
+
+#THE LOADING FUNCTIONS END
+
+if (($(ls "$apt_appstream_dir"/xml | wc -l)<1))
+then
+
+    sudo shock-os-update-manager-refresh
+
+fi
+
+read_settings
+
+if [[ "$(getconf LONG_BIT)" == "32" ]]
+then
+
+    arch="arm"
+
+else
+
+    arch="aarch64"
+
+fi
+
+#APPSTREAM DIRECTORIES BEGIN
+
+#Change these directories if needed to fit the system appstream configuration
+
+flatpak_appstream_dir="/var/lib/flatpak/appstream/flathub/$arch"
+
+apt_appstream_dir="/var/lib/app-info"
+
+#APPSTREAM DIRECTORIES END
+
+all_flatpaks=($(grep -o '<component type="desktop[^"]*">\|<name>[^<]*</name>' "$flatpak_appstream_dir/active/appstream.xml" | sed -n '/<component type="desktop[^"]*">/{n; s/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/; p}')) #ChatGPT
+
+all_packages=($(grep -oh '<component type="desktop[^"]*">\|<name>[^<]*</name>' "$apt_appstream_dir"/xml/*.xml | sed -n '/<component type="desktop[^"]*">/{n; s/<name>\([^<]*\)<\/name>/"\1 [APT]"/; p}' | sort -u)) #ChatGPT
+
+all_duplicates=()
+
+for i in "${all_packages[@]}"
+do
+
+    i="${i::-7}"
+
+    i="${i#\"}"
+
+    echo "$i" #DEBUG
+
+    if [[ " ${all_flatpaks[@]} " == *" \"$i [FLATPAK]\" "* ]] #if app is both an apt and a flatpak
+    then
+
+        all_duplicates+=("\"$i [BOTH]\"")
+
+    fi
+
+done
+
+echo "${all_duplicates[@]}" #DEBUG
+
+keyword=""
+
+page=0
+
+kill -9 $splash_kilpid
+
+while true
+do
+
+	start_loading
+
+	search_results_prep_full=()
+
+    if [[ "$category" != "All Applications" ]]
+    then
+
+        if [[ "$category" == "Accessories" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Utilit*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Accessibility*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Archiving*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Calculator*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Clock*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Maps*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Recorder*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Text*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_packages_proxy=($(grep -B 50 '<category>*Utility*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*TextEditor*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+        elif [[ "$category" == "Games" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Game*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Adventure*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Amusement*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Emulat*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_packages_proxy=($(grep -B 50 '<category>*Game*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Emulator*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+        elif [[ "$category" == "Graphics" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Graphics*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Art*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_packages_proxy=($(grep -B 50 '<category>*Graphics*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+        elif [[ "$category" == "Internet" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Network*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Chat*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Communication*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Email*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Feed*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*InstantMessaging*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Remote*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_packages_proxy=($(grep -B 50 '<category>*Network*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Email*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*InstantMessaging*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+        elif [[ "$category" == "Office" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Office*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Calendar*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Chart*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*ContactManagement*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Database*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Dictionary*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Productivity*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_packages_proxy=($(grep -B 50 '<category>*Office*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Calendar*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Dictionary*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+        elif [[ "$category" == "Programming" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Development*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_packages_proxy=($(grep -B 50 '<category>*Development*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*IDE*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+        elif [[ "$category" == "Education" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Education*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Science*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Astronomy*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Biology*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Chemistry*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Engineering*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Geography*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Geoscience*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Literature*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Math*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_packages_proxy=($(grep -B 50 '<category>*Education*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Science*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Biology*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Literature*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Math*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+        elif [[ "$category" == "Multimedia" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Audio*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Animation*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Music*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*Video*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_packages_proxy=($(grep -B 50 '<category>*Audio*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*DiscBurning*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Mixer*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Music*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Photography*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Player*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Video*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*Viewer*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+        elif [[ "$category" == "System Tools" ]]
+        then
+
+            all_flatpaks_proxy=($(grep -B 10 '<category>*Settings*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*System*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_flatpaks_proxy+=($(grep -B 10 '<category>*File*</category>' "$flatpak_appstream_dir"/active/appstream.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [FLATPAK]"/'))
+
+            all_packages_proxy=($(grep -B 50 '<category>*Settings*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*System*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*File*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+            all_packages_proxy+=($(grep -B 50 '<category>*PackageManager*</category>' "$apt_appstream_dir"/xml/*.xml | grep -o '<name>[^<]*</name>' | sed 's/<name>\([^<]*\)<\/name>/"\1 [APT]"/'))
+
+        fi
+
+    else #if no category picked
+
+        all_packages_proxy=("${all_packages[@]}")
+
+        all_flatpaks_proxy=("${all_flatpaks[@]}")
+
+    fi
+
+	if [[ -n "$keyword" ]] #if keyword is not empty
+	then
+
+		if [[ "$show_apt_packages" == "TRUE" ]]
+		then
+
+			search_results_prep_full=($(printf "%s\n" "${all_packages_proxy[@]}" | grep -i "$keyword"))
+
+		fi
+
+		if [[ "$show_flatpaks" == "TRUE" ]]
+		then
+
+			search_results_prep_full+=($(printf "%s\n" "${all_flatpaks_proxy[@]}" | grep -i "$keyword"))
+
+		fi
+
+	else #if keyword is empty (Show All or on startup)
+
+		if [[ "$show_apt_packages" == "TRUE" ]]
+		then
+
+			search_results_prep_full=("${all_packages_proxy[@]}")
+
+		fi
+
+		if [[ "$show_flatpaks" == "TRUE" ]]
+		then
+
+			search_results_prep_full+=("${all_flatpaks_proxy[@]}")
+
+		fi
+
+	fi
+
+	search_results_prep_full=($(printf "%s\n" "${search_results_prep_full[@]}" | sort))
+
+	if (("${#search_results_prep_full[@]}"==0)) #if no search results
+	then
+
+        end_loading
+
+		zenity --info --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="No results found." --ok-label="Dismiss"
+
+		if [[ "$show_apt_packages" == "FALSE" ]] && [[ "$show_flatpaks" == "FALSE" ]]
+		then
+
+			ex=1 #settings
+
+		else
+
+			ex=3 #search
+
+		fi
+
+	else #if there are search results
+
+		search_results_prep=("${search_results_prep_full[@]:$((rows_per_page*page))}")
+
+		search_results_prep=("${search_results_prep[@]::$((rows_per_page))}")
+
+		mapfile -t search_results_prep < <(printf '%s\n' "${search_results_prep[@]}" | sed 's/^"\(.*\)"$/"\1"/' | sort -u)
+
+		search_results=()
+
+        if [[ "$show_apt_packages" == "TRUE" ]] && [[ "$show_flatpaks" == "TRUE" ]]
+        then
+
+            show_duplicates="TRUE"
+
+        else
+
+            show_duplicates="FALSE"
+
+        fi
+
+		for i in "${search_results_prep[@]}"
+		do
+
+			if [[ "$i" == *" [FLATPAK]\"" ]] #if Flatpak
+			then
+
+				name="${i::-11}"
+
+				name="${name#\"}"
+
+				#name="${name%\"}"
+
+				icon="$(grep -B 5 "<name>$name</name>" "$flatpak_appstream_dir"/active/appstream.xml | grep '<id>' | awk -F'[<>]' '{print $3}')"
+
+				icon="${icon%% *}"
+
+				icon=$(echo "$icon" | head -n1)
+
+				if [[ "$icon" == *".desktop" ]]
+				then
+
+					icon="${icon::-8}"
+
+				fi
+
+				icon="$flatpak_appstream_dir/active/icons/64x64/$icon.png"
+
+                if [[ " ${all_duplicates[@]} " == *" ${i::-11} [BOTH]\" "* ]] && [[ "$show_duplicates" == "TRUE" ]] #if duplicate application (both APT and Flatpak) and both Flatpak and APT packages are shown.
+                then
+
+                    package_name="$(grep -A 10000 "<name>$name</name>" "$apt_appstream_dir"/xml/*.xml | grep '<pkgname>' | head -n1 | awk -F'[<>]' '{print $3}')"
+
+                    dup_icon="$(find "$apt_appstream_dir"/icons/*/64x64/"$package_name"_* | head -1)" #prefer 64x64 icons (uses APT icon)
+
+                    if [[ -z "$dup_icon" ]]
+                    then
+
+                        dup_icon="$(find "$apt_appstream_dir"/icons/*/*/"$package_name"_* | head -1)"
+
+                    fi
+
+			        if [[ -n "$dup_icon" ]]
+			        then
+
+                        search_results+=("\"$dup_icon\"" "\"$name\"" "\"B\"" "\"$package_name\"" "\"$icon\"")
+
+			        fi
+
+                else #if not duplicate application (Flatpak only)
+
+				    if [[ -f "$icon" ]]
+				    then
+
+					    search_results+=("\"$icon\"" "\"$name\"" "\"F\"" "\"N/A\"" "\"$icon\"")
+
+				    fi
+
+                fi
+
+			elif [[ " ${all_duplicates[@]} " != *" ${i::-7} [BOTH]\" "* && "$show_duplicates" == "TRUE" ]] || [[ "$i" == *" [APT]\"" && "$show_duplicates" == "FALSE" ]] #if APT package
+            then
+
+                name="${i::-7}"
+
+                name="${name#\"}"
+
+				#name="${name%\"}"
+
+                package_name="$(grep -A 10000 "<name>$name</name>" "$apt_appstream_dir"/xml/*.xml | grep '<pkgname>' | head -n1 | awk -F'[<>]' '{print $3}')"
+
+				icon="$(find "$apt_appstream_dir"/icons/*/64x64/"$package_name"_* | head -1)" #prefer 64x64 icons
+
+                if [[ -z "$icon" ]]
+                then
+
+                    icon="$(find "$apt_appstream_dir"/icons/*/*/"$package_name"_* | head -1)"
+
+                fi
+
+				if [[ -n "$icon" ]]
+				then
+
+					search_results+=("$icon" "\"$name\"" "\"A\"" "\"$package_name\"" "\"N/A\"")
+
+				fi
+
+			fi
+
+		done
+
+		if ((${#search_results_prep_full[@]}>rows_per_page)) && [[ "$((page+1))" != "$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" ]] #if not on the last page
+		then
+
+		    if ((page>0))
+		    then
+
+		        page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
+
+		    else
+
+		        page_buttons='--button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
+
+		    fi
+
+		elif ((page>0))
+		then
+
+		    page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50' 
+
+		else
+
+		    page_buttons=""
+
+		fi
+
+        end_loading
+
+		eval "yad --window-icon=/usr/share/shockware-center/icon.svg --title=\"Shockware Center\" --text=\"Page $((page+1)) of $(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1)). Category: $category. Double-click on an app to install/remove it.\" --width=800 --height=500 --buttons-layout=spread --list --dclick-action=shockware-center-view-package --column=\"Icon\":IMG --column=\"Name\" --column=\"Type\":HD --column=\"Icon (only for Flatpaks when clicked on)\":HD --column=\"Flatpak ID column (only used for duplicate packages)\":HD --button=\"Settings\"\!gnome-settings:1 --button=\"Categories\"\!open-menu-symbolic:2 --button=\"Search\"\!gtk-find:3 $page_buttons ${search_results[@]}"
+
+		ex=$?
+
+	fi
+
+	if [[ "$ex" == "40" ]] #previous
+	then
+
+		page=$((page-1))
+
+	elif [[ "$ex" == "60" ]] #next
+	then
+
+		page=$((page+1))
+
+	elif [[ "$ex" == "50" ]] #jump
+	then
+
+		jump_page=$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
+
+		ex=$?
+
+		jump_page=$(echo "$jump_page" | awk -F'|' '{print $1}')
+
+        if [[ "$ex" == "0" ]]
+        then
+
+            page="$((jump_page-1))"
+
+        fi
+
+	elif [[ "$ex" == "1" ]] #settings
+	then
+
+		if [[ "$rows_per_page" == "50" ]]
+		then
+
+			rpp='^50!100!200'
+
+		elif [[ "$rows_per_page" == "100" ]]
+		then
+
+			rpp='50!^100!200'
+
+		else
+
+			rpp='50!100!^200'
+
+		fi
+
+		settings="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Rows per page:":CB "$rpp" --field="Show APT packages":CHK "$show_apt_packages" --field="Show Flatpaks":CHK "$show_flatpaks" --button="Apply"\!gtk-ok)"
+
+		ex=$?
+
+		if [[ "$ex" == "0" ]]
+		then
+
+			rows_per_page=$(echo $settings | awk 'BEGIN {FS="|" } { print $1 }')
+
+			show_apt_packages=$(echo $settings | awk 'BEGIN {FS="|" } { print $2 }')
+
+			show_flatpaks=$(echo $settings | awk 'BEGIN {FS="|" } { print $3 }')
+
+			write_settings
+
+			read_settings
+
+		fi
+
+    elif [[ "$ex" == "2" ]] #categories
+    then
+
+        output=$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --list --no-headers --width=400 --height=300 --column="Icon":IMG --column="Category" open-menu-symbolic "All Applications" applications-accessories Accessories applications-games Games applications-graphics Graphics applications-internet Internet applications-office Office applications-development Programming applications-science Education applications-multimedia Multimedia applications-system "System Tools" --button="Go"\!go-next)
+
+        ex=$?
+
+        if [[ "$ex" == "0" ]]
+        then
+
+            page=0
+
+            keyword=""
+
+            category=$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')
+
+        fi
+
+	elif [[ "$ex" == "3" ]] #search
+	then
+
+		newkeyword="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --entry --entry-text="$keyword" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
+
+        ex=$?
+
+		page=0
+
+        if [[ "$ex" == "1" ]] #show all
+        then
+
+            keyword=""
+
+        elif [[ "$ex" == "0" ]] #search
+        then
+
+            keyword="$newkeyword"
+
+            category="All Applications"
+
+            page=0
+
+        fi
+
+	else
+
+		exit
+
+	fi
+
+done
+
+

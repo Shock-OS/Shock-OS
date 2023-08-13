@@ -1,0 +1,132 @@
+#!/bin/bash
+
+#the root check element begins
+
+if [[ "$(id -u)" != "0" ]]
+then
+
+    echo "Script must be run as root. Exiting..."
+
+    exit
+
+fi
+
+#the root check element ends
+
+IFS=$'\n'
+
+userlist=()
+
+for i in $(ls /home)
+do
+
+    if [[ " $(groups "$i") " == *" shock-child "* ]]
+    then
+
+        if [[ -z "$userlist" ]]
+        then
+
+            userlist="$(getent passwd "$i" | awk -F ':' '{gsub(/,/, "", $5); print $5}') ("$i")"
+        
+        else
+
+            userlist+="!$(getent passwd "$i" | awk -F ':' '{gsub(/,/, "", $5); print $5}') ("$i")"
+
+        fi
+
+    fi
+
+done
+
+if [[ -z "$userlist" ]]
+then
+
+    yad --window-icon=/usr/share/shock/parental-controls.png --width=400 --title="Parental Controls" --text="There are currently no child profiles on your system. To add a child profile, create a new user through the 'Users' application and tick the 'Child Profile' checkbox." --button="Dismiss"\!gtk-quit
+
+    exit
+
+fi
+
+output=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="You can manage the limits and restrictions of child profiles." --form --field="Child Profile:":CB "$userlist" --field="Restriction:":CB 'Screen Time Limit' --button="Next"\!go-next)
+
+utr_display_name=$(echo "$output" | awk -F'|' '{print $1}')
+
+utr=$(echo "$utr_display_name" | grep -o -P '(?<=\().*?(?=\))')
+
+limit=$(echo "$output" | awk -F'|' '{print $2}')
+
+if [[ "$limit" == "Screen Time Limit" ]]
+then
+
+    if [[ -f /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit ]]
+    then
+
+        yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="This user already has a screen time limit set. What would you like to do?" --button="Overwrite"\!gtk-edit:0 --button="Remove"\!remove:1 --button="Cancel"\!gtk-cancel:2
+
+        ex3=$?
+
+        if [[ "$ex3" != "0" ]] && [[ "$ex3" != "1" ]]
+        then
+
+            yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="Operation aborted. No changes were made to your system." --button="Dismiss"\!gtk-quit
+
+            exit
+
+        elif [[ "$ex3" == "1" ]]
+        then
+
+            chattr -R -i /usr/share/shock-pcstl/"$utr"
+
+            rm -r /usr/share/shock-pcstl/"$utr"
+
+            yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="The screen time limit for the user '$utr_display_name' was removed successfully." --button="Dismiss"\!gtk-quit
+
+            exit
+
+        fi
+
+    fi
+
+    #the time limit patch begins
+
+    minutes=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="You can set a daily screen time limit for $utr_display_name." --form --field="Daily screen time limit (in minutes):":NUM '120!10..1440' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+
+    ex4=$?
+
+    if [[ "$ex4" != "0" ]]
+    then
+
+        yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="Operation aborted. No changes were made to your system." --button="Dismiss"\!gtk-quit
+
+        exit
+
+    fi
+
+    minutes=$(echo "$minutes" | sed 's/|//')
+
+    mkdir -p /usr/share/shock-pcstl/"$utr"
+
+    chattr -R -i /usr/share/shock-pcstl/"$utr"/today
+
+    rm -r /usr/share/shock-pcstl/"$utr"/today
+
+    chattr -i /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit
+
+    echo "$minutes" | tee /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit
+
+    chattr +i /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit
+
+    if [[ "$ex3" == "0" ]] #if overwriting
+    then
+
+        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="The daily screen time limit for the user $utr_display_name has been changed to $minutes minutes. If they have been logged in today, their timer will be restarted." --button="Dismiss"\!gtk-quit
+
+    else
+
+        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="A daily screen time limit of $minutes minutes has been set for $utr_display_name. This will take effect the next time they log in." --button="Dismiss"\!gtk-quit
+
+    fi
+
+    #the time limit patch ends
+
+fi

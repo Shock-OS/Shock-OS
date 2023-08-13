@@ -1,0 +1,74 @@
+#!/bin/bash
+
+#this is the initial setup program for Bullseye-based versions of Shock OS
+
+#the default target should be set to 'multi-user.target'
+
+#the 'shock' user should be set to autologin
+
+if [[ "$(cat /usr/share/shock/setupvalue)" != "0" ]]
+then
+
+    exit
+
+fi
+
+clear
+
+xinit 
+
+ex=""
+
+until [[ "$ex" == "0" ]]
+do
+
+    sudo env DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata locales keyboard-configuration #this will allow the user to select their country and timezone
+
+    ex=$?
+
+done
+
+sleep 1
+
+sudo setupcon
+
+sleep 1
+
+sudo shock-users --setup #create a user
+
+#echo "%$x ALL=(ALL:ALL) NOPASSWD:ALL" | sudo EDITOR='tee' visudo -f /etc/sudoers.d/initsetup-rootpriv #enables the user to run all commands without a password (temporarily)
+
+#the setup finalizer temporary autologin patch begins
+
+#sudo sed -i 's/#NAutoVTs=6/NAutoVTs=1/g' /etc/systemd/logind.conf
+
+#sudo echo "[Service]
+#ExecStart=
+#ExecStart=-/usr/sbin/agetty --autologin $x --noclear %I $TERM" | sudo tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
+
+#sudo systemctl is-enabled getty@tty1.service
+
+#sudo systemctl enable getty@tty1.service
+
+#sudo systemctl daemon-reload
+
+#echo 'shock-startup' | sudo tee -a "/home/$x/.bashrc"
+
+#the setup finalizer temporary autologin patch ends
+
+clear
+
+echo "1" | tee /usr/share/shock/setupvalue
+
+rm -f /etc/lightdm/lightdm.conf #removes the autologin setup for the 'shock' user and resets the LighDM config to defaults
+
+clear
+
+yad --window-icon=gtk-refresh --image=gtk-refresh --title="Rebooting..." --text="The system will now reboot to finish the setup..." --no-buttons --no-escape --undecorated & sleep 5
+
+sudo reboot
+
+
+
+
+

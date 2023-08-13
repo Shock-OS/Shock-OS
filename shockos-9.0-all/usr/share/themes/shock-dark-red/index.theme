@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=shock-dark-red
+Comment=The Shock OS dark red theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+Name=shock-dark-red
+GtkTheme=shock-dark-red
+IconTheme=shock-dark-red
+MetacityTheme=shock-dark-red

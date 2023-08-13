@@ -1,0 +1,387 @@
+#!/bin/bash
+
+#the root check element begins
+
+if [[ "$(id -u)" != "0" ]]
+then
+
+    echo "Script must be run as root. Exiting..."
+
+    exit
+
+fi
+
+#the root check element ends
+
+mkdir -p /usr/share/shock-os-imager
+
+rm /usr/share/shock-os-imager/images
+
+rm /usr/share/shock-os-imager/cached-images/download*
+
+success2="FALSE"
+
+until [[ "$success2" == "TRUE" ]]
+do
+
+	until [[ -f /usr/share/shock-os-imager/images ]]
+	do
+
+		wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/images -P /usr/share/shock-os-imager
+
+		if [[ ! -f /usr/share/shock-os-imager/images ]]
+		then
+
+			yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-important --title="Shock OS Imager" --text="Shock OS Imager requires an internet connection. Please reconnect to the internet and hit 'Retry'." --button="Retry"\!edit-undo
+
+			ex=$?
+
+			if [[ "$ex" != "0" ]]
+			then
+
+				exit
+
+			fi
+
+		fi
+
+	done
+
+	eval "$(cat /usr/share/shock-os-imager/images)"
+
+	drives=($(lsblk | grep /media | grep -oP "sd[a-z]" | awk '{print "/dev/"$1}' | sort -u))
+
+    drives_selection=""
+
+    for i in "${drives[@]}"
+    do
+
+        drive_label=""
+
+        for a in {1..1000}
+        do
+
+            LABEL=""
+
+            eval $(sudo blkid "${i}${a}" | grep -o 'LABEL="[^"]*"')
+
+            if [[ -z "$LABEL" ]]
+            then
+
+                break
+
+            elif [[ -z "$drive_label" ]]
+            then
+
+                drive_label="$LABEL"
+
+            else
+
+                drive_label+=",$LABEL"
+
+            fi
+
+        done
+
+        if [[ -z "$drive_label" ]]
+        then
+
+            drive_label="NO LABEL"
+
+        fi
+
+        if [[ -z "$drives_selection" ]]
+        then
+
+            drives_selection="$i ($drive_label)"
+
+        else
+
+            drives_selection+='!'"$i ($drive_label)"
+
+        fi
+
+    done
+
+    if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)>0))
+    then
+
+        cached_images_button='--button=Delete Cached Images!gtk-delete:30'\!remove
+
+    else
+
+        cached_images_button=""
+
+    fi
+
+	output="$(yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Install Shock OS onto an external storage device." --form --field="SD card/USB drive:":CB "$drives_selection" --field="Shock OS version:":CB "$images" "$cached_images_button" --button="Refresh"\!gtk-refresh:10 --button="Flash"\!/usr/share/shock/shock-logo.svg:20)"
+
+	ex=$?
+
+	target_drive=$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')
+
+	target_drive_display_name=$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')
+
+	target_drive=$(echo "$target_drive" | cut -d' ' -f1)
+
+    if [[ "$ex" == "30" ]] #delete cached images
+    then
+
+        if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)>1)) #plural
+        then
+
+            rmci_text="There are $(ls /usr/share/shock-os-imager/cached-images | wc -l) cached images on your system, taking up a total of $(du -sh /usr/share/shock-os-imager/cached-images | awk '{print $1}') of space. Would you like to delete them?"
+
+        else #singular
+        
+            rmci_text="There is 1 cached image on your system, taking up a total of $(du -sh /usr/share/shock-os-imager/cached-images | awk '{print $1}') of space. Would you like to delete it?"
+
+        fi
+
+        yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="$rmci_text" --button="Yes, remove"\!gtk-ok --button="No, keep"\!gtk-cancel
+
+        ex=$?
+
+        if [[ "$ex" == "0" ]]
+        then
+
+            rm -rf /usr/share/shock-os-imager/cached-images/*
+
+            yad --window-icon=/usr/share/shock-os-imager/icon.svg --image=emblem-default --title="Shock OS Imager" --text="All cached images have been successfully removed." --button="Dismiss"\!gtk-quit
+
+        fi
+
+	elif [[ "$target_drive" == "(null)" ]] && [[ "$ex" == "20" ]]
+	then
+
+		zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="You have not selected a drive to flash. Please plug in a storage device to install Shock OS on, and then click 'Retry'" --ok-label="Retry" --width=300
+
+    elif [[ -z "$(lsblk -o PATH | grep -w $target_drive)" ]] && [[ "$ex" == "20" ]] #if error reading the device (perhaps it was unplugged)
+    then
+
+        zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --ok-label="Retry" --width=300
+
+	elif (($(lsblk -o PATH,SIZE -b | grep -w $target_drive | awk '{print $2}')<15000000000)) && [[ "$ex" == "20" ]] #if drive is less than 16GB
+    then
+
+		target_drive="(null)"
+
+        zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="The SD card/USB drive you selected is too small. Shock OS requires a storage device of at least 16GB. Please insert a storage device that is at least 16GB in size, then press 'Retry' when you are ready to continue." --ok-label="Retry" --width=300
+
+    elif [[ "$ex" != "10" ]] && [[ "$ex" != "20" ]]
+	then
+
+		exit
+
+	elif [[ "$ex" == "20" ]]
+    then
+
+        success2="TRUE"
+
+    fi
+
+    echo "SUCCESS2: $success2" #DEBUG
+
+done
+
+image_to_flash=$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')
+
+image_to_flash_display="$image_to_flash"
+
+image_to_flash=$(echo "$output" | awk -F'|' '{print $2}')
+
+image_to_flash_display_name="$image_to_flash"
+
+image_to_flash_codename=${image_to_flash:13}
+
+if [[ "$image_to_flash" == *"Legacy"* ]]
+then
+
+	image_to_flash_variant="Legacy"
+
+else
+	
+	image_to_flash_variant=$(echo "$image_to_flash_codename" | sed 's/[^0-9]*//g')
+
+fi
+
+image_to_flash="$(echo "$image_to_flash_codename" | cut -f1 -d" ")$image_to_flash_variant"
+
+echo "TARGET DRIVE: $target_drive
+
+IMAGE TO FLASH: $image_to_flash" #DEBUG
+
+if [[ "$ex" == "20" ]] #flash
+then
+
+	url="${!image_to_flash}"
+
+	filename="$(basename "${url%/*}")"
+
+	if [[ ! -f /usr/share/shock-os-imager/cached-images/$filename ]] #if Shock OS image is not already downloaded
+	then
+
+		mkdir -p /usr/share/shock-os-imager/cached-images
+
+		echo "$url" #DEBUG
+
+		{
+
+        wget "$url" -P /usr/share/shock-os-imager/cached-images 2>&1 || {
+
+            zenity --error --text="Failed to download $image_to_flash_display. The program will now exit." --ok-label="Exit" ; kill $$
+
+            }
+
+        } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-os-imager/icon.svg --progress --title="Downloading $image_to_flash_display" --width=310 --text="Downloading $image_to_flash_display. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel"\!gtk-cancel:1
+
+		mv /usr/share/shock-os-imager/cached-images/download /usr/share/shock-os-imager/cached-images/$filename
+
+	fi
+
+#THE VERIFICATION SEGMENT BEGINS
+
+    # Launch the command in the background and capture its PID
+    {
+
+    mkdir -p /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Could Not Refresh Cache" --text="The directory /usr/share/shock-os-imager/sha256sums does not exist and could not be created." --ok-label="Exit"; exit 1; }
+
+    rm -rf /usr/share/shock-os-imager/sha256sums/* || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Could Not Refresh Cache" --text="Failed to remove files from /usr/share/shock-os-imager/sha256sums." --ok-label="Exit"; exit 1; }
+
+    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/shockos.asc -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Verify Image" --text="Failed to download the GPG key to verify the image." --ok-label="Exit"; exit 1; }
+
+    gpg --import /usr/share/shock-os-imager/sha256sums/shockos.asc || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Import Key" --text="Failed to import the GPG key to verify the image." --ok-label="Exit"; exit 1; }
+
+    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/sha256sums -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Fetch sha256sums" --text="Failed to fetch the sha256sums to verify the image." --ok-label="Exit"; exit 1; }
+
+    wget https://github.com/Shock-OS/shock-os-imager/raw/main/sha256sums.sig -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Failed to Fetch sha256sums.sig" --text="Failed to fetch the sha256sums.sig to verify the image." --ok-label="Exit"; exit 1; }
+
+    if [[ "$(gpg --verify /usr/share/shock-os-imager/sha256sums/sha256sums.sig /usr/share/shock-os-imager/sha256sums/sha256sums 2>&1 | grep 'Primary key fingerprint:')" != "Primary key fingerprint: 9515 D970 4C1B 1B3B 58CB  606D D2EA 4E12 F633 2179" ]]
+    then
+
+        zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Invalid sha256sums" --text="sha256sums has been tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --ok-label="Exit"
+
+        exit 1
+
+    fi
+
+    eval "$(cat /usr/share/shock-os-imager/sha256sums/sha256sums)"
+
+    sha256sum="${!image_to_flash}"
+
+    if [[ "$(sha256sum -b /usr/share/shock-os-imager/cached-images/$filename | cut -d' ' -f1)" != "$sha256sum" ]]
+    then
+
+        zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Invalid Image" --text="$filename was tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --ok-label="Exit"
+
+        exit 1
+
+    fi
+
+    } > /dev/null 2>&1 & command_pid=$!
+
+    # Show the progress window using YAD
+
+    yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Verifying the Image" --text="Verifying $filename..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
+
+    # Wait for either the command to finish or the YAD window to close
+    wait -n "$command_pid" "$yad_pid"
+
+    # Get the command's exit code
+    ex=$?
+
+    # Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
+    if ps -p "$command_pid"
+    then
+
+        kill "$command_pid"
+
+    else
+
+        kill "$yad_pid"
+
+    fi
+
+    # Check if the command exited with a non-zero code and show an error message if needed
+    if [[ "$ex" != "0" ]]
+    then
+
+        zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="The verification has been cancelled. The program will now exit." --ok-label="Exit"
+
+        kill $$
+
+    fi
+
+#THE VERIFICATION SEGMENT ENDS
+
+    if [[ -z "$(lsblk -o PATH | grep -w $target_drive)" ]] #if error reading the device (perhaps it was unplugged)
+    then
+
+        zenity --error --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --ok-label="Exit"
+
+        exit 1
+
+    fi
+
+	partitions=$(lsblk -n "$target_drive" | grep -c '^')
+
+	for ((i=1; i<=$partitions; i++))
+	do
+
+		umount "$target_drive$i"
+
+	done
+
+#THE WRITE SEGMENT BEGINS
+
+    # Launch the command in the background and capture its PID
+    { sudo unxz -c /usr/share/shock-os-imager/cached-images/"$filename" | sudo dd of=$target_drive bs=4M status=progress; } > /dev/null 2>&1 & command_pid=$!
+
+    # Show the progress window using YAD
+
+    yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
+
+    # Wait for either the command to finish or the YAD window to close
+    wait -n "$command_pid" "$yad_pid"
+
+    # Get the command's exit code
+    ex=$?
+
+   # Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
+    if ps -p "$command_pid"
+    then
+
+        kill "$command_pid"
+
+        eject "$target_drive"
+
+    else
+
+        kill "$yad_pid"
+
+    fi
+
+    # Check if the command exited with a non-zero code and show an error message if needed
+    if [[ "$ex" != "0" ]]
+    then
+
+        zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="An error occurred when writing the image. The program will now exit." --ok-label="Exit"
+
+        kill $$
+
+    fi
+
+#THE WRITE SEGMENT ENDS
+
+	zenity --notification --title="Flashing Complete" --text="$image_to_flash_display has successfully been flashed to $target_drive_display_name."
+
+	yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Congratulations! $image_to_flash_display has successfully been flashed to $target_drive_display_name. Thank you and enjoy!" --button="Dismiss"\!gtk-quit
+
+elif [[ "$ex" != "10" ]]
+then
+
+	exit
+
+fi
+
+
