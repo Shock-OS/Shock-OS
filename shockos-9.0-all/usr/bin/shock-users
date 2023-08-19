@@ -68,11 +68,26 @@ then
     until [[ "$success" == "yes" ]]
     do
 
-        nui=$(yad --window-icon=system-users --title="New User" --form --focus-field="$focus_field" --field="Username:" "$x" --field="Full name:" "$full_name" --field="":LBL "" --field="For security reasons, a strong password is highly recommended. Strong passwords consist of:
+        if [[ "$1" != "--setup" ]] #if regular mode
+        then
+
+            nui=$(yad --window-icon=system-users --title="New User" --form --focus-field="$focus_field" --field="Username:" "$x" --field="Full name:" "$full_name" --field="":LBL "" --field="For security reasons, a strong password is highly recommended. Strong passwords consist of:
         - at least eight characters
         - both lower and upper case letters
         - numbers
         - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --field="":LBL "" --field="The privilages of child profiles can be managed in the 'Parental Controls' app. Screen time limits can be imposed on child profiles. Child profiles cannot gain root access or use the 'sudo' command.":LBL "" --field="Child Profile":CHK "$kidprofile" --separator='`' --button="Create User"\!add)
+
+        else #initial setup mode
+
+            kidprofile="FALSE"
+
+            nui=$(yad --window-icon=system-users --title="New User" --form --focus-field="$focus_field" --field="Username:" "$x" --field="Full name:" "$full_name" --field="":LBL "" --field="For security reasons, a strong password is highly recommended. Strong passwords consist of:
+        - at least eight characters
+        - both lower and upper case letters
+        - numbers
+        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --field="":LBL "" --field="The privilages of child profiles can be managed in the 'Parental Controls' app. Screen time limits can be imposed on child profiles. Child profiles cannot gain root access or use the 'sudo' command.":LBL "" --separator='`' --button="Create User"\!add)
+
+        fi
 
         cnu=$?
 
@@ -181,6 +196,7 @@ then
             fi
 
         elif [[ "$1" != "--setup" ]]
+        then
 
             exit
 
@@ -215,7 +231,7 @@ then
 
         fi
 
-        if [[ "$1" == "--setup" ]]
+        if [[ "$1" == "--setup" ]] #initial setup stuff
         then
 
             echo "%$x ALL=(ALL:ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/initsetup-rootpriv #enables the user to run all commands without a password (temporarily)

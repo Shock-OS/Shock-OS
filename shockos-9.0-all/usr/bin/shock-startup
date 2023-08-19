@@ -60,16 +60,51 @@ fi
 if [[ "$(cat /usr/share/shock/setupvalue)" == "0" ]] #INITIAL SETUP (run as 'shock' user)
 then
 
+    mkdir -p ~/.config/gtk-3.0
+
+    echo "[Settings]
+gtk-icon-theme-name=shock-light-blue" | tee -a ~/.config/gtk-3.0/settings.ini
+
+    export GTK_THEME=shock-light-blue
+
+    xinit    
+
+    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
+
+    dconf write /org/mate/marco/general/center-new-windows "true"
+
+    feh --bg-fill /usr/share/shock/initsetup-background.png
+
+    yad --window-icon=/usr/share/shock/shock-logo.svg --title="Welcome" --picture --size=fit --filename=/usr/share/shock/initsetup-welcome-logo.png --text="
+<span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --button="Next"\!go-next --width=400
+
     until [[ "$ex" == "0" ]]
     do
 
-        sudo env DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata locales keyboard-configuration #this will allow the user to select their country and timezone
+        sudo env DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata locales keyboard-configuration
 
         ex=$?
 
     done
 
     sudo shock-users --setup #create a user
+
+    echo "shock-startup" | tee -a ~/.bashrc
+
+    echo "1" | tee /usr/share/shock/setupvalue
+    
+    yad --window-icon=gtk-refresh --image=gtk-refresh --title="Rebooting..." --text="The system will now reboot to finish the setup..." --center --fixed --no-buttons --no-escape --undecorated & sleep 5
+
+    sudo reboot
+
+elif [[ "$(cat /usr/share/shock/setupvalue)" == "1" ]]
+then
+
+    sudo deluser --remove-home shock #the 'shock' user has been removed
+
+    sudo systemctl set-default graphical
+
+    sudo rm /usr/share/shock/setupvalue
 
     #the default .bashrc file restoration patch begins
 
@@ -80,23 +115,6 @@ then
     sudo chown $(whoami) ~/.bashrc
 
     #the default .bashrc file restoration patch ends
-
-    echo "shock-startup" | tee -a ~/.bashrc
-
-    echo "1" | tee /usr/share/shock/setupvalue
-    
-    yad --window-icon=gtk-refresh --image=gtk-refresh --title="Rebooting..." --text="The system will now reboot to finish the setup..." --center --fixed --no-buttons --no-escape --undecorated & sleep 5
-
-    reboot
-
-elif [[ "$(cat /usr/share/shock/setupvalue)" == "1" ]]
-then
-
-    sudo deluser --remove-home shock #the 'shock' user has been removed
-
-    sudo systemctl set-default graphical
-
-    sudo rm /usr/share/shock/setupvalue
 
     sudo rm /etc/sudoers.d/initsetup-rootpriv #this command removes elevated privilages as they are no longer required.
 

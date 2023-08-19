@@ -170,7 +170,7 @@ mkdir -p /etc/skel/.cache
 
 mkdir -p /etc/skel/.local/share/applications
 
-#cp /usr/share/shock/mate_dock_applet.conf /etc/skel/.config
+cp -r /usr/share/shock/install-temp/"Sample Videos" /etc/skel/Videos
 
 #the home directory building ends
 
@@ -259,19 +259,15 @@ systemctl enable NetworkManager
 
 #Wi-Fi patch ends
 
-echo 'shock-initial-setup' | tee -a /home/shock/.bashrc
-
-#the above set of commands sets the initial setup program to run on first boot
-
 systemctl set-default multi-user #ensures the target is set to multi-user
 
 #the 'shock' temporary autologin patch begins
 
 sed -i 's/#NAutoVTs=6/NAutoVTs=1/g' /etc/systemd/logind.conf
 
-sudo echo "[Service]
+echo '[Service]
 ExecStart=
-ExecStart=-/usr/sbin/agetty --autologin shock --noclear %I $TERM" | tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
+ExecStart=-/usr/sbin/agetty --autologin shock --noclear %I $TERM' | tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
 
 systemctl is-enabled getty@tty1.service
 
@@ -279,13 +275,9 @@ systemctl enable getty@tty1.service
 
 systemctl daemon-reload
 
-echo 'xinit' | tee -a "/home/shock/.bashrc"
+echo 'shock-startup' | tee -a /home/shock/.bashrc
 
-echo 'marco &
-
-feh --bg-fill /usr/share/shock/initsetup-background.png
-
-shock-startup'
+echo 'marco' | tee -a /home/shock/.xinitrc
 
 #the 'shock' temporary autologin patch ends
 
@@ -307,6 +299,8 @@ ShowDelay=0
 Enable=1" | tee /etc/plymouth/plymouthd.conf
 
 #the splash screen patch ends
+
+rm -rf /usr/share/shock/install-temp
 
 
 
