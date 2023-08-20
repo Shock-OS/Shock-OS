@@ -275,11 +275,11 @@ systemctl enable getty@tty1.service
 
 systemctl daemon-reload
 
-mkdir -p home/shock/.config/gtk-3.0
+mkdir -p /home/shock/.config/gtk-3.0
 
 echo "[Settings]
 gtk-theme-name=shock-light-blue
-gtk-icon-theme-name=shock-light-blue" | tee /home/shock/.gtk-3.0/settings.ini
+gtk-icon-theme-name=shock-light-blue" | tee /home/shock/.config/gtk-3.0/settings.ini
 
 echo 'xinit' | tee -a /home/shock/.bashrc
 
