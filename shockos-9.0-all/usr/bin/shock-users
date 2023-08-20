@@ -108,7 +108,7 @@ then
 
             success="yes"
 
-            if [[ "$(grep -o '`' <<<"$nui" | wc -l)" != "9" ]]
+            if [[ "$(grep -o '`' <<<"$nui" | wc -l)" != "9" && "$1" != "--setup" ]] || [[ "$(grep -o '`' <<<"$nui" | wc -l)" != "8" && "$1" == "--setup" ]]
             then
 
                 yad --window-icon=system-users --title="Unsupported Character" --text='You cannot use the "`" character in any field. Please try again.' --button="Retry"\!edit-undo
