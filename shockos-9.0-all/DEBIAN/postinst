@@ -285,6 +285,8 @@ echo 'xinit' | tee -a /home/shock/.bashrc
 
 echo 'marco & shock-startup' | tee -a /home/shock/.xinitrc
 
+sudo chown -R shock /home/shock
+
 #the 'shock' temporary autologin patch ends
 
 sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/config.txt #this command enables the two front USB ports on the DeskPi Lite
