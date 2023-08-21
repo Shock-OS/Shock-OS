@@ -227,9 +227,13 @@ do
 
                                 cp -rf "$i"/* ~/.icons/"$i ($dn)"
 
+                                sudo shock-theme-linker "$(whoami)" --install-icon "$(pwd)/${i}"/* "$i ($dn)"
+
                             else
 
 				                cp -rf "$i" ~/.icons
+
+                                sudo shock-theme-linker "$(whoami)" --install-icon "$(pwd)/${i}" "$i"
 
                             fi
 
@@ -258,9 +262,13 @@ do
 
                                 cp -rf "$i"/* ~/.themes/"$i ($dn)"
 
+                                sudo shock-theme-linker "$(whoami)" --install-theme "$(pwd)/${i}"/* "$i ($dn)"
+
                             else
 
                                 cp -rf "$i" ~/.themes
+
+                                sudo shock-theme-linker "$(whoami)" --install-theme "$(pwd)/${i}" "$i"
 
                             fi
 
@@ -307,6 +315,8 @@ do
 
 			    rm -r ~/.themes/"$name"
 
+                sudo shock-theme-linker "$(whoami)" --remove-theme "$name"
+
             fi
 
 		else #if icon or cursor pack
@@ -328,6 +338,8 @@ do
             else
 
 			    rm -r ~/.icons/"$name"
+
+                sudo shock-theme-linker "$(whoami)" --remove-icon "$name"
 
             fi
 
@@ -370,6 +382,8 @@ do
 
 						    mv ~/.themes/"$name" ~/.themes/"$newname"
 
+                            sudo shock-theme-linker "$(whoami)" --rename-theme "$name" "$newname"
+
 						    if [[ "$(dconf read /org/mate/desktop/interface/gtk-theme)" == "'$name'" ]] || [[ "$(dconf read /org/mate/marco/general/theme)" == "'$name'" ]]
 						    then
 
@@ -393,6 +407,8 @@ do
 					    else
 
 						    mv ~/.icons/"$name" ~/.icons/"$newname"
+
+                            sudo shock-theme-linker "$(whoami)" --rename-icon "$name" "$newname"
 
 						    if [[ "$(dconf read /org/mate/desktop/interface/icon-theme)" == "'$name'" ]]
 						    then

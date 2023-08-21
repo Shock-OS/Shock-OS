@@ -123,22 +123,6 @@ mpg123 /usr/share/shock/startup-sound/* #this command plays the startup sound
 
 shock-welcome &
 
-#THE CLEANUP FUNCTION BEGINS
-
-function cleanup() {
-
-killall shock-os-update-manager
-
-killall shock-release-upgrader
-
-killall yad
-
-}
-
-#THE CLEANUP FUNCTION ENDS
-
-trap cleanup EXIT SIGINT SIGTERM SIGKILL
-
 while true #check for updates
 do
 
@@ -146,7 +130,7 @@ do
 
     sleep 900
 
-done & killpid_soum=$!
+done
 
 while true #check for available system upgrades
 do
@@ -155,7 +139,7 @@ do
 
     sleep 900
 
-done & killpid_srs=$!
+done
 
 if [[ " $(groups "$(whoami)") " == *" shock-child "* ]] && [[ -f /usr/share/shock-pcstl/"$(whoami)"/shock-screen-time-limit ]] #if account is a child profile with a screen time limit set
 then

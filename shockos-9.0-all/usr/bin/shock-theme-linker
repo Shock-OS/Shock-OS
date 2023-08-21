@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#USAGE: sudo shock-theme-linker "$(whoami)" [--install-theme/--remove-theme/--install-icon/--remove-icon/--rename-theme/--rename-icon] <THEME_DIR> <THEME_NAME>
+
+if [[ "$2" == "--install-theme" ]]
+then
+
+    ln -s "$3" /usr/share/themes/"$4"
+
+elif [[ "$2" == "--install-icon" ]]
+then
+
+    ln -s "$3" /usr/share/icons/"$4"
+
+elif [[ "$2" == "--remove-theme" ]]
+then
+
+    rm -rf /usr/share/themes/"$3"
+
+elif [[ "$2" == "--remove-icon" ]]
+then
+
+    rm -rf /usr/share/icons/"$3"
+
+elif [[ "$2" == "--rename-theme" ]]
+then
+
+    mv /usr/share/themes/"$3" /usr/share/themes/"$4"
+
+elif [[ "$2" == "--rename-icon" ]]
+then
+
+    mv /usr/share/icons/"$3" /usr/share/icons/"$4"
+
+else
+
+    echo "SYNTAX ERROR: Unknown operation '$2'"
+
+    exit 1
+
+fi

@@ -240,6 +240,10 @@ echo 'ALL ALL=NOPASSWD:/usr/bin/shock-pcstl-daemon' | tee /etc/sudoers.d/shock-p
 
 #the above command allows anyone to run shock-pcstl manager without a password (for parental controls screen time limits)
 
+echo 'ALL ALL=NOPASSWD:/usr/bin/shock-theme-linker' | tee /etc/sudoers.d/shock-theme-linker
+
+#the above command allows users to create a symlink to their custom themes in /usr/share/themes so that root apps can use their user-specific themes
+
 #setfacl -m g:shock-child:--- /usr/bin/pkexec
 
 #prohibits child users from using pkexec
