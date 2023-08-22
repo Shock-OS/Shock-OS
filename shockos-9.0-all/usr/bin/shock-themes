@@ -2,6 +2,12 @@
 
 IFS=$'\n'
 
+runuser="$(whoami)"
+
+nl="${#runuser}"
+
+nl=$((nl+1))
+
 while true
 do
 
@@ -13,14 +19,16 @@ do
 		for i in ~/.themes/* #list all themes
 		do
 
+            current_theme="$(basename "$i")"
+
             if [[ "$(ls -d "$i"/*/)" == "${i}/metacity-1/" ]]
             then
 
-			    yadlist+=("gnome-settings-theme" "Metacity theme" "$(basename "$i")")
+			    yadlist+=("gnome-settings-theme" "Metacity theme" "${current_theme:$nl}")
 
             else
 
-                yadlist+=("gnome-settings-theme" "Theme pack" "$(basename "$i")")
+                yadlist+=("gnome-settings-theme" "Theme pack" "${current_theme:$nl}")
 
             fi
 
@@ -31,10 +39,12 @@ do
 	for i in ~/.icons/* #list all icons
 	do
 
+        current_theme="$(basename "$i")"
+
 		if  [[ -d "$(find "$i" -name places | head -n1)" || -d "$(find "$i" -name status | head -n1)" ]] && [[ "$(cat "$i/index.theme")" == *"[Icon Theme]"* ]]
 		then
 
-			yadlist+=("folder-images" "Icon pack" "$(basename "$i")")
+			yadlist+=("folder-images" "Icon pack" "${current_theme:$nl}")
 
 		fi
 
@@ -43,10 +53,12 @@ do
 	for i in ~/.icons/* #list all cursors
 	do
 
+        current_theme="$(basename "$i")"
+
 		if  [[ -d "$(find "$i" -name cursors | head -n1)" ]] || [[ -f "$i/cursors.theme" ]]
 		then
 
-			yadlist+=("input-mouse" "Cursor pack" "$(basename "$i")")
+			yadlist+=("input-mouse" "Cursor pack" "${current_theme:$nl}")
 
 		fi
 
@@ -225,15 +237,11 @@ do
 
                                 mkdir -p ~/.icons/"$i ($dn)"
 
-                                cp -rf "$i"/* ~/.icons/"$i ($dn)"
-
-                                sudo shock-theme-linker "$(whoami)" --install-icon "$(pwd)/${i}"/* "$i ($dn)"
+                                cp -rf "$i"/* ~/.icons/"${runuser}_$i ($dn)"
 
                             else
 
-				                cp -rf "$i" ~/.icons
-
-                                sudo shock-theme-linker "$(whoami)" --install-icon "$(pwd)/${i}" "$i"
+				                cp -rf "$i" ~/.icons/"${runuser}_$i"
 
                             fi
 
@@ -260,15 +268,11 @@ do
 
                                 mkdir -p ~/.themes/"$i ($dn)"
 
-                                cp -rf "$i"/* ~/.themes/"$i ($dn)"
-
-                                sudo shock-theme-linker "$(whoami)" --install-theme "$(pwd)/${i}"/* "$i ($dn)"
+                                cp -rf "$i"/* ~/.themes/"${runuser}_$i ($dn)"
 
                             else
 
-                                cp -rf "$i" ~/.themes
-
-                                sudo shock-theme-linker "$(whoami)" --install-theme "$(pwd)/${i}" "$i"
+                                cp -rf "$i" ~/.themes/"${runuser}_$i"
 
                             fi
 
@@ -306,22 +310,20 @@ do
 		elif [[ "$type" == "Theme pack" ]] || [[ "$type" == "Metacity theme" ]] #if theme pack
 		then
 
-            if [[ "$(dconf read /org/mate/desktop/interface/gtk-theme)" == "'$name'" ]] || [[ "$(dconf read /org/mate/marco/general/theme)" == "'$name'" ]]
+            if [[ "$(dconf read /org/mate/desktop/interface/gtk-theme)" == "'${runuser}_${name}'" ]] || [[ "$(dconf read /org/mate/marco/general/theme)" == "'${runuser}_${name}'" ]]
             then
 
                 yad --window-icon=gnome-settings-theme --title="Themes" --image=emblem-important --text="You cannot remove $name because it is currently in use. Please switch to a different theme before removing $name." --button="Dismiss"\!gtk-quit
 
             else
 
-			    rm -r ~/.themes/"$name"
-
-                sudo shock-theme-linker "$(whoami)" --remove-theme "$name"
+			    rm -r ~/.themes/"${runuser}_$name"
 
             fi
 
 		else #if icon or cursor pack
 
-            if [[ "$(dconf read /org/mate/desktop/interface/icon-theme)" == "'$name'" ]] || [[ "$(dconf write /org/mate/desktop/peripherals/mouse/cursor-theme)" == "'$name'" ]]
+            if [[ "$(dconf read /org/mate/desktop/interface/icon-theme)" == "'${runuser}_${name}'" ]] || [[ "$(dconf write /org/mate/desktop/peripherals/mouse/cursor-theme)" == "'${runuser}_${name}'" ]]
             then
 
                 if [[ "$type" == "Icon pack" ]]
@@ -337,9 +339,7 @@ do
 
             else
 
-			    rm -r ~/.icons/"$name"
-
-                sudo shock-theme-linker "$(whoami)" --remove-icon "$name"
+			    rm -r ~/.icons/"${runuser}_$name"
 
             fi
 
@@ -380,18 +380,25 @@ do
 
 					    else
 
-						    mv ~/.themes/"$name" ~/.themes/"$newname"
+						    mv ~/.themes/"${runuser}_$name" ~/.themes/"${runuser}_$newname"
 
-                            sudo shock-theme-linker "$(whoami)" --rename-theme "$name" "$newname"
-
-						    if [[ "$(dconf read /org/mate/desktop/interface/gtk-theme)" == "'$name'" ]] || [[ "$(dconf read /org/mate/marco/general/theme)" == "'$name'" ]]
+						    if [[ "$(dconf read /org/mate/desktop/interface/gtk-theme)" == "'${runuser}_${name}'" || "$(dconf read /org/mate/marco/general/theme)" == "'${runuser}_${name}'" ]] && [[ "$type" == "Theme pack" ]] #if regular theme
 						    then
 
-							    dconf write /org/mate/desktop/interface/gtk-theme "'$newname'"
+							    dconf write /org/mate/desktop/interface/gtk-theme "'${runuser}_${newname}'"
 
-							    dconf write /org/mate/marco/general/theme "'$newname'"
+							    dconf write /org/mate/marco/general/theme "'${runuser}_${newname}'"
 
-						    fi
+                                flatpak override --user --env=GTK_THEME="${runuser}_${newname}"
+
+						    elif [[ "$(dconf read /org/mate/marco/general/theme)" == "'${runuser}_${name}'" ]] && [[ "$type" == "Metacity theme" ]] #if metacity theme
+                            then
+
+                                dconf write /org/mate/marco/general/theme "'${runuser}_${newname}'"
+
+                                flatpak override --user --env=GTK_THEME="${runuser}_${newname}"
+
+                            fi
 
 					    fi
 
@@ -406,21 +413,21 @@ do
 
 					    else
 
-						    mv ~/.icons/"$name" ~/.icons/"$newname"
+						    mv ~/.icons/"${runuser}_$name" ~/.icons/"${runuser}_$newname"
 
-                            sudo shock-theme-linker "$(whoami)" --rename-icon "$name" "$newname"
-
-						    if [[ "$(dconf read /org/mate/desktop/interface/icon-theme)" == "'$name'" ]]
+						    if [[ "$(dconf read /org/mate/desktop/interface/icon-theme)" == "'${runuser}_${name}'" ]]
 						    then
 
-							    dconf write /org/mate/desktop/interface/icon-theme "'$newname'"
+							    dconf write /org/mate/desktop/interface/icon-theme "'${runuser}_${newname}'"
+
+                                flatpak override --user --env=ICON_THEME="${runuser}_${newname}"
 
 						    fi
 
-						    if [[ "$(dconf write /org/mate/desktop/peripherals/mouse/cursor-theme)" == "'$name'" ]]
+						    if [[ "$(dconf write /org/mate/desktop/peripherals/mouse/cursor-theme)" == "'${runuser}_${name}'" ]]
 						    then
 
-							    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$newname'"
+							    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'${runuser}_${newname}'"
 
 						    fi
 
@@ -546,30 +553,30 @@ color=$color" | tee ~/.config/shock_themes
 		elif [[ "$type" == "Theme pack" ]]
 		then
 
-			dconf write /org/mate/desktop/interface/gtk-theme "'$name'"
+			dconf write /org/mate/desktop/interface/gtk-theme "'${runuser}_${name}'"
 
-			dconf write /org/mate/marco/general/theme "'$name'"
+			dconf write /org/mate/marco/general/theme "'${runuser}_${name}'"
 
-            flatpak override --user --env=GTK_THEME="$name"
+            flatpak override --user --env=GTK_THEME="${runuser}_${name}"
 
         elif [[ "$type" == "Metacity theme" ]]
         then
 
-            dconf write /org/mate/marco/general/theme "'$name'"
+            dconf write /org/mate/marco/general/theme "'${runuser}_${name}'"
 
-            flatpak override --user --env=GTK_THEME="$name"
+            flatpak override --user --env=GTK_THEME="${runuser}_${name}"
 
 		elif [[ "$type" == "Icon pack" ]]
 		then
 
-			dconf write /org/mate/desktop/interface/icon-theme "'$name'"
+			dconf write /org/mate/desktop/interface/icon-theme "'${runuser}_${name}'"
 
-            flatpak override --user --env=ICON_THEME="$name"
+            flatpak override --user --env=ICON_THEME="${runuser}_${name}"
 
 		elif [[ "$type" == "Cursor pack" ]]
 		then
 
-			dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'$name'"
+			dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'${runuser}_${name}'"
 
 		fi
 
@@ -578,6 +585,8 @@ color=$color" | tee ~/.config/shock_themes
 		exit
 
 	fi
+
+    sudo shock-themes-sync-daemon
 
 done
 

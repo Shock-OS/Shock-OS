@@ -1,0 +1,65 @@
+#!/bin/bash
+
+#deamon that syncs the user themes with the /usr/share/themes directory to allow root apps to use user themes
+
+#the root check element begins
+
+if [[ "$(id -u)" != "0" ]]
+then
+
+    echo "Script must be run as root. Exiting..."
+
+    exit
+
+fi
+
+#the root check element ends
+
+for user in /home/*
+do
+
+    user="$(basename "$user")"
+
+    for type in {themes,icons}
+    do
+
+        for theme in /home/$user/.$type/*
+        do
+
+            theme="$(basename "$theme")"
+
+            if [[ "$theme" != "$user_"* ]] #if theme not named to fit user
+            then
+
+                mv /home/$user/.$type/"$theme" /home/$user/themes/"${user}_${theme}"
+
+                theme="${user}_${theme}"
+
+            fi
+
+            if [[ ! -d /usr/share/$type/"$theme" ]] #add new themes to their directories in /usr/share
+            then
+
+                ln -s /home/$user/.$type/"$theme" /usr/share/$type/"$theme"
+
+            fi
+
+        done
+
+        for theme in $(ls /usr/share/$type | grep "${user}_") #remove links to themes that no longer exist
+        do
+
+            theme="$(basename "$theme")"
+
+            if [[ ! -d /home/$user/.$type/"$theme" ]]
+            then
+
+                rm /usr/share/$type/"$theme"
+
+            fi
+
+        done
+
+    done
+
+done
