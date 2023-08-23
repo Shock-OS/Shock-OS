@@ -1,5 +1,7 @@
 #!/bin/bash
 
+IFS=$'\n'
+
 #deamon that syncs the user themes with the /usr/share/themes directory to allow root apps to use user themes
 
 #the root check element begins
