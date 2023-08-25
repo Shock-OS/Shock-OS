@@ -51,6 +51,10 @@ then
 
     flatpak override --user --filesystem=$HOME/.icons
 
+    flatpak override --user --filesystem=$HOME/.shock-themes
+
+    flatpak override --user --filesystem=$HOME/.shock-icons
+
     #THE FLATPAK GTK THEMING PATCH ENDS
 
     rm ~/.config/userlogstat

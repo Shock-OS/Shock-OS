@@ -25,67 +25,88 @@ do
     for type in {themes,icons}
     do
 
-        linked_themes=()
+        if (($(ls /home/"$user"/."$type" | wc -l)>0))
+        then
 
-        for theme in /home/"$user"/."$type"/* #creates list of themes that already have a link
-        do
+            linked_themes=()
 
-            theme="$(basename "$theme")"
+            for theme in /home/"$user"/."$type"/* #creates list of themes that already have a link
+            do
 
-            if [[ -L /home/"$user"/."$type"/"$theme" ]]
-            then
+                theme="$(basename "$theme")"
 
-                linked_themes+=("\"$(readlink /home/"$user"/."$type"/"$theme")\"")
-
-                if [[ "$theme" != "$user_"* ]] #if theme not named to fit user
+                if [[ -h /home/"$user"/."$type"/"$theme" ]]
                 then
 
-                    mv /home/"$user"/."$type"/"$theme" /home/"$user"/."$type"/"${user}_${theme}"
+                    link="$(readlink /home/"$user"/."$type"/"$theme")"
 
-                    theme="${user}_${theme}"
+                    if [[ -d "$link" ]]
+                    then
+
+                        linked_themes+=("\"$(basename "$link")\"")
+
+                        if [[ "$theme" != "$user_"* ]] #if theme not named to fit user
+                        then
+
+                            mv /home/"$user"/."$type"/"$theme" /home/"$user"/."$type"/"${user}_${theme}"
+
+                            theme="${user}_${theme}"
+
+                        fi
+
+                    else #remove symlink if target theme doesn't exist
+
+                        rm /home/"$user"/."$type"/"$theme"
+
+                    fi
+
+                else #if file is not a symlink, move it to the .shock-(themes/icons) directory
+
+                    mv /home/"$user"/."$type"/"$theme" /home/"$user"/.shock-"$type"
 
                 fi
 
-            elif [[ -h "$theme" ]] #remove symlink if target theme doesn't exist
-            then
+            done
 
-                rm /home/"$user"/.shock-"$type"/"$theme"
+        fi
 
-            else #if file is not a symlink, move it to the .shock-(themes/icons) directory
+        if (($(ls /home/"$user"/.shock-"$type" | wc -l)>0))
+        then
 
-                mv /home/"$user"/."$type"/"$theme" /home/"$user"/.shock-"$type"
+            for theme in /home/"$user"/.shock-"$type"/* #create links to new themes.
+            do
 
-            fi
+                theme="$(basename "$theme")"
 
-        done
+                if [[ " ${linked_themes[@]} " != *"\"$theme\""* ]]
+                then
 
-        for theme in /home/"$user"/.shock-"$type" #create links to new themes.
-        do
+                    ln -s /home/"$user"/.shock-"$type"/"$theme" /home/"$user"/."$type"/"${user}_${theme}"
 
-            theme="$(basename "$theme")"
+                fi
 
-            if [[ " ${linked_themes[@]} " != *"\"$theme\""* ]]
-            then
+            done
 
-                ln -s /home/"$user"/.shock-"$type"/"$theme" /home/"$user"/."$type"/"${user}_${theme}"
+        fi
 
-            fi
+        if (($(ls /home/"$user"/."$type" | wc -l)>0))
+        then
 
-        done                    
+            for theme in /home/"$user"/."$type"/* #add new themes to their directories in /usr/share
+            do
 
-        for theme in /home/"$user"/.shock-"$type"/*
-        do
+                theme="$(basename "$theme")"
 
-            theme="$(basename "$theme")"
+                if [[ ! -d /usr/share/"$type"/"$theme" ]] 
+                then
 
-            if [[ ! -d /usr/share/"$type"/"$theme" ]] #add new themes to their directories in /usr/share
-            then
+                    ln -s /home/"$user"/."$type"/"$theme" /usr/share/"$type"/"$theme"
 
-                ln -s /home/"$user"/.shock-"$type"/"$theme" /usr/share/"$type"/"$theme"
+                fi
 
-            fi
+            done
 
-        done
+        fi
 
         for theme in $(ls /usr/share/"$type" | grep "${user}_") #remove links to themes that no longer exist
         do

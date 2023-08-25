@@ -9,5 +9,5 @@ Icon=gnome-settings-theme
 Terminal=false
 Type=Application
 Categories=Settings;DesktopSettings;
-Keywords=theme;accent;color;dark;light;desktop;red;orange;yellow;green;blue;purple;pink;
+Keywords=themes;icons;mouse;cursors;accent;color;dark;light;desktop;red;orange;yellow;green;blue;purple;pink;
 Name[en_US]=Themes

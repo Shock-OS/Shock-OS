@@ -11,6 +11,8 @@ nl=$((nl+1))
 while true
 do
 
+    sudo shock-themes-sync-daemon
+
 	yadlist=("/usr/share/shock/shock-logo.svg" "The default Shock OS look and feel" "Default")
 
 	if (($(ls ~/.themes | wc -l)>0))
@@ -41,7 +43,7 @@ do
 
         current_theme="$(basename "$i")"
 
-		if  [[ -d "$(find "$i" -name places | head -n1)" || -d "$(find "$i" -name status | head -n1)" ]] && [[ "$(cat "$i/index.theme")" == *"[Icon Theme]"* ]]
+		if  [[ -d "$(find "$i"/* -name places | head -n1)" || -d "$(find "$i"/* -name status | head -n1)" ]] && [[ "$(cat "$i/index.theme")" == *"[Icon Theme]"* ]]
 		then
 
 			yadlist+=("folder-images" "Icon pack" "${current_theme:$nl}")
@@ -55,7 +57,7 @@ do
 
         current_theme="$(basename "$i")"
 
-		if  [[ -d "$(find "$i" -name cursors | head -n1)" ]] || [[ -f "$i/cursors.theme" ]]
+		if  [[ -d "$(find "$i"/* -name cursors | head -n1)" ]] || [[ -f "$i/cursors.theme" ]]
 		then
 
 			yadlist+=("input-mouse" "Cursor pack" "${current_theme:$nl}")
@@ -321,9 +323,9 @@ do
 
             else
 
-                ttr="$(readlink "${runuser}_$name")"
+                ttr="$(readlink ~/.themes/"${runuser}_$name")"
 
-			    rm -r ~/.shock-themes/"$ttr"
+			    rm -r "$ttr"
 
             fi
 
@@ -345,9 +347,9 @@ do
 
             else
 
-                ttr="$(readlink "${runuser}_$name")"
+                ttr="$(readlink ~/.icons/"${runuser}_$name")"
 
-			    rm -r ~/.shock-icons/"$ttr"
+			    rm -r "$ttr"
 
             fi
 
@@ -593,8 +595,6 @@ color=$color" | tee ~/.config/shock_themes
 		exit
 
 	fi
-
-    sudo shock-themes-sync-daemon
 
 done
 
