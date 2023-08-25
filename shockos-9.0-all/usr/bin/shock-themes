@@ -223,25 +223,27 @@ do
 
                             mkdir -p ~/.icons
 
-                            if [[ -d ~/.icons/"$i" ]] #if directory with the same name already exists
+                            mkdir -p ~/.shock-icons
+
+                            if [[ -d ~/.shock-icons/"$i" ]] #if directory with the same name already exists
                             then
 
                                 dn=1
 
-                                until [[ ! -d ~/.icons/"$i ($dn)" ]]
+                                until [[ ! -d ~/.shock-icons/"$i ($dn)" ]]
                                 do
 
                                     dn=$((dn+1))
 
                                 done
 
-                                mkdir -p ~/.icons/"$i ($dn)"
+                                mkdir -p ~/.shock-icons/"$i ($dn)"
 
-                                cp -rf "$i"/* ~/.icons/"${runuser}_$i ($dn)"
+                                cp -rf "$i"/* ~/.shock-icons/"$i ($dn)"
 
                             else
 
-				                cp -rf "$i" ~/.icons/"${runuser}_$i"
+				                cp -rf "$i" ~/.shock-icons/"$i"
 
                             fi
 
@@ -254,25 +256,27 @@ do
 
                             mkdir -p ~/.themes
 
-                            if [[ -d ~/.themes/"$i" ]] #if directory with the same name already exists
+                            mkdir -p ~/.shock-themes
+
+                            if [[ -d ~/.shock-themes/"$i" ]] #if directory with the same name already exists
                             then
 
                                 dn=1
 
-                                until [[ ! -d ~/.themes/"$i ($dn)" ]]
+                                until [[ ! -d ~/.shock-themes/"$i ($dn)" ]]
                                 do
 
                                     dn=$((dn+1))
 
                                 done
 
-                                mkdir -p ~/.themes/"$i ($dn)"
+                                mkdir -p ~/.shock-themes/"$i ($dn)"
 
-                                cp -rf "$i"/* ~/.themes/"${runuser}_$i ($dn)"
+                                cp -rf "$i"/* ~/.shock-themes/"$i ($dn)"
 
                             else
 
-                                cp -rf "$i" ~/.themes/"${runuser}_$i"
+                                cp -rf "$i" ~/.shock-themes/"$i"
 
                             fi
 
@@ -317,7 +321,9 @@ do
 
             else
 
-			    rm -r ~/.themes/"${runuser}_$name"
+                ttr="$(readlink "${runuser}_$name")"
+
+			    rm -r ~/.shock-themes/"$ttr"
 
             fi
 
@@ -339,7 +345,9 @@ do
 
             else
 
-			    rm -r ~/.icons/"${runuser}_$name"
+                ttr="$(readlink "${runuser}_$name")"
+
+			    rm -r ~/.shock-icons/"$ttr"
 
             fi
 

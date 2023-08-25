@@ -25,38 +25,77 @@ do
     for type in {themes,icons}
     do
 
-        for theme in /home/$user/.$type/*
+        linked_themes=()
+
+        for theme in /home/"$user"/."$type"/* #creates list of themes that already have a link
         do
 
             theme="$(basename "$theme")"
 
-            if [[ "$theme" != "$user_"* ]] #if theme not named to fit user
+            if [[ -L /home/"$user"/."$type"/"$theme" ]]
             then
 
-                mv /home/$user/.$type/"$theme" /home/$user/themes/"${user}_${theme}"
+                linked_themes+=("\"$(readlink /home/"$user"/."$type"/"$theme")\"")
 
-                theme="${user}_${theme}"
+                if [[ "$theme" != "$user_"* ]] #if theme not named to fit user
+                then
 
-            fi
+                    mv /home/"$user"/."$type"/"$theme" /home/"$user"/."$type"/"${user}_${theme}"
 
-            if [[ ! -d /usr/share/$type/"$theme" ]] #add new themes to their directories in /usr/share
+                    theme="${user}_${theme}"
+
+                fi
+
+            elif [[ -h "$theme" ]] #remove symlink if target theme doesn't exist
             then
 
-                ln -s /home/$user/.$type/"$theme" /usr/share/$type/"$theme"
+                rm /home/"$user"/.shock-"$type"/"$theme"
+
+            else #if file is not a symlink, move it to the .shock-(themes/icons) directory
+
+                mv /home/"$user"/."$type"/"$theme" /home/"$user"/.shock-"$type"
 
             fi
 
         done
 
-        for theme in $(ls /usr/share/$type | grep "${user}_") #remove links to themes that no longer exist
+        for theme in /home/"$user"/.shock-"$type" #create links to new themes.
         do
 
             theme="$(basename "$theme")"
 
-            if [[ ! -d /home/$user/.$type/"$theme" ]]
+            if [[ " ${linked_themes[@]} " != *"\"$theme\""* ]]
             then
 
-                rm /usr/share/$type/"$theme"
+                ln -s /home/"$user"/.shock-"$type"/"$theme" /home/"$user"/."$type"/"${user}_${theme}"
+
+            fi
+
+        done                    
+
+        for theme in /home/"$user"/.shock-"$type"/*
+        do
+
+            theme="$(basename "$theme")"
+
+            if [[ ! -d /usr/share/"$type"/"$theme" ]] #add new themes to their directories in /usr/share
+            then
+
+                ln -s /home/"$user"/.shock-"$type"/"$theme" /usr/share/"$type"/"$theme"
+
+            fi
+
+        done
+
+        for theme in $(ls /usr/share/"$type" | grep "${user}_") #remove links to themes that no longer exist
+        do
+
+            theme="$(basename "$theme")"
+
+            if [[ ! -d /home/"$user"/."$type"/"$theme" ]]
+            then
+
+                rm /usr/share/"$type"/"$theme"
 
             fi
 
