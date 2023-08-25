@@ -406,8 +406,6 @@ do
 
                                 dconf write /org/mate/marco/general/theme "'${runuser}_${newname}'"
 
-                                flatpak override --user --env=GTK_THEME="${runuser}_${newname}"
-
                             fi
 
 					    fi
@@ -573,8 +571,6 @@ color=$color" | tee ~/.config/shock_themes
         then
 
             dconf write /org/mate/marco/general/theme "'${runuser}_${name}'"
-
-            flatpak override --user --env=GTK_THEME="${runuser}_${name}"
 
 		elif [[ "$type" == "Icon pack" ]]
 		then

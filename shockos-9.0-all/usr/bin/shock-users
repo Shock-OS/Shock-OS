@@ -85,7 +85,7 @@ then
         - at least eight characters
         - both lower and upper case letters
         - numbers
-        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --field="":LBL "" --field="The privilages of child profiles can be managed in the 'Parental Controls' app. Screen time limits can be imposed on child profiles. Child profiles cannot gain root access or use the 'sudo' command.":LBL "" --separator='`' --button="Create User"\!add)
+        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --separator='`' --button="Create User"\!add)
 
         fi
 
