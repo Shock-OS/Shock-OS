@@ -16,25 +16,66 @@ do
 
         minutes=$(cat /usr/share/shock-pcstl/"$(whoami)"/shock-screen-time-limit)
 
-        remaining="$(cat /usr/share/shock-pcstl/"$(whoami)"/today/"$(date "+%F")") minutes"
+        total_hours=$((minutes/60))
 
-        if [[ "$remaining" == "1 minutes" ]]
+        total_minutes=$((minutes%60))
+
+        if ((total_hours>0))
         then
 
-            remaining="1 minute"
+            if ((total_minutes>0))
+            then
 
-        elif [[ "$remaining" == " minutes" ]] #if the screen time limit has changed less then 60 seconds ago and shock-pcstl-daemon has not adjusted yet
+                total_display="$total_hours hours and $total_minutes minutes"
+
+            else
+
+                total_display="$total_hours hours"
+
+            fi
+
+        else
+
+            total_display="$total_minutes minutes"
+
+        fi
+
+        remaining="$(cat /usr/share/shock-pcstl/"$(whoami)"/today/"$(date "+%F")")"
+
+        remaining_hours=$((remaining/60))
+
+        remaining_minutes=$((remaining%60))
+
+        if ((remaining_hours>0))
         then
 
-            remaining="$minutes minutes"
+            if ((remaining_minutes>0))
+            then
+
+                remaining_display="$remaining_hours hours and $remaining_minutes minutes"
+
+            else
+
+                remaining_display="$remaining_hours hours"
+
+            fi
+
+        elif ((remaining_minutes>1))
+        then
+
+            remaining_display="$remaining_minutes minutes"
+
+        else
+
+            remaining_display="1 minute"
 
         fi
 
         yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="Your parent/guardian/administrator has set a daily screen time limit on your profile.
 
-Total daily limit: $minutes minutes
+Total daily limit: $total_display
 
-Time remaining: $remaining" --buttons-layout=edge --button="Refresh"\!gtk-refresh --button="Dismiss"\!gtk-quit
+Time remaining: $remaining_display" --buttons-layout=edge --button="Refresh"\!gtk-refresh --button="Dismiss"\!gtk-quit
 
         ex=$?
 

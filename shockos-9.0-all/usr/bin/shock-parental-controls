@@ -89,20 +89,38 @@ then
 
     #the time limit patch begins
 
-    minutes=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="You can set a daily screen time limit for $utr_display_name." --form --field="Daily screen time limit (in minutes):":NUM '120!10..1440' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+    minutes=0
 
-    ex4=$?
+    until ((minutes>10))
+    do
 
-    if [[ "$ex4" != "0" ]]
-    then
+        output=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="You can set a daily screen time limit for $utr_display_name." --form --field="Hours:":NUM '2!0..24' --field="Minutes:":NUM '30!0..60' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
 
-        yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="Operation aborted. No changes were made to your system." --button="Dismiss"\!gtk-quit
+        ex4=$?
 
-        exit
+        if [[ "$ex4" != "0" ]]
+        then
 
-    fi
+            yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="Operation aborted. No changes were made to your system." --button="Dismiss"\!gtk-quit
 
-    minutes=$(echo "$minutes" | sed 's/|//')
+            exit
+
+        fi
+
+        hours=$(echo "$output" | awk -F'|' '{print $1}')
+
+        minutes=$(echo "$output" | awk -F'|' '{print $2}')
+
+        minutes=$((hours*60+minutes))
+
+        if ((minutes<10))
+        then
+
+            yad --window-icon=/usr/share/shock/parental-controls.png --image=emblem-important --title="Parental Controls" --text="The screen time limit cannot be less than 10 minutes." --button="Retry"\!edit-undo
+
+        fi
+
+    done
 
     mkdir -p /usr/share/shock-pcstl/"$utr"
 
