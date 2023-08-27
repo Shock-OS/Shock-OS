@@ -221,7 +221,18 @@ then
         if [[ "$kidprofile" == "TRUE" ]]
         then
 
-            groupadd shock-child || (zenity --error --text="Failed to create the 'shock-child' group. The program will now exit." --ok-label="Exit" ; kill $$)
+            groupadd shock-child
+
+            ex=$?
+
+            if [[ "$ex" != "0" ]] && [[ "$ex" != "9" ]]
+            then
+
+                zenity --error --text="Failed to create the 'shock-child' group. The program will now exit." --ok-label="Exit"
+
+                exit 1
+
+            fi
 
             usermod -a -G adm,dialout,cdrom,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio,shock-child $x || (zenity --error --text="Failed to add the user to the required groups. The program will now exit." --ok-label="Exit" ; kill $$) #the user has been added to the required groups (excluding sudo)
 

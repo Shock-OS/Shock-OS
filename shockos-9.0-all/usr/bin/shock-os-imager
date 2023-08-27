@@ -49,7 +49,7 @@ do
 
 	eval "$(cat /usr/share/shock-os-imager/images)"
 
-	drives=($(lsblk | grep /media | grep -oP "sd[a-z]" | awk '{print "/dev/"$1}' | sort -u))
+	drives=($(lsblk | grep /media | grep -oP "(sd[a-z]|mmcblk[0-9])" | awk '{print "/dev/"$1}' | sort -u))
 
     drives_selection=""
 
@@ -63,7 +63,16 @@ do
 
             LABEL=""
 
-            eval $(sudo blkid "${i}${a}" | grep -o 'LABEL="[^"]*"')
+            if [[ "$i" == "/dev/mmcblk"* ]]
+            then
+
+                eval $(sudo blkid "${i}p${a}" | grep -o 'LABEL="[^"]*"')
+
+            else
+
+                eval $(sudo blkid "${i}${a}" | grep -o 'LABEL="[^"]*"')
+
+            fi
 
             if [[ -z "$LABEL" ]]
             then
