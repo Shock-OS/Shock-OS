@@ -4,9 +4,9 @@ IFS=$'\n'
 
 #THE LOADING FUNCTIONS BEGIN
 
-function start_loading_gui() {
+function start_preloading() {
 
-yad --window-icon=system-software-update --title="Update Manager" --progress-text="Checking for updates..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & gui_killpid=$!
+yad --window-icon=system-software-update --title="Update Manager" --progress-text="Refreshing..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & preloader_killpid=$!
 
 }
 
@@ -20,7 +20,7 @@ function end_loading() {
 
 kill -9 $killpid
 
-kill -9 $gui_killpid
+kill -9 $preloader_killpid
 
 }
 
@@ -132,42 +132,24 @@ all_updates=($(printf "%s\n" "${all_updates[@]}" | sort))
 
 }
 
-if [[ "$1" == "gui" ]] #if launched from the Shockware Center
-then
-
-    touch ~/.cache/shockware-center-launched-update-manager
-
-    eval "$(cat ~/.cache/shock-os-update-manager-notifications)"
-
-    (sleep 10 && rm ~/.cache/shockware-center-launched-update-manager) &
-
-    start_loading_gui
-
-fi
+start_preloading
 
 fetch_updates
+
+end_loading
 
 if ((${#all_updates[@]}==0))
 then
 
-    echo "Your system is up to date."
+    yad --window-icon=emblem-default --image=emblem-default --buttons-layout=edge --title="Update Manager" --text="Your system is up to date." --button="Settings"\!gnome-settings --button="Dismiss"\!gtk-quit --width=300
 
-    if [[ "$1" == "gui" ]] #if launched from the Shockware Center
+    ex=$?
+
+    if [[ "$ex" == "0" ]] #settings
     then
 
-        end_loading
+        settings
 
-        yad --window-icon=emblem-default --image=emblem-default --buttons-layout=edge --title="Update Manager" --text="Your system is up to date." --button="Settings"\!gnome-settings --button="Dismiss"\!gtk-quit --width=300
-
-        ex=$?
-
-        if [[ "$ex" == "0" ]] #settings
-        then
-
-            settings
-
-        fi
-    
     fi
 
     exit
@@ -177,225 +159,186 @@ then
 
     window_text="1 update is available."
 
-    text="1 update is available. Click to install it."
-
 else
 
     window_text="${#all_updates[@]} updates are available."
 
-    text="${#all_updates[@]} updates are available. Click to install them."
-
 fi
+
+page=0
 
 while true
 do
 
-    if [[ "$1" != "gui" ]] && [[ ! -f /etc/sudoers.d/shock_automatic_updates ]] #if NOT launched from the Shockware Center
-    then
+    start_loading
 
-        yad --notification --image=system-software-update --text="$text" --icon-size=48 & notification_killpid=$!
+    all_updates_show=("${all_updates[@]:$((rows_per_page*page))}")
 
-        echo "kill -9 $notification_killpid" | tee -a ~/.cache/shock-os-update-manager-notifications
+    all_updates_show=("${all_updates_show[@]::$((rows_per_page))}")
 
-        wait "$notification_killpid"
+    mapfile -t all_updates < <(printf '%s\n' "${all_updates[@]}" | sed 's/^"\(.*\)"$/"\1"/')
 
-        if [[ -f ~/.cache/shockware-center-launched-update-manager ]]
-        then
+    update_list=()
 
-            exit
-
-        fi
-
-    elif [[ -f /etc/sudoers.d/shock_automatic_updates ]] #if automatic updates are enabled
-    then
-
-        shock-auto-updates-kickstart
-
-        exit
-
-    fi
-
-    page=0
-
-    while true
+    for i in "${all_updates_show[@]}"
     do
 
-        start_loading
+        if [[ "$i" == *" [FLATPAK]\"" ]] #if Flatpak application
+        then
 
-        all_updates_show=("${all_updates[@]:$((rows_per_page*page))}")
+	        name="${i::-11}\""
 
-        all_updates_show=("${all_updates_show[@]::$((rows_per_page))}")
+	        name="${name#\"}"
 
-        mapfile -t all_updates < <(printf '%s\n' "${all_updates[@]}" | sed 's/^"\(.*\)"$/"\1"/')
+	        name="${name%\"}"
 
-        update_list=()
+	        icon="$(grep -A 1 -B 3 "<name>$name</name>" /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | grep '<id>' | awk -F'[<>]' '{print $3}')"
 
-        for i in "${all_updates_show[@]}"
-        do
+	        icon="${icon%% *}"
 
-	        if [[ "$i" == *" [FLATPAK]\"" ]] #if Flatpak application
+	        icon=$(echo "$icon" | head -n1)
+
+	        if [[ "$icon" == *".desktop" ]]
 	        then
 
-		        name="${i::-11}\""
-
-		        name="${name#\"}"
-
-		        name="${name%\"}"
-
-		        icon="$(grep -A 1 -B 3 "<name>$name</name>" /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | grep '<id>' | awk -F'[<>]' '{print $3}')"
-
-		        icon="${icon%% *}"
-
-		        icon=$(echo "$icon" | head -n1)
-
-		        if [[ "$icon" == *".desktop" ]]
-		        then
-
-			        icon="${icon::-8}"
-
-		        fi
-
-		        icon="$appstream_icons_dir/$icon.png"
-
-		        if [[ ! -f "$icon" ]]
-		        then
-
-			        icon="/usr/share/shock-os-update-manager/flatpak.svg"
-
-		        fi
-		        
-		        update_list+=("$icon" "$name" "F")
-
-	        else #if APT package
-
-                name="${i%%/*}"
-
-                name="${name#\"}"
-
-		        icon="$(find /var/lib/app-info/icons/*/*/"$name"_* | head -1)"
-
-		        if [[ ! -f "$icon" ]]
-		        then
-
-			        icon="/usr/share/shock-os-update-manager/apt.svg"
-
-		        fi
-
-                full_name="$(grep -A 10000 "<pkgname>$name</pkgname>" /var/lib/app-info/xml/*.xml | grep '<name>' | head -n1 | awk -F'[<>]' '{print $3}')"
-
-                if [[ -n "$full_name" ]]
-                then
-
-                    name="$full_name"
-
-                fi
-
-		        update_list+=("$icon" "$name" "A")
+		        icon="${icon::-8}"
 
 	        fi
 
-        done
+	        icon="$appstream_icons_dir/$icon.png"
 
-        echo "UPDATE LIST: ${update_list[@]}" #DEBUG
-
-        if ((${#update_list[@]}>rows_per_page))
-        then
-
-            if ((page>0))
-            then
-
-                page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
-
-            else
-
-                page_buttons='--button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
-
-            fi
-
-        elif ((page>0))
-        then
-
-            page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50' 
-
-        else
-
-            page_buttons=""
-
-        fi
-
-        end_loading
-
-        yad --window-icon=system-software-update --title="Update Manager" --width=800 --height=500 --text="$window_text" --list --dclick-action=shock-os-update-manager-view-package --no-click --buttons-layout=edge --column="Type":IMG --column="Name" --column="Type":HD $page_buttons --button="Settings"\!gnome-settings:1 --button="Install Updates"\!system-software-update:2 "${update_list[@]}"
-
-        ex=$?
-
-        if [[ "$ex" == "40" ]] #previous
-        then
-
-	        page=$((page-1))
-
-        elif [[ "$ex" == "60" ]] #next
-        then
-
-	        page=$((page+1))
-
-        elif [[ "$ex" == "50" ]] #jump
-        then
-
-	        jump_page=$(yad --window-icon=system-software-update --title="Update Manager" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
-
-	        ex=$?
-
-	        jump_page=$(echo "$jump_page" | awk -F'|' '{print $1}')
-
-            if [[ "$ex" == "0" ]]
-            then
-
-                page="$((jump_page-1))"
-
-            fi
-
-        elif [[ "$ex" == "1" ]] #settings
-        then
-
-            settings
-
-        elif [[ "$ex" == "2" ]] #install updates
-        then
-
-	        install_updates | zenity --window-icon=system-software-update --title="Update Manager" --text="Installing updates..." --progress --pulsate --auto-close --no-cancel
-
-            yad --window-icon=system-software-update --title="Update Manager" --progress-text="Refreshing cache..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & refresh_killpid=$!
-
-            fetch_updates
-
-            kill -9 $refresh_killpid
-
-	        if ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
+	        if [[ ! -f "$icon" ]]
 	        then
 
-		        zenity --error --text="Failed to install the updates. Please double check your internet connection and try again later." --ok-label="Exit"
+		        icon="/usr/share/shock-os-update-manager/flatpak.svg"
 
-	        else
+	        fi
+	        
+	        update_list+=("$icon" "$name" "F")
 
-		        yad --window-icon=emblem-default --image=emblem-default --title="Update Manager" --text="Your system is up to date." --button="Dismiss"\!gtk-quit --width=300
+        else #if APT package
+
+            name="${i%%/*}"
+
+            name="${name#\"}"
+
+	        icon="$(find /var/lib/app-info/icons/*/*/"$name"_* | head -1)"
+
+	        if [[ ! -f "$icon" ]]
+	        then
+
+		        icon="/usr/share/shock-os-update-manager/apt.svg"
 
 	        fi
 
-	        exit
+            full_name="$(grep -A 10000 "<pkgname>$name</pkgname>" /var/lib/app-info/xml/*.xml | grep '<name>' | head -n1 | awk -F'[<>]' '{print $3}')"
 
-        elif [[ "$1" == "gui" ]] #if launched from the Shockware Center
-        then
+            if [[ -n "$full_name" ]]
+            then
 
-            exit
+                name="$full_name"
 
-        else
+            fi
 
-            break
+	        update_list+=("$icon" "$name" "A")
 
         fi
 
     done
+
+    echo "UPDATE LIST: ${update_list[@]}" #DEBUG
+
+    if ((${#update_list[@]}>rows_per_page))
+    then
+
+        if ((page>0))
+        then
+
+            page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
+
+        else
+
+            page_buttons='--button=Jump!gtk-jump-to-ltr:50 --button=Next!gtk-go-forward-ltr:60'
+
+        fi
+
+    elif ((page>0))
+    then
+
+        page_buttons='--button=Previous!gtk-go-forward-rtl:40 --button=Jump!gtk-jump-to-ltr:50' 
+
+    else
+
+        page_buttons=""
+
+    fi
+
+    end_loading
+
+    yad --window-icon=system-software-update --title="Update Manager" --width=800 --height=500 --text="$window_text" --list --dclick-action=shock-os-update-manager-view-package --no-click --buttons-layout=edge --column="Type":IMG --column="Name" --column="Type":HD $page_buttons --button="Settings"\!gnome-settings:1 --button="Install Updates"\!system-software-update:2 "${update_list[@]}"
+
+    ex=$?
+
+    if [[ "$ex" == "40" ]] #previous
+    then
+
+        page=$((page-1))
+
+    elif [[ "$ex" == "60" ]] #next
+    then
+
+        page=$((page+1))
+
+    elif [[ "$ex" == "50" ]] #jump
+    then
+
+        jump_page=$(yad --window-icon=system-software-update --title="Update Manager" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
+
+        ex=$?
+
+        jump_page=$(echo "$jump_page" | awk -F'|' '{print $1}')
+
+        if [[ "$ex" == "0" ]]
+        then
+
+            page="$((jump_page-1))"
+
+        fi
+
+    elif [[ "$ex" == "1" ]] #settings
+    then
+
+        settings
+
+    elif [[ "$ex" == "2" ]] #install updates
+    then
+
+        install_updates | zenity --window-icon=system-software-update --title="Update Manager" --text="Installing updates..." --progress --pulsate --auto-close --no-cancel
+
+        yad --window-icon=system-software-update --title="Update Manager" --progress-text="Refreshing cache..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & refresh_killpid=$!
+
+        fetch_updates
+
+        kill -9 $refresh_killpid
+
+        if ((${#all_updates[@]}>0)) #if there are STILL updates available (updates likely failed or were interrupted)
+        then
+
+	        zenity --error --text="Failed to install the updates. Please double check your internet connection and try again later." --ok-label="Exit"
+
+        else
+
+	        yad --window-icon=emblem-default --image=emblem-default --title="Update Manager" --text="Your system is up to date." --button="Dismiss"\!gtk-quit --width=300
+
+        fi
+
+        exit
+
+    else
+
+        exit
+
+    fi
 
 done
 

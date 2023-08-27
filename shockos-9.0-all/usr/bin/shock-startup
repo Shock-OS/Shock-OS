@@ -127,23 +127,23 @@ mpg123 /usr/share/shock/startup-sound/* #this command plays the startup sound
 
 shock-welcome &
 
-while true #check for updates
-do
-
-    shock-os-update-manager
-
-    sleep 900
-
-done
-
-while true #check for available system upgrades
-do
-
-    shock-release-scanner
-
-    sleep 900
-
-done
+#while true #check for updates
+#do
+#
+#    shock-os-update-manager
+#
+#    sleep 900
+#
+#done
+#
+#while true #check for available system upgrades
+#do
+#
+#    shock-release-scanner
+#
+#    sleep 900
+#
+#done
 
 if [[ " $(groups "$(whoami)") " == *" shock-child "* ]] && [[ -f /usr/share/shock-pcstl/"$(whoami)"/shock-screen-time-limit ]] #if account is a child profile with a screen time limit set
 then
