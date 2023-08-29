@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if (($(ps aux | grep "$(whoami)" | grep -c shock-os-update-manager)>3)) #exits the program if it is already running for this user
+if (($(ps aux | awk '{print $1,$12}' | grep -c "$(whoami) /usr/bin/shock-os-update-manager")>3)) #exits the program if it is already running for this user
 then
 
     wmctrl -a "Update Manager"

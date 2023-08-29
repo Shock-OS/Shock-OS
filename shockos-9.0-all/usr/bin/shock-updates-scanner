@@ -4,7 +4,7 @@ IFS=$'\n'
 
 #this script checks for available updates and sends a notification if any are available
 
-if (($(ps aux | grep "$(whoami)" | grep -c shock-updates-scanner)>3)) #exits the program if it is already running for this user
+if (($(ps aux | awk '{print $1,$12}' | grep -c "$(whoami) /usr/bin/shock-updates-scanner")>3)) #exits the program if it is already running for this user
 then
 
     exit

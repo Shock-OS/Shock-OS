@@ -2,7 +2,7 @@
 
 #this script is designed to shuffle between wallpapers when the user has set a slideshow wallpaper
 
-if (($(ps aux | grep "$(whoami)" | grep -c shock-slideshow-wallpaper)>3)) #exits the program if it is already running for this user
+if (($(ps aux | awk '{print $1,$12}' | grep -c "$(whoami) /usr/bin/shock-slideshow-wallpaper")>3)) #exits the program if it is already running for this user
 then
 
     exit
