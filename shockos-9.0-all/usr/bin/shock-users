@@ -85,7 +85,7 @@ then
         - at least eight characters
         - both lower and upper case letters
         - numbers
-        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --separator='`' --button="Create User"\!add)
+        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --separator='`' --button="Finish Setup"\!gtk-yes)
 
         fi
 
@@ -265,9 +265,11 @@ then
 
             #the setup finalizer temporary autologin patch ends
 
-        fi
+        else #Do not show congrats screen during intial setup
 
-        yad --window-icon=system-users --title="User Created Successfully" --text="Congratulations! You have successfully created the user '$x'." --button="Dismiss"\!gtk-quit
+            yad --window-icon=system-users --title="User Created Successfully" --text="Congratulations! You have successfully created the user '$x'." --button="Dismiss"\!gtk-quit
+
+        fi
 
 elif [[ "$action" == "1" ]] #remove
 then
