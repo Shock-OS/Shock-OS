@@ -22,10 +22,10 @@ do
 
     updates+=($(flatpak remote-ls --updates --columns=app))
 
-    if ((updates>0))
+    if ((${#updates[@]}>0))
     then
 
-        if ((updates>1))
+        if ((${#updates[@]}>1))
         then
 
             yad_text="${#updates[@]} updates are available. Click to install them."
