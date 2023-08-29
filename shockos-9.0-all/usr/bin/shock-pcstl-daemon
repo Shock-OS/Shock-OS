@@ -46,21 +46,7 @@ done
 
 #THE VIEW CURRENT USER FUNCTION ENDS
 
-pcstl_cusessions=0
-
-for i in $(ps aux | grep root)
-do
-
-    if [[ "$(echo "$i" | awk '{print $1}')" == "root" ]] && [[ " $i " == *" sudo shock-pcstl-daemon $runuser "* ]]
-    then
-
-        pcstl_cusessions=$((pcstl_cusessions+1))
-
-    fi
-
-done
-
-if ((pcstl_cusessions>1))
+if (($(ps aux | grep root | grep -c "sudo shock-pcstl-daemon $runuser")>3)) #exits the program if it is already running for this user
 then
 
     exit

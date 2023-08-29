@@ -1,0 +1,49 @@
+#!/bin/bash
+
+IFS=$'\n'
+
+#this script checks for available updates and sends a notification if any are available
+
+if (($(ps aux | grep "$(whoami)" | grep -c shock-updates-scanner)>3)) #exits the program if it is already running for this user
+then
+
+    exit
+
+fi
+
+while true
+do
+
+    rm ~/.cache/shock-os-update-manager/notification_pid
+
+    updates=($(apt list --upgradable | awk '{ printf "\"%s\"\n", $0 }'))
+
+    unset "updates[0]" #removes "Listing..." from the list because it is obviously not a package
+
+    updates+=($(flatpak remote-ls --updates --columns=app))
+
+    if ((updates>0))
+    then
+
+        if ((updates>1))
+        then
+
+            yad_text="${#updates[@]} updates are available. Click to install them."
+
+        else
+
+            yad_text="1 update is available. Click to install it."
+
+        fi
+
+        yad --notification --image=system-software-update --text="$yad_text" --command='shock-os-update-manager' & killpid=$!
+
+        echo "$killpid" | tee ~/.cache/shock-os-update-manager/notification_pid
+
+        wait "$killpid"
+
+    fi
+
+    sleep 900
+
+done
