@@ -46,7 +46,7 @@ done
 
 #THE VIEW CURRENT USER FUNCTION ENDS
 
-if (($(ps aux | awk '{print $1,$12,$13}' | grep -c "root /usr/bin/shock-pcstl-daemon $runuser")>3)) #exits the program if it is already running for this user
+if (($(ps aux | awk '{print $1,$12,$13}' | grep -c "root /usr/bin/shock-pcstl-daemon $runuser")>2)) #exits the program if it is already running for this user
 then
 
     exit
