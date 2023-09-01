@@ -25,22 +25,46 @@ do
     if ((${#updates[@]}>0))
     then
 
-        if ((${#updates[@]}>1))
+        if [[ -f /etc/sudoers.d/shock_automatic_updates ]] #if automatic updates are enabled
         then
 
-            yad_text="${#updates[@]} updates are available. Click to install them."
+            if (($(ps aux | awk '{print $1,$12}' | grep -c "root /usr/bin/shock-auto-updates")<=2)) #installs automatic updates if they aren't already running
+            then
+
+                sudo shock-auto-updates & auto_updates_killpid=$!
+
+            else
+
+                auto_updates_killpid="$(ps aux | grep "root" | grep "/usr/bin/shock-auto-updates" | awk '{print $2}')"
+
+            fi
+
+            yad --notification --image=/usr/share/shock/auto-updates.svg --icon-size=48 --text="Automatic updates are being installed. Please do not turn off your computer." --command="" & killpid=$!
+
+            wait "$auto_updates_killpid"
+
+            kill "$killpid"
 
         else
 
-            yad_text="1 update is available. Click to install it."
+            if ((${#updates[@]}>1))
+            then
+
+                yad_text="${#updates[@]} updates are available. Click to install them."
+
+            else
+
+                yad_text="1 update is available. Click to install it."
+
+            fi
+
+            yad --notification --image=system-software-update --text="$yad_text" --command='shock-os-update-manager' & killpid=$!
+
+            echo "$killpid" | tee ~/.cache/shock-os-update-manager/notification_pid
+
+            wait "$killpid"
 
         fi
-
-        yad --notification --image=system-software-update --text="$yad_text" --command='shock-os-update-manager' & killpid=$!
-
-        echo "$killpid" | tee ~/.cache/shock-os-update-manager/notification_pid
-
-        wait "$killpid"
 
     fi
 
