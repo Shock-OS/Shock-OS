@@ -28,8 +28,10 @@ do
         if [[ -f /etc/sudoers.d/shock_automatic_updates ]] #if automatic updates are enabled
         then
 
-            if (($(ps aux | awk '{print $1,$12}' | grep -c "root /usr/bin/shock-auto-updates")<=2)) #installs automatic updates if they aren't already running
+            if (($(ps aux | awk '{print $1,$11,$12}' | grep -c "root /bin/bash /usr/bin/shock-auto-updates")<=2)) #installs automatic updates if they aren't already running
             then
+
+                dconf write /org/mate/desktop/lockdown/disable-log-out "true" #stops the user from accessing the shutdown menu while automatic updates are being applied.
 
                 sudo shock-auto-updates & auto_updates_killpid=$!
 
@@ -44,6 +46,8 @@ do
             wait "$auto_updates_killpid"
 
             kill "$killpid"
+
+            dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" #allows the user to access the shutdown menu.
 
         else
 
