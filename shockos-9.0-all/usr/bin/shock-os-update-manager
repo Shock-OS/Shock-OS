@@ -201,29 +201,9 @@ do
 
 	        name="${name%\"}"
 
-	        icon="$(grep -A 1 -B 3 "<name>$name</name>" /var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml | grep '<id>' | awk -F'[<>]' '{print $3}')"
-
-	        icon="${icon%% *}"
-
-	        icon=$(echo "$icon" | head -n1)
-
-	        if [[ "$icon" == *".desktop" ]]
-	        then
-
-		        icon="${icon::-8}"
-
-	        fi
-
-	        icon="$appstream_icons_dir/$icon.png"
-
-	        if [[ ! -f "$icon" ]]
-	        then
-
-		        icon="/usr/share/shock-os-update-manager/flatpak.svg"
-
-	        fi
+	        icon="/usr/share/shock-os-update-manager/flatpak.svg"
 	        
-	        update_list+=("$icon" "$name" "F")
+	        update_list+=("$icon" "$name")
 
         else #if APT package
 
@@ -231,14 +211,7 @@ do
 
             name="${name#\"}"
 
-	        icon="$(find /var/lib/app-info/icons/*/*/"$name"_* | head -1)"
-
-	        if [[ ! -f "$icon" ]]
-	        then
-
-		        icon="/usr/share/shock-os-update-manager/apt.svg"
-
-	        fi
+	        icon="/usr/share/shock-os-update-manager/apt.svg"
 
             full_name="$(grep -A 10000 "<pkgname>$name</pkgname>" /var/lib/app-info/xml/*.xml | grep '<name>' | head -n1 | awk -F'[<>]' '{print $3}')"
 
@@ -249,7 +222,7 @@ do
 
             fi
 
-	        update_list+=("$icon" "$name" "A")
+	        update_list+=("$icon" "$name")
 
         fi
 
@@ -284,7 +257,7 @@ do
 
     end_loading
 
-    yad --window-icon=system-software-update --title="Update Manager" --width=800 --height=500 --text="$window_text" --list --dclick-action=shock-os-update-manager-view-package --no-click --buttons-layout=edge --column="Type":IMG --column="Name" --column="Type":HD $page_buttons --button="Settings"\!gnome-settings:1 --button="Install Updates"\!system-software-update:2 "${update_list[@]}"
+    yad --window-icon=system-software-update --title="Update Manager" --width=800 --height=500 --text="$window_text" --list --no-click --buttons-layout=edge --column="Type":IMG --column="Name" $page_buttons --button="Settings"\!gnome-settings:1 --button="Install Updates"\!system-software-update:2 "${update_list[@]}"
 
     ex=$?
 
