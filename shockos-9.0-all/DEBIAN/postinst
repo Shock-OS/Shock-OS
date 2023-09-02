@@ -244,6 +244,10 @@ echo 'ALL ALL=NOPASSWD:/usr/bin/shock-themes-sync-daemon' | tee /etc/sudoers.d/s
 
 #the above command allows users to create a symlink to their custom themes in /usr/share/themes so that root apps can use their user-specific themes
 
+echo 'ALL ALL=NOPASSWD:/usr/bin/shock-fonts-sync-daemon' | tee /etc/sudoers.d/shock-fonts-sync-daemon
+
+#the above command allows users to create a symlink to their custom fonts in /usr/share/fonts so that root apps can use their user-specific fonts
+
 #setfacl -m g:shock-child:--- /usr/bin/pkexec
 
 #prohibits child users from using pkexec

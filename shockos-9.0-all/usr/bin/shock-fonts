@@ -1,5 +1,7 @@
 #!/bin/bash
 
+IFS=$'\n'
+
 function detect_exit() {
 
 ex=$?
@@ -13,94 +15,188 @@ fi
 
 }
 
-if ! [[ -f ~/.config/shock_fonts ]]
-then
+while true
+do
 
-    touch ~/.config/shock_fonts
+    sudo shock-fonts-sync-daemon
 
-    echo "current_appfont=\"'Cantarell 11'\"
+    current_appfont="$(dconf read /org/mate/desktop/interface/font-name)"
 
-current_deskfont=\"'Cantarell 11'\"
+    current_deskfont="$(dconf read /org/mate/caja/desktop/font)"
 
-current_docfont=\"'Cantarell 11'\"
+    current_docfont="$(dconf read /org/mate/desktop/interface/document-font-name)"
 
-current_fixedwidthfont=\"'Monospace 13'\"
+    current_fixedwidthfont="$(dconf read /org/mate/desktop/interface/monospace-font-name)"
 
-current_windowtitlefont=\"'Cantarell Bold 11'\"" | tee ~/.config/shock_fonts
+    current_windowtitlefont="$(dconf read /org/mate/marco/general/titlebar-font)"
 
-fi
+    if (($(ls ~/.fonts | wc -l)>0))
+    then
 
-source ~/.config/shock_fonts
+        remove_button='--button=Remove!remove:2'
 
-font_to_change=$(yad --title="Fonts" --window-icon=preferences-desktop-font --form --text='Which system font would you like to change?' --field='':CB 'Application Font!Desktop Font!Document Font!Fixed Width Font!Window Title Font' --button="Close"\!gtk-close:1 --button="Next"\!go-next:0)
+    else
 
-detect_exit
+        remove_button=""
 
-if [[ "$font_to_change" == "Application Font|" ]]
-then
+    fi
 
-    new_font=$(yad --font --title="Application Font" --window-icon=preferences-desktop-font --fontname="$current_appfont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+    font_to_change=$(yad --title="Fonts" --window-icon=preferences-desktop-font --form --text='Which system font would you like to change?' --field='':CB 'Application Font!Desktop Font!Document Font!Fixed Width Font!Window Title Font' --button="Browse"\!applications-internet:0 --button="Install"\!add:1 "$remove_button" --button="Close"\!gtk-close:3 --button="Next"\!go-next:4)
 
-    detect_exit
+    ex=$?
 
-    dconf write /org/mate/desktop/interface/font-name "'$new_font'"
+    if [[ "$ex" == "0" ]]
+    then
 
-    current_appfont="$new_font"
+        xdg-open https://fonts.google.com/
 
-elif [[ "$font_to_change" == "Desktop Font|" ]]
-then
+    elif [[ "$ex" == "1" ]]
+    then
 
-    new_font=$(yad --font --title="Desktop Font" --window-icon=preferences-desktop-font --fontname="$current_deskfont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+        file="$(yad --window-icon=preferences-desktop-font --title="Install Fonts" --file)"
 
-    detect_exit
+        info="$(file "$file")"
 
-    dconf write /org/mate/caja/desktop/font "'$new_font'"
+        if [[ -f "$file" ]] && ! [[ "$info" == *"archive data"* || "$info" == *"compressed data"* ]] #if file selected
+        then
 
-    current_deskfont="$new_font"
+            if [[ "$info" == *"OpenType font data"* || "$info" == *"TrueType Font data"* ]]
+            then
 
-elif [[ "$font_to_change" == "Document Font|" ]]
-then
+                mkdir -p ~/.fonts
 
-    new_font=$(yad --font --title="Document Font" --window-icon=preferences-desktop-font --fontname="$current_docfont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+                cp "$file" ~/.fonts
 
-    detect_exit
+            fi
 
-    dconf write /org/mate/desktop/interface/document-font-name "'$new_font'"
+        else
 
-    current_docfont="$new_font"
+            if [[ -f "$file" ]] && [[ "$info" == *"archive data"* || "$info" == *"compressed data"* ]] #if archive selected
+            then
 
-elif [[ "$font_to_change" == "Fixed Width Font|" ]]
-then
+                dir="$(mktemp -d)"
 
-    new_font=$(yad --font --title="Fixed Width Font" --window-icon=preferences-desktop-font --fontname="$current_fixedwidthfont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+                cd "$dir"
 
-    detect_exit
+                unp -f "$file"
 
-    dconf write /org/mate/desktop/interface/monospace-font-name "'$new_font'"
+                cd /
 
-    current_fixedwidthfont="$new_font"
+            elif [[ -d "$file" ]] #if directory
+            then
+        
+                dir="$file"
 
-elif [[ "$font_to_change" == "Window Title Font|" ]]
-then
+            fi
 
-    new_font=$(yad --font --title="Window Title Font" --window-icon=preferences-desktop-font --fontname="$current_windowtitlefont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+            for i in $(find "$dir" -name *.otf)
+            do
 
-    detect_exit
+                if [[ "$(file "$i")" == *"OpenType font data"* ]]
+                then
 
-    dconf write /org/mate/marco/general/titlebar-font "'$new_font'"
+                    mkdir -p ~/.fonts
 
-    current_windowtitlefont="$new_font"
+                    cp "$i" ~/.fonts
 
-fi
+                fi
 
-echo "current_appfont=\"$current_appfont\"
+            done
 
-current_deskfont=\"$current_deskfont\"
+            for i in $(find "$dir" -name *.ttf)
+            do
 
-current_docfont=\"$current_docfont\"
+                if [[ "$(file "$i")" == *"TrueType Font data"* ]]
+                then
 
-current_fixedwidthfont=\"$current_fixedwidthfont\"
+                    mkdir -p ~/.fonts
 
-current_windowtitlefont=\"$current_windowtitlefont\"" | tee ~/.config/shock_fonts
+                    cp "$i" ~/.fonts
 
+                fi
+
+            done
+
+        fi
+
+    elif [[ "$ex" == "2" ]] #remove
+    then
+
+        fonts=($(ls ~/.fonts))
+
+        ftr="$(yad --window-icon=preferences-desktop-font --title="Remove Fonts" --width=400 --height=300 --list --column="Name" --no-headers "${fonts[@]}" --button="Cancel"\!gtk-cancel:1 --button="Remove"\!remove:0)"
+
+        detect_exit
+
+        ftr="${ftr::-1}"
+
+        rm ~/.fonts/"$ftr"
+
+    elif [[ "$ex" == "4" ]] #next
+    then
+
+        if [[ "$font_to_change" == "Application Font|" ]]
+        then
+
+            new_font=$(yad --font --title="Application Font" --window-icon=preferences-desktop-font --fontname="$current_appfont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+
+            detect_exit
+
+            dconf write /org/mate/desktop/interface/font-name "'$new_font'"
+
+            current_appfont="$new_font"
+
+        elif [[ "$font_to_change" == "Desktop Font|" ]]
+        then
+
+            new_font=$(yad --font --title="Desktop Font" --window-icon=preferences-desktop-font --fontname="$current_deskfont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+
+            detect_exit
+
+            dconf write /org/mate/caja/desktop/font "'$new_font'"
+
+            current_deskfont="$new_font"
+
+        elif [[ "$font_to_change" == "Document Font|" ]]
+        then
+
+            new_font=$(yad --font --title="Document Font" --window-icon=preferences-desktop-font --fontname="$current_docfont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+
+            detect_exit
+
+            dconf write /org/mate/desktop/interface/document-font-name "'$new_font'"
+
+            current_docfont="$new_font"
+
+        elif [[ "$font_to_change" == "Fixed Width Font|" ]]
+        then
+
+            new_font=$(yad --font --title="Fixed Width Font" --window-icon=preferences-desktop-font --fontname="$current_fixedwidthfont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+
+            detect_exit
+
+            dconf write /org/mate/desktop/interface/monospace-font-name "'$new_font'"
+
+            current_fixedwidthfont="$new_font"
+
+        elif [[ "$font_to_change" == "Window Title Font|" ]]
+        then
+
+            new_font=$(yad --font --title="Window Title Font" --window-icon=preferences-desktop-font --fontname="$current_windowtitlefont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+
+            detect_exit
+
+            dconf write /org/mate/marco/general/titlebar-font "'$new_font'"
+
+            current_windowtitlefont="$new_font"
+
+        fi
+
+    else
+
+        exit
+
+    fi
+
+done
 

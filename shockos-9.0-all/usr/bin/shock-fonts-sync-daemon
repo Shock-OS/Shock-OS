@@ -1,0 +1,47 @@
+#!/bin/bash
+
+IFS=$'\n'
+
+#deamon that syncs the user fonts with the /usr/share/fonts directory to allow root apps to use user themes
+
+#the root check element begins
+
+if [[ "$(id -u)" != "0" ]]
+then
+
+    echo "Script must be run as root. Exiting..."
+
+    exit
+
+fi
+
+for user in /home/*
+do
+
+    user="$(basename "$user")"
+
+    for font in /home/"$user"/.fonts/*
+    do
+
+        font="$(basename "$font")"
+
+        info="$(file /home/"$user"/.fonts/"$font")"
+
+        if [[ ! -f /usr/share/fonts/"$font" ]] && [[ "$info" == *"OpenType font data"* || "$info" == *"TrueType Font data"* ]]
+        then
+
+            ln -s /home/"$user"/.fonts/"$font" /usr/share/fonts/"$font"
+
+        fi
+
+    done
+
+done
+
+for font in $(find /usr/share/fonts -maxdepth 1 -type l ! -exec test -e {} \; -print)
+do
+
+    rm "$font"
+
+done
+
