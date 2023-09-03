@@ -108,9 +108,50 @@ fi
 
 function install_updates() {
 
-pkexec env DEBIAN_FRONTEND=gnome apt upgrade -y
+if ((${#apt_updates[@]}>0))
+then
 
-flatpak update -y
+    pkexec env DEBIAN_FRONTEND=gnome apt-get upgrade --show-progress -y | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Downloading updates, please wait..."; stdbuf -o0 sed 's/.*/&\n#&%/g') | yad --window-icon=system-software-update --image=system-software-update --width=400 --title="Update Manager" --text="Installing APT Updates..." --progress --auto-close --no-cancel  --no-buttons --no-esape
+
+fi
+
+if ((${#flatpak_ids[@]}>0))
+then
+
+    flatpak update -y | stdbuf -o0 grep 'Installing' | while read progress
+    do
+
+        current_progress="$(echo "$progress" | grep -oP '\d+(?=%)')"
+
+        flatpak_counter="$(echo "$progress" | grep -oE "[0-9]+/[0-9]+")"
+
+        current_flatpak="${flatpak_counter%%/*}"
+
+        total_flatpaks="${flatpak_counter#*/}"
+
+        if (($(echo "$flatpak_counter" | wc -l)==1))
+        then
+
+            if [[ -z "$flatpak_counter" ]]
+            then
+
+                percentage="$current_progress"
+
+            else
+
+                percentage=$(($(($((current_flatpak-1))*100/total_flatpaks))+$((current_progress/total_flatpaks))))
+
+            fi
+
+            echo "${percentage}n"
+
+            echo "#${percentage}%"
+
+        fi
+
+    done | yad --window-icon=system-software-update --image=system-software-update --width=400 --title="Update Manager" --text="Installing Flatpak Updates..." --progress --auto-close --no-cancel  --no-buttons --no-esape
+
+fi
 
 }
 
@@ -121,6 +162,8 @@ function fetch_updates() {
 sudo shock-os-update-manager-refresh
 
 all_updates=($(apt list --upgradable | awk '{ printf "\"%s\"\n", $0 }'))
+
+apt_updates=("${all_updates[@]}")
 
 unset "all_updates[0]" #removes "Listing..." from the list because it is obviously not a package
 
@@ -299,7 +342,7 @@ do
     elif [[ "$ex" == "2" ]] #install updates
     then
 
-        install_updates | zenity --window-icon=system-software-update --title="Update Manager" --text="Installing updates..." --progress --pulsate --auto-close --no-cancel
+        install_updates
 
         yad --window-icon=system-software-update --title="Update Manager" --progress-text="Refreshing cache..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & refresh_killpid=$!
 
