@@ -150,6 +150,10 @@ end_loading
 if ((${#all_updates[@]}==0))
 then
 
+    kill "$(cat ~/.cache/shock-os-update-manager/notification_pid)"
+
+    rm ~/.cache/shock-os-update-manager/notification_pid
+
     yad --window-icon=emblem-default --image=emblem-default --buttons-layout=edge --title="Update Manager" --text="Your system is up to date." --button="Settings"\!gnome-settings --button="Dismiss"\!gtk-quit --width=300
 
     ex=$?
