@@ -226,26 +226,31 @@ do
 
     current_progress="$(echo "$progress" | grep -oP '\d+(?=%)')"
 
-    flatpak_counter="$(echo "$progress" | grep -oE "[0-9]+/[0-9]+" | tail -n 1)"
+    flatpak_counter="$(echo "$progress" | grep -oE "[0-9]+/[0-9]+")"
 
     current_flatpak="${flatpak_counter%%/*}"
 
     total_flatpaks="${flatpak_counter#*/}"
 
-    if [[ -z "$flatpak_counter" ]]
+    if (($(echo "$flatpak_counter" | wc -l)==1))
     then
 
-        percentage="$current_progress"
+        if [[ -z "$flatpak_counter" ]]
+        then
 
-    else
+            percentage="$current_progress"
 
-        percentage=$(($(($((current_flatpak-1))*100/total_flatpaks))+$((current_progress/total_flatpaks))))
+        else
+
+            percentage=$(($(($((current_flatpak-1))*100/total_flatpaks))+$((current_progress/total_flatpaks))))
+
+        fi
+
+        echo "${percentage}n"
+
+        echo "#${percentage}%"
 
     fi
-
-    echo "${percentage}n"
-
-    echo "#${percentage}%"
 
 done | yad --skip-taskbar --no-buttons --no-focus --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --image="$icon" --text="Installing $full_name$both..." --text-align=center --auto-close --progress
 
