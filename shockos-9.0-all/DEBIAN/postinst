@@ -303,17 +303,6 @@ flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flat
 
 flatpak update #refreshes the flatpak cache and downloads the icons for the Shockware Center
 
-#the stylepak patch begins (installs Shock OS system GTK themes as Flatpaks)
-
-for theme in $(ls /usr/share/themes | grep shock)
-do
-
-    /usr/share/shock/install-temp/stylepak_themes install-system "$theme"
-
-done
-
-#the stylepak patch ends
-
 #the splash screen patch begins
 
 newcmdline="$(cat /boot/cmdline.txt) quiet splash plymouth.ignore-serial-consoles"

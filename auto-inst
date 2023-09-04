@@ -11,6 +11,17 @@ do
 
 done
 
+#the stylepak patch begins (installs Shock OS system GTK themes as Flatpaks)
+
+for theme in $(ls /usr/share/themes | grep shock)
+do
+
+    /usr/share/shock/stylepak_themes install-system "$theme"
+
+done
+
+#the stylepak patch ends
+
 sudo apt update
 
 sudo apt purge -y pluma xterm ostree appstream-util #gets rid of pluma (because gedit is installed instead), xterm, ostree, and appstream-util (because ostree and appstream-util are only installed for stylepak to work)
