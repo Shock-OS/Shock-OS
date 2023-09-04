@@ -7,7 +7,7 @@ do
 
     sudo apt update
 
-    sudo apt install --install-suggests -y ./shockos*
+    sudo apt install -y ./shockos*
 
 done
 
