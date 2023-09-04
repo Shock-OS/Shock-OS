@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#this script installs the Shock OS .deb in the current directory
+
+until [[ "$(apt show shock-os-metapackage)" == *"Installed: yes"* ]]
+do
+
+    sudo apt update
+
+    sudo apt install --install-suggests -y ./shockos*
+
+done
+
+sudo apt update
+
+sudo apt purge -y pluma xterm ostree appstream-util #gets rid of pluma (because gedit is installed instead), xterm, ostree, and appstream-util (because ostree and appstream-util are only installed for stylepak to work)
+
+sudo apt autopurge -y
+
+sudo apt update
+
+sudo shock-os-update-manager-refresh

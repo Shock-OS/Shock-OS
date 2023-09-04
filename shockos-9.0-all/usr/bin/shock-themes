@@ -545,6 +545,8 @@ color=blue' | tee ~/.config/shock_themes
 
 				dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
 
+                flatpak override --user --env=GTK_THEME="$theme"
+
 				echo "[Greeter]
 theme-name=shock-dark-$color
 icon-theme-name=shock-dark-$color
