@@ -113,7 +113,8 @@ then
 
     dconf write /org/mate/desktop/lockdown/disable-log-out "true" #stops the user from accessing the shutdown menu while updates are being applied.
 
-    pkexec env DEBIAN_FRONTEND=gnome apt-get upgrade --show-progress -y | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Downloading updates, please wait..."; stdbuf -o0 sed 's/.*/&\n#&%/g') | yad --window-icon=system-software-update --image=system-software-update --width=400 --title="Update Manager" --text="Installing APT Updates..." --text-align=center --fixed --progress --auto-close --no-cancel  --no-buttons --no-esape
+    pkexec env DEBIAN_FRONTEND=gnome apt-get upgrade --show-progress -y | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Downloading updates, please wait..."; stdbuf -o0 sed 's/.*/&\n#&%/g') | yad --window-icon=system-software-update --image=system-software-update --width=400 --title="Update Manager" --text="Installing APT Updates...
+<small>Updates will continue in the background if this window is closed.</small>" --text-align=center --fixed --progress --auto-close --no-cancel  --no-buttons --no-esape
 
 fi
 
@@ -153,7 +154,8 @@ then
 
         fi
 
-    done | yad --window-icon=system-software-update --image=system-software-update --width=400 --title="Update Manager" --text="Installing Flatpak Updates..." --text-align=center --fixed --progress --auto-close --no-cancel  --no-buttons --no-esape
+    done | yad --window-icon=system-software-update --image=system-software-update --width=400 --title="Update Manager" --text="Installing Flatpak Updates...
+<small>Updates will continue in the background if this window is closed.</small>" --text-align=center --fixed --progress --auto-close --no-cancel  --no-buttons --no-esape
 
 fi
 
