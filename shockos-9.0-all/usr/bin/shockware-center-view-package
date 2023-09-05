@@ -26,6 +26,52 @@ kill -9 $killpid
 
 #THE LOADING FUNCTIONS END
 
+#THE NOTIFICATION FUNCIONS BEGIN
+
+function show_notification() {
+
+mkdir -p ~/.cache/shock-tmp/shockware-center
+
+if [[ -f ~/.cache/shock-tmp/shockware-center/notification_instances ]]
+then
+
+    local instances=$(($(cat ~/.cache/shock-tmp/shockware-center/notification_instances)+1))
+
+    echo "$instances" | tee ~/.cache/shock-tmp/shockware-center/notification_instances
+
+else
+
+    yad --notification --image=/usr/share/shockware-center/icon.svg --icon-size=30 --text="Software is being installed. Please do not turn off your computer." --command='' & echo "$!" | tee ~/.cache/shock-tmp/shockware-center/notification_killpid
+
+    echo "1" | tee ~/.cache/shock-tmp/shockware-center/notification_instances
+
+fi
+
+}
+
+function hide_notification() {
+
+if (($(cat ~/.cache/shock-tmp/shockware-center/notification_instances)>1)) #if other apps are being installed, keep the notification
+then
+
+    local instances=$(($(cat ~/.cache/shock-tmp/shockware-center/notification_instances)-1))
+
+    echo "$instances" | tee ~/.cache/shock-tmp/shockware-center/notification_instances
+
+else #kill the notification
+
+    rm ~/.cache/shock-tmp/shockware-center/notification_instances
+
+    kill "$(cat ~/.cache/shock-tmp/shockware-center/notification_killpid)"
+
+    rm ~/.cache/shock-tmp/shockware-center/notification_killpid
+
+fi
+
+}
+
+#THE NOTIFICATION FUNCTIONS END
+
 function apt_fetch_info() {
 
 apt_icon="$(find /var/lib/app-info/icons/*/64x64/"$package"_* | head -1)" #prefer 64x64 icons
@@ -132,8 +178,12 @@ fi
 
 function apt_install() {
 
+show_notification
+
 pkexec env DEBIAN_FRONTEND=gnome apt-get install --show-progress -y $package | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Pending..."; stdbuf -o0 sed 's/.*/&\n#&%/g') | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --image="$icon" --text="Installing $full_name$both...
 <small>The installation will continue in the background if this window is closed.</small>" --text-align=center --auto-close --progress
+
+hide_notification
 
 installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
@@ -222,6 +272,8 @@ fi
 
 function flatpak_install() {
 
+show_notification
+
 flatpak install -y "$id" | stdbuf -o0 grep 'Installing' | while read progress
 do
 
@@ -255,6 +307,8 @@ do
 
 done | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --image="$icon" --text="Installing $full_name$both...
 <small>The installation will continue in the background if this window is closed.</small>" --text-align=center --auto-close --progress
+
+hide_notification
 
 installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
 

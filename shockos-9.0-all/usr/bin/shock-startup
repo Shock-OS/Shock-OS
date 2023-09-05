@@ -125,6 +125,10 @@ fi
 
 dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" #ensures that the user can logout and shutdown (fixes the shutdown menu being locked if the system crashed during automatic updates)
 
+mkdir -p ~/.cache/shock-tmp
+
+rm -r ~/.cache/shock-tmp/* &
+
 mpg123 /usr/share/shock/startup-sound/* #this command plays the startup sound
 
 shock-welcome &
