@@ -110,9 +110,9 @@ function install_updates() {
 
 dconf write /org/mate/desktop/lockdown/disable-log-out "true" #stops the user from accessing the shutdown menu while updates are being applied.
 
-kill "$(cat ~/.cache/shock-os-update-manager/notification_pid)"
+kill "$(cat ~/.cache/shock-tmp/shock-os-update-manager/notification_pid)"
 
-rm ~/.cache/shock-os-update-manager/notification_pid
+rm ~/.cache/shock-tmp/shock-os-update-manager/notification_pid
 
 if ((${#all_updates[@]}>1))
 then
@@ -126,6 +126,10 @@ else
 fi
 
 yad --notification --image=system-software-update --text="$yad_text" --command='' & notification_killpid=$!
+
+mkdir -p ~/.cache/shock-tmp/shock-os-update-manager
+
+echo "$notification_killpid" | tee ~/.cache/shock-tmp/shock-os-update-manager/updates_in_progress_notification_pid
 
 if ((${#apt_updates[@]}>0))
 then
@@ -174,6 +178,8 @@ then
 
 fi
 
+rm ~/.cache/shock-tmp/shock-os-update-manager/updates_in_progress_notification_pid
+
 kill "$notification_killpid"
 
 dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" #allows the user to access the shutdown menu.
@@ -218,9 +224,9 @@ end_loading
 if ((${#all_updates[@]}==0))
 then
 
-    kill "$(cat ~/.cache/shock-os-update-manager/notification_pid)"
+    kill "$(cat ~/.cache/shock-tmp/shock-os-update-manager/notification_pid)"
 
-    rm ~/.cache/shock-os-update-manager/notification_pid
+    rm ~/.cache/shock-tmp/shock-os-update-manager/notification_pid
 
     yad --window-icon=emblem-default --image=emblem-default --buttons-layout=edge --title="Update Manager" --text="Your system is up to date." --button="Settings"\!gnome-settings --button="Dismiss"\!gtk-quit --width=300
 
@@ -382,9 +388,9 @@ do
 
         else
 
-            kill "$(cat ~/.cache/shock-os-update-manager/notification_pid)"
+            kill "$(cat ~/.cache/shock-tmp/shock-os-update-manager/notification_pid)"
 
-            rm ~/.cache/shock-os-update-manager/notification_pid
+            rm ~/.cache/shock-tmp/shock-os-update-manager/notification_pid
 
 	        yad --window-icon=emblem-default --image=emblem-default --title="Update Manager" --text="Your system is up to date." --button="Dismiss"\!gtk-quit --width=300
 
