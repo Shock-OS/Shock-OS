@@ -2,90 +2,141 @@
 
 #check how much screen time is left
 
-while true
-do
+if [[ ! -d /usr/share/shock-pcstl/"$(whoami)" ]]
+then
 
-    if [[ ! -d /usr/share/shock-pcstl/"$(whoami)" ]]
+    yad --window-icon=/usr/share/shock/parental-controls.png --image=changes-allow --title="Screen Time Limit" --text="Your screen time limit has been removed." --button="Dismiss"\!gtk-quit
+
+    exit
+
+else
+
+    minutes=$(cat /usr/share/shock-pcstl/"$(whoami)"/shock-screen-time-limit)
+
+    total_hours=$((minutes/60))
+
+    total_minutes=$((minutes%60))
+
+    if ((total_hours>0))
     then
 
-        yad --window-icon=/usr/share/shock/parental-controls.png --image=changes-allow --title="Screen Time Limit" --text="Your screen time limit has been removed." --button="Dismiss"\!gtk-quit
-
-        exit
-
-    else
-
-        minutes=$(cat /usr/share/shock-pcstl/"$(whoami)"/shock-screen-time-limit)
-
-        total_hours=$((minutes/60))
-
-        total_minutes=$((minutes%60))
-
-        if ((total_hours>0))
+        if ((total_minutes>0))
         then
 
-            if ((total_minutes>0))
-            then
-
-                total_display="$total_hours hours and $total_minutes minutes"
-
-            else
-
-                total_display="$total_hours hours"
-
-            fi
+            total_display="$total_hours hours and $total_minutes minutes"
 
         else
 
-            total_display="$total_minutes minutes"
+            total_display="$total_hours hours"
 
         fi
+
+    else
+
+        total_display="$total_minutes minutes"
+
+    fi
+
+    while true
+    do
 
         remaining="$(cat /usr/share/shock-pcstl/"$(whoami)"/today/"$(date "+%F")")"
 
         remaining_hours=$((remaining/60))
 
-        remaining_minutes=$((remaining%60))
-
-        if ((remaining_hours>0))
+        if ((remaining_hours>1))
         then
 
-            if ((remaining_minutes>0))
-            then
+            remaining_hours="$remaining_hours hours"
 
-                remaining_display="$remaining_hours hours and $remaining_minutes minutes"
-
-            else
-
-                remaining_display="$remaining_hours hours"
-
-            fi
-
-        elif ((remaining_minutes>1))
+        elif ((remaining_hours>0))
         then
 
-            remaining_display="$remaining_minutes minutes"
+            remaining_hours="1 hour"
 
         else
 
-            remaining_display="1 minute"
+            remaining_hours="0 hours"
 
         fi
 
-        yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="Your parent/guardian/administrator has set a daily screen time limit on your profile.
+        remaining_minutes=$((remaining%60))
 
-Total daily limit: $total_display
-
-Time remaining: $remaining_display" --buttons-layout=edge --button="Refresh"\!gtk-refresh --button="Dismiss"\!gtk-quit
-
-        ex=$?
-
-        if [[ "$ex" != "0" ]]
+        if ((remaining_minutes>1))
         then
 
-            exit
+            remaining_minutes="$remaining_minutes minutes"
+
+        elif ((remaining_minutes>0))
+        then
+
+            remaining_minutes="1 minute"
+
+        else
+
+            remaining_minutes="0 minutes"
 
         fi
 
-    fi
+        seconds="$(cat /usr/share/shock-pcstl/"$(whoami)"/today/seconds)"
 
-done
+        if ((seconds!=1))
+        then
+
+            remaining_seconds="$seconds seconds"
+
+        else
+
+            remaining_seconds="1 second"
+
+        fi
+
+        if [[ "$remaining_hours" != "0 hours" ]]
+        then
+
+            if [[ "$remaining_minutes" != "0 minutes" ]]
+            then
+
+                remaining_display="$remaining_hours and $remaining_minutes"
+
+            else
+
+                remaining_display="$remaining_hours"
+
+            fi
+
+        elif [[ "$remaining_minutes" != "0 minutes" ]]
+        then
+
+            if [[ "$remaining_seconds" != "0 seconds" ]]
+            then
+
+                remaining_display="$remaining_minutes and $remaining_seconds"
+
+            else
+
+                remaining_display="$remaining_minutes"
+
+            fi
+
+        else
+
+            remaining_display="$remaining_seconds"
+
+        fi
+
+        remaining_seconds=$((remaining*60+seconds))
+
+        total_seconds=$((minutes*60))
+
+        percentage=$((remaining_seconds*100/total_seconds))
+
+        echo "${percentage}n"
+
+        echo "#${remaining_display} remaining"
+
+        sleep 1
+
+    done | yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="Your parent/guardian/administrator has set a daily screen time limit of $total_display on your profile." --progress --button="Dismiss"\!gtk-quit
+
+fi

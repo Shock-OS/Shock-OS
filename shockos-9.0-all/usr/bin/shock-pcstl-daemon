@@ -60,6 +60,8 @@ then
 
     sudo ntpdate -u pool.ntp.org #synchronizes the time if the system is connected to the internet
 
+    chattr -R -i /usr/share/shock-pcstl/"$runuser"/today #UPDATE COMPATIBILITY
+
     mkdir -p /usr/share/shock-pcstl/"$runuser"/today
 
     daily_limit="$(cat /usr/share/shock-pcstl/"$runuser"/shock-screen-time-limit)"
@@ -84,20 +86,18 @@ then
 
         minutes="$daily_limit"
 
-        chattr -R -i /usr/share/shock-pcstl/"$runuser"/today
-
         rm -r /usr/share/shock-pcstl/"$runuser"/today/*
+
+        chattr -i /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
 
         echo "$minutes" | tee /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
 
-        chattr -R +i /usr/share/shock-pcstl/"$runuser"/today
+        chattr +i /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
 
     fi
 
     until ((minutes==0))
     do
-
-        sleep 60
 
         if [[ ! -f /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)" ]] #if new day, or screen time limit has been changed, then restart timer
         then
@@ -109,15 +109,15 @@ then
 
                 minutes="$daily_limit"
 
-                chattr -R -i /usr/share/shock-pcstl/"$runuser"/today
+                mkdir -p /usr/share/shock-pcstl/"$runuser"/today
+
+                chattr -i /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
 
                 rm -r /usr/share/shock-pcstl/"$runuser"/today/*
 
-                mkdir -p /usr/share/shock-pcstl/"$runuser"/today
-
                 echo "$minutes" | tee /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
 
-                chattr -R +i /usr/share/shock-pcstl/"$runuser"/today
+                chattr +i /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
 
             else #if screen time limit has been removed for this user
 
@@ -134,27 +134,36 @@ then
 
             minutes=$((minutes-1))
 
-            chattr -R -i /usr/share/shock-pcstl/"$runuser"/today
+            chattr -i /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
 
             echo "$minutes" | tee /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
 
-            chattr -R +i /usr/share/shock-pcstl/"$runuser"/today
+            chattr +i /usr/share/shock-pcstl/"$runuser"/today/"$(date +%F)"
 
-            if ((minutes==0)) #if screen time is up
+            if ((minutes<0)) #if screen time is up
             then
 
                 zenity --notification --text="Your screen time is up. Logging off..."
 
                 sleep 5
 
-            elif ((minutes<6)) #if 5 or less minutes
+            elif ((minutes<5)) #if 5 or less minutes
             then
 
-                zenity --notification --text="You have $minutes minutes of screen time remaining. Please find a stopping point, save your work, and prepare to log off."
+                zenity --notification --text="You have $((minutes+1)) minutes of screen time remaining. Please find a stopping point, save your work, and prepare to log off."
 
             fi
 
         fi
+
+        for second in {59..0} #counts down the seconds in a minute (for shock-pcstl-timeleft)
+        do
+
+            echo "$second" | tee /usr/share/shock-pcstl/"$runuser"/today/seconds
+
+            sleep 1
+
+        done
 
     done
 

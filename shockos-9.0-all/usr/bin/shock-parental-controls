@@ -89,7 +89,7 @@ then
 
     #the time limit patch begins
 
-    until ((total_minutes>10))
+    until ((total_minutes>=10))
     do
 
         output=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="You can set a daily screen time limit for $utr_display_name." --form --field="Hours:":NUM '2!0..23' --field="Minutes:":NUM '30!0..59' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
