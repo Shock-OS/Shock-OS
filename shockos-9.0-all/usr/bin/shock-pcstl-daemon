@@ -156,21 +156,30 @@ then
 
         fi
 
-        for second in {59..0} #counts down the seconds in a minute (for shock-pcstl-timeleft)
-        do
+        if ((minutes<60))
+        then
 
-            until [[ "$(view-current-user)" == "$runuser" ]]
+            for second in {59..0} #counts down the seconds in a minute (for shock-pcstl-timeleft)
             do
+
+                until [[ "$(view-current-user)" == "$runuser" ]]
+                do
+
+                    sleep 1
+
+                done
+
+                echo "$second" | tee /usr/share/shock-pcstl/"$runuser"/today/seconds
 
                 sleep 1
 
             done
 
-            echo "$second" | tee /usr/share/shock-pcstl/"$runuser"/today/seconds
+        else
 
-            sleep 1
+            sleep 60
 
-        done
+        fi
 
     done
 

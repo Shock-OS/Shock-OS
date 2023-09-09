@@ -78,16 +78,21 @@ else
 
         fi
 
-        seconds="$(cat /usr/share/shock-pcstl/"$(whoami)"/today/seconds)"
-
-        if ((seconds!=1))
+        if [[ "$remaining_hours" == "0 hours" ]]
         then
 
-            remaining_seconds="$seconds seconds"
+            seconds="$(cat /usr/share/shock-pcstl/"$(whoami)"/today/seconds)"
 
-        else
+            if ((seconds!=1))
+            then
 
-            remaining_seconds="1 second"
+                remaining_seconds="$seconds seconds"
+
+            else
+
+                remaining_seconds="1 second"
+
+            fi
 
         fi
 
