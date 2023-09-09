@@ -150,7 +150,7 @@ then
             elif ((minutes<5)) #if 5 or less minutes
             then
 
-                zenity --notification --text="You have $((minutes+1)) minutes of screen time remaining. Please find a stopping point, save your work, and prepare to log off."
+                zenity --notification --text="You have $((minutes+1)) minutes of screen time remaining. Please find a stopping point, save your work, and prepare to log off." &
 
             fi
 
@@ -158,6 +158,13 @@ then
 
         for second in {59..0} #counts down the seconds in a minute (for shock-pcstl-timeleft)
         do
+
+            until [[ "$(view-current-user)" == "$runuser" ]]
+            do
+
+                sleep 1
+
+            done
 
             echo "$second" | tee /usr/share/shock-pcstl/"$runuser"/today/seconds
 
