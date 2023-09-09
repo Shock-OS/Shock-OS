@@ -11,6 +11,8 @@ then
 
     flatpak override --user --env=GTK_THEME="shock-light-blue"
 
+    ln -s /usr/share/icons/shock-light-blue ~/.icons/"$(whoami)_shock_fallback_icon_theme"
+
     dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
 
     dconf write /org/onboard/theme "'/usr/share/onboard/themes/Nightshade.theme'"

@@ -154,11 +154,11 @@ do
                         if [[ "${#inherit_line}" == "9" ]] #if no fallback themes
                         then
 
-                            sed -i "s|^Inherits=.*|Inherits=shock-light-blue,shock-dark-blue,Adwaita,hicolor|" "$i"
+                            sed -i "s|^Inherits=.*|Inherits=${runuser}_shock_fallback_icon_theme,Adwaita,hicolor|" "$i"
 
                         else
 
-                            sed -i "s|^Inherits=.*|$inherit_line,shock-light-blue,shock-dark-blue,Adwaita,hicolor|" "$i"
+                            sed -i "s|^Inherits=.*|$inherit_line,${runuser}_shock_fallback_icon_theme,Adwaita,hicolor|" "$i"
 
                         fi
 
@@ -546,6 +546,8 @@ color=blue' | tee ~/.config/shock_themes
 				dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
 
                 flatpak override --user --env=GTK_THEME="$theme"
+
+                ln -s /usr/share/icons/"$theme" ~/.icons/"${runuser}_shock_fallback_icon_theme"
 
 				echo "[Greeter]
 theme-name=shock-dark-$color
