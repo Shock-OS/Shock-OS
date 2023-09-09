@@ -113,7 +113,7 @@ do
 
             theme="$(basename "$theme")"
 
-            if [[ ! -d /home/"$user"/."$type"/"$theme" ]]
+            if [[ ! -d /home/"$user"/."$type"/"$theme" ]] && [[ "$theme" != "${user}_shock_fallback_icon_theme" ]]
             then
 
                 rm /usr/share/"$type"/"$theme"
@@ -121,6 +121,17 @@ do
             fi
 
         done
+
+        if [[ -f /home/"$user"/.config/shock_themes ]]
+        then
+
+            source /home/"$user"/.config/shock_themes
+
+            rm /usr/share/icons/"${user}_shock_fallback_icon_theme"
+
+            ln -s /usr/share/icons/"${shock_icon_theme}" /usr/share/icons/"${user}_shock_fallback_icon_theme"
+
+        fi
 
     done
 
