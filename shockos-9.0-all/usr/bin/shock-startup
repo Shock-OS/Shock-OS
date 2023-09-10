@@ -137,15 +137,7 @@ nohup shock-slideshow-wallpaper &
 
 nohup shock-updates-scanner &
 
-#
-#while true #check for available system upgrades
-#do
-#
-#    shock-release-scanner
-#
-#    sleep 900
-#
-#done
+nohup shock-release-scanner &
 
 if [[ " $(groups "$(whoami)") " == *" shock-child "* ]] && [[ -f /usr/share/shock-pcstl/"$(whoami)"/shock-screen-time-limit ]] #if account is a child profile with a screen time limit set
 then

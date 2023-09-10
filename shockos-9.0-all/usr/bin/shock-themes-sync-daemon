@@ -122,7 +122,7 @@ do
 
         done
 
-        if [[ -f /home/"$user"/.config/shock_themes ]]
+        if [[ -f /home/"$user"/.config/shock_themes ]] #sets the user's fallback icon theme
         then
 
             source /home/"$user"/.config/shock_themes

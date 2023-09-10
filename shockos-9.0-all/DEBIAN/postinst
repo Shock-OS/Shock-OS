@@ -172,6 +172,9 @@ mkdir -p /etc/skel/.local/share/applications
 
 cp -r /usr/share/shock/install-temp/"Sample Videos" /etc/skel/Videos
 
+echo "shock_gtk_theme=shock-light-blue
+shock_icon_theme=shock-light-blue" | tee /etc/skel/.config/shock_themes
+
 #the home directory building ends
 
 cp -r /usr/share/shock/applications/* /etc/skel/.local/share/applications
@@ -247,10 +250,6 @@ echo 'ALL ALL=NOPASSWD:/usr/bin/shock-themes-sync-daemon' | tee /etc/sudoers.d/s
 echo 'ALL ALL=NOPASSWD:/usr/bin/shock-fonts-sync-daemon' | tee /etc/sudoers.d/shock-fonts-sync-daemon
 
 #the above command allows users to create a symlink to their custom fonts in /usr/share/fonts so that root apps can use their user-specific fonts
-
-#setfacl -m g:shock-child:--- /usr/bin/pkexec
-
-#prohibits child users from using pkexec
 
 #Wi-Fi patch begins
 

@@ -11,6 +11,26 @@ nl=$((nl+1))
 while true
 do
 
+    if [[ ! -f ~/.config/shock_themes ]] #creates the config file if it doesn't already exist
+	then
+
+		touch ~/.config/shock_themes
+
+		echo 'shock_gtk_theme=shock-light-blue
+shock_icon_theme=shock-light-blue' | tee ~/.config/shock_themes
+
+	fi
+
+    if [[ "$(cat ~/.config/shock_themes)" == "lod="* ]] #UPDATE COMPATIBILITY (9.0)
+    then
+
+        echo "shock_gtk_theme=shock-${lod}-${color}
+shock_icon_theme=shock-${lod}-${color}" | tee ~/.config/shock_themes
+
+        source ~/.config/shock_themes
+
+    fi
+
     sudo shock-themes-sync-daemon
 
 	yadlist=("/usr/share/shock/shock-logo.svg" "The default Shock OS look and feel" "Default")
@@ -137,6 +157,7 @@ do
 
                     for i in $(find . -name index.theme)
                     do
+
                         inherit_line=$(grep -m 1 -e '^Inherits=' "$i")
 
                         inherit_line=$(echo "$inherit_line" | sed 's/,Adwaita//') #removes Adwaita
@@ -459,27 +480,7 @@ do
 		if [[ "$type" == "The default Shock OS look and feel" ]]
 		then
 
-			if [[ ! -f ~/.config/shock_themes ]]
-			then
-
-				touch ~/.config/shock_themes
-
-				echo 'shock_gtk_theme=shock-light-blue
-shock_icon_theme=shock-light-blue' | tee ~/.config/shock_themes
-
-			fi
-
             source ~/.config/shock_themes
-
-            if [[ "$(cat ~/.config/shock_themes)" == "lod="* ]] #UPDATE COMPATIBILITY (9.0)
-            then
-
-                echo "shock_gtk_theme=shock-${lod}-${color}
-shock_icon_theme=shock-${lod}-${color}" | tee ~/.config/shock_themes
-
-                source ~/.config/shock_themes
-
-            fi
 
 			if [[ "$shock_gtk_theme" == "shock-light-"* ]]
 			then
@@ -639,6 +640,8 @@ shock_icon_theme=shock-${lod}-${color}" | tee ~/.config/shock_themes
 
 			            theme_color=$(echo "$theme_color" | awk '{print tolower($0)}') #this command makes all the letters lowercase
 
+                        color="$theme_color" #for LightDM Greeter settings file.
+
 			            icon_color=$(echo "$output" | awk -F'|' '{print $2}')
 
 			            icon_color=$(echo "$icon_color" | awk '{print tolower($0)}') #this command makes all the letters lowercase
@@ -674,8 +677,8 @@ icon_color=${icon_color}" | tee ~/.config/shock-themes-mixed-colors
                     flatpak override --user --env=GTK_THEME="$shock_gtk_theme"
 
 				    echo "[Greeter]
-theme-name=${shock_gtk_theme}
-icon-theme-name=${shock_icon_theme}
+theme-name=shock-dark-${color}
+icon-theme-name=shock-dark-${color}
 show-hostname=false
 show-power=false
 show-keyboard=false
