@@ -459,17 +459,27 @@ do
 		if [[ "$type" == "The default Shock OS look and feel" ]]
 		then
 
-			if ! [[ -f ~/.config/shock_themes ]]
+			if [[ ! -f ~/.config/shock_themes ]]
 			then
 
 				touch ~/.config/shock_themes
 
-				echo 'lod=light
-color=blue' | tee ~/.config/shock_themes
+				echo 'shock_gtk_theme=shock-light-blue
+shock_icon_theme=shock-light-blue' | tee ~/.config/shock_themes
 
 			fi
 
-			source ~/.config/shock_themes
+            source ~/.config/shock_themes
+
+            if [[ "$(cat ~/.config/shock_themes)" == "lod="* ]] #UPDATE COMPATIBILITY (9.0)
+            then
+
+                echo "shock_gtk_theme=shock-${lod}-${color}
+shock_icon_theme=shock-${lod}-${color}" | tee ~/.config/shock_themes
+
+                source ~/.config/shock_themes
+
+            fi
 
 			if [[ "$shock_gtk_theme" == "shock-light-"* ]]
 			then
@@ -542,74 +552,76 @@ color=blue' | tee ~/.config/shock_themes
                 if [[ "$color" == "mixed" ]]
                 then
 
-                    if [[ "$shock_gtk_theme" == *"blue" ]]
+                    source ~/.config/shock-themes-mixed-colors
+
+                    if [[ "$theme_color" == "blue" ]] || [[ ! -f ~/.config/shock-themes-mixed-colors ]]
                     then
 
 	                    theme_color_selection='^Blue!Green!Orange!Pink!Purple!Red!Yellow'
 
-                    elif [[ "$shock_gtk_theme" == *"green" ]]
+                    elif [[ "$theme_color" == "green" ]]
                     then
 
 	                    theme_color_selection='Blue!^Green!Orange!Pink!Purple!Red!Yellow'
 
-                    elif [[ "$shock_gtk_theme" == *"orange" ]]
+                    elif [[ "$theme_color" == "orange" ]]
                     then
 
 	                    theme_color_selection='Blue!Green!^Orange!Pink!Purple!Red!Yellow'
 
-                    elif [[ "$shock_gtk_theme" == *"pink" ]]
+                    elif [[ "$theme_color" == "pink" ]]
                     then
 
 	                    theme_color_selection='Blue!Green!Orange!^Pink!Purple!Red!Yellow'
 
-                    elif [[ "$shock_gtk_theme" == *"purple" ]]
+                    elif [[ "$theme_color" == "purple" ]]
                     then
 
 	                    theme_color_selection='Blue!Green!Orange!Pink!^Purple!Red!Yellow'
 
-                    elif [[ "$shock_gtk_theme" == *"red" ]]
+                    elif [[ "$theme_color" == "red" ]]
                     then
 
 	                    theme_color_selection='Blue!Green!Orange!Pink!Purple!^Red!Yellow'
 
-                    elif [[ "$shock_gtk_theme" == *"yellow" ]]
+                    elif [[ "$theme_color" == "yellow" ]]
                     then
 
 	                    theme_color_selection='Blue!Green!Orange!Pink!Purple!Red!^Yellow'
 
                     fi
 
-                    if [[ "$shock_icon_theme" == *"blue" ]]
+                    if [[ "$icon_color" == "blue" ]] || [[ ! -f ~/.config/shock-themes-mixed-colors ]]
                     then
 
 	                    icon_color_selection='^Blue!Green!Orange!Pink!Purple!Red!Yellow'
 
-                    elif [[ "$shock_icon_theme" == *"green" ]]
+                    elif [[ "$icon_color" == "green" ]]
                     then
 
 	                    icon_color_selection='Blue!^Green!Orange!Pink!Purple!Red!Yellow'
 
-                    elif [[ "$shock_icon_theme" == *"orange" ]]
+                    elif [[ "$icon_color" == "orange" ]]
                     then
 
 	                    icon_color_selection='Blue!Green!^Orange!Pink!Purple!Red!Yellow'
 
-                    elif [[ "$shock_icon_theme" == *"pink" ]]
+                    elif [[ "$icon_color" == "pink" ]]
                     then
 
 	                    icon_color_selection='Blue!Green!Orange!^Pink!Purple!Red!Yellow'
 
-                    elif [[ "$shock_icon_theme" == *"purple" ]]
+                    elif [[ "$icon_color" == "purple" ]]
                     then
 
 	                    icon_color_selection='Blue!Green!Orange!Pink!^Purple!Red!Yellow'
 
-                    elif [[ "$shock_icon_theme" == *"red" ]]
+                    elif [[ "$icon_color" == "red" ]]
                     then
 
 	                    icon_color_selection='Blue!Green!Orange!Pink!Purple!^Red!Yellow'
 
-                    elif [[ "$shock_icon_theme" == *"yellow" ]]
+                    elif [[ "$icon_color" == "yellow" ]]
                     then
 
 	                    icon_color_selection='Blue!Green!Orange!Pink!Purple!Red!^Yellow'
@@ -631,13 +643,12 @@ color=blue' | tee ~/.config/shock_themes
 
 			            icon_color=$(echo "$icon_color" | awk '{print tolower($0)}') #this command makes all the letters lowercase
 
+                        echo "theme_color=${theme_color}
+icon_color=${icon_color}" | tee ~/.config/shock-themes-mixed-colors
+
                         shock_gtk_theme="shock-${lod}-${theme_color}"
 
                         shock_icon_theme="shock-${lod}-${icon_color}"
-
-                    else
-
-                        exit
 
                     fi
 
@@ -649,17 +660,20 @@ color=blue' | tee ~/.config/shock_themes
 
                 fi
 
-				dconf write /org/mate/desktop/interface/gtk-theme "'$shock_gtk_theme'"
+                if [[ "$ex" == "0" ]]
+                then
 
-				dconf write /org/mate/marco/general/theme "'$shock_gtk_theme'"
+				    dconf write /org/mate/desktop/interface/gtk-theme "'$shock_gtk_theme'"
 
-				dconf write /org/mate/desktop/interface/icon-theme "'$shock_icon_theme'"
+				    dconf write /org/mate/marco/general/theme "'$shock_gtk_theme'"
 
-				dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
+				    dconf write /org/mate/desktop/interface/icon-theme "'$shock_icon_theme'"
 
-                flatpak override --user --env=GTK_THEME="$shock_gtk_theme"
+				    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
 
-				echo "[Greeter]
+                    flatpak override --user --env=GTK_THEME="$shock_gtk_theme"
+
+				    echo "[Greeter]
 theme-name=${shock_gtk_theme}
 icon-theme-name=${shock_icon_theme}
 show-hostname=false
@@ -667,8 +681,10 @@ show-power=false
 show-keyboard=false
 show-clock=false" > /etc/lightdm/slick-greeter.conf
 
-				echo "shock_gtk_theme=${shock_gtk_theme}
+			    echo "shock_gtk_theme=${shock_gtk_theme}
 shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock_themes
+
+                fi
 
 			fi
 

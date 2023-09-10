@@ -127,6 +127,16 @@ do
 
             source /home/"$user"/.config/shock_themes
 
+            if [[ "$(cat /home/"$user"/.config/shock_themes)" == "lod="* ]] #UPDATE COMPATIBILITY (9.0)
+            then
+
+                echo "shock_gtk_theme=shock-${lod}-${color}
+shock_icon_theme=shock-${lod}-${color}" | tee /home/"$user"/.config/shock_themes
+
+                source /home/"$user"/.config/shock_themes
+
+            fi
+
             rm /usr/share/icons/"${user}_shock_fallback_icon_theme"
 
             ln -s /usr/share/icons/"${shock_icon_theme}" /usr/share/icons/"${user}_shock_fallback_icon_theme"
