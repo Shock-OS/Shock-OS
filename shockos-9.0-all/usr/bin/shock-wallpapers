@@ -5,41 +5,41 @@
 if [[ -f ~/.config/shock-slideshow-wallpaper ]]
 then
 
-    eval $(cat ~/.config/shock-slideshow-wallpaper)
+    source ~/.config/shock-slideshow-wallpaper
 
 elif [[ -f ~/.config/shock-wallpaper ]]
 then
 
-    eval $(cat ~/.config/shock-wallpaper)
+    source ~/.config/shock-wallpaper
 
 fi
 
-if [[ "$current_style" == "zoom" ]]
+if [[ "$style" == "zoom" ]]
 then
 
     style_input='^Zoom!Tile!Centered!Scaled!Stretched!Spanned'
 
-elif [[ "$current_style" == "wallpaper" ]]
+elif [[ "$style" == "wallpaper" ]]
 then
 
     style_input='Zoom!^Tile!Centered!Scaled!Stretched!Spanned'
 
-elif [[ "$current_style" == "centered" ]]
+elif [[ "$style" == "centered" ]]
 then
 
     style_input='Zoom!Tile!^Centered!Scaled!Stretched!Spanned'
 
-elif [[ "$current_style" == "scaled" ]]
+elif [[ "$style" == "scaled" ]]
 then
 
     style_input='Zoom!Tile!Centered!^Scaled!Stretched!Spanned'
 
-elif [[ "$current_style" == "stretched" ]]
+elif [[ "$style" == "stretched" ]]
 then
 
     style_input='Zoom!Tile!Centered!Scaled!^Stretched!Spanned'
 
-elif [[ "$current_style" == "spanned" ]]
+elif [[ "$style" == "spanned" ]]
 then
 
     style_input='Zoom!Tile!Centered!Scaled!Stretched!^Spanned'
@@ -50,32 +50,32 @@ else
 
 fi
 
-if [[ "$current_style_siw" == "zoom" ]]
+if [[ "$style" == "zoom" ]]
 then
 
     style_input_siw='^Zoom!Tile!Centered!Scaled!Stretched!Spanned'
 
-elif [[ "$current_style_siw" == "wallpaper" ]]
+elif [[ "$style" == "wallpaper" ]]
 then
 
     style_input_siw='Zoom!^Tile!Centered!Scaled!Stretched!Spanned'
 
-elif [[ "$current_style_siw" == "centered" ]]
+elif [[ "$style" == "centered" ]]
 then
 
     style_input_siw='Zoom!Tile!^Centered!Scaled!Stretched!Spanned'
 
-elif [[ "$current_style_siw" == "scaled" ]]
+elif [[ "$style" == "scaled" ]]
 then
 
     style_input_siw='Zoom!Tile!Centered!^Scaled!Stretched!Spanned'
 
-elif [[ "$current_style_siw" == "stretched" ]]
+elif [[ "$style" == "stretched" ]]
 then
 
     style_input_siw='Zoom!Tile!Centered!Scaled!^Stretched!Spanned'
 
-elif [[ "$current_style_siw" == "spanned" ]]
+elif [[ "$style" == "spanned" ]]
 then
 
     style_input_siw='Zoom!Tile!Centered!Scaled!Stretched!^Spanned'
@@ -98,7 +98,7 @@ then
     until [[ "$wallpaper_is_image" == "yes" ]]
     do
     
-        choose=$(yad --width=300 --title="Single Image Background" --window-icon="background" --form --field="Image:":FL "$siw" --field="Style:":CB "$style_input_siw" --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0 --button="Cancel"\!gtk-cancel:2)
+        choose=$(yad --width=300 --title="Single Image Background" --window-icon="background" --form --field="Image:":FL "$siw" --field="Style:":CB "$style_input_siw" --field="Change Background Colors":BTN 'shock-background-color-chooser' --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0 --button="Cancel"\!gtk-cancel:2)
 
         ex=$?
 
@@ -114,6 +114,12 @@ then
             dconf reset /org/mate/desktop/background/picture-options
 
             dconf reset /org/mate/desktop/background/picture-filename
+
+            dconf reset /org/mate/desktop/background/color-shading-type
+
+            dconf reset /org/mate/desktop/background/primary-color
+
+            dconf reset /org/mate/desktop/background/secondary-color
 
             exit
 
@@ -176,7 +182,7 @@ then
     until (( $dc > 1 )) && [[ "$dci" == *"image"* ]]
     do
 
-        choose=$(yad --form --width=400 --height=200 --window-icon=background --title="Slideshow Background" --field="Folder containing images:":DIR "$directory" --field="Delay (minutes):":NUM "$delay"'!1..100!1' --field="Style:":CB "$style_input" --field="Play images in random order":CHK "$random_inorder" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+        choose=$(yad --form --width=400 --height=200 --window-icon=background --title="Slideshow Background" --field="Folder containing images:":DIR "$directory" --field="Delay (minutes):":NUM "$delay"'!1..100!1' --field="Style:":CB "$style_input" --field="Play images in random order":CHK "$random_inorder" --field="Change Background Colors":BTN 'shock-background-color-chooser' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
 
         ex=$?
 
