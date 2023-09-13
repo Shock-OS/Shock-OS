@@ -129,7 +129,7 @@ then
 
         fi  
 
-        if [[ "$(view-current-user)" == "$runuser" ]] && [[ "$(su -c "dbus-send --session --dest=org.mate.ScreenSaver --type=method_call --print-reply=literal /org/mate/ScreenSaver org.mate.ScreenSaver.GetActive" "$runuser")" == *"boolean false"* ]] #makes sure that the user is not logged in and that the screensaver is not running
+        if [[ "$(view-current-user)" == "$runuser" ]] #makes sure that the user is not logged in and that the screensaver is not running
         then
 
             minutes=$((minutes-1))
