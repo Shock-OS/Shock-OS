@@ -1,0 +1,11 @@
+[Unit]
+Description=Screen Time Counter
+After=default.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/shock-screentime-daemon
+
+[Install]
+WantedBy=graphical.target

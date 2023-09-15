@@ -1,0 +1,134 @@
+#!/bin/bash
+
+#the root check element begins
+
+if [[ "$(id -u)" != "0" ]]
+then
+
+    echo "Script must be run as root. Exiting..."
+
+    exit
+
+fi
+
+#the root check element ends
+
+IFS=$'\n'
+
+#THE VIEW CURRENT USER FUNCTION BEGINS
+
+#this function outputs the user that is using the currently active desktop session
+
+function view-current-user() {
+
+for i in $(loginctl --no-legend list-sessions)
+do
+    session="$(echo "$i" | awk '{print $1}')"
+
+    session_info="$(loginctl show-session "$session")"
+
+    session_info="${session_info// /}" #removes all spaces to satisfy the eval command
+
+    eval "$session_info"
+
+    if [[ "$Active" == "yes" ]] && [[ "$Type" == "x11" || "$Type" == "wayland" ]] && [[ -d /home/"$Name" ]]
+    then
+
+        echo "$Name"
+
+    fi
+
+done
+
+}
+
+#THE VIEW CURRENT USER FUNCTION ENDS
+
+
+
+#POSSIBLY PUT A SESSION CHECKER HERE
+
+
+
+while true
+do
+
+    sleep 60
+
+    {
+
+    child_users="$(getent group shock-child)"
+
+    child_users="${child_users##*:}"
+
+    child_users="${child_users//,/\\n}"
+
+    child_users=($(echo -e "$child_users"))
+
+    current_user="$(view-current-user)"
+
+    if [[ ! -f /usr/share/shock-screentime/"$current_user"/notrack-screentime ]]
+    then
+
+        current_date="$(date +%F)"
+
+        if [[ " ${child_users[@]} " == *" $current_user "* ]] #detect if active user is a child profile
+        then
+
+            child_account="TRUE"
+
+        fi
+
+        mkdir -p /usr/share/shock-screentime/"$current_user"/dates
+
+        if [[ -f /usr/share/shock-screentime/"$current_user"/dates/"$current_date" ]]
+        then
+
+            if [[ "$child_account" ]]
+            then
+
+                chattr -i /usr/share/shock-screentime/"$current_user"/dates/"$current_date"
+
+            fi
+
+            current_usage=$(cat /usr/share/shock-screentime/"$current_user"/dates/"$current_date")
+
+        else
+
+            current_usage=0
+
+        fi
+
+        current_usage=$((current_usage+1))
+
+        echo "$current_usage" | tee /usr/share/shock-screentime/"$current_user"/dates/"$current_date" #the screen time usage for today has been updated
+
+        if [[ "$child_account" ]] #manages dailylimit if current user is a child profile and has a daily limit
+        then
+
+            chattr +i /usr/share/shock-screentime/"$current_user"/dates/"$current_date"
+
+            if [[ -f /usr/share/shock-screentime/"$current_user"/dailylimit ]]
+            then
+
+                dailylimit=$(cat /usr/share/shock-screentime/"$current_user"/dailylimit)
+
+                if ((current_usage>dailylimit))
+                then
+
+                    killall -15 -u "$current_user"
+
+                    killall -9 -u "$current_user"
+
+                fi
+
+            fi
+
+        fi
+
+    fi
+
+    } &
+
+done
+

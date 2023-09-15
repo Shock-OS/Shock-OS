@@ -11,25 +11,15 @@ nl=$((nl+1))
 while true
 do
 
-    if [[ ! -f ~/.config/shock_themes ]] #creates the config file if it doesn't already exist
+    if [[ ! -f ~/.config/shock/themes ]] #creates the config file if it doesn't already exist
 	then
 
-		touch ~/.config/shock_themes
+		touch ~/.config/shock/themes
 
 		echo 'shock_gtk_theme=shock-light-blue
-shock_icon_theme=shock-light-blue' | tee ~/.config/shock_themes
+shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
 	fi
-
-    if [[ "$(cat ~/.config/shock_themes)" == "lod="* ]] #UPDATE COMPATIBILITY (9.0)
-    then
-
-        echo "shock_gtk_theme=shock-${lod}-${color}
-shock_icon_theme=shock-${lod}-${color}" | tee ~/.config/shock_themes
-
-        source ~/.config/shock_themes
-
-    fi
 
     sudo shock-themes-sync-daemon
 
@@ -480,7 +470,7 @@ shock_icon_theme=shock-${lod}-${color}" | tee ~/.config/shock_themes
 		if [[ "$type" == "The default Shock OS look and feel" ]]
 		then
 
-            source ~/.config/shock_themes
+            source ~/.config/shock/themes
 
 			if [[ "$shock_gtk_theme" == "shock-light-"* ]]
 			then
@@ -685,7 +675,7 @@ show-keyboard=false
 show-clock=false" > /etc/lightdm/slick-greeter.conf
 
 			    echo "shock_gtk_theme=${shock_gtk_theme}
-shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock_themes
+shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
 
                 fi
 

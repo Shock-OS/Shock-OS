@@ -1,0 +1,93 @@
+#!/bin/bash
+
+runuser="$(whoami)"
+
+function convert_time() {
+
+local used_minutes=$1
+
+local hours=$((used_minutes/60))
+
+local minutes=$((used_minutes%60))
+
+if ((hours!=1))
+then
+
+    hours="$hours hours"
+
+else
+
+    hours="1 hour"
+
+fi
+
+if ((minutes!=1))
+then
+
+    minutes="$minutes minutes"
+
+else
+
+    minutes="1 minute"
+
+fi
+
+if [[ "$hours" != "0 hours" ]] && [[ "$minutes" != "0 minutes" ]]
+then
+
+    local time_display="$hours and $minutes"
+
+elif [[ "$hours" != "0 hours" ]]
+then
+
+    local time_display="$hours"
+
+else
+
+    local time_display="$minutes"
+
+fi
+
+echo "$time_display"
+
+}
+
+current_date="$(date +%F)"
+
+total_minutes=$(cat /usr/share/shock-screentime/"$runuser"/dailylimit)
+
+total_minutes_display="$(convert_time $total_minutes)"
+
+while true
+do
+
+    if [[ -f /usr/share/shock-screentime/"$runuser"/dates/"$current_date" ]] #if user logged in less than a minute ago for the first time today
+    then
+
+        used_minutes=$(cat /usr/share/shock-screentime/"$runuser"/dates/"$current_date")
+
+    else
+
+        used_minutes=0
+
+    fi
+
+    remaining_minutes=$((total_minutes-used_minutes))
+
+    remaining_minutes_display=$(convert_time $remaining_minutes)
+
+    percentage=$(echo "scale=2; $remaining_minutes / $total_minutes" | bc)
+
+    echo "$percentage"
+
+    echo "#${remaining_minutes_display} remaining"
+
+    sleep 30
+
+done | yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="Your parent/guardian/administrator has set a daily screen time limit of $total_minutes_display on your profile." --progress --button="Dismiss"\!gtk-quit
+
+
+
+
+
+

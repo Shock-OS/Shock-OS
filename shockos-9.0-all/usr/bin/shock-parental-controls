@@ -47,7 +47,7 @@ then
 
 fi
 
-output=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="You can manage the limits and restrictions of child profiles." --form --field="Child Profile:":CB "$userlist" --field="Restriction:":CB 'Screen Time Limit' --button="Next"\!go-next)
+output=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="You can manage the limits and restrictions of child profiles." --form --field="Child Profile:":CB "$userlist" --field="Restriction:":CB 'Set/Manage Screen Time Limit' --button="Next"\!go-next)
 
 utr_display_name=$(echo "$output" | awk -F'|' '{print $1}')
 
@@ -55,10 +55,10 @@ utr=$(echo "$utr_display_name" | grep -o -P '(?<=\().*?(?=\))')
 
 limit=$(echo "$output" | awk -F'|' '{print $2}')
 
-if [[ "$limit" == "Screen Time Limit" ]]
+if [[ "$limit" == "Set/Manage Screen Time Limit" ]]
 then
 
-    if [[ -f /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit ]]
+    if [[ -f /usr/share/shock-screentime/"$utr"/dailylimit ]]
     then
 
         yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="This user already has a screen time limit set. What would you like to do?" --button="Overwrite"\!gtk-edit:0 --button="Remove"\!remove:1 --button="Cancel"\!gtk-cancel:2
@@ -75,9 +75,9 @@ then
         elif [[ "$ex3" == "1" ]]
         then
 
-            chattr -R -i /usr/share/shock-pcstl/"$utr"
+            chattr -i /usr/share/shock-screentime/"$utr"/dailylimit
 
-            rm -r /usr/share/shock-pcstl/"$utr"
+            rm -r /usr/share/shock-screentime/"$utr"/dailylimit
 
             yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="The screen time limit for the user '$utr_display_name' was removed successfully." --button="Dismiss"\!gtk-quit
 
@@ -120,17 +120,13 @@ then
 
     done
 
-    mkdir -p /usr/share/shock-pcstl/"$utr"
+    mkdir -p /usr/share/shock-screentime/"$utr"
 
-    chattr -R -i /usr/share/shock-pcstl/"$utr"/today
+    chattr -i /usr/share/shock-screentime/"$utr"/dailylimit
 
-    rm -r /usr/share/shock-pcstl/"$utr"/today
+    echo "$total_minutes" | tee /usr/share/shock-screentime/"$utr"/dailylimit
 
-    chattr -i /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit
-
-    echo "$total_minutes" | tee /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit
-
-    chattr +i /usr/share/shock-pcstl/"$utr"/shock-screen-time-limit
+    chattr +i /usr/share/shock-screentime/"$utr"/dailylimit
 
     if ((hours>0))
     then
@@ -166,3 +162,26 @@ then
     #the time limit patch ends
 
 fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

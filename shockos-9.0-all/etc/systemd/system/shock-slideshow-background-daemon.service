@@ -1,0 +1,9 @@
+[Unit]
+Description=Slideshow Background Daemon
+After=graphical.target
+
+[Service]
+ExecStart=/usr/bin/shock-slideshow-background-daemon
+
+[Install]
+WantedBy=default.target

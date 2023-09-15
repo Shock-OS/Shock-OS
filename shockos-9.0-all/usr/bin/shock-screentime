@@ -1,0 +1,117 @@
+#!/bin/bash
+
+IFS=$'\n'
+
+function convert_time() {
+
+local used_minutes=$1
+
+local hours=$((used_minutes/60))
+
+local minutes=$((used_minutes%60))
+
+if ((hours!=1))
+then
+
+    hours="$hours hours"
+
+else
+
+    hours="1 hour"
+
+fi
+
+if ((minutes!=1))
+then
+
+    minutes="$minutes minutes"
+
+else
+
+    minutes="1 minute"
+
+fi
+
+if [[ "$hours" != "0 hours" ]] && [[ "$minutes" != "0 minutes" ]]
+then
+
+    local time_display="$hours and $minutes"
+
+elif [[ "$hours" != "0 hours" ]]
+then
+
+    local time_display="$hours"
+
+else
+
+    local time_display="$minutes"
+
+fi
+
+echo "$time_display"
+
+}
+
+while true
+do
+
+    key="$RANDOM"
+
+    until (($(ps aux | grep -c "$key")==1))
+    do
+
+        key="$RANDOM"
+
+    done
+
+    usernum=1
+
+    tabs=()
+
+    for user in /usr/share/shock-screentime/*
+    do
+
+        user="$(basename "$user")"
+
+        screentimes=()
+
+        if [[ -f /usr/share/shock-screentime/"$user"/dailylimit ]]
+        then
+
+            total_minutes=$(cat /usr/share/shock-screentime/"$user"/dailylimit)
+
+        else
+
+            total_minutes=1440
+
+        fi
+
+        total_minutes_display="$(convert_time $total_minutes)"
+
+        for date in /usr/share/shock-screentime/"$user"/dates/*
+        do
+
+            used_minutes=$(cat "$date")
+
+            screentimes+=("$(basename "$date")" "$(convert_time $used_minutes)" "$((${used_minutes}/${total_minutes}))")
+
+        done
+
+        yad --plug=$key --tabnum=$usernum --list --column="Date" --column="Time Used" --column="Percentage of $total_minutes_display used":BAR "${screentimes[@]}" &
+
+        usernum=$((usernum+1))
+
+        tabs+=("--tab=$user")
+
+    done
+
+    yad --window-icon=ICON_HERE --width=600 --height=400 --title="Screen Time" --notebook --key=$key "${tabs[@]}" --buttons-layout=edge --button="Refresh"\!gtk-refresh --button="Close"\!gtk-close
+
+    if [[ "$?" != "0" ]]
+    then
+
+        exit
+
+    fi
+
+done

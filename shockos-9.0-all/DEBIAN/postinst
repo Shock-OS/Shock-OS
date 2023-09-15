@@ -313,6 +313,18 @@ done
 
 #the stylepak patch ends
 
+#the systemd services patch begins
+
+sudo systemctl daemon-reload
+
+sudo systemctl enable shock-startup-daemon.service
+
+sudo systemctl enable shock-screentime-daemon.service
+
+sudo systemctl enable shock-slideshow-background-daemon.service
+
+#the systemd services patch ends
+
 #the splash screen patch begins
 
 newcmdline="$(cat /boot/cmdline.txt) quiet splash plymouth.ignore-serial-consoles"

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+IFS=$'\n'
+
+#this script is designed to shuffle between wallpapers when the user has set a slideshow wallpaper
+
+if (($(ps aux | awk '{print $1,$11,$12}' | grep -c "$(whoami) /bin/bash /usr/bin/shock-slideshow-wallpaper")>2)) #exits the program if it is already running for this user
+then
+
+    exit
+
+fi
+
+
+
+
+
+
+$(dconf read /org/mate/desktop/background/picture-filename)
+
+
+
+
+if [[ -f ~/.config/shock-slideshow-wallpaper ]]
+then
+
+    source ~/.config/shock-slideshow-wallpaper
+
+    backgrounds=()
+
+    
+
+
+
+
+
+
+    
+
+fi
+

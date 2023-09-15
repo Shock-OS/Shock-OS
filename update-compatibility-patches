@@ -1,0 +1,43 @@
+#!/bin/bash
+
+#use this in the preupgr or postupgr script in the 9.0 upgrade pack for a smooth transition
+
+#the config file renaming begins
+
+for user_home_dir in /home/*
+do
+
+    mv "$user_home_dir"/.config/shock-slideshow-wallpaper "$user_home_dir"/.config/shock/slideshow-background
+
+    mv "$user_home_dir"/.config/shock-wallpaper "$user_home_dir"/.config/shock/background
+
+    if [[ "$(cat "$user_home_dir"/.config/shock_themes)" == "lod="* ]]
+    then
+
+        echo "shock_gtk_theme=shock-${lod}-${color}
+shock_icon_theme=shock-${lod}-${color}" | tee "$user_home_dir"/.config/shock_themes
+
+    fi
+
+done
+
+#the config file renaming ends
+
+#the pcstl -> screentime patch begins
+
+chattr -R -i /usr/share/shock-pcstl
+
+rm -r /usr/share/shock-pcstl/*/today
+
+for user_pcstl_dir in /usr/share/shock-pcstl/*
+do
+
+    mv "$user_pcstl_dir"/shock-screen-time-limit "$user_pcstl_dir"/dailylimit
+
+done
+
+mkdir -p /usr/share/shock-screentime
+
+mv /usr/share/shock-pcstl/* /usr/share/shock-screentime/
+
+#the pcstl -> screentime patch ends

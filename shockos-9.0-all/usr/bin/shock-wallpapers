@@ -2,15 +2,15 @@
 
 #this script is the applicaton that sets wallpapers (both single image and slideshow)
 
-if [[ -f ~/.config/shock-slideshow-wallpaper ]]
+if [[ -f ~/.config/shock/slideshow-background ]]
 then
 
-    source ~/.config/shock-slideshow-wallpaper
+    source ~/.config/shock/slideshow-background
 
-elif [[ -f ~/.config/shock-wallpaper ]]
+elif [[ -f ~/.config/shock/background ]]
 then
 
-    source ~/.config/shock-wallpaper
+    source ~/.config/shock/background
 
 fi
 
@@ -105,11 +105,11 @@ then
         if [[ "$ex" == "1" ]]
         then
 
-            killall shock-slideshow-wallpaper
+            systemctl --user stop shock-slideshow-background-daemon.service
 
-            rm ~/.config/shock-slideshow-wallpaper
+            rm ~/.config/shock/slideshow-background
 
-            rm ~/.config/shock-wallpaper
+            rm ~/.config/shock/background
 
             dconf reset /org/mate/desktop/background/picture-options
 
@@ -146,15 +146,13 @@ then
 
                 fi
 
-                killall shock-slideshow-wallpaper
+                systemctl --user stop shock-slideshow-background-daemon.service
 
-                rm ~/.config/shock-slideshow-wallpaper
-
-                touch ~/.config/shock-wallpaper
+                rm ~/.config/shock/slideshow-background
 
                 echo "siw='$siw'
 
-style=\"$style\"" | tee ~/.config/shock-wallpaper
+style=\"$style\"" | tee ~/.config/shock/background
 
                 dconf write /org/mate/desktop/background/picture-options "'$style'"
 
@@ -162,7 +160,7 @@ style=\"$style\"" | tee ~/.config/shock-wallpaper
 
             else
 
-                yad --window-icon="background" --image=emblem-important --title="Not an Image" --text="The file you selected does not appear to be an image." --button="Dismiss"\!gtk-quit
+                yad --window-icon=background --image=emblem-important --title="Not an Image" --text="The file you selected does not appear to be an image." --button="Dismiss"\!gtk-quit
 
             fi
 
@@ -232,9 +230,9 @@ then
 
     done
 
-    rm ~/.config/shock-wallpaper
+    rm ~/.config/shock/background
 
-    touch ~/.config/shock-slideshow-wallpaper
+    touch ~/.config/shock/slideshow-background
 
     echo "directory='$directory'
 
@@ -242,7 +240,7 @@ delay=\"$delay\"
 
 random_inorder=\"$random_inorder\"
 
-style=\"$style\"" | tee ~/.config/shock-slideshow-wallpaper
+style=\"$style\"" | tee ~/.config/shock/slideshow-background
 
     if [[ "$random_inorder" == 'TRUE' ]] #random
     then
@@ -279,8 +277,6 @@ style=\"$style\"" | tee ~/.config/shock-slideshow-wallpaper
 
     dconf write /org/mate/desktop/background/picture-filename "'$ws'"
 
-    killall shock-slideshow-wallpaper
-
-    shock-slideshow-wallpaper
+    systemctl --user restart shock-slideshow-background-daemon.service
 
 fi

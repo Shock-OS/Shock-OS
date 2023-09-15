@@ -355,6 +355,13 @@ fi
 
 key="$RANDOM"
 
+until (($(ps aux | grep -c "$key")==1))
+do
+
+    key="$RANDOM"
+
+done
+
 if [[ "$type" == "A" ]] #if APT package
 then
 
