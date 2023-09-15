@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ -f ~/.config/userlogstat ]]
+if [[ -f ~/.config/shock/userlogstat ]]
 then
 
     dconf write /org/mate/desktop/interface/gtk-theme "'shock-light-blue'"
@@ -88,7 +88,7 @@ then
 
     sudo shock-users --setup #create a user
 
-    echo "shock-startup" | tee -a ~/.bashrc
+    echo "shock-startup-daemon" | tee -a ~/.bashrc
 
     echo "1" | tee /usr/share/shock/setupvalue
     
@@ -131,11 +131,18 @@ rm -r ~/.cache/shock-tmp/* &
 
 mpg123 /usr/share/shock/startup-sound/* #this command plays the startup sound
 
-shock-welcome &
+systemctl --user start shock-slideshow-background-daemon.service
 
-nohup shock-updates-scanner &
+systemctl --user start shock-update-manager.service
 
-nohup shock-release-scanner &
+systemctl --user start shock-release-scanner.service
+
+if [[ -f ~/.config/shock/welcome-indicator ]]
+then
+
+    shock-welcome &
+
+fi
 
 if [[ " $(groups "$(whoami)") " == *" shock-child "* ]] && [[ -f /usr/share/shock-pcstl/"$(whoami)"/shock-screen-time-limit ]] #if account is a child profile with a screen time limit set
 then

@@ -28,25 +28,27 @@ do
 
         fi
 
-        rm ~/.cache/shock-release-scanner/codenames
+        mkdir -p ~/.cache/shock-tmp/shock-release-scanner/codenames
 
-        wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/codenames -P ~/.cache/shock-release-scanner
+        rm ~/.cache/shock-tmp/shock-release-scanner/codenames
 
-        if  [[ ! -f ~/.cache/shock-release-scanner/codenames ]]
+        wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/codenames -P ~/.cache/shock-tmp/shock-release-scanner
+
+        if  [[ ! -f ~/.cache/shock-tmp/shock-release-scanner/codenames ]]
         then
 
             echo "An internet connection is required. Waiting 15 minutes until retry..."
 
         else
 
-            latest_version="$(cat ~/.cache/shock-release-scanner/codenames | wc -l)"
+            latest_version="$(cat ~/.cache/shock-tmp/shock-release-scanner/codenames | wc -l)"
 
             if ((latest_version>current_version))
             then
 
                 upgrto_version=$((current_version+1))
 
-                upgrto_version_codename="$(sed -n "$upgrto_version"p ~/.cache/shock-release-scanner/codenames)"
+                upgrto_version_codename="$(sed -n "$upgrto_version"p ~/.cache/shock-tmp/shock-release-scanner/codenames)"
 
                 if ((upgrto_version<10))
                 then

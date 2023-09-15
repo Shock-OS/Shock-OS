@@ -2,40 +2,81 @@
 
 IFS=$'\n'
 
-#this script is designed to shuffle between wallpapers when the user has set a slideshow wallpaper
+#this script is designed to shuffle between backgrounds when the user has set a slideshow background
 
-if (($(ps aux | awk '{print $1,$11,$12}' | grep -c "$(whoami) /bin/bash /usr/bin/shock-slideshow-wallpaper")>2)) #exits the program if it is already running for this user
+if [[ -f ~/.config/shock/slideshow-background ]]
 then
 
-    exit
+    source ~/.config/shock/slideshow-background
 
-fi
+    current_background="$(dconf read /org/mate/desktop/background/picture-filename)"
 
+    backgrounds=("$directory"/*)
 
+    if [[ "$random_boolean" == "FALSE" ]] #if in order, set the counter to the current backdrop
+    then
 
+        counter=0
 
+        images_in_directory=$(ls "$directory" | wc -l)
 
+        until [[ "${backgrounds[counter]}" == "$current_background" ]] || ((counter>images_in_directory))
+        do
 
-$(dconf read /org/mate/desktop/background/picture-filename)
+            counter=$((counter+1))
 
+        done
 
+        if ((counter>images_in_directory))
+        then
 
+            counter=0
 
-if [[ -f ~/.config/shock-slideshow-wallpaper ]]
-then
+        fi
 
-    source ~/.config/shock-slideshow-wallpaper
+    fi
 
-    backgrounds=()
+    while true
+    do
 
-    
+        sleep $delay
 
+        backgrounds=("$directory"/*)
 
+        images_in_directory=$(ls "$directory" | wc -l)
 
+        until [[ "$(file "$background")" == *"image"* ]] && [[ "$background" != "$current_background" ]]
+        do
 
+            if [[ "$random_boolean" == "TRUE" ]] #shuffle randomly
+            then
 
+                background="$(ls "$directory"/* | shuf -n 1)"
 
-    
+            else #shuffle in order
+
+                if ((counter<$images_in_directory))
+                then
+
+                    counter=$((counter+1))
+
+                else
+
+                    counter=0
+
+                fi
+
+                background="${backgrounds[counter]}"
+
+            fi
+
+        done
+
+        dconf write /org/mate/desktop/background/picture-filename "'$background'"
+
+        current_background="$background"
+
+    done
 
 fi
 

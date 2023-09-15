@@ -18,9 +18,9 @@ fi
 while true
 do
 
-    sudo shock-fonts-sync-daemon
+    sudo shock-fonts-sync
 
-    source ~/.config/shock_fonts
+    source ~/.config/shock/fonts
 
     if (($(ls ~/.fonts | wc -l)>0))
     then
@@ -219,7 +219,7 @@ current_docfont=\"$current_docfont\"
 
 current_monospacefont=\"$current_monospacefont\"
 
-current_windowtitlefont=\"$current_windowtitlefont\"" | tee ~/.config/shock_fonts
+current_windowtitlefont=\"$current_windowtitlefont\"" | tee ~/.config/shock/fonts
 
     else
 

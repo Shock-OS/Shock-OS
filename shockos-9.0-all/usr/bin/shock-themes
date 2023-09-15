@@ -21,7 +21,7 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
 	fi
 
-    sudo shock-themes-sync-daemon
+    sudo shock-themes-sync
 
 	yadlist=("/usr/share/shock/shock-logo.svg" "The default Shock OS look and feel" "Default")
 

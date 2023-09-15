@@ -88,7 +88,7 @@ do
 
         total_minutes_display="$(convert_time $total_minutes)"
 
-        for date in /usr/share/shock-screentime/"$user"/dates/*
+        for date in $(ls -t /usr/share/shock-screentime/"$user"/dates/*)
         do
 
             used_minutes=$(cat "$date")

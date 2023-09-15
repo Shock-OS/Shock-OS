@@ -68,7 +68,7 @@ kill -9 $killpid
 if (($(ls "$apt_appstream_dir"/xml | wc -l)<1))
 then
 
-    sudo shock-os-update-manager-refresh
+    sudo shock-update-manager-refresh
 
 fi
 

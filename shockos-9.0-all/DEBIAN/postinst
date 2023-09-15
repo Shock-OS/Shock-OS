@@ -149,11 +149,9 @@ mkdir -p /etc/skel/Videos
 
 mkdir -p /etc/skel/.config/menus
 
-touch /etc/skel/.config/shock-welcome-indicator
+touch /etc/skel/.config/shock/welcome-indicator
 
-touch /etc/skel/.config/userlogstat
-
-touch /etc/skel/.config/user-dirs.dirs
+touch /etc/skel/.config/shock/userlogstat
 
 echo 'XDG_DESKTOP_DIR="$HOME/Desktop"
 XDG_DOWNLOAD_DIR="$HOME/Downloads"
@@ -229,25 +227,21 @@ touch /usr/bin/mate-appearance-properties
 
 echo '#!/bin/bash
 
-shock-wallpapers' | tee /usr/bin/mate-appearance-properties
+shock-backgrounds' | tee /usr/bin/mate-appearance-properties
 
 chmod +x /usr/bin/mate-appearance-properties
 
 #the above set of commands replaces the mate-appearance-properties program with a link to shock-wallpapers (for the desktop context menu)
 
-echo 'ALL ALL=NOPASSWD:/usr/bin/shock-os-update-manager-refresh' | tee /etc/sudoers.d/shock-os-update-manager-refresh
-
-#the above command allows anyone to run shock-os-update-manager-refresh without a password
-
-echo 'ALL ALL=NOPASSWD:/usr/bin/shock-pcstl-daemon' | tee /etc/sudoers.d/shock-pcstl-manager
+echo 'ALL ALL=NOPASSWD:/usr/bin/shock-update-manager-refresh' | tee /etc/sudoers.d/shock-os-update-manager-refresh
 
 #the above command allows anyone to run shock-pcstl manager without a password (for parental controls screen time limits)
 
-echo 'ALL ALL=NOPASSWD:/usr/bin/shock-themes-sync-daemon' | tee /etc/sudoers.d/shock-themes-sync-daemon
+echo 'ALL ALL=NOPASSWD:/usr/bin/shock-themes-sync' | tee /etc/sudoers.d/shock-themes-sync-daemon
 
 #the above command allows users to create a symlink to their custom themes in /usr/share/themes so that root apps can use their user-specific themes
 
-echo 'ALL ALL=NOPASSWD:/usr/bin/shock-fonts-sync-daemon' | tee /etc/sudoers.d/shock-fonts-sync-daemon
+echo 'ALL ALL=NOPASSWD:/usr/bin/shock-fonts-sync' | tee /etc/sudoers.d/shock-fonts-sync-daemon
 
 #the above command allows users to create a symlink to their custom fonts in /usr/share/fonts so that root apps can use their user-specific fonts
 
@@ -317,11 +311,7 @@ done
 
 sudo systemctl daemon-reload
 
-sudo systemctl enable shock-startup-daemon.service
-
 sudo systemctl enable shock-screentime-daemon.service
-
-sudo systemctl enable shock-slideshow-background-daemon.service
 
 #the systemd services patch ends
 

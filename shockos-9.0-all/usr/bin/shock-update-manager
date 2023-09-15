@@ -15,7 +15,7 @@ IFS=$'\n'
 
 function start_preloading() {
 
-yad --window-icon=system-software-update --title="Update Manager" --progress-text="Refreshing..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & preloader_killpid=$!
+yad --window-icon=system-software-update --title="Update Manager" --progress-text="Checking for updates..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & preloader_killpid=$!
 
 }
 
@@ -190,7 +190,7 @@ rows_per_page=100
 
 function fetch_updates() {
 
-sudo shock-os-update-manager-refresh
+sudo shock-update-manager-refresh
 
 all_updates=($(apt list --upgradable | awk '{ printf "\"%s\"\n", $0 }'))
 
@@ -215,7 +215,12 @@ all_updates=($(printf "%s\n" "${all_updates[@]}" | sort))
 
 }
 
-start_preloading
+if [[ "$1" != "--systemd" ]] #if running as the systemd daemon
+then
+
+    start_preloading
+
+fi
 
 fetch_updates
 
@@ -249,6 +254,13 @@ then
 else
 
     window_text="${#all_updates[@]} updates are available."
+
+fi
+
+if [[ "$1" == "--systemd" ]]
+then
+
+    yad --notification --image=system-software-update --text="$window_text"
 
 fi
 

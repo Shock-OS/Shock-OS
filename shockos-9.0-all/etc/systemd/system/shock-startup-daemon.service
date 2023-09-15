@@ -1,9 +1,0 @@
-[Unit]
-Description=Shock Startup Daemon
-After=graphical.target
-
-[Service]
-ExecStart=/usr/bin/shock-startup-daemon
-
-[Install]
-WantedBy=default.target

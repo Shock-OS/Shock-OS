@@ -44,12 +44,6 @@ done
 
 #THE VIEW CURRENT USER FUNCTION ENDS
 
-
-
-#POSSIBLY PUT A SESSION CHECKER HERE
-
-
-
 while true
 do
 
@@ -84,7 +78,7 @@ do
         if [[ -f /usr/share/shock-screentime/"$current_user"/dates/"$current_date" ]]
         then
 
-            if [[ "$child_account" ]]
+            if [[ "$child_account" == "TRUE" ]]
             then
 
                 chattr -i /usr/share/shock-screentime/"$current_user"/dates/"$current_date"
@@ -103,7 +97,7 @@ do
 
         echo "$current_usage" | tee /usr/share/shock-screentime/"$current_user"/dates/"$current_date" #the screen time usage for today has been updated
 
-        if [[ "$child_account" ]] #manages dailylimit if current user is a child profile and has a daily limit
+        if [[ "$child_account" == "TRUE" ]] #manages dailylimit if current user is a child profile and has a daily limit
         then
 
             chattr +i /usr/share/shock-screentime/"$current_user"/dates/"$current_date"

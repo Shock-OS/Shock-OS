@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=shock-startup.desktop
+Exec=shock-startup
+X-GNOME-Autostart-Phase=Desktop
+Type=Application
+Terminal=false
