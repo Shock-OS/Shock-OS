@@ -52,6 +52,17 @@ echo "$time_display"
 
 }
 
+if [[ " $(groups "$(whoami)") " == *" shock-child "* ]]
+then
+
+    child_account="TRUE"
+
+else
+
+    child_account="FALSE"
+
+fi
+
 while true
 do
 
@@ -73,41 +84,108 @@ do
 
         user="$(basename "$user")"
 
-        screentimes=()
-
-        if [[ -f /usr/share/shock-screentime/"$user"/dailylimit ]]
+        if [[ " $(groups "$user") " == *"shock-child"* && ! -f /usr/share/shock-screentime/"$user"/notrack-screentime ]] || [[ -f /home/"$user"/.config/shock/track-screentime ]]
         then
 
-            total_minutes=$(cat /usr/share/shock-screentime/"$user"/dailylimit)
+            screentimes=()
 
-        else
+            if [[ -f /usr/share/shock-screentime/"$user"/dailylimit ]]
+            then
 
-            total_minutes=1440
+                total_minutes=$(cat /usr/share/shock-screentime/"$user"/dailylimit)
+
+            else
+
+                total_minutes=1440
+
+            fi
+
+            total_minutes_display="$(convert_time $total_minutes)"
+
+            for date in $(ls -t /usr/share/shock-screentime/"$user"/dates/*)
+            do
+
+                used_minutes=$(cat "$date")
+
+                screentimes+=("$(basename "$date")" "$(convert_time $used_minutes)" "$((${used_minutes}/${total_minutes}))")
+
+            done
+
+            yad --plug=$key --tabnum=$usernum --list --column="Date" --column="Time Used" --column="Percentage of $total_minutes_display used":BAR "${screentimes[@]}" &
+
+            usernum=$((usernum+1))
+
+            tabs+=("--tab=$user")
 
         fi
 
-        total_minutes_display="$(convert_time $total_minutes)"
-
-        for date in $(ls -t /usr/share/shock-screentime/"$user"/dates/*)
-        do
-
-            used_minutes=$(cat "$date")
-
-            screentimes+=("$(basename "$date")" "$(convert_time $used_minutes)" "$((${used_minutes}/${total_minutes}))")
-
-        done
-
-        yad --plug=$key --tabnum=$usernum --list --column="Date" --column="Time Used" --column="Percentage of $total_minutes_display used":BAR "${screentimes[@]}" &
-
-        usernum=$((usernum+1))
-
-        tabs+=("--tab=$user")
-
     done
 
-    yad --window-icon=ICON_HERE --width=600 --height=400 --title="Screen Time" --notebook --key=$key "${tabs[@]}" --buttons-layout=edge --button="Refresh"\!gtk-refresh --button="Close"\!gtk-close
+    if [[ "$child_account" == "TRUE" ]]
+    then
 
-    if [[ "$?" != "0" ]]
+        yad --window-icon=/usr/share/shock/screentime.svg --width=600 --height=400 --title="Screen Time" --notebook --key=$key "${tabs[@]}" --buttons-layout=edge --button="Refresh"\!gtk-refresh --button="Close"\!gtk-close
+
+    else
+
+        yad --window-icon=/usr/share/shock/screentime.svg --width=600 --height=400 --title="Screen Time" --notebook --key=$key "${tabs[@]}" --buttons-layout=edge --button="Refresh"\!gtk-refresh --button="Settings"\!gnome-settings --button="Close"\!gtk-close
+
+    fi
+
+    ex=$?
+
+    if [[ "$ex" == "1" ]]
+    then
+
+        if [[ -f ~/.config/shock/track-screentime ]]
+        then
+
+            track_screentime="TRUE"
+
+        else
+
+            track_screentime="FALSE"
+
+        fi
+
+        source ~/.config/shock/screentime-track-days
+
+        if ((${#screentime_track_days}==0))
+        then
+
+            screentime_track_days=60
+
+        fi
+
+        output="$(yad --window-icon=/usr/share/shock/screentime.svg --title="Screen Time" --form --field="Track my screen time":CHK "$track_screentime" --field="Days to track screen time":NUM "${screentime_track_days}\!1..65525" --field="Manage the screen time track days of child profiles in the Parental Controls app.":LBL '' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+
+        ex=$?
+
+        if [[ "$ex" == "0" ]]
+        then
+
+            track_screentime=$(echo "$output" | awk -F'|' '{print $1}')
+
+            screentime_track_days=$(echo "$output" | awk -F'|' '{print $2}')
+
+            if [[ "$track_screentime" == "TRUE" ]]
+            then
+
+                mkdir -p ~/.config/shock
+
+                touch ~/.config/shock/track-screentime
+
+            else
+
+                rm ~/.config/shock/track-screentime
+
+            fi
+
+            echo "screentime_track_days=${screentime_track_days}" | tee ~/.config/shock/screentime-track-days
+
+        fi
+
+    elif [[ "$ex" != "0" ]]
     then
 
         exit

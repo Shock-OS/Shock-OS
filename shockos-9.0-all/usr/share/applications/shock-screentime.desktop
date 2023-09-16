@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1
+Name=Screen Time
+GenericName=Screen Time
+Comment=View screen time usage
+Exec=shock-screentime
+TryExec=shock-screentime
+Icon=/usr/share/shock/screentime.svg
+Terminal=false
+Type=Application
+Categories=System;
+Keywords=screen;time;daily;limit;usage;
+Name[en_US]=shock-screentime.desktop

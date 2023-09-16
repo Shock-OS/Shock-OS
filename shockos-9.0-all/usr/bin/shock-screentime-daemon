@@ -44,6 +44,45 @@ done
 
 #THE VIEW CURRENT USER FUNCTION ENDS
 
+#THE REMOVE OLD TRACK DAYS FUNCTION BEGINS
+
+function remove-old-track-days() {
+
+for user in /usr/share/shock-screentime/*
+do
+
+    user="$(basename "$user")"
+
+    screentime_track_days=60
+
+    if [[ " $(groups "$user") " == *"shock-child"* ]]
+    then
+
+        source /usr/share/shock-screentime/"$user"/screentime-track-days
+
+    else
+
+        source /home/"$user"/.config/shock/screentime-track-days
+
+    fi
+
+    for date in $(ls -t /usr/share/shock-screentime/"$user"/dates | tail -n +"${screentime_track_days}") 
+    do
+
+        chattr -i "$date"
+
+        rm "$date"
+
+    done
+
+done
+
+}
+
+#THE REMOVE OLD TRACK DAYS FUNCTION ENDS
+
+remove-old-track-days &
+
 while true
 do
 
@@ -61,17 +100,24 @@ do
 
     current_user="$(view-current-user)"
 
-    if [[ ! -f /usr/share/shock-screentime/"$current_user"/notrack-screentime ]]
+    if [[ "$current_date" != "$(date +%F)" ]] #if new day
     then
 
-        current_date="$(date +%F)"
+        remove-old-track-days &
 
-        if [[ " ${child_users[@]} " == *" $current_user "* ]] #detect if active user is a child profile
-        then
+    fi
 
-            child_account="TRUE"
+    current_date="$(date +%F)"
 
-        fi
+    if [[ " ${child_users[@]} " == *" $current_user "* ]] #detect if active user is a child profile
+    then
+
+        child_account="TRUE"
+
+    fi
+
+    if [[ "$child_account" == "TRUE" ]] || [[ -f /home/"$current_user"/.config/shock/track-screentime ]]
+    then
 
         mkdir -p /usr/share/shock-screentime/"$current_user"/dates
 
@@ -119,6 +165,11 @@ do
             fi
 
         fi
+
+    elif [[ "$child_account" == "FALSE" ]] #if user is not a child user and does not want screen time tracked, delete any previous screen time data (incase they opted in, then opted out)
+    then
+
+        rm -r /usr/share/shock-screentime/"$current_user"
 
     fi
 

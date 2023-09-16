@@ -344,9 +344,9 @@ then
 
     #removing restricting child profile files if they exist... (ignore errors from these lines if user being removed is not a child profile)
 
-    chattr -R -i /usr/share/shock-pcstl/"$user_to_remove"
+    chattr -R -i /usr/share/shock-screentime/"$user_to_remove"
 
-    rm -r /usr/share/shock-pcstl/"$user_to_remove"
+    rm -r /usr/share/shock-screentime/"$user_to_remove"
 
     #child profile files removed
 

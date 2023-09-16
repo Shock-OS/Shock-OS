@@ -149,6 +149,10 @@ mkdir -p /etc/skel/Videos
 
 mkdir -p /etc/skel/.config/menus
 
+mkdir -p /etc/skel/.config/shock
+
+mkdir -p /etc/skel/.cache/shock-tmp
+
 touch /etc/skel/.config/shock/welcome-indicator
 
 touch /etc/skel/.config/shock/userlogstat

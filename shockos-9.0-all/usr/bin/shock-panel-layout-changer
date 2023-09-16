@@ -22,7 +22,7 @@ then
 
 fi
 
-cf=$(dconf read /org/mate/panel/objects/clockapplet/prefs/format)
+clock_format=$(dconf read /org/mate/panel/objects/clockapplet/prefs/format)
 
 if [[ "$output" == "Modern|" ]]
 then
@@ -40,4 +40,4 @@ echo "$output" | tee ~/.config/shock-panel
 
 sleep 5
 
-dconf write /org/mate/panel/objects/clockapplet/prefs/format "$cf"
+dconf write /org/mate/panel/objects/clockapplet/prefs/format "$clock_format"

@@ -47,18 +47,18 @@ then
 
 fi
 
-output=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="You can manage the limits and restrictions of child profiles." --form --field="Child Profile:":CB "$userlist" --field="Restriction:":CB 'Set/Manage Screen Time Limit' --button="Next"\!go-next)
+output=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="You can manage the limits and restrictions of child profiles." --form --field="Child Profile:":CB "$userlist" --field="Restriction:":CB 'Set/Manage Screen Time Limit!Manage Screen Time Track Days' --button="Next"\!go-next)
 
-utr_display_name=$(echo "$output" | awk -F'|' '{print $1}')
+user_display_name=$(echo "$output" | awk -F'|' '{print $1}')
 
-utr=$(echo "$utr_display_name" | grep -o -P '(?<=\().*?(?=\))')
+user=$(echo "$user_display_name" | grep -o -P '(?<=\().*?(?=\))')
 
 limit=$(echo "$output" | awk -F'|' '{print $2}')
 
 if [[ "$limit" == "Set/Manage Screen Time Limit" ]]
 then
 
-    if [[ -f /usr/share/shock-screentime/"$utr"/dailylimit ]]
+    if [[ -f /usr/share/shock-screentime/"$user"/dailylimit ]]
     then
 
         yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="This user already has a screen time limit set. What would you like to do?" --button="Overwrite"\!gtk-edit:0 --button="Remove"\!remove:1 --button="Cancel"\!gtk-cancel:2
@@ -75,11 +75,11 @@ then
         elif [[ "$ex3" == "1" ]]
         then
 
-            chattr -i /usr/share/shock-screentime/"$utr"/dailylimit
+            chattr -i /usr/share/shock-screentime/"$user"/dailylimit
 
-            rm -r /usr/share/shock-screentime/"$utr"/dailylimit
+            rm -r /usr/share/shock-screentime/"$user"/dailylimit
 
-            yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="The screen time limit for the user '$utr_display_name' was removed successfully." --button="Dismiss"\!gtk-quit
+            yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="The screen time limit for the user '$user_display_name' was removed successfully." --button="Dismiss"\!gtk-quit
 
             exit
 
@@ -92,7 +92,7 @@ then
     until ((total_minutes>=10))
     do
 
-        output=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="You can set a daily screen time limit for $utr_display_name." --form --field="Hours:":NUM '2!0..23' --field="Minutes:":NUM '30!0..59' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+        output=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="You can set a daily screen time limit for $user_display_name." --form --field="Hours:":NUM '2!0..23' --field="Minutes:":NUM '30!0..59' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
 
         ex4=$?
 
@@ -120,13 +120,13 @@ then
 
     done
 
-    mkdir -p /usr/share/shock-screentime/"$utr"
+    mkdir -p /usr/share/shock-screentime/"$user"
 
-    chattr -i /usr/share/shock-screentime/"$utr"/dailylimit
+    chattr -i /usr/share/shock-screentime/"$user"/dailylimit
 
-    echo "$total_minutes" | tee /usr/share/shock-screentime/"$utr"/dailylimit
+    echo "$total_minutes" | tee /usr/share/shock-screentime/"$user"/dailylimit
 
-    chattr +i /usr/share/shock-screentime/"$utr"/dailylimit
+    chattr +i /usr/share/shock-screentime/"$user"/dailylimit
 
     if ((hours>0))
     then
@@ -151,37 +151,65 @@ then
     if [[ "$ex3" == "0" ]] #if overwriting
     then
 
-        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="The daily screen time limit for the user $utr_display_name has been changed to $total_display. If they have been logged in today, their timer will be restarted." --button="Dismiss"\!gtk-quit
+        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="The daily screen time limit for the user $user_display_name has been changed to $total_display. If they have been logged in today, their timer will be restarted." --button="Dismiss"\!gtk-quit
 
     else
 
-        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="A daily screen time limit of $total_display has been set for $utr_display_name. This will take effect the next time they log in." --button="Dismiss"\!gtk-quit
+        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="A daily screen time limit of $total_display has been set for $user_display_name. This will take effect the next time they log in." --button="Dismiss"\!gtk-quit
 
     fi
 
     #the time limit patch ends
 
+elif [[ "$limit" == "Manage Screen Time Track Days" ]]
+then
+
+    if [[ -f /usr/share/shock-screentime/"$user"/notrack-screentime ]]
+    then
+
+        track_screentime="FALSE"
+
+    else
+
+        track_screentime="TRUE"
+
+    fi
+
+    source /usr/share/shock-screentime/"$user"/screentime-track-days
+
+    if ((${#screentime_track_days}==0))
+    then
+
+        screentime_track_days=60
+
+    fi
+
+    output="$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --field="Track my screen time":CHK "$track_screentime" --field="Days to track screen time":NUM "${screentime_track_days}\!1..65525" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+
+    ex=$?
+
+    if [[ "$ex" == "0" ]]
+    then
+
+        track_screentime=$(echo "$output" | awk -F'|' '{print $1}')
+
+        if [[ "$track_screentime" == "FALSE" ]]
+        then
+
+            touch /usr/share/shock-screentime/"$user"/notrack-screentime
+
+        else
+
+            rm /usr/share/shock-screentime/"$user"/notrack-screentime
+
+        fi
+
+        screentime_track_days=$(echo "$output" | awk -F'|' '{print $2}')
+
+        echo "screentime_track_days=${screentime_track_days}" | tee /usr/share/shock-screentime/"$user"/screentime-track-days
+
+    fi
+
 fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
