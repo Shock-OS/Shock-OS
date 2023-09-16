@@ -1,0 +1,6 @@
+[Unit]
+Description=Checks for system updates and notifies the user if any are available (or installs them automatically if automatic updates are enabled)
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/shock-updates-scanner

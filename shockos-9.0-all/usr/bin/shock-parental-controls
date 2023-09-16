@@ -151,11 +151,11 @@ then
     if [[ "$ex3" == "0" ]] #if overwriting
     then
 
-        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="The daily screen time limit for the user $user_display_name has been changed to $total_display. If they have been logged in today, their timer will be restarted." --button="Dismiss"\!gtk-quit
+        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="The daily screen time limit for the user $user_display_name has been changed to $total_display." --button="Dismiss"\!gtk-quit
 
     else
 
-        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="A daily screen time limit of $total_display has been set for $user_display_name. This will take effect the next time they log in." --button="Dismiss"\!gtk-quit
+        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --title="Parental Controls" --text="A daily screen time limit of $total_display has been set for $user_display_name." --button="Dismiss"\!gtk-quit
 
     fi
 
@@ -164,14 +164,14 @@ then
 elif [[ "$limit" == "Manage Screen Time Track Days" ]]
 then
 
-    if [[ -f /usr/share/shock-screentime/"$user"/notrack-screentime ]]
+    if [[ -f /usr/share/shock-screentime/"$user"/track-screentime ]]
     then
 
-        track_screentime="FALSE"
+        track_screentime="TRUE"
 
     else
 
-        track_screentime="TRUE"
+        track_screentime="FALSE"
 
     fi
 
@@ -193,20 +193,29 @@ then
 
         track_screentime=$(echo "$output" | awk -F'|' '{print $1}')
 
-        if [[ "$track_screentime" == "FALSE" ]]
+        if [[ "$track_screentime" == "TRUE" ]]
         then
 
-            touch /usr/share/shock-screentime/"$user"/notrack-screentime
+            touch /usr/share/shock-screentime/"$user"/track-screentime
 
         else
 
-            rm /usr/share/shock-screentime/"$user"/notrack-screentime
+            rm /usr/share/shock-screentime/"$user"/track-screentime
 
         fi
 
         screentime_track_days=$(echo "$output" | awk -F'|' '{print $2}')
 
         echo "screentime_track_days=${screentime_track_days}" | tee /usr/share/shock-screentime/"$user"/screentime-track-days
+
+        for date in $(ls -t /usr/share/shock-screentime/"$user"/dates | tail -n +"${screentime_track_days}") 
+        do
+
+            chattr -i "$date"
+
+            rm "$date"
+
+        done
 
     fi
 

@@ -1,6 +1,0 @@
-[Unit]
-Description=Update Manager
-
-[Service]
-Type=simple
-ExecStart=/usr/bin/shock-update-manager --systemd

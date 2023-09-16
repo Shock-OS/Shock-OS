@@ -62,4 +62,6 @@ mkdir -p /usr/share/shock-screentime
 
 mv /usr/share/shock-pcstl/* /usr/share/shock-screentime/
 
+rm -r /usr/share/shock-pcstl
+
 #the pcstl -> screentime patch ends

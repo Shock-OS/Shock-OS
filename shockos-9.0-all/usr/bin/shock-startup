@@ -133,7 +133,7 @@ mpg123 /usr/share/shock/startup-sound/* #this command plays the startup sound
 
 systemctl --user start shock-slideshow-background-daemon.service
 
-systemctl --user start shock-update-manager.service
+systemctl --user start shock-updates-scanner.service
 
 systemctl --user start shock-release-scanner.service
 
@@ -147,7 +147,9 @@ fi
 if [[ " $(groups "$(whoami)") " == *" shock-child "* ]] && [[ -f /usr/share/shock-pcstl/"$(whoami)"/shock-screen-time-limit ]] #if account is a child profile with a screen time limit set
 then
 
-    yad --notification --image=/usr/share/shock/parental-controls.png --text='Screen time limit is enabled for this user.' --icon-size=48 --command='' --menu='Remaining Time!shock-screentime-timeleft!time' &
+    yad --notification --image=/usr/share/shock/parental-controls.png --text='Screen time limit is enabled for this user.' --icon-size=48 --command='' --menu='Remaining Time!shock-screentime-timeleft!time' & killpid=$!
+
+    echo "$killpid" | tee ~/.cache/shock-tmp/screentime-limit-notification
 
 fi
 
