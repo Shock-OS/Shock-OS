@@ -79,7 +79,7 @@ do
 
     tabs=()
 
-    for user in /usr/share/shock-screentime/*
+    for user in /home/*
     do
 
         user="$(basename "$user")"
@@ -111,7 +111,16 @@ do
 
             done
 
-            yad --plug=$key --tabnum=$usernum --list --column="Date" --column="Time Used" --column="Percentage of $total_minutes_display used":BAR "${screentimes[@]}" &
+            if ((${#screentimes[@]}==0))
+            then
+
+                yad --plug=$key --tabnum=$usernum --text="There is no screen time usage data for this user yet..." &
+
+            else
+
+                yad --plug=$key --tabnum=$usernum --list --column="Date" --column="Time Used" --column="Percentage of $total_minutes_display used":BAR "${screentimes[@]}" &
+
+            fi
 
             usernum=$((usernum+1))
 
@@ -127,7 +136,7 @@ do
         if ((${#tabs[@]}==0))
         then
 
-            yad --window-icon=/usr/share/shock/screentime.svg --image=info --title="Screen time tracking is currently disabled for all users." --button="Dismiss"\!gtk-quit
+            yad --window-icon=/usr/share/shock/screentime.svg --image=info --title="Screen Time" --text="Screen time tracking is currently disabled for all users." --button="Dismiss"\!gtk-quit:3
 
         else
 
@@ -140,13 +149,13 @@ do
         if ((${#tabs[@]}==0))
         then
 
-            yad --window-icon=/usr/share/shock/screentime.svg --image=info --title="Screen time tracking is currently disabled for all users. Would you like to begin tracking your screen time?
+            yad --window-icon=/usr/share/shock/screentime.svg --image=info --title="Screen Time" --text="Screen time tracking is currently disabled for all users. Would you like to begin tracking your screen time?
 
-NOTE: To manage the screen time tracking settings of child profiles, use the Parental Controls app." --button="Enable screen time tracking for my account"\!gtk-ok:2 --button="Dismiss"\!gtk-quit:3
+NOTE: To manage the screen time tracking settings of child profiles, use the Parental Controls app." --button="Enable screen time tracking for my account"\!gtk-ok --button="Dismiss"\!gtk-quit
 
             ex=$?
 
-            if ((ex=2))
+            if ((ex==0)) #enable screen time tracking for this user (non-child user)
             then
 
                mkdir -p ~/.config/shock
@@ -155,9 +164,11 @@ NOTE: To manage the screen time tracking settings of child profiles, use the Par
 
             fi
 
+            exit
+
         else
 
-            yad --window-icon=/usr/share/shock/screentime.svg --width=600 --height=400 --title="Screen Time" --text="Click 'Settings' to manage your screen time settings. Change screen time settings for child profiles in the Parental Controls app." --notebook --key=$key "${tabs[@]}" --buttons-layout=edge --button="Refresh"\!gtk-refresh --button="Settings"\!gnome-settings --button="Close"\!gtk-close
+            yad --window-icon=/usr/share/shock/screentime.svg --width=600 --height=400 --title="Screen Time" --text="Click 'Settings' to manage your screen time settings. Change screen time settings for child profiles in the Parental Controls app." --notebook --key=$key "${tabs[@]}" --buttons-layout=edge --button="Refresh"\!gtk-refresh --button="Settings"\!gnome-settings:6 --button="Close"\!gtk-close
 
         fi
 
@@ -165,7 +176,7 @@ NOTE: To manage the screen time tracking settings of child profiles, use the Par
 
     ex=$?
 
-    if ((ex==1)) #settings
+    if ((ex==6)) #settings
     then
 
         if [[ -f ~/.config/shock/track-screentime ]]

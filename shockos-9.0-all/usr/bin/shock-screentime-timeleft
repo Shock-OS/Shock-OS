@@ -61,10 +61,10 @@ total_minutes_display="$(convert_time $total_minutes)"
 while true
 do
 
-    if [[ -f /usr/share/shock-screentime/"$runuser"/dates/"$current_date" ]] #if user logged in less than a minute ago for the first time today
+    if [[ -f /usr/share/shock-screentime/"$runuser"/today-limit/"$current_date" ]] #if user logged in less than a minute ago for the first time today
     then
 
-        used_minutes=$(cat /usr/share/shock-screentime/"$runuser"/dates/"$current_date")
+        used_minutes=$(cat /usr/share/shock-screentime/"$runuser"/today-limit/"$current_date")
 
     else
 
@@ -77,6 +77,8 @@ do
     remaining_minutes_display=$(convert_time $remaining_minutes)
 
     percentage=$(echo "scale=2; $remaining_minutes / $total_minutes" | bc)
+
+    percentage=$((100-percentage))
 
     echo "$percentage"
 
