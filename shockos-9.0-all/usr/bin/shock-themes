@@ -95,7 +95,7 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
 		cd ~/
 
-		file="$(yad --window-icon=gnome-settings-theme --title="Install" --text="Please select a theme, icon or cursor pack to install. You may select a folder or a compressed archive." --file --button="Install"\!document-open)"
+		file="$(yad --window-icon=gnome-settings-theme --title="Install" --text="Please select a theme, icon or cursor pack to install. You may select a folder or a compressed archive." --file --button="Install"\!fileopen)"
 
 		ex=$?
 

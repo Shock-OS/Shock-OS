@@ -107,7 +107,7 @@ do
 
                 used_minutes=$(cat "$date")
 
-                screentimes+=("$(basename "$date")" "$(convert_time $used_minutes)" "$((${used_minutes}/${total_minutes}))")
+                screentimes+=("$(basename "$date")" "$(convert_time $used_minutes)" "$(echo "scale=2; $used_minutes / $total_minutes * 100" | bc)")
 
             done
 
@@ -162,9 +162,11 @@ NOTE: To manage the screen time tracking settings of child profiles, use the Par
 
                touch ~/.config/shock/track-screentime
 
-            fi
+            else
 
-            exit
+                exit
+
+            fi
 
         else
 

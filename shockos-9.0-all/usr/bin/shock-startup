@@ -59,7 +59,7 @@ then
 
     #THE FLATPAK GTK THEMING PATCH ENDS
 
-    rm ~/.config/userlogstat
+    rm ~/.config/shock/userlogstat
 
 fi
 
@@ -129,7 +129,16 @@ mkdir -p ~/.cache/shock-tmp
 
 rm -r ~/.cache/shock-tmp/* &
 
-mpg123 /usr/share/shock/startup-sound/* #this command plays the startup sound
+if [[ -f ~/.shock/startup-sound ]] #this command plays the startup sound
+then
+
+    mpg123 ~/.shock/startup-sound
+
+else
+
+    mpg123 /usr/share/shock/startup-sound.mp3
+
+fi
 
 systemctl --user start shock-slideshow-background-daemon.service
 

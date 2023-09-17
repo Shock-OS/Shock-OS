@@ -237,7 +237,7 @@ chmod +x /usr/bin/mate-appearance-properties
 
 #the above set of commands replaces the mate-appearance-properties program with a link to shock-wallpapers (for the desktop context menu)
 
-echo 'ALL ALL=NOPASSWD:/usr/bin/shock-update-manager-refresh' | tee /etc/sudoers.d/shock-os-update-manager-refresh
+echo 'ALL ALL=NOPASSWD:/usr/bin/shock-update-manager-refresh' | tee /etc/sudoers.d/shock-update-manager-refresh
 
 #the above command allows anyone to run shock-pcstl manager without a password (for parental controls screen time limits)
 

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1
+Name=Startup Sound
+GenericName=Startup Sound
+Comment=Change the startup sound
+Exec=shock-startup-sound-chooser
+TryExec=shock-startup-sound-chooser
+Icon=sound
+Terminal=false
+Type=Application
+Categories=Settings;DesktopSettings;
+Keywords=startup;sound;
