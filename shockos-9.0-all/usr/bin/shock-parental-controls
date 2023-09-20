@@ -2,7 +2,7 @@
 
 #the root check element begins
 
-if [[ "$(id -u)" != "0" ]]
+if (($(id -u)!=0))
 then
 
     echo "Script must be run as root. Exiting..."
@@ -47,13 +47,13 @@ then
 
 fi
 
-output=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="You can manage the limits and restrictions of child profiles." --form --field="Child Profile:":CB "$userlist" --field="Restriction:":CB 'Set/Manage Screen Time Limit!Manage Screen Time Track Days' --button="Next"\!go-next)
+output="$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="You can manage the limits and restrictions of child profiles." --form --field="Child Profile:":CB "$userlist" --field="Restriction:":CB 'Set/Manage Screen Time Limit!Manage Screen Time Track Days' --button="Next"\!go-next)"
 
-user_display_name=$(echo "$output" | awk -F'|' '{print $1}')
+user_display_name="$(echo "$output" | awk -F'|' '{print $1}')"
 
-user=$(echo "$user_display_name" | grep -o -P '(?<=\().*?(?=\))')
+user="$(echo "$user_display_name" | grep -o -P '(?<=\().*?(?=\))')"
 
-limit=$(echo "$output" | awk -F'|' '{print $2}')
+limit="$(echo "$output" | awk -F'|' '{print $2}')"
 
 if [[ "$limit" == "Set/Manage Screen Time Limit" ]]
 then
@@ -63,16 +63,16 @@ then
 
         yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="This user already has a screen time limit set. What would you like to do?" --button="Overwrite"\!gtk-edit:0 --button="Remove"\!remove:1 --button="Cancel"\!gtk-cancel:2
 
-        ex3=$?
+        ex=$?
 
-        if [[ "$ex3" != "0" ]] && [[ "$ex3" != "1" ]]
+        if ((ex!=0)) && ((ex!=1))
         then
 
             yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="Operation aborted. No changes were made to your system." --button="Dismiss"\!gtk-quit
 
             exit
 
-        elif [[ "$ex3" == "1" ]]
+        elif ((ex==1))
         then
 
             chattr -i /usr/share/shock-screentime/"$user"/dailylimit
@@ -92,11 +92,11 @@ then
     until ((total_minutes>=10))
     do
 
-        output=$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="You can set a daily screen time limit for $user_display_name." --form --field="Hours:":NUM '2!0..23' --field="Minutes:":NUM '30!0..59' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+        output="$(yad --window-icon=/usr/share/shock/parental-controls.png --title="Screen Time Limit" --text="You can set a daily screen time limit for $user_display_name." --form --field="Hours:":NUM '2!0..23' --field="Minutes:":NUM '30!0..59' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
 
-        ex4=$?
+        ex=$?
 
-        if [[ "$ex4" != "0" ]]
+        if ((ex!=0))
         then
 
             yad --window-icon=/usr/share/shock/parental-controls.png --image=gtk-cancel --title="Parental Controls" --text="Operation aborted. No changes were made to your system." --button="Dismiss"\!gtk-quit
@@ -152,7 +152,7 @@ then
 
     fi
 
-    if [[ "$ex3" == "0" ]] #if overwriting
+    if ((ex==0)) #if overwriting
     then
 
         yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --image=emblem-default --title="Parental Controls" --text="The daily screen time limit for the user $user_display_name has been changed to $total_display. If they have been logged in today, their timer will be restarted." --button="Dismiss"\!gtk-quit
@@ -192,10 +192,10 @@ then
 
     ex=$?
 
-    if [[ "$ex" == "0" ]]
+    if ((ex==0))
     then
 
-        track_screentime=$(echo "$output" | awk -F'|' '{print $1}')
+        track_screentime="$(echo "$output" | awk -F'|' '{print $1}')"
 
         if [[ "$track_screentime" == "TRUE" ]]
         then

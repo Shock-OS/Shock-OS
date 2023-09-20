@@ -6,7 +6,7 @@ IFS=$'\n'
 
 #the root check element begins
 
-if [[ "$(id -u)" != "0" ]]
+if (($(id -u)!=0))
 then
 
     echo "Script must be run as root. Exiting..."

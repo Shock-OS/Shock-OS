@@ -144,7 +144,7 @@ fi
 
 function apt_launch() {
 
-$package &
+"$package" &
 
 }
 
@@ -169,7 +169,7 @@ yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center
 
 ex=$?
 
-if [[ "$ex" == "0" ]]
+if ((ex==0))
 then
 
 	{ wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt remove -y $package; } | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --image="$icon" --title="Shockware Center" --text="Removing $full_name$both..." --text-align=center --progress-text="" --auto-close --progress --pulsate
@@ -232,7 +232,7 @@ else
 
 fi
 
-description=$(grep -A 10000 "<id>$id</id>" /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep "<description>" | head -n1 | sed -e 's/<[^>]*>//g' -e 's/^[[:space:]]*//')
+description="$(grep -A 10000 "<id>$id</id>" /var/lib/flatpak/appstream/flathub/$arch/active/appstream.xml | grep "<description>" | head -n1 | sed -e 's/<[^>]*>//g' -e 's/^[[:space:]]*//')"
 
 if [[ -n "$description" ]] #if description found
 then
@@ -263,7 +263,7 @@ yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center
 
 ex=$?
 
-if [[ "$ex" == "0" ]]
+if ((ex==0))
 then
 
 	flatpak uninstall -y "$id" | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --image="$icon" --text="Removing $full_name$both..." --text-align=center --progress-text="" --auto-close --progress --pulsate
@@ -342,7 +342,7 @@ fi
 
 start_loading
 
-if [[ "$(getconf LONG_BIT)" == "32" ]]
+if (($(getconf LONG_BIT)==32))
 then
 
     arch="arm"
@@ -353,12 +353,12 @@ else
 
 fi
 
-key="$RANDOM"
+key=$RANDOM
 
 until (($(ps aux | grep -c "$key")==1))
 do
 
-    key="$RANDOM"
+    key=$RANDOM
 
 done
 
@@ -375,17 +375,17 @@ then
 
 	rm "$tmpfile"
 
-	if [[ "$ex" == "3" ]] #launch
+	if ((ex==3)) #launch
 	then
 
 		apt_launch
 
-	elif [[ "$ex" == "4" ]] #remove
+	elif ((ex==4)) #remove
 	then
 
 		apt_remove
 
-	elif [[ "$ex" == "5" ]] #install
+	elif ((ex==5)) #install
 	then
 
 		apt_install
@@ -405,17 +405,17 @@ then
 
 	rm "$tmpfile2"
 
-	if [[ "$ex" == "6" ]] #launch
+	if ((ex==6)) #launch
 	then
 
 		flatpak_launch
 
-	elif [[ "$ex" == "7" ]] #remove
+	elif ((ex==7)) #remove
 	then
 
 		flatpak_remove
 
-	elif [[ "$ex" == "8" ]] #install
+	elif ((ex==8)) #install
 	then
 
 		flatpak_install
@@ -468,38 +468,38 @@ else #if both
 
     rm "$tmpfile2"
 
-    if [[ "$ex" == "3" ]] #launch APT
+    if ((ex==3)) #launch APT
 	then
 
 		apt_launch
 
-	elif [[ "$ex" == "4" ]] #remove APT
+	elif ((ex==4)) #remove APT
 	then
 
         both=" (APT)"
 
 		apt_remove
 
-	elif [[ "$ex" == "5" ]] #install APT
+	elif ((ex==5)) #install APT
 	then
 
         both=" (APT)"
 
 		apt_install
 
-	elif [[ "$ex" == "6" ]] #launch FLATPAK
+	elif ((ex==6)) #launch FLATPAK
 	then
 
 		flatpak_launch
 
-	elif [[ "$ex" == "7" ]] #remove FLATPAK
+	elif ((ex==7)) #remove FLATPAK
 	then
 
         both=" (Flatpak)"
 
 		flatpak_remove
 
-	elif [[ "$ex" == "8" ]] #install FLATPAK
+	elif ((ex==8)) #install FLATPAK
 	then
 
         both=" (Flatpak)"

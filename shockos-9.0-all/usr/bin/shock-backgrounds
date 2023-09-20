@@ -13,9 +13,9 @@ style="$(dconf read /org/mate/desktop/background/picture-options)"
 
 yad --width=320 --text-align=center --buttons-layout=center --title="Desktop Background" --window-icon="background" --text="Please choose a background style:" --button="Single Image"\!image-x-generic --button="Slideshow"\!folder-images
 
-wt=$?
+ex=$?
 
-if [[ "$wt" == "0" ]] #single image
+if ((ex==0)) #single image
 then
 
     file_is_image="no"
@@ -54,13 +54,13 @@ then
 
         fi
     
-        output=$(yad --width=300 --title="Single Image Background" --window-icon="background" --form --field="Image:":FL "$background" --field="Style:":CB "$style_yad_cb" --field="Change Background Colors":BTN 'shock-background-color-chooser' --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0 --button="Cancel"\!gtk-cancel:2)
+        output="$(yad --width=300 --title="Single Image Background" --window-icon="background" --form --field="Image:":FL "$background" --field="Style:":CB "$style_yad_cb" --field="Change Background Colors":BTN 'shock-background-color-chooser' --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0 --button="Cancel"\!gtk-cancel:2)"
 
         ex=$?
 
-        style=$(echo "$output" | awk -F'|' '{print $2}')
+        style="$(echo "$output" | awk -F'|' '{print $2}')"
 
-        style=$(echo "$style" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+        style="$(echo "$style" | awk '{print tolower($0)}')" #this command makes all the letters lowercase
 
         if [[ "$style" == "tile" ]]
         then
@@ -69,7 +69,7 @@ then
 
         fi
 
-        if [[ "$ex" == "1" ]]
+        if ((ex==1))
         then
 
             systemctl --user stop shock-slideshow-background-daemon.service
@@ -88,10 +88,10 @@ then
 
             exit
 
-        elif [[ "$ex" == "0" ]]
+        elif ((ex==0))
         then
 
-            background=$(echo "$output" | cut -d '|' -f1)
+            background="$(echo "$output" | cut -d '|' -f1)"
 
             file_is_image="$(file "$background")"
 
@@ -122,32 +122,32 @@ then
 
     done
 
-elif [[ "$wt" == "1" ]] #slideshow
+elif ((ex==1)) #slideshow
 then
 
-    dc=0
+    directory_count=0
 
     until ((directory_count>1)) && [[ "$directory_contains_images" == *"image"* ]]
     do
 
-        output=$(yad --form --width=400 --height=200 --window-icon=background --title="Slideshow Background" --field="Folder containing images:":DIR "$directory" --field="Delay (minutes):":NUM "$delay"'!1..100!1' --field="Style:":CB "$style_yad_cb" --field="Play images in random order":CHK "$random_boolean" --field="Change Background Colors":BTN 'shock-background-color-chooser' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+        output="$(yad --form --width=400 --height=200 --window-icon=background --title="Slideshow Background" --field="Folder containing images:":DIR "$directory" --field="Delay (minutes):":NUM "$delay"'!1..100!1' --field="Style:":CB "$style_yad_cb" --field="Play images in random order":CHK "$random_boolean" --field="Change Background Colors":BTN 'shock-background-color-chooser' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
 
         ex=$?
 
-        if [[ "$ex" != "0" ]]
+        if ((ex!=0))
         then
 
             exit
 
         fi
 
-        directory=$(echo "$output" | cut -d '|' -f1)
+        directory="$(echo "$output" | cut -d '|' -f1)"
 
-        delay=$(echo "$output" | awk -F'|' '{print $2}')
+        delay="$(echo "$output" | awk -F'|' '{print $2}')"
 
-        style=$(echo "$output" | awk -F'|' '{print $3}')
+        style="$(echo "$output" | awk -F'|' '{print $3}')"
 
-        style=$(echo "$style" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+        style="$(echo "$style" | awk '{print tolower($0)}')" #this command makes all the letters lowercase
 
         if [[ "$style" == "tile" ]]
         then
@@ -158,7 +158,7 @@ then
 
         random_boolean="$(echo "$output" | awk -F'|' '{print $4}')"
 
-        dc=$(ls "$directory" | wc -l)
+        directory_count=$(ls "$directory" | wc -l)
 
         cd "$directory"
 

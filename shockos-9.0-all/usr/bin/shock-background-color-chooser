@@ -22,7 +22,7 @@ output="$(yad --window-icon=background --title="Background Colors" --form --fiel
 
 ex=$?
 
-if [[ "$ex" == "1" ]] #reset to default
+if ((ex==1)) #reset to default
 then
 
     dconf reset /org/mate/desktop/background/color-shading-type
@@ -31,7 +31,7 @@ then
 
     dconf reset /org/mate/desktop/background/secondary-color
 
-elif [[ "$ex" == "0" ]] #apply
+elif ((ex==0)) #apply
 then
 
     shading_type="$(echo "$output" | grep '|')"

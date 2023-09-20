@@ -47,7 +47,7 @@ then
 
 fi
 
-package=$(echo "$package" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+package="$(echo "$package" | awk '{print tolower($0)}')" #this command makes all the letters lowercase
 
 action="install"
 
@@ -64,19 +64,19 @@ then
 
     ex=$?
 
-    if [[ "$ex" == "0" ]] #deb is an upgrade
+    if ((ex==0)) #deb is an upgrade
     then
 
         yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, but $(basename "$file") contains an upgraded version of it. Would you like to upgrade or remove $package_display_name?" --button="Upgrade"\!gtk-ok --button="Remove"\!remove --button="Cancel"\!gtk-cancel
 
-        ex2=$?
+        ex=$?
 
-        if [[ "$ex2" == "1" ]]
+        if ((ex==1))
         then
 
             action="remove"
 
-        elif [[ "$ex2" != "0" ]]
+        elif ((ex!=0))
         then
 
             exit
@@ -88,20 +88,19 @@ then
 
         yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, and $(basename "$file") contains the same version you have installed. Reinstalling the software is unnecessary in most cases. Would you like to reinstall or remove $package_display_name?" --button="Reinstall"\!gtk-refresh --button="Remove"\!remove --button="Cancel"\!gtk-cancel
 
-        ex2=$?
+        ex=$?
 
-        if [[ "$ex2" == "0" ]]
+        if ((ex==0))
         then
 
             action="reinstall"
 
-        elif [[ "$ex2" == "1" ]]
+        elif ((ex==1))
         then
 
             action="remove"
 
-        elif [[ "$ex2" != "0" ]]
-        then
+        else
 
             exit
 
@@ -111,20 +110,19 @@ then
     
         yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, and $(basename "$file") contains an older version of the software. Downgrading is not recommended in most cases. Would you like to downgrade or remove $package_display_name?" --button="Downgrade"\!gtk-revert --button="Remove"\!remove --button="Cancel"\!gtk-cancel
 
-        ex2=$?
+        ex=$?
 
-        if [[ "$ex2" == "0" ]]
+        if ((ex==0))
         then
 
             action="reinstall"
 
-        elif [[ "$ex2" == "1" ]]
+        elif ((ex==1))
         then
 
             action="remove"
 
-        elif [[ "$ex2" != "0" ]]
-        then
+        else
 
             exit
 

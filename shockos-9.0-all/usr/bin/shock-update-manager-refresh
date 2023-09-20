@@ -2,7 +2,7 @@
 
 #The system will now check for new updates...
 
-if [[ "$(id -u)" != "0" ]]
+if (($(id -u)!=0))
 then
 
     echo "Script must be run as root. Exiting..."
@@ -17,7 +17,7 @@ sudo apt update
 
 sudo mkdir -p "$apt_appstream_dir"/xml
 
-if [[ "$(getconf LONG_BIT)" == "32" ]] #if 32-bit system
+if (($(getconf LONG_BIT)==32)) #if 32-bit system
 then
 
     codename="$(lsb_release -cs)"

@@ -66,12 +66,12 @@ fi
 while true
 do
 
-    key="$RANDOM"
+    key=$RANDOM
 
     until (($(ps aux | grep -c "$key")==1))
     do
 
-        key="$RANDOM"
+        key=$RANDOM
 
     done
 

@@ -69,12 +69,12 @@ settings="$(yad --window-icon=system-software-update --width=100 --title="Settin
 
 ex=$?
 
-if [[ "$ex" == "0" ]]
+if ((ex==0))
 then
 
-    automatic_updates=$(echo $settings | awk 'BEGIN {FS="|" } { print $2 }')
+    automatic_updates="$(echo $settings | awk 'BEGIN {FS="|" } { print $2 }')"
 
-    notify_of_new_versions_of_shock_os=$(echo $settings | awk 'BEGIN {FS="|" } { print $4 }')
+    notify_of_new_versions_of_shock_os="$(echo $settings | awk 'BEGIN {FS="|" } { print $4 }')"
 
     if [[ "$automatic_updates" == "TRUE" ]] && [[ ! -f /etc/sudoers.d/shock_automatic_updates ]] #enable automatic updates
     then
@@ -207,7 +207,7 @@ flatpak_ids=($(flatpak remote-ls --updates --columns=app))
 for i in "${flatpak_ids[@]}"
 do
 
-all_updates+=("\"$(flatpak search "$i" --columns=app,name | grep -w "$i" | awk '{str=""; for(i=2;i<=NF;i++) str=str $i " "; sub(/ $/, "", str); printf "%s\n", str}') [FLATPAK]\"")
+    all_updates+=("\"$(flatpak search "$i" --columns=app,name | grep -w "$i" | awk '{str=""; for(i=2;i<=NF;i++) str=str $i " "; sub(/ $/, "", str); printf "%s\n", str}') [FLATPAK]\"")
 
 done
 
@@ -232,7 +232,7 @@ then
 
     ex=$?
 
-    if [[ "$ex" == "0" ]] #settings
+    if ((ex==0)) #settings
     then
 
         settings
@@ -339,17 +339,17 @@ do
 
     ex=$?
 
-    if [[ "$ex" == "40" ]] #previous
+    if ((ex==40)) #previous
     then
 
         page=$((page-1))
 
-    elif [[ "$ex" == "60" ]] #next
+    elif ((ex==60)) #next
     then
 
         page=$((page+1))
 
-    elif [[ "$ex" == "50" ]] #jump
+    elif ((ex==50)) #jump
     then
 
         jump_page=$(yad --window-icon=system-software-update --title="Update Manager" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
@@ -358,19 +358,19 @@ do
 
         jump_page=$(echo "$jump_page" | awk -F'|' '{print $1}')
 
-        if [[ "$ex" == "0" ]]
+        if ((ex==0))
         then
 
-            page="$((jump_page-1))"
+            page=$((jump_page-1))
 
         fi
 
-    elif [[ "$ex" == "1" ]] #settings
+    elif ((ex==1)) #settings
     then
 
         settings
 
-    elif [[ "$ex" == "2" ]] #install updates
+    elif ((ex==2)) #install updates
     then
 
         install_updates

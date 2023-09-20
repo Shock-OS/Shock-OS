@@ -63,7 +63,7 @@ then
 
 fi
 
-if [[ "$(cat /usr/share/shock/setupvalue)" == "0" ]] #INITIAL SETUP (run as 'shock' user)
+if (($(cat /usr/share/shock/setupvalue)==0)) #INITIAL SETUP (run as 'shock' user)
 then
 
     dconf write /org/mate/marco/general/theme "'shock-light-blue'"
@@ -75,9 +75,9 @@ then
     feh --bg-fill /usr/share/shock/initsetup-background.png
 
     yad --window-icon=/usr/share/shock/shock-logo.svg --title="Welcome" --picture --size=fit --filename=/usr/share/shock/initsetup-welcome-logo.png --text="
-<span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --button="Next"\!go-next --width=400
+<span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --buttons-layout=center --button="Next"\!go-next --width=400
 
-    until [[ "$ex" == "0" ]]
+    until ((ex==0))
     do
 
         sudo env GTK_THEME=shock-light-blue DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata locales keyboard-configuration
@@ -88,7 +88,7 @@ then
 
     sudo shock-users --setup #create a user
 
-    echo "shock-startup-daemon" | tee -a ~/.bashrc
+    echo "shock-startup" | tee -a ~/.bashrc
 
     echo "1" | tee /usr/share/shock/setupvalue
     
@@ -96,7 +96,7 @@ then
 
     sudo reboot
 
-elif [[ "$(cat /usr/share/shock/setupvalue)" == "1" ]]
+elif (($(cat /usr/share/shock/setupvalue)==1))
 then
 
     sudo deluser --remove-home shock #the 'shock' user has been removed
@@ -111,7 +111,7 @@ then
 
     sudo cp /etc/skel/.bashrc ~/
 
-    sudo chown $(whoami) ~/.bashrc
+    sudo chown "$(whoami)" ~/.bashrc
 
     #the default .bashrc file restoration patch ends
 

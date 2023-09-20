@@ -19,4 +19,4 @@ sudo apt autopurge -y
 
 sudo apt update
 
-sudo shock-os-update-manager-refresh
+sudo shock-update-manager-refresh

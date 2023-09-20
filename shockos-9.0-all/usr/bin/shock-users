@@ -2,7 +2,7 @@
 
 #the root check element begins
 
-if [[ "$(id -u)" != "0" ]]
+if (($(id -u)!=0))
 then
 
     echo "Script must be run as root. Exiting..."
@@ -26,7 +26,7 @@ function detect_exit() {
 
 ex=$?
 
-if [[ "$ex" != "0" ]] && [[ "$1" != "--setup" ]]
+if ((ex!=0)) && [[ "$1" != "--setup" ]]
 then
 
     exit
@@ -42,20 +42,20 @@ then
 
     yad --window-icon=system-users --title="Users" --text="Would you like to add or remove users?" --button="Add"\!add --button="Remove"\!remove --button="Advanced"\!gnome-settings --button="Cancel"\!gtk-cancel --buttons-layout=center
 
-    action=$?
+    ex=$?
 
 else #if running initial setup
 
-    action="0"
+    ex=0
 
 fi
 
-if [[ "$action" == "0" ]] #add
+if ((ex==0)) #add
 then
 
     success="no"
 
-    x=""
+    username=""
 
     full_name=""
 
@@ -71,44 +71,42 @@ then
         if [[ "$1" != "--setup" ]] #if regular mode
         then
 
-            nui=$(yad --window-icon=system-users --title="New User" --form --focus-field="$focus_field" --field="Username:" "$x" --field="Full name:" "$full_name" --field="":LBL "" --field="For security reasons, a strong password is highly recommended. Strong passwords consist of:
+            output="$(yad --window-icon=system-users --title="New User" --form --focus-field="$focus_field" --field="Username:" "$username" --field="Full name:" "$full_name" --field="":LBL "" --field="For security reasons, a strong password is highly recommended. Strong passwords consist of:
         - at least eight characters
         - both lower and upper case letters
         - numbers
-        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --field="":LBL "" --field="The privilages of child profiles can be managed in the 'Parental Controls' app. Screen time limits can be imposed on child profiles. Child profiles cannot gain root access or use the 'sudo' command.":LBL "" --field="Child Profile":CHK "$kidprofile" --separator='`' --button="Create User"\!add)
+        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --field="":LBL "" --field="The privilages of child profiles can be managed in the 'Parental Controls' app. Screen time limits can be imposed on child profiles. Child profiles cannot gain root access or use the 'sudo' command.":LBL "" --field="Child Profile":CHK "$kidprofile" --separator='`' --button="Create User"\!add)"
 
         else #initial setup mode
 
             kidprofile="FALSE"
 
-            nui=$(yad --window-icon=system-users --title="New User" --form --focus-field="$focus_field" --field="Username:" "$x" --field="Full name:" "$full_name" --field="":LBL "" --field="For security reasons, a strong password is highly recommended. Strong passwords consist of:
+            output="$(yad --window-icon=system-users --title="New User" --form --focus-field="$focus_field" --field="Username:" "$username" --field="Full name:" "$full_name" --field="":LBL "" --field="For security reasons, a strong password is highly recommended. Strong passwords consist of:
         - at least eight characters
         - both lower and upper case letters
         - numbers
-        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --separator='`' --button="Finish Setup"\!gtk-yes)
+        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --separator='`' --button="Finish Setup"\!gtk-yes)"
 
         fi
 
-        cnu=$?
+        ex=$?
 
-        echo "$cnu"
-
-        if [[ "$cnu" == "0" ]]
+        if ((ex==0))
         then
 
-                x=$(echo "$nui" | awk -F'`' '{print $1}')
+                username="$(echo "$output" | awk -F'`' '{print $1}')"
 
-                full_name=$(echo "$nui" | awk -F'`' '{print $2}')
+                full_name="$(echo "$output" | awk -F'`' '{print $2}')"
 
-                pa1=$(echo "$nui" | awk -F'`' '{print $5}')
+                pa1="$(echo "$output" | awk -F'`' '{print $5}')"
 
-                pa2=$(echo "$nui" | awk -F'`' '{print $6}')
+                pa2="$(echo "$output" | awk -F'`' '{print $6}')"
 
-                kidprofile=$(echo "$nui" | awk -F'`' '{print $9}')
+                kidprofile="$(echo "$output" | awk -F'`' '{print $9}')"
 
             success="yes"
 
-            if [[ "$(grep -o '`' <<<"$nui" | wc -l)" != "9" && "$1" != "--setup" ]] || [[ "$(grep -o '`' <<<"$nui" | wc -l)" != "6" && "$1" == "--setup" ]]
+            if [[ "$(grep -o '`' <<<"$output" | wc -l)" != "9" && "$1" != "--setup" ]] || [[ "$(grep -o '`' <<<"$output" | wc -l)" != "6" && "$1" == "--setup" ]]
             then
 
                 yad --window-icon=system-users --title="Unsupported Character" --text='You cannot use the "`" character in any field. Please try again.' --button="Retry"\!edit-undo
@@ -117,7 +115,7 @@ then
 
                 success="no"
 
-                x=""
+                username=""
 
                 full_name=""
 
@@ -127,7 +125,7 @@ then
 
                 focus_field="1"
 
-            elif [[ -z "$x" ]] || [[ "$x" == *" "* ]]
+            elif [[ -z "$username" ]] || [[ "$username" == *" "* ]]
             then
 
                 yad --window-icon=system-users --title="Invalid Username" --text="Your username cannot be empty or contain spaces. Please try again." --button="Retry"\!edit-undo
@@ -138,10 +136,10 @@ then
 
                 focus_field="1"
 
-            elif [[ -d /home/$x ]]
+            elif [[ -d /home/"$username" ]]
             then
 
-                yad --window-icon=system-users --title="User Already Exists" --text="The username '$x' is already taken. Please choose a different one." --button="Retry"\!edit-undo
+                yad --window-icon=system-users --title="User Already Exists" --text="The username '$username' is already taken. Please choose a different one." --button="Retry"\!edit-undo
 
                 detect_exit
 
@@ -149,7 +147,7 @@ then
 
                 focus_field="1"
 
-            elif [[ "$(expr "$x" : "^[a-z][-a-z0-9_]*\$" )" == "0" ]] #if username doesn't match the regular expression configured via the NAME_REGEX variable
+            elif (($(expr "$username" : "^[a-z][-a-z0-9_]*\$" )==0)) #if username doesn't match the regular expression configured via the NAME_REGEX variable
             then
 
                 yad --window-icon=system-users --title="Invalid Username" --text="That username does not meet the necessary requirements. Usernames must start with a lowercase letter and can only contain lowercase letters, digits, hyphens and underscores." --button="Retry"\!edit-undo
@@ -204,15 +202,15 @@ then
 
     done
 
-        x=$(echo "$x" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+        username="$(echo "$username" | awk '{print tolower($0)}')" #this command makes all the letters lowercase
 
-        x=$(echo ${x//[[:blank:]]/}) #this command removes all spaces
+        username="$(echo ${username//[[:blank:]]/})" #this command removes all spaces
 
-        x=$(echo "$x" | tr -cd '[:alnum:]._-') #this command removes all numbers
+        username="$(echo "$username" | tr -cd '[:alnum:]._-')" #this command removes all numbers
 
-        adduser --disabled-password --gecos "$full_name" $x || (zenity --error --text="Failed to create a new user. The program will now exit." --ok-label="Exit" ; kill $$) #the user has been created
+        adduser --disabled-password --gecos "$full_name" "$username" || { zenity --error --text="Failed to create a new user. The program will now exit." --ok-label="Exit"; kill $$; } #the user has been created
 
-        echo "$x:$pa1" | chpasswd
+        echo "$username:$pa1" | chpasswd
 
         pa1=""
 
@@ -225,7 +223,7 @@ then
 
             ex=$?
 
-            if [[ "$ex" != "0" ]] && [[ "$ex" != "9" ]]
+            if ((ex!=0)) && ((ex!=9))
             then
 
                 zenity --error --text="Failed to create the 'shock-child' group. The program will now exit." --ok-label="Exit"
@@ -234,18 +232,18 @@ then
 
             fi
 
-            usermod -a -G adm,dialout,cdrom,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio,shock-child $x || (zenity --error --text="Failed to add the user to the required groups. The program will now exit." --ok-label="Exit" ; kill $$) #the user has been added to the required groups (excluding sudo)
+            usermod -a -G adm,dialout,cdrom,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio,shock-child $username || { zenity --error --text="Failed to add the user to the required groups. The program will now exit." --ok-label="Exit"; kill $$; } #the user has been added to the required groups (excluding sudo)
 
         else
 
-            usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $x || (zenity --error --text="Failed to add the user to the required groups. The program will now exit." --ok-label="Exit" ; kill $$) #the user has been added to the required groups
+            usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $username || { zenity --error --text="Failed to add the user to the required groups. The program will now exit." --ok-label="Exit"; kill $$; } #the user has been added to the required groups
 
         fi
 
         if [[ "$1" == "--setup" ]] #initial setup stuff
         then
 
-            echo "%$x ALL=(ALL:ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/initsetup-rootpriv #enables the user to run all commands without a password (temporarily)
+            echo "%$username ALL=(ALL:ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/initsetup-rootpriv #enables the user to run all commands without a password (temporarily)
 
             #the setup finalizer temporary autologin patch begins
 
@@ -253,7 +251,7 @@ then
 
             echo "[Service]
             ExecStart=
-            ExecStart=-/usr/sbin/agetty --autologin $x --noclear %I $TERM" | tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
+            ExecStart=-/usr/sbin/agetty --autologin $username --noclear %I $TERM" | tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
 
             systemctl is-enabled getty@tty1.service
 
@@ -261,17 +259,17 @@ then
 
             systemctl daemon-reload
 
-            echo 'shock-startup' | tee -a "/home/$x/.bashrc"
+            echo 'shock-startup' | tee -a "/home/$username/.bashrc"
 
             #the setup finalizer temporary autologin patch ends
 
         else #Do not show congrats screen during intial setup
 
-            yad --window-icon=system-users --title="User Created Successfully" --text="Congratulations! You have successfully created the user '$x'." --button="Dismiss"\!gtk-quit
+            yad --window-icon=system-users --title="User Created Successfully" --text="Congratulations! You have successfully created the user '$username'." --button="Dismiss"\!gtk-quit
 
         fi
 
-elif [[ "$action" == "1" ]] #remove
+elif ((ex==1)) #remove
 then
 
     urs="no"
@@ -294,15 +292,15 @@ then
 
         detect_exit
 
-        user_to_remove_display_name=$(echo "$output" | awk -F'|' '{print $1}')
+        user_to_remove_display_name="$(echo "$output" | awk -F'|' '{print $1}')"
 
-        user_to_remove=$(echo "$output" | awk -F'|' '{print $2}')
+        user_to_remove="$(echo "$output" | awk -F'|' '{print $2}')"
 
         yad --window-icon=system-users --title="Remove User" --text="You are about to remove the user '$user_to_remove_display_name'. THIS ACTION IS IRREVERSABLE AND WILL ERASE ALL THEIR DATA. Are you sure you would like to delete '$user_to_remove_display_name'?" --button="DELETE USER"\!remove --button="Cancel"\!gtk-cancel
 
-        rdu=$?
+        ex=$?
 
-        if [[ "$rdu" != "0" ]]
+        if ((ex!=0))
         then
 
             yad --window-icon=system-users --title="Operation Aborted" --text="The user '$user_to_remove_display_name' was not removed. No changes were made to your system." --button="Dismiss"\!gtk-quit
@@ -329,7 +327,7 @@ then
 
             exit
 
-        elif ! [[ -d /home/"$user_to_remove" ]]
+        elif [[ ! -d /home/"$user_to_remove" ]]
         then
 
             yad --window-icon=system-users --title="Cannot Remove User" --text="The user '$user_to_remove_display_name' does not exist." --button="Retry"\!edit-undo
@@ -354,10 +352,10 @@ then
 
     yad --window-icon=system-users --title="User Successfully Removed" --text="Congratulations! The user '$user_to_remove_display_name' has successfully been removed." --button="Dismiss"\!gtk-quit
 
-elif [[ "$action" == "2" ]]
+elif ((ex==2))
 then
 
-    -u "$runuser" users-admin
+    sudo -u "$runuser" users-admin
 
 fi
             

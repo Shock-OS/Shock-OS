@@ -11,33 +11,31 @@ else
 
 fi
 
-output=$(yad --picture --window-icon=mate-panel --width=300 --title="Panel Layouts" --text="Please choose a panel layout." --form --field="Panel Layout:":CB "$panel_layouts" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+output="$(yad --picture --window-icon=mate-panel --width=300 --title="Panel Layouts" --text="Please choose a panel layout." --form --field="Panel Layout:":CB "$panel_layouts" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
 
 ex=$?
 
-if [[ "$ex" != "0" ]]
+if ((ex==0))
 then
 
-    exit
+    clock_format="$(dconf read /org/mate/panel/objects/clockapplet/prefs/format)"
+
+    if [[ "$output" == "Modern|" ]]
+    then
+
+        mate-panel --reset --layout=default
+
+    elif [[ "$output" == "Traditional|" ]]
+    then
+
+        mate-panel --reset --layout=fedora
+
+    fi
+
+    echo "$output" | tee ~/.config/shock-panel
+
+    sleep 5
+
+    dconf write /org/mate/panel/objects/clockapplet/prefs/format "$clock_format"
 
 fi
-
-clock_format=$(dconf read /org/mate/panel/objects/clockapplet/prefs/format)
-
-if [[ "$output" == "Modern|" ]]
-then
-
-    mate-panel --reset --layout=default
-
-elif [[ "$output" == "Traditional|" ]]
-then
-
-    mate-panel --reset --layout=fedora
-
-fi
-
-echo "$output" | tee ~/.config/shock-panel
-
-sleep 5
-
-dconf write /org/mate/panel/objects/clockapplet/prefs/format "$clock_format"

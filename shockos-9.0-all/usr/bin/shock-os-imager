@@ -2,7 +2,7 @@
 
 #the root check element begins
 
-if [[ "$(id -u)" != "0" ]]
+if (($(id -u)!=0))
 then
 
     echo "Script must be run as root. Exiting..."
@@ -36,7 +36,7 @@ do
 
 			ex=$?
 
-			if [[ "$ex" != "0" ]]
+			if ((ex!=0))
 			then
 
 				exit
@@ -66,11 +66,11 @@ do
             if [[ "$i" == "/dev/mmcblk"* ]]
             then
 
-                eval $(sudo blkid "${i}p${a}" | grep -o 'LABEL="[^"]*"')
+                eval "$(sudo blkid "${i}p${a}" | grep -o 'LABEL="[^"]*"')"
 
             else
 
-                eval $(sudo blkid "${i}${a}" | grep -o 'LABEL="[^"]*"')
+                eval "$(sudo blkid "${i}${a}" | grep -o 'LABEL="[^"]*"')"
 
             fi
 
@@ -127,13 +127,13 @@ do
 
 	ex=$?
 
-	target_drive=$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')
+	target_drive="$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')"
 
-	target_drive_display_name=$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')
+	target_drive_display_name="$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')"
 
-	target_drive=$(echo "$target_drive" | cut -d' ' -f1)
+	target_drive="$(echo "$target_drive" | cut -d' ' -f1)"
 
-    if [[ "$ex" == "30" ]] #delete cached images
+    if ((ex==30)) #delete cached images
     then
 
         if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)>1)) #plural
@@ -151,7 +151,7 @@ do
 
         ex=$?
 
-        if [[ "$ex" == "0" ]]
+        if ((ex==0))
         then
 
             rm -rf /usr/share/shock-os-imager/cached-images/*
@@ -160,48 +160,46 @@ do
 
         fi
 
-	elif [[ "$target_drive" == "(null)" ]] && [[ "$ex" == "20" ]]
+	elif [[ "$target_drive" == "(null)" ]] && ((ex==20))
 	then
 
 		zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="You have not selected a drive to flash. Please plug in a storage device to install Shock OS on, and then click 'Retry'" --ok-label="Retry" --width=300
 
-    elif [[ -z "$(lsblk -o PATH | grep -w $target_drive)" ]] && [[ "$ex" == "20" ]] #if error reading the device (perhaps it was unplugged)
+    elif [[ -z "$(lsblk -o PATH | grep -w $target_drive)" ]] && ((ex==20)) #if error reading the device (perhaps it was unplugged)
     then
 
         zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --ok-label="Retry" --width=300
 
-	elif (($(lsblk -o PATH,SIZE -b | grep -w $target_drive | awk '{print $2}')<15000000000)) && [[ "$ex" == "20" ]] #if drive is less than 16GB
+	elif (($(lsblk -o PATH,SIZE -b | grep -w $target_drive | awk '{print $2}')<15000000000)) && ((ex==20)) #if drive is less than 16GB
     then
 
 		target_drive="(null)"
 
         zenity --window-icon=/usr/share/shock-os-imager/icon.svg --error --title="Shock OS Imager" --text="The SD card/USB drive you selected is too small. Shock OS requires a storage device of at least 16GB. Please insert a storage device that is at least 16GB in size, then press 'Retry' when you are ready to continue." --ok-label="Retry" --width=300
 
-    elif [[ "$ex" != "10" ]] && [[ "$ex" != "20" ]]
+    elif ((ex!=10)) && ((ex!=20))
 	then
 
 		exit
 
-	elif [[ "$ex" == "20" ]]
+	elif ((ex==20))
     then
 
         success2="TRUE"
 
     fi
 
-    echo "SUCCESS2: $success2" #DEBUG
-
 done
 
-image_to_flash=$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')
+image_to_flash="$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')"
 
 image_to_flash_display="$image_to_flash"
 
-image_to_flash=$(echo "$output" | awk -F'|' '{print $2}')
+image_to_flash="$(echo "$output" | awk -F'|' '{print $2}')"
 
 image_to_flash_display_name="$image_to_flash"
 
-image_to_flash_codename=${image_to_flash:13}
+image_to_flash_codename="${image_to_flash:13}"
 
 if [[ "$image_to_flash" == *"Legacy"* ]]
 then
@@ -210,17 +208,13 @@ then
 
 else
 	
-	image_to_flash_variant=$(echo "$image_to_flash_codename" | sed 's/[^0-9]*//g')
+	image_to_flash_variant="$(echo "$image_to_flash_codename" | sed 's/[^0-9]*//g')"
 
 fi
 
 image_to_flash="$(echo "$image_to_flash_codename" | cut -f1 -d" ")$image_to_flash_variant"
 
-echo "TARGET DRIVE: $target_drive
-
-IMAGE TO FLASH: $image_to_flash" #DEBUG
-
-if [[ "$ex" == "20" ]] #flash
+if ((ex==20)) #flash
 then
 
 	url="${!image_to_flash}"
@@ -312,7 +306,7 @@ then
     fi
 
     # Check if the command exited with a non-zero code and show an error message if needed
-    if [[ "$ex" != "0" ]]
+    if ((ex!=0))
     then
 
         zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="The verification has been cancelled. The program will now exit." --ok-label="Exit"
@@ -371,7 +365,7 @@ then
     fi
 
     # Check if the command exited with a non-zero code and show an error message if needed
-    if [[ "$ex" != "0" ]]
+    if ((ex!=0))
     then
 
         zenity --error --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="An error occurred when writing the image. The program will now exit." --ok-label="Exit"
@@ -386,7 +380,7 @@ then
 
 	yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Congratulations! $image_to_flash_display has successfully been flashed to $target_drive_display_name. Thank you and enjoy!" --button="Dismiss"\!gtk-quit
 
-elif [[ "$ex" != "10" ]]
+elif ((ex!=10))
 then
 
 	exit

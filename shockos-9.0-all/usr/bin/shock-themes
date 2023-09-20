@@ -81,16 +81,16 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
 	ex=$?
 
-	name=$(echo $output | awk 'BEGIN {FS="|" } { print $3 }')
+	name="$(echo $output | awk 'BEGIN {FS="|" } { print $3 }')"
 
-	type=$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')
+	type="$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')"
 
-    if [[ "$ex" == "0" ]] #browse
+    if ((ex==0)) #browse
     then
 
         xdg-open https://www.mate-look.org/browse
 
-	elif [[ "$ex" == "1" ]] #install
+	elif ((ex==1)) #install
 	then
 
 		cd ~/
@@ -99,7 +99,7 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
 		ex=$?
 
-		if [[ "$ex" == "0" ]]
+		if ((ex==0))
 		then
 
             if [[ "$file" == *".deb" ]]
@@ -111,7 +111,7 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
                 yad --fixed --window-icon=gnome-settings-theme --title="Themes" --progress-text="Installing $(basename "$file")..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
 
-                tmpdir=$(mktemp -d)
+                tmpdir="$(mktemp -d)"
 
 			    mkdir -p "$tmpdir"
 
@@ -148,21 +148,21 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
                     for i in $(find . -name index.theme)
                     do
 
-                        inherit_line=$(grep -m 1 -e '^Inherits=' "$i")
+                        inherit_line="$(grep -m 1 -e '^Inherits=' "$i")"
 
-                        inherit_line=$(echo "$inherit_line" | sed 's/,Adwaita//') #removes Adwaita
+                        inherit_line="$(echo "$inherit_line" | sed 's/,Adwaita//')" #removes Adwaita
 
-                        inherit_line=$(echo "$inherit_line" | sed 's/Adwaita,//') #removes Adwaita
+                        inherit_line="$(echo "$inherit_line" | sed 's/Adwaita,//')" #removes Adwaita
 
-                        inherit_line=$(echo "$inherit_line" | sed 's/Adwaita//') #removes Adwaita
+                        inherit_line="$(echo "$inherit_line" | sed 's/Adwaita//')" #removes Adwaita
 
-                        inherit_line=$(echo "$inherit_line" | sed 's/,hicolor//') #removes hicolor
+                        inherit_line="$(echo "$inherit_line" | sed 's/,hicolor//')" #removes hicolor
 
-                        inherit_line=$(echo "$inherit_line" | sed 's/hicolor,//') #removes hicolor
+                        inherit_line="$(echo "$inherit_line" | sed 's/hicolor,//')" #removes hicolor
 
-                        inherit_line=$(echo "$inherit_line" | sed 's/hicolor//') #removes hicolor
+                        inherit_line="$(echo "$inherit_line" | sed 's/hicolor//')" #removes hicolor
 
-                        if [[ "${#inherit_line}" == "9" ]] #if no fallback themes
+                        if ((${#inherit_line}==9)) #if no fallback themes
                         then
 
                             sed -i "s|^Inherits=.*|Inherits=${runuser}_shock_fallback_icon_theme,Adwaita,hicolor|" "$i"
@@ -316,7 +316,7 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
 		fi
 
-	elif [[ "$ex" == "2" ]] #remove
+	elif ((ex==2)) #remove
 	then
 
 		if [[ "$type" == "The default Shock OS look and feel" ]]
@@ -366,7 +366,7 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
 		fi
 
-	elif [[ "$ex" == "3" ]] #rename
+	elif ((ex==3)) #rename
 	then
 
         if [[ "$type" == "The default Shock OS look and feel" ]]
@@ -384,7 +384,7 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
 			    ex=$?
 
-			    if [[ "$ex" == "0" ]]
+			    if ((ex==0))
 			    then
 
 				    success="yes"
@@ -464,7 +464,7 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
         fi
 
-	elif [[ "$ex" == "4" ]] #use
+	elif ((ex==4)) #use
 	then
 
 		if [[ "$type" == "The default Shock OS look and feel" ]]
@@ -525,20 +525,20 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
 			fi
 
-			output=$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)
+			output="$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
 
 			ex=$?
 
-			if [[ "$ex" == "0" ]]
+			if ((ex==0))
 			then
 
-				lod=$(echo "$output" | awk -F'|' '{print $1}')
+				lod="$(echo "$output" | awk -F'|' '{print $1}')"
 
-				lod=$(echo "$lod" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+				lod="$(echo "$lod" | awk '{print tolower($0)}')" #this command makes all the letters lowercase
 
-				color=$(echo "$output" | awk -F'|' '{print $2}')
+				color="$(echo "$output" | awk -F'|' '{print $2}')"
 
-				color=$(echo "$color" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+				color="$(echo "$color" | awk '{print tolower($0)}')" #this command makes all the letters lowercase
 
                 if [[ "$color" == "mixed" ]]
                 then
@@ -623,18 +623,18 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
                     ex=$?
 
-                    if [[ "$ex" == "0" ]]
+                    if ((ex==0))
                     then
 
-                        theme_color=$(echo "$output" | awk -F'|' '{print $1}')
+                        theme_color="$(echo "$output" | awk -F'|' '{print $1}')"
 
-			            theme_color=$(echo "$theme_color" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+			            theme_color="$(echo "$theme_color" | awk '{print tolower($0)}')" #this command makes all the letters lowercase
 
                         color="$theme_color" #for LightDM Greeter settings file.
 
-			            icon_color=$(echo "$output" | awk -F'|' '{print $2}')
+			            icon_color="$(echo "$output" | awk -F'|' '{print $2}')"
 
-			            icon_color=$(echo "$icon_color" | awk '{print tolower($0)}') #this command makes all the letters lowercase
+			            icon_color="$(echo "$icon_color" | awk '{print tolower($0)}')" #this command makes all the letters lowercase
 
                         echo "theme_color=${theme_color}
 icon_color=${icon_color}" | tee ~/.config/shock-themes-mixed-colors
@@ -653,7 +653,7 @@ icon_color=${icon_color}" | tee ~/.config/shock-themes-mixed-colors
 
                 fi
 
-                if [[ "$ex" == "0" ]]
+                if ((ex==0))
                 then
 
 				    dconf write /org/mate/desktop/interface/gtk-theme "'$shock_gtk_theme'"

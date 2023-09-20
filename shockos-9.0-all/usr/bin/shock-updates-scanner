@@ -4,13 +4,6 @@ IFS=$'\n'
 
 #this script checks for available updates and sends a notification if any are available
 
-if (($(ps aux | awk '{print $1,$12}' | grep -c "$(whoami) /usr/bin/shock-updates-scanner")>2)) #exits the program if it is already running for this user
-then
-
-    exit
-
-fi
-
 while true
 do
 
@@ -43,9 +36,9 @@ do
 
             yad --notification --image=/usr/share/shock/auto-updates.svg --icon-size=48 --text="Automatic updates are being installed. Please do not turn off your computer." --command="" & killpid=$!
 
-            wait "$auto_updates_killpid"
+            wait $auto_updates_killpid
 
-            kill "$killpid"
+            kill $killpid
 
             dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" #allows the user to access the shutdown menu.
 
@@ -68,7 +61,7 @@ do
 
             echo "$killpid" | tee ~/.cache/shock-tmp/shock-update-manager/notification_pid
 
-            wait "$killpid"
+            wait $killpid
 
             if [[ -f ~/.cache/shock-tmp/shock-update-manager/updates_in_progress_notification_pid ]] #if updates are being installed, wait for them to finish.
             then

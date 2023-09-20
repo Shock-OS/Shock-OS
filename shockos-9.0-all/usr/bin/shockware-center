@@ -2,8 +2,6 @@
 
 IFS=$'\n'
 
-splash_killed="FALSE"
-
 category="All Applications"
 
 yad --fixed --picture --filename=/usr/share/shockware-center/shockware-loader.png --size=fit --width=1000 --height=397 --undecorated --no-buttons --skip-taskbar & splash_kilpid=$!
@@ -12,14 +10,12 @@ yad --fixed --picture --filename=/usr/share/shockware-center/shockware-loader.pn
 
 function read_settings() {
 
-if [[ -e ~/.config/shockware-center ]]
+if [[ -f ~/.config/shockware-center ]]
 then
 
-	eval "$(cat ~/.config/shockware-center)"
+	source ~/.config/shockware-center
 
 else
-
-	touch ~/.config/shockware-center
 
 	echo 'rows_per_page=100
 
@@ -27,7 +23,7 @@ show_apt_packages=TRUE
 
 show_flatpaks=TRUE' | tee ~/.config/shockware-center
 
-	rows_per_page="100"
+	rows_per_page=100
 
 	show_apt_packages="TRUE"
 
@@ -74,7 +70,7 @@ fi
 
 read_settings
 
-if [[ "$(getconf LONG_BIT)" == "32" ]]
+if $(($(getconf LONG_BIT)==32))
 then
 
     arch="arm"
@@ -108,8 +104,6 @@ do
 
     i="${i#\"}"
 
-    echo "$i" #DEBUG
-
     if [[ " ${all_flatpaks[@]} " == *" \"$i [FLATPAK]\" "* ]] #if app is both an apt and a flatpak
     then
 
@@ -118,8 +112,6 @@ do
     fi
 
 done
-
-echo "${all_duplicates[@]}" #DEBUG
 
 keyword=""
 
@@ -363,7 +355,7 @@ do
 
 	search_results_prep_full=($(printf "%s\n" "${search_results_prep_full[@]}" | sort))
 
-	if (("${#search_results_prep_full[@]}"==0)) #if no search results
+	if ((${#search_results_prep_full[@]}==0)) #if no search results
 	then
 
         end_loading
@@ -416,7 +408,7 @@ do
 
 				icon="${icon%% *}"
 
-				icon=$(echo "$icon" | head -n1)
+				icon="$(echo "$icon" | head -n1)"
 
 				if [[ "$icon" == *".desktop" ]]
 				then
@@ -521,17 +513,17 @@ do
 
 	fi
 
-	if [[ "$ex" == "40" ]] #previous
+	if ((ex==40)) #previous
 	then
 
 		page=$((page-1))
 
-	elif [[ "$ex" == "60" ]] #next
+	elif ((ex==60)) #next
 	then
 
 		page=$((page+1))
 
-	elif [[ "$ex" == "50" ]] #jump
+	elif ((ex==50)) #jump
 	then
 
 		jump_page=$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
@@ -540,22 +532,22 @@ do
 
 		jump_page=$(echo "$jump_page" | awk -F'|' '{print $1}')
 
-        if [[ "$ex" == "0" ]]
+        if ((ex==0))
         then
 
             page="$((jump_page-1))"
 
         fi
 
-	elif [[ "$ex" == "1" ]] #settings
+	elif ((ex==1)) #settings
 	then
 
-		if [[ "$rows_per_page" == "50" ]]
+		if ((rows_per_page==50))
 		then
 
 			rpp='^50!100!200'
 
-		elif [[ "$rows_per_page" == "100" ]]
+		elif ((rows_per_page=100))
 		then
 
 			rpp='50!^100!200'
@@ -570,14 +562,14 @@ do
 
 		ex=$?
 
-		if [[ "$ex" == "0" ]]
+		if ((ex==0))
 		then
 
 			rows_per_page=$(echo $settings | awk 'BEGIN {FS="|" } { print $1 }')
 
-			show_apt_packages=$(echo $settings | awk 'BEGIN {FS="|" } { print $2 }')
+			show_apt_packages="$(echo $settings | awk 'BEGIN {FS="|" } { print $2 }')"
 
-			show_flatpaks=$(echo $settings | awk 'BEGIN {FS="|" } { print $3 }')
+			show_flatpaks="$(echo $settings | awk 'BEGIN {FS="|" } { print $3 }')"
 
 			write_settings
 
@@ -585,25 +577,25 @@ do
 
 		fi
 
-    elif [[ "$ex" == "2" ]] #categories
+    elif ((ex==2)) #categories
     then
 
-        output=$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --list --no-headers --width=400 --height=300 --column="Icon":IMG --column="Category" open-menu-symbolic "All Applications" applications-accessories Accessories applications-games Games applications-graphics Graphics applications-internet Internet applications-office Office applications-development Programming applications-science Education applications-multimedia Multimedia applications-system "System Tools" --button="Go"\!go-next)
+        output="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --list --no-headers --width=400 --height=300 --column="Icon":IMG --column="Category" open-menu-symbolic "All Applications" applications-accessories Accessories applications-games Games applications-graphics Graphics applications-internet Internet applications-office Office applications-development Programming applications-science Education applications-multimedia Multimedia applications-system "System Tools" --button="Go"\!go-next)"
 
         ex=$?
 
-        if [[ "$ex" == "0" ]]
+        if ((ex==0))
         then
 
             page=0
 
             keyword=""
 
-            category=$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')
+            category="$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')"
 
         fi
 
-	elif [[ "$ex" == "3" ]] #search
+	elif ((ex==3)) #search
 	then
 
 		newkeyword="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --entry --entry-text="$keyword" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
@@ -612,12 +604,12 @@ do
 
 		page=0
 
-        if [[ "$ex" == "1" ]] #show all
+        if ((ex==1)) #show all
         then
 
             keyword=""
 
-        elif [[ "$ex" == "0" ]] #search
+        elif ((ex==0)) #search
         then
 
             keyword="$newkeyword"

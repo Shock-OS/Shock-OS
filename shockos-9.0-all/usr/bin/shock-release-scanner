@@ -2,13 +2,6 @@
 
 #This script checks for an available upgrade to a newer version of Shock OS and notifies the user if one is available
 
-if (($(ps aux | awk '{print $1,$11,$12}' | grep -c "$(whoami) /bin/bash /usr/bin/shock-release-scanner")>2)) #exits the program if it is already running for this user
-then
-
-    exit
-
-fi
-
 while true
 do
 
@@ -69,7 +62,7 @@ do
 
                 ex=$?
 
-                if [[ "$ex" == "0" ]] #If 'Yes, proceed to upgrade' was clicked
+                if ((ex==0)) #If 'Yes, proceed to upgrade' was clicked
                 then
 
                     dconf write /org/mate/desktop/lockdown/disable-log-out "true" # Stops the user from accessing the shutdown menu while the system is being upgraded.
