@@ -77,7 +77,7 @@ then
     yad --window-icon=/usr/share/shock/shock-logo.svg --title="Welcome" --picture --size=fit --filename=/usr/share/shock/initsetup-welcome-logo.png --text="
 <span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --buttons-layout=center --button="Next"\!go-next --width=400
 
-    until ((ex==0))
+    until [[ "$ex" == "0" ]]
     do
 
         sudo env GTK_THEME=shock-light-blue DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata locales keyboard-configuration
