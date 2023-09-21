@@ -7,7 +7,7 @@ do
 
     cd "$directory"
 
-    file="$(yad --window-icon=sound --title="Startup Sound" --text="Please select an audio file to use as the startup sound." --file --buttons-layout=edge --button="Reset to Default"\!gtk-revert:2 --button="Cancel"\!gtk-cancel:1 --button="Choose"\!fileopen:0)"
+    file="$(yad --window-icon=sound --title="Startup Sound" --text="Please select an audio file to use as the startup sound." --file --buttons-layout=edge --button="Reset to Default"\!gtk-revert:2 --button="Choose"\!fileopen:0)"
 
     ex=$?
 
