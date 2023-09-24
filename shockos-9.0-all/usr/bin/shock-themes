@@ -693,7 +693,16 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
         elif [[ "$type" == "Metacity theme" ]]
         then
 
-            dconf write /org/mate/marco/general/theme "'${runuser}_${name}'"
+            if [[ "$(dconf read /org/mate/desktop/session/required-components/windowmanager)" == "'mutter'" ]]
+            then
+
+                yad --window-icon=gnome-settings-theme --image=emblem-important --title="Themes" --text="Mutter, the current window manager, does not support metacity themes. To use metacity themes, please select a different window manager in the 'Window Manager' app." --button="Dismiss"\!gtk-quit
+
+            else
+
+                dconf write /org/mate/marco/general/theme "'${runuser}_${name}'"
+
+            fi
 
 		elif [[ "$type" == "Icon pack" ]]
 		then
@@ -706,6 +715,8 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
 		then
 
 			dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'${runuser}_${name}'"
+
+            dconf write /org/gnome/desktop/interface "'${runuser}_${name}'"
 
 		fi
 

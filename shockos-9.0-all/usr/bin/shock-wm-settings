@@ -1,0 +1,69 @@
+#!/bin/bash
+
+current_wm="$(dconf read /org/mate/desktop/session/required-components/windowmanager)"
+
+if [[ "$current_wm" == "'marco-no-composite'" ]]
+then
+
+    wm_selector='Marco!Compton!Mutter!^None'
+
+elif [[ "$current_wm" == "'marco-compton'" ]]
+then
+
+    wm_selector='Marco!^Compton!Mutter!None'
+
+elif [[ "$current_wm" == "'mutter'" ]]
+then
+
+    wm_selector='Marco!Compton!^Mutter!None'
+
+else
+
+    wm_selector='Marco!Compton!Mutter!None'
+
+fi
+
+output="$(yad --window-icon=preferences-system-windows --title="Window Manager" --text="Please choose a window manager." --form --field=:CB "$wm_selector" --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok)"
+
+ex=$?
+
+current_wm="$(echo "$output" | awk -F'|' '{print $1}')"
+
+if ((ex==1)) #reset to default
+then
+
+    dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-compton'"
+
+elif ((ex==0)) #apply
+then
+
+    if [[ "$current_wm" == "Marco" ]]
+    then
+
+        dconf write /org/mate/desktop/session/required-components/windowmanager "'marco'"
+
+    elif [[ "$current_wm" == "Compton" ]]
+    then
+
+        dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-compton'"
+
+    elif [[ "$current_wm" == "Mutter" ]]
+    then
+
+        dconf write /org/mate/desktop/session/required-components/windowmanager "'mutter'"
+
+    else
+
+        dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-no-composite'"
+
+    fi
+
+fi
+
+if ((ex==0)) || ((ex==1))
+then
+
+    marco --replace &
+
+fi
+

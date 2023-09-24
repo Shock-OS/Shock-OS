@@ -3,7 +3,7 @@ Version: 9.0
 Architecture: all
 Essential: no
 Priority: optional
-Depends: xinit,mate-desktop-environment-extras,slick-greeter,zenity,yad,mpg123,btrfs-progs,network-manager-gnome,dosfstools,mtools,wget,xz-utils,apt-config-icons,unp,ntpdate,gnupg,libgtk3-perl,feh,wmctrl
+Depends: xinit,mate-desktop-environment-extras,slick-greeter,zenity,yad,mpg123,btrfs-progs,network-manager-gnome,dosfstools,mtools,wget,xz-utils,apt-config-icons,unp,ntpdate,gnupg,libgtk3-perl,feh,wmctrl,compton,mutter
 Recommends: chromium,rhythmbox,celluloid,libreoffice,libreoffice-gnome,gnome-calendar,cups,system-config-printer,onboard,orca,gnote,ntp,xscreensaver-data-extra,gnome-weather,gnome-disk-utility,gucharmap,gedit,plymouth,flatpak
 Maintainer: Carson Grover
 Description: This package installs Shock OS 9.0 Issac on top of Raspberry Pi OS Lite.
