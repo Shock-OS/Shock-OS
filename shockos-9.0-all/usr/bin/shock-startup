@@ -3,9 +3,13 @@
 if [[ -f ~/.config/shock/userlogstat ]]
 then
 
-    dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-compton'"
+    #THE MUTTER SETTINGS PATCH BEGINS
 
-    marco --replace &
+    dconf write /org/gnome/desktop/wm/preferences/button-layout "':minimize,maximize,close'"
+
+    dconf write /org/gnome/desktop/wm/keybindings/panel-main-menu "['Super']"
+
+    #THE MUTTER SETTINGS PATCH ENDS
 
     dconf write /org/mate/desktop/interface/gtk-theme "'shock-light-blue'"
 

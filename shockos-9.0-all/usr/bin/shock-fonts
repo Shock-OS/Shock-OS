@@ -136,7 +136,7 @@ do
 
             dconf write /org/mate/desktop/interface/font-name "'$new_font'"
 
-            dconf write /org/gnome/desktop/interface/font-name "'$new_font'"
+            dconf write /org/gnome/desktop/interface/font-name "'$new_font'" #MUTTER COMPATIBILITY
 
             current_appfont="$new_font"
 
@@ -160,7 +160,7 @@ do
 
             dconf write /org/mate/desktop/interface/document-font-name "'$new_font'"
 
-            dconf write /org/gnome/desktop/interface/document-font-name "'$new_font'"
+            dconf write /org/gnome/desktop/interface/document-font-name "'$new_font'" #MUTTER COMPATIBILITY
 
             current_docfont="$new_font"
 
@@ -173,7 +173,7 @@ do
 
             dconf write /org/mate/desktop/interface/monospace-font-name "'$new_font'"
 
-            dconf write /org/gnome/desktop/interface/monospace-font-name "'$new_font'"
+            dconf write /org/gnome/desktop/interface/monospace-font-name "'$new_font'" #MUTTER COMPATIBILITY
 
             current_monospacefont="$new_font"
 
@@ -186,7 +186,7 @@ do
 
             dconf write /org/mate/marco/general/titlebar-font "'$new_font'"
 
-            dconf write /org/gnome/desktop/wm/preferences/titlebar-font "'$new_font'"
+            dconf write /org/gnome/desktop/wm/preferences/titlebar-font "'$new_font'" #MUTTER COMPATIBILITY
 
             current_windowtitlefont="$new_font"
 
@@ -199,6 +199,8 @@ do
 
             dconf write /org/mate/desktop/interface/font-name "'Cantarell 11'"
 
+            dconf write /org/gnome/desktop/interface/font-name "'Cantarell 11'" #MUTTER COMPATIBILITY
+
             current_appfont="Cantarell 11"
 
             dconf write /org/mate/caja/desktop/font "'Cantarell 11'"
@@ -207,13 +209,19 @@ do
 
             dconf write /org/mate/desktop/interface/document-font-name "'Cantarell 11'"
 
+            dconf write /org/gnome/desktop/interface/document-font-name "'Cantarell 11'" #MUTTER COMPATIBILITY
+
             current_docfont="Cantarell 11"
 
             dconf write /org/mate/desktop/interface/monospace-font-name "'Monospace 13'"
 
+            dconf write /org/gnome/desktop/interface/monospace-font-name "'Monospace 13'" #MUTTER COMPATIBILITY
+
             current_monospacefont="Monospace 13"
 
             dconf write /org/mate/marco/general/titlebar-font "'Cantarell Bold 11'"
+
+            dconf write /org/gnome/desktop/wm/preferences/titlebar-font "'Cantarell Bold 11'" #MUTTER COMPATIBILITY
 
             current_windowtitlefont="Cantarell Bold 11"
 

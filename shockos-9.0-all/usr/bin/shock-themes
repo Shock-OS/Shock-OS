@@ -448,6 +448,8 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
 							    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'${runuser}_${newname}'"
 
+                                dconf write /org/gnome/desktop/interface/cursor-theme "'${runuser}_${newname}'" #MUTTER COMPATIBILITY
+
 						    fi
 
 					    fi
@@ -664,6 +666,8 @@ icon_color=${icon_color}" | tee ~/.config/shock-themes-mixed-colors
 
 				    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
 
+                    dconf write /org/gnome/desktop/interface/cursor-theme "'mate-black'" #MUTTER COMPATIBILITY
+
                     flatpak override --user --env=GTK_THEME="$shock_gtk_theme"
 
 				    echo "[Greeter]
@@ -693,7 +697,7 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
         elif [[ "$type" == "Metacity theme" ]]
         then
 
-            if [[ "$(dconf read /org/mate/desktop/session/required-components/windowmanager)" == "'mutter'" ]]
+            if [[ "$(dconf read /org/mate/desktop/session/required-components/windowmanager)" == "'mutter'" ]] #MUTTER COMPATIBILITY
             then
 
                 yad --window-icon=gnome-settings-theme --image=emblem-important --title="Themes" --text="Mutter, the current window manager, does not support metacity themes. To use metacity themes, please select a different window manager in the 'Window Manager' app." --button="Dismiss"\!gtk-quit
@@ -716,7 +720,7 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
 
 			dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'${runuser}_${name}'"
 
-            dconf write /org/gnome/desktop/interface/cursor-theme "'${runuser}_${name}'"
+            dconf write /org/gnome/desktop/interface/cursor-theme "'${runuser}_${name}'" #MUTTER COMPATIBILITY
 
 		fi
 

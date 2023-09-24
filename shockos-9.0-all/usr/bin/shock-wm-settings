@@ -1,11 +1,13 @@
 #!/bin/bash
 
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
 current_wm="$(dconf read /org/mate/desktop/session/required-components/windowmanager)"
 
 if [[ "$current_wm" == "'marco-no-composite'" ]]
 then
 
-    wm_selector='Marco!Compton!Mutter!^None'
+    wm_selector+='Marco!Compton!Mutter!^None'
 
 elif [[ "$current_wm" == "'marco-compton'" ]]
 then
@@ -23,6 +25,20 @@ else
 
 fi
 
+if [[ " ${installed_packages[@]} " != *" mutter "* ]] #if mutter is not installed, then remove it from the list of options
+then
+
+    wm_selector="${wm_selector//'!Mutter'/}"
+
+fi
+
+if [[ " ${installed_packages[@]} " != *" compton "* ]] #if mutter is not installed, then remove it from the list of options
+then
+
+    wm_selector="${wm_selector//'!Compton'/}"
+
+fi
+
 output="$(yad --window-icon=preferences-system-windows --title="Windows" --text="Please choose a window manager." --form --field=:CB "$wm_selector" --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0)"
 
 ex=$?
@@ -32,7 +48,7 @@ current_wm="$(echo "$output" | awk -F'|' '{print $1}')"
 if ((ex==1)) #reset to default
 then
 
-    dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-compton'"
+    dconf write /org/mate/desktop/session/required-components/windowmanager "'marco'"
 
 elif ((ex==0)) #apply
 then

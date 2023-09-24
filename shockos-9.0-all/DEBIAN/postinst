@@ -229,9 +229,7 @@ rm /usr/share/applications/screensavers/vidwhacker.desktop
 
 cp /usr/bin/mate-appearance-properties /usr/bin/mate-appearance-properties-old
 
-rm /usr/bin/mate-appearance-properties
-
-touch /usr/bin/mate-appearance-properties
+cp /usr/bin/mate-window-properties /usr/bin/mate-window-properties-old
 
 echo '#!/bin/bash
 
@@ -240,8 +238,6 @@ shock-backgrounds' | tee /usr/bin/mate-appearance-properties
 echo '#!/bin/bash
 
 shock-wm-settings' | tee /usr/bin/mate-window-properties
-
-chmod +x /usr/bin/mate-appearance-properties
 
 #the above set of commands replaces the mate-appearance-properties program with a link to shock-wallpapers (for the desktop context menu)
 
@@ -294,9 +290,7 @@ echo "[Settings]
 gtk-theme-name=shock-light-blue
 gtk-icon-theme-name=shock-light-blue" | tee /home/shock/.config/gtk-3.0/settings.ini
 
-echo "dconf write /org/mate/desktop/session/required-components/windowmanager \"'marco-compton'\"
-
-xinit" | tee -a /home/shock/.bashrc
+echo 'xinit' | tee -a /home/shock/.bashrc
 
 echo 'marco & shock-startup' | tee -a /home/shock/.xinitrc
 

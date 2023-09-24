@@ -41,11 +41,11 @@ then
     if [[ "$clock_format" == "'24-hour'" ]] #Change time format for GNOME apps (GNOME Clocks)
     then
 
-        dconf write /org/gnome/desktop/inteface/clock-format "'24h'"
+        dconf write /org/gnome/desktop/interface/clock-format "'24h'"
 
     else
 
-        dconf write /org/gnome/desktop/inteface/clock-format "'12h'"
+        dconf write /org/gnome/desktop/interface/clock-format "'12h'"
 
     fi
 

@@ -65,3 +65,19 @@ mv /usr/share/shock-pcstl/* /usr/share/shock-screentime/
 rm -r /usr/share/shock-pcstl
 
 #the pcstl -> screentime patch ends
+
+cp /usr/bin/mate-appearance-properties /usr/bin/mate-appearance-properties-old
+
+cp /usr/bin/mate-window-properties /usr/bin/mate-window-properties-old
+
+echo '#!/bin/bash
+
+shock-backgrounds' | tee /usr/bin/mate-appearance-properties
+
+echo '#!/bin/bash
+
+shock-wm-settings' | tee /usr/bin/mate-window-properties
+
+
+
+
