@@ -136,6 +136,8 @@ do
 
             dconf write /org/mate/desktop/interface/font-name "'$new_font'"
 
+            dconf write /org/gnome/desktop/interface/font-name "'$new_font'"
+
             current_appfont="$new_font"
 
         elif [[ "$font_to_change" == "Desktop Font|" ]]
@@ -158,6 +160,8 @@ do
 
             dconf write /org/mate/desktop/interface/document-font-name "'$new_font'"
 
+            dconf write /org/gnome/desktop/interface/document-font-name "'$new_font'"
+
             current_docfont="$new_font"
 
         elif [[ "$font_to_change" == "Monospace Font|" ]]
@@ -169,6 +173,8 @@ do
 
             dconf write /org/mate/desktop/interface/monospace-font-name "'$new_font'"
 
+            dconf write /org/gnome/desktop/interface/monospace-font-name "'$new_font'"
+
             current_monospacefont="$new_font"
 
         elif [[ "$font_to_change" == "Window Title Font|" ]]
@@ -179,6 +185,8 @@ do
             detect_exit
 
             dconf write /org/mate/marco/general/titlebar-font "'$new_font'"
+
+            dconf write /org/gnome/desktop/wm/preferences/titlebar-font "'$new_font'"
 
             current_windowtitlefont="$new_font"
 

@@ -716,7 +716,7 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
 
 			dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'${runuser}_${name}'"
 
-            dconf write /org/gnome/desktop/interface "'${runuser}_${name}'"
+            dconf write /org/gnome/desktop/interface/cursor-theme "'${runuser}_${name}'"
 
 		fi
 

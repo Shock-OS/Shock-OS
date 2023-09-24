@@ -127,6 +127,10 @@ rm /usr/share/applications/mate-font-viewer.desktop
 
 rm /usr/share/applications/mate-appearance-properties.desktop
 
+rm /usr/share/applications/compton.desktop
+
+rm /usr/share/applications/picom.desktop
+
 #removes the shortcuts for unwanted apps in the applications directory
 
 #the home directory building begins
@@ -232,6 +236,10 @@ touch /usr/bin/mate-appearance-properties
 echo '#!/bin/bash
 
 shock-backgrounds' | tee /usr/bin/mate-appearance-properties
+
+echo '#!/bin/bash
+
+shock-wm-settings' | tee /usr/bin/mate-window-properties
 
 chmod +x /usr/bin/mate-appearance-properties
 

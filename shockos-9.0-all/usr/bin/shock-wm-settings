@@ -23,7 +23,7 @@ else
 
 fi
 
-output="$(yad --window-icon=preferences-system-windows --title="Window Manager" --text="Please choose a window manager." --form --field=:CB "$wm_selector" --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok)"
+output="$(yad --window-icon=preferences-system-windows --title="Windows" --text="Please choose a window manager." --form --field=:CB "$wm_selector" --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0)"
 
 ex=$?
 
@@ -63,7 +63,22 @@ fi
 if ((ex==0)) || ((ex==1))
 then
 
-    marco --replace &
+    killall marco
+
+    killall compton
+
+    killall mutter
+
+    if [[ "$current_wm" == "Mutter" ]]
+    then
+
+        mutter --replace &
+
+    else
+
+        marco --replace &
+
+    fi
 
 fi
 

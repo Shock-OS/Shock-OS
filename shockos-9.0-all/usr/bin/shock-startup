@@ -17,6 +17,8 @@ then
 
     dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
 
+    dconf write /org/gnome/desktop/interface/cursor-theme "'mate-black'"
+
     dconf write /org/onboard/theme "'/usr/share/onboard/themes/Nightshade.theme'"
 
     #the above command sets the onboard theme to Nightshade
