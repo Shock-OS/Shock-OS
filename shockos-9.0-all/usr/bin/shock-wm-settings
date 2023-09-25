@@ -7,28 +7,28 @@ current_wm="$(dconf read /org/mate/desktop/session/required-components/windowman
 if [[ "$current_wm" == "'marco-no-composite'" ]]
 then
 
-    wm_selector+='Marco!Compton!Mutter!^None'
+    wm_selector+='Marco!Compton!Mutter (experimental)!^None'
 
 elif [[ "$current_wm" == "'marco-compton'" ]]
 then
 
-    wm_selector='Marco!^Compton!Mutter!None'
+    wm_selector='Marco!^Compton!Mutter (experimental)!None'
 
 elif [[ "$current_wm" == "'mutter'" ]]
 then
 
-    wm_selector='Marco!Compton!^Mutter!None'
+    wm_selector='Marco!Compton!^Mutter (experimental)!None'
 
 else
 
-    wm_selector='Marco!Compton!Mutter!None'
+    wm_selector='Marco!Compton!Mutter (experimental)!None'
 
 fi
 
 if [[ " ${installed_packages[@]} " != *" mutter "* ]] #if mutter is not installed, then remove it from the list of options
 then
 
-    wm_selector="${wm_selector//'!Mutter'/}"
+    wm_selector="${wm_selector//'!Mutter (experimental)'/}"
 
 fi
 
@@ -63,7 +63,7 @@ then
 
         dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-compton'"
 
-    elif [[ "$current_wm" == "Mutter" ]]
+    elif [[ "$current_wm" == "Mutter (experimental)" ]]
     then
 
         dconf write /org/mate/desktop/session/required-components/windowmanager "'mutter'"
@@ -85,7 +85,7 @@ then
 
     killall mutter
 
-    if [[ "$current_wm" == "Mutter" ]]
+    if [[ "$current_wm" == "Mutter (experimental)" ]]
     then
 
         mutter --replace &
