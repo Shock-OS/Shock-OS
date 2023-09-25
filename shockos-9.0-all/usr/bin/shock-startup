@@ -1,5 +1,22 @@
 #!/bin/bash
 
+#AUTO SOUND CONFIGURATION - PULSEAUDIO
+
+function pulseaudio_autoconfig() {
+
+xrandr_output="$(xrandr)"
+
+if [[ "$xrandr_output" == *"HDMI-1 connected"* ]] || [[ "$xrandr_output" == *"HDMI-2 connected"* ]]
+then
+
+    pactl set-default-sink "$(pctl list short links | awk '{print $2}' | grep 'hdmi')"
+
+fi
+
+}
+
+#AUTO SOUND CONFIGURATION - PULSEAUDIO
+
 if [[ -f ~/.config/shock/userlogstat ]]
 then
 
@@ -71,6 +88,8 @@ then
 
     #THE FLATPAK GTK THEMING PATCH ENDS
 
+    pulseaudio_autoconfig
+
     rm ~/.config/shock/userlogstat
 
 fi
@@ -85,6 +104,15 @@ then
     dconf write /org/mate/marco/general/center-new-windows "true"
 
     feh --bg-fill /usr/share/shock/initsetup-background.png
+
+    pulseaudio_autoconfig
+
+    while true
+    do
+
+        mpg123 /usr/share/shock/"Space Ambience.mp3"
+
+    done &
 
     yad --window-icon=/usr/share/shock/shock-logo.svg --title="Welcome" --picture --size=fit --filename=/usr/share/shock/initsetup-welcome-logo.png --text="
 <span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --buttons-layout=center --button="Next"\!go-next --width=400
@@ -116,6 +144,8 @@ then
     sudo systemctl set-default graphical
 
     sudo rm /usr/share/shock/setupvalue
+
+    sudo rm /usr/share/shock/"Space Ambience.mp3"
 
     #the default .bashrc file restoration patch begins
 
