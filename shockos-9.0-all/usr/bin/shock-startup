@@ -9,7 +9,7 @@ xrandr_output="$(xrandr)"
 if [[ "$xrandr_output" == *"HDMI-1 connected"* ]] || [[ "$xrandr_output" == *"HDMI-2 connected"* ]]
 then
 
-    pactl set-default-sink "$(pctl list short links | awk '{print $2}' | grep 'hdmi')"
+    pactl set-default-sink "$(pactl list short sinks | awk '{print $2}' | grep 'hdmi')"
 
 fi
 
