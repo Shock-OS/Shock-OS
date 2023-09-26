@@ -320,6 +320,8 @@ do
 
     fi
 
+    search_results_prep_full=()
+
 	if [[ -n "$keyword" ]] #if keyword is not empty
 	then
 
@@ -331,7 +333,21 @@ do
             if [[ "$search_package_descriptions" == "TRUE" ]]
             then
 
-                search_results_prep_full=("$(apt-cache search "$keyword" | awk '{print $1}')")
+                apt_description_search_results=($(apt-cache search "$keyword" | awk '{print $1}'))
+
+                for package in "${apt_description_search_results[@]}"
+                do
+
+                    full_name="$(grep -B 10000 "<pkgname>$package</pkgname>" "$apt_appstream_dir"/xml/*.xml | grep '<name>' | tail -n 1 | awk -F'[<>]' '{print $3}')"
+
+                    if [[ -n "$full_name" ]]
+                    then
+
+                        search_results_prep_full+=("\"$full_name [APT]\"")
+
+                    fi
+
+                done
 
             else
 
@@ -347,7 +363,7 @@ do
             if [[ "$search_package_descriptions" == "TRUE" ]]
             then
 
-                search_results_prep_full+=($(flatpak search --columns=app "$keyword" | tail -n +1))
+                search_results_prep_full+=($(flatpak search --columns=name "$keyword" | sed 's/.*/"& [FLATPAK]"/' | tail -n +1))
 
             else
 
@@ -622,7 +638,7 @@ do
 	elif ((ex==3)) #search
 	then
 
-		output="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --form --field=: "$keyword" --field="Search in package descriptions":CHK "$search_package_descriptions" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
+		output="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --form --field="" "$keyword" --field="Search in package descriptions (slower search)":CHK "$search_package_descriptions" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
 
         ex=$?
 
