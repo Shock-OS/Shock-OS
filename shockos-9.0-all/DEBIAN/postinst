@@ -320,7 +320,7 @@ echo "$newcmdline" | tee /boot/cmdline.txt
 
 echo "[Daemon]
 Theme=shockspin
-ShowDelay=0
+ShowDelay=4
 Enable=1" | tee /etc/plymouth/plymouthd.conf
 
 #the splash screen patch ends

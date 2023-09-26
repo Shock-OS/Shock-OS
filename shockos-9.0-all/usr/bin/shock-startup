@@ -4,7 +4,7 @@
 
 function pulseaudio_autoconfig() {
 
-xrandr_output="$(xrandr)"
+local xrandr_output="$(xrandr)"
 
 if [[ "$xrandr_output" == *"HDMI-1 connected"* ]] || [[ "$xrandr_output" == *"HDMI-2 connected"* ]]
 then
