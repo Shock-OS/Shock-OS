@@ -99,14 +99,16 @@ all_packages=($(grep -oh '<component type="desktop[^"]*">\|<name>[^<]*</name>' "
 
 all_duplicates=()
 
+flatpaks_str=" ${all_flatpaks[*]} "
+
 for i in "${all_packages[@]}"
 do
 
-    i="${i::-7}"
+    i="${i::-7}"  # Remove the last 7 characters
 
     i="${i#\"}"
 
-    if [[ " ${all_flatpaks[@]} " == *" \"$i [FLATPAK]\" "* ]] #if app is both an apt and a flatpak
+    if [[ " $flatpaks_str " == *" \"$i [FLATPAK]\" "* ]]
     then
 
         all_duplicates+=("\"$i [BOTH]\"")
