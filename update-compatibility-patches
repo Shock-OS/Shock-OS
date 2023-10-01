@@ -39,6 +39,8 @@ style=\"$style\"" | tee "$user_home_dir"/.config/shock/slideshow-background
 
         mv "$user_home_dir"/.config/shock_fonts "$user_home_dir"/.config/shock/fonts
 
+        mv "$user_home_dir"/.config/shockware-center "$user_home_dir"/.config/shock/shockware-center
+
     fi
 
 done
