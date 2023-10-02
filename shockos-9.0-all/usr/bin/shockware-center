@@ -343,9 +343,7 @@ do
 
                 name="${app:1}"
 
-                name="${name::-4}"
-
-                num=0
+                name="${name::-5}"
 
                 icon=""
 
@@ -364,55 +362,79 @@ do
                     fi
 
                 fi
-                
-                if [[ "$type" == "A" ]] || [[ "$type" == "B" ]] #if apt package or duplicate
+
+                if [[ "$type" != "SKIP" ]]
                 then
 
-                    until [[ "${apt_names[num]}" == "$app" ]]
-                    do
-
-                        num=$((num+1))
-
-                    done
-
-                    id_pkgname="${apt_pkgnames[num]}"
-
-                    icon="$(find "$apt_appstream_dir"/icons/*/64x64/"$id_pkgname"_* | head -1)" #prefer 64x64 icons
-
-                    if [[ -z "$icon" ]]
+                    if [[ "$type" == "A" ]] || [[ "$type" == "B" ]] #if apt package or duplicate
                     then
 
-                        icon="$(find "$apt_appstream_dir"/icons/*/*/"$id_pkgname"_* | head -1)"
+                        num=0
+
+                        until [[ "${apt_names[num]}" == "\"$name [A]\"" ]]
+                        do
+
+                            num=$((num+1))
+
+                        done
+
+                        package="${apt_pkgnames[num]}"
+
+                        icon="$(find "$apt_appstream_dir"/icons/*/64x64/"$package"_* | head -1)" #prefer 64x64 icons
+
+                        if [[ -z "$icon" ]]
+                        then
+
+                            icon="$(find "$apt_appstream_dir"/icons/*/*/"$package"_* | head -1)"
+
+                        fi
+
+                    else
+
+                        package="N/A"
 
                     fi
 
-                elif [[ "$type" == "F" ]] #if flatpak
-                then
+                    if [[ "$type" == "F" ]] || [[ "$type" == "B" ]] #if flatpak app or duplicate
+                    then
 
-                    until [[ "${flatpak_names[num]}" == "$app" ]]
-                    do
+                        num=0
 
-                        num=$((num+1))
+                        until [[ "${flatpak_names[num]}" == "\"$name [F]\"" ]]
+                        do
 
-                    done
+                            num=$((num+1))
 
-                    id_pkgname="${flatpak_ids[num]}"
+                        done
 
-                    if [[ "$id_pkgname" == *".desktop" ]]
-	                then
+                        id="${flatpak_ids[num]}"
 
-		                id_pkgname="${id_pkgname::-8}"
+                        if [[ "$id" == *".desktop" ]]
+                        then
 
-	                fi
+	                        id="${id::-8}"
 
-                    icon="$flatpak_appstream_dir/icons/64x64/$id_pkgname.png"
+                        fi
+
+                        if [[ "$type" != "B" ]] #if not a duplicate package
+                        then
+
+                            icon="$flatpak_appstream_dir/icons/64x64/${id}.png"
+
+                        fi
+
+                    else
+
+                        id="N/A"
+
+                    fi
 
                 fi
 
                 if [[ -n "$icon" ]]
                 then
 
-                    yad_list+=("\"$icon\"" "\"$name\"" "\"$type\"" "\"$id_pkgname\"" "\"$icon\"")
+                    yad_list+=("\"$icon\"" "\"$name\"" "\"$type\"" "\"$package\"" "\"$id\"" "\"$icon\"")
 
                 fi
 
@@ -456,7 +478,7 @@ do
 
             fi
 
-            eval "yad --window-icon=/usr/share/shockware-center/icon.svg --width=800 --height=500 --title=\"Shockware Center\" --text=\"${category_text}Page $page of $((${#results_full[@]}/rows_per_page)) <small>Double-click on an app to install/remove it.</small>\" --list --column=\"Icon\":IMG --column=\"Name\" --column=\"TYPE\":HD --column=\"ID_PKGNAME\":HD --column=\"ICON\":HD ${yad_list[@]} --dclick-action=\"shockware-center-view-package $show_apt_packages $show_flatpaks $flatpak_appstream_dir\" --buttons-layout=spread --button=\"Settings\"\!gnome-settings:0 --button=\"Categories\"\!open-menu-symbolic:1 --button=\"Search\"\!gtk-find:2 $page_buttons"
+            eval "yad --window-icon=/usr/share/shockware-center/icon.svg --width=800 --height=500 --title=\"Shockware Center\" --text=\"${category_text}Page $page of $((${#results_full[@]}/rows_per_page)) <small>Double-click on an app to install/remove it.</small>\" --list --column=\"Icon\":IMG --column=\"Name\" --column=\"TYPE\":HD --column=\"PACKAGE\":HD --column=\"ID\":HD --column=\"ICON\":HD ${yad_list[@]} --dclick-action=\"shockware-center-view-package $show_apt_packages $show_flatpaks\" --buttons-layout=spread --button=\"Settings\"\!gnome-settings:0 --button=\"Categories\"\!open-menu-symbolic:1 --button=\"Search\"\!gtk-find:2 $page_buttons"
 
             ex=$?
 
