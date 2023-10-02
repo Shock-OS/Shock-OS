@@ -1,14 +1,53 @@
 #!/bin/bash
 
-type="$3"
+show_apt_packages="$1"
 
-full_name="$2"
+show_flatpaks="$2"
 
-package="$4"
+flatpak_appstream_dir="$3"
 
-icon="$5"
+full_name="$5"
 
-id="$(basename "$5")"
+type="$6"
+
+package="$7"
+
+icon="$8"
+
+if [[ "$type" == "F" ]]
+then
+
+    id="$package"
+
+elif [[ "$type" == "B" ]]
+then
+
+    id="$(grep -B 5 "<name>$full_name</name>" "$flatpak_appstream_dir"/appstream.xml | grep '<id>' | awk -F'[<>]' '{print $3}')"
+
+	id="${id%% *}"
+
+	id="$(echo "$id" | head -n1)"
+
+	if [[ "$id" == *".desktop" ]]
+	then
+
+		id="${id::-8}"
+
+	fi
+
+fi
+
+if [[ "$type" == "B" ]] && [[ "$show_apt_packages" == "FALSE" ]]
+then
+
+    type="F"
+
+elif [[ "$type" == "B" ]] && [[ "$show_flatpaks" == "FALSE" ]]
+then
+
+    type="A"
+
+fi
 
 #THE LOADING FUNCTIONS BEGIN
 
@@ -74,15 +113,6 @@ fi
 
 function apt_fetch_info() {
 
-apt_icon="$(find /var/lib/app-info/icons/*/64x64/"$package"_* | head -1)" #prefer 64x64 icons
-
-if [[ -z "$apt_icon" ]]
-then
-
-    apt_icon="$(find /var/lib/app-info/icons/*/*/"$package"_* | head -1)"
-
-fi
-
 details="$(apt show $package)"
 
 if [[ "$details" == *"State: not a real package (virtual)"* ]] #if virtual package (likely only to happen on a 32-bit system)
@@ -101,7 +131,7 @@ then
 
         irbuttons_apt=""
 
-        apt_icon="emblem-important"
+        icon="emblem-important"
 
         tmpfile="$(mktemp)"
 
@@ -243,8 +273,6 @@ fi
 }
 
 function flatpak_fetch_info() {
-
-id="${id::-4}"
 
 installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
 
@@ -400,7 +428,7 @@ then
 
 	end_loading
 
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="APT package" --width=830 --height=300 --image="$apt_icon" --text-info --filename="$tmpfile" $irbuttons_apt
+	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="APT package" --width=830 --height=300 --image="$icon" --text-info --filename="$tmpfile" $irbuttons_apt
 
 	ex=$?
 
@@ -457,7 +485,7 @@ else #if both
 
     apt_fetch_info
 
-    yad --plug=$key --tabnum=1 --image="$apt_icon" --text-info --filename="$tmpfile" &
+    yad --plug=$key --tabnum=1 --image="$icon" --text-info --filename="$tmpfile" &
 
     flatpak_fetch_info
 

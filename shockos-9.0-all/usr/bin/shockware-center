@@ -78,14 +78,14 @@ flatpak_names_string="${flatpak_names[@]}"
 for app in "${apt_names[@]}"
 do
 
-    app="${app:1}"
+    name="${app:1}"
 
-    app="${app::-5}"
+    name="${name::-5}"
 
-    if [[ " $flatpak_names_string " == *" \"$app [F]\" "* ]]
+    if [[ " $flatpak_names_string " == *" \"$name [F]\" "* ]]
     then
 
-        duplicates+="\"$app\" "
+        duplicates+="$app \"$name [F]\" "
 
     fi
 
@@ -307,14 +307,14 @@ do
     if [[ "$show_apt_packages" == "TRUE" ]]
     then
 
-        results_full=($(printf "%s\n" "${apt_names_in_category[@]}" | grep "$keyword"))
+        results_full=($(printf "%s\n" "${apt_names_in_category[@]}" | grep -i "$keyword"))
 
     fi
 
     if [[ "$show_flatpaks" == "TRUE" ]]
     then
 
-        results_full+=($(printf "%s\n" "${flatpak_names_in_category[@]}" | grep "$keyword"))
+        results_full+=($(printf "%s\n" "${flatpak_names_in_category[@]}" | grep -i "$keyword"))
 
     fi
 
@@ -325,153 +325,167 @@ do
     until [[ "$keyword" != "$old_keyword" ]] || [[ "$category" != "$old_category" ]] || [[ "$reload_needed" == "TRUE" ]] #repeat until a new search is made
     do
 
-        start_loading
+        if (("${#results_full[@]}">0))
+        then
 
-        results=("${results_full[@]:$((rows_per_page*$((page-1))))}")
+            start_loading
 
-        yad_list=()
+            results=("${results_full[@]:$((rows_per_page*$((page-1))))}")
 
-        app_number=0
+            results=("${results[@]::$rows_per_page}")
 
-        counter=0
+            yad_list=()
 
-        until ((app_number>rows_per_page))
-        do
+            for app in "${results[@]}"
+            do
 
-            app="${results[counter]}"
+                type="${app: -3:1}"
 
-            type="${app: -3:1}"
+                name="${app:1}"
 
-            name="${app:1}"
+                name="${name::-4}"
 
-            name="${name::-4}"
+                num=0
 
-            num=0
+                icon=""
 
-            icon=""
-
-            if [[ " $duplicates " == *" \"$name\" "* ]]
-            then
-
-                if [[ "$type" == "F" ]]
+                if [[ " $duplicates " == *" $app "* ]]
                 then
 
-                    type="B"
+                    if [[ "$type" == "A" ]]
+                    then
+
+                        type="B"
+
+                    else
+
+                        type="SKIP"
+
+                    fi
+
+                fi
+                
+                if [[ "$type" == "A" ]] || [[ "$type" == "B" ]] #if apt package or duplicate
+                then
+
+                    until [[ "${apt_names[num]}" == "$app" ]]
+                    do
+
+                        num=$((num+1))
+
+                    done
+
+                    id_pkgname="${apt_pkgnames[num]}"
+
+                    icon="$(find "$apt_appstream_dir"/icons/*/64x64/"$id_pkgname"_* | head -1)" #prefer 64x64 icons
+
+                    if [[ -z "$icon" ]]
+                    then
+
+                        icon="$(find "$apt_appstream_dir"/icons/*/*/"$id_pkgname"_* | head -1)"
+
+                    fi
+
+                elif [[ "$type" == "F" ]] #if flatpak
+                then
+
+                    until [[ "${flatpak_names[num]}" == "$app" ]]
+                    do
+
+                        num=$((num+1))
+
+                    done
+
+                    id_pkgname="${flatpak_ids[num]}"
+
+                    if [[ "$id_pkgname" == *".desktop" ]]
+	                then
+
+		                id_pkgname="${id_pkgname::-8}"
+
+	                fi
+
+                    icon="$flatpak_appstream_dir/icons/64x64/$id_pkgname.png"
+
+                fi
+
+                if [[ -n "$icon" ]]
+                then
+
+                    yad_list+=("\"$icon\"" "\"$name\"" "\"$type\"" "\"$id_pkgname\"" "\"$icon\"")
+
+                fi
+
+            done
+
+            if ((${#results_full[@]}>rows_per_page)) && [[ "$page" != "$(expr ${#results_full[@]} / $rows_per_page)" ]] #if not on the last page
+            then
+
+                if ((page>1))
+                then
+
+                    page_buttons='--button=Previous!gtk-go-forward-rtl:3 --button=Jump!gtk-jump-to-ltr:4 --button=Next!gtk-go-forward-ltr:5'
 
                 else
 
-                    type="SKIP"
+                    page_buttons='--button=Jump!gtk-jump-to-ltr:4 --button=Next!gtk-go-forward-ltr:5'
 
                 fi
 
-            fi
-
-            if [[ "$type" == "A" ]] || [[ "$type" == "B" ]] #if apt package or duplicate
+            elif ((page>1))
             then
 
-                until [[ "${apt_names[num]}" == "$app" ]]
-                do
-
-                    num=$((num+1))
-
-                done
-
-                id_pkgname="${apt_pkgnames[num]}"
-
-                icon="$(find "$apt_appstream_dir"/icons/*/64x64/"$id_pkgname"_* | head -1)" #prefer 64x64 icons
-
-                if [[ -z "$icon" ]]
-                then
-
-                    icon="$(find "$apt_appstream_dir"/icons/*/*/"$id_pkgname"_* | head -1)"
-
-                fi
-
-            elif [[ "$type" == "F" ]] #if flatpak
-            then
-
-                until [[ "${flatpak_names[num]}" == "$app" ]]
-                do
-
-                    num=$((num+1))
-
-                done
-
-                id_pkgname="${flatpak_ids[num]}"
-
-                if [[ "$id_pkgname" == *".desktop" ]]
-		        then
-
-			        id_pkgname="${id_pkgname::-8}"
-
-		        fi
-
-                icon="$flatpak_appstream_dir/icons/64x64/$id_pkgname.png"
-
-            fi
-
-            if [[ -n "$icon" ]]
-            then
-
-                app_number=$((app_number+1))
-
-                yad_list+=("\"$icon\"" "\"$name\"" "\"$type\"" "\"$id_pkgname\"")
-
-            fi
-
-            counter=$((counter+1))
-
-        done
-
-        if ((${#results_full[@]}>rows_per_page)) && [[ "$page" != "$(expr ${#results_full[@]} / $rows_per_page)" ]] #if not on the last page
-        then
-
-            if ((page>1))
-            then
-
-                page_buttons='--button=Previous!gtk-go-forward-rtl:3 --button=Jump!gtk-jump-to-ltr:4 --button=Next!gtk-go-forward-ltr:5'
+                page_buttons='--button=Previous!gtk-go-forward-rtl:3 --button=Jump!gtk-jump-to-ltr:4' 
 
             else
 
-                page_buttons='--button=Jump!gtk-jump-to-ltr:4 --button=Next!gtk-go-forward-ltr:5'
+                page_buttons=""
 
             fi
 
-        elif ((page>1))
-        then
+            end_loading
 
-            page_buttons='--button=Previous!gtk-go-forward-rtl:3 --button=Jump!gtk-jump-to-ltr:4' 
+            if [[ "$category" != "All Applications" ]]
+            then
+
+                category_text="<b>Category: ${category}</b> "
+
+            else
+
+                category_text=""
+
+            fi
+
+            eval "yad --window-icon=/usr/share/shockware-center/icon.svg --width=800 --height=500 --title=\"Shockware Center\" --text=\"${category_text}Page $page of $((${#results_full[@]}/rows_per_page)) <small>Double-click on an app to install/remove it.</small>\" --list --column=\"Icon\":IMG --column=\"Name\" --column=\"TYPE\":HD --column=\"ID_PKGNAME\":HD --column=\"ICON\":HD ${yad_list[@]} --dclick-action=\"shockware-center-view-package $show_apt_packages $show_flatpaks $flatpak_appstream_dir\" --buttons-layout=spread --button=\"Settings\"\!gnome-settings:0 --button=\"Categories\"\!open-menu-symbolic:1 --button=\"Search\"\!gtk-find:2 $page_buttons"
+
+            ex=$?
 
         else
 
-            page_buttons=""
+            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="No results found. Please try a different keyword." --button="Retry"\!edit-undo
+
+            ex=2
 
         fi
-
-        end_loading
-
-        eval "yad --window-icon=/usr/share/shockware-center/icon.svg --title=\"Shockware Center\" --width=800 --height=500 --list --column=\"Icon\":IMG --column=\"Name\" --column=\"TYPE\":HD --column=\"ID_PKGNAME\":HD ${yad_list[@]} --dclick-action=shockware-center-view-package --buttons-layout=spread --button=\"Settings\"\!gnome-settings:0 --button=\"Categories\"\!open-menu-symbolic:1 --button=\"Search\"\!gtk-find:2 $page_buttons"
-
-        ex=$?
 
         if ((ex==0)) #settings
         then
 
             if ((rows_per_page==50))
-		    then
+	        then
 
-			    rows_per_page_selection='^50!100!200'
+		        rows_per_page_selection='^50!100!200'
 
-		    elif ((rows_per_page=100))
-		    then
+	        elif ((rows_per_page==100))
+	        then
 
-			    rows_per_page_selection='50!^100!200'
+		        rows_per_page_selection='50!^100!200'
 
-		    else
+	        else
 
-			    rows_per_page_selection='50!100!^200'
+		        rows_per_page_selection='50!100!^200'
 
-		    fi
+	        fi
 
             if [[ "$show_apt_packages" == "TRUE" ]] && [[ "$show_flatpaks" == "TRUE" ]]
             then
@@ -489,14 +503,14 @@ do
 
             fi
 
-		    output="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Rows per page:":CB "$rows_per_page_selection" --field='':CB "$show_packages_selection" --buttons-layout=edge --button="Refresh Catalog"\!gtk-refresh:1 --button="Apply"\!gtk-ok:0)"
+	        output="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Rows per page:":CB "$rows_per_page_selection" --field='':CB "$show_packages_selection" --buttons-layout=edge --button="Refresh Catalog"\!gtk-refresh:1 --button="Apply"\!gtk-ok:0)"
 
-		    ex=$?
+	        ex=$?
 
-		    if ((ex==0)) #apply
-		    then
+	        if ((ex==0)) #apply
+	        then
 
-			    rows_per_page=$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')
+		        rows_per_page=$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')
 
                 show_packages_selection=$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')
 
@@ -528,7 +542,7 @@ show_apt_packages=$show_apt_packages
 
 show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
 
-		    elif ((ex==1)) #refresh catalog
+	        elif ((ex==1)) #refresh catalog
             then
 
                 sudo shock-update-manager-refresh | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --image=gtk-refresh --title="Shockware Center" --text="Refreshing application catalog..." --percentage-text="" --text-align=center --auto-close --progress --pulsate
@@ -558,76 +572,89 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
         elif ((ex==2)) #search
         then
 
-            if [[ "$category" == "All Applications" ]]
-            then
+            success="FALSE"
 
-                category_selection='All Applications!Accessories!Games!Graphics!Internet!Office!Programming!Education!Multimedia!System Tools'
+            until [[ "$success" == "TRUE" ]]
+            do
 
-            elif [[ "$category" == "Accessories" ]]
-            then
+                if [[ "$category" == "All Applications" ]]
+                then
 
-                category_selection='All Applications!^Accessories!Games!Graphics!Internet!Office!Programming!Education!Multimedia!System Tools'
+                    category_selection='All Applications!Accessories!Games!Graphics!Internet!Office!Programming!Education!Multimedia!System Tools'
 
-            elif [[ "$category" == "Games" ]]
-            then
+                elif [[ "$category" == "Accessories" ]]
+                then
 
-                category_selection='All Applications!Accessories!^Games!Graphics!Internet!Office!Programming!Education!Multimedia!System Tools'
+                    category_selection='All Applications!^Accessories!Games!Graphics!Internet!Office!Programming!Education!Multimedia!System Tools'
 
-            elif [[ "$category" == "Graphics" ]]
-            then
+                elif [[ "$category" == "Games" ]]
+                then
 
-                category_selection='All Applications!Accessories!Games!^Graphics!Internet!Office!Programming!Education!Multimedia!System Tools'
+                    category_selection='All Applications!Accessories!^Games!Graphics!Internet!Office!Programming!Education!Multimedia!System Tools'
 
-            elif [[ "$category" == "Internet" ]]
-            then
+                elif [[ "$category" == "Graphics" ]]
+                then
 
-                category_selection='All Applications!Accessories!Games!Graphics!^Internet!Office!Programming!Education!Multimedia!System Tools'
+                    category_selection='All Applications!Accessories!Games!^Graphics!Internet!Office!Programming!Education!Multimedia!System Tools'
 
-            elif [[ "$category" == "Office" ]]
-            then
+                elif [[ "$category" == "Internet" ]]
+                then
 
-                category_selection='All Applications!Accessories!Games!Graphics!Internet!^Office!Programming!Education!Multimedia!System Tools'
+                    category_selection='All Applications!Accessories!Games!Graphics!^Internet!Office!Programming!Education!Multimedia!System Tools'
 
-            elif [[ "$category" == "Programming" ]]
-            then
+                elif [[ "$category" == "Office" ]]
+                then
 
-                category_selection='All Applications!Accessories!Games!Graphics!Internet!Office!^Programming!Education!Multimedia!System Tools'
+                    category_selection='All Applications!Accessories!Games!Graphics!Internet!^Office!Programming!Education!Multimedia!System Tools'
 
-            elif [[ "$category" == "Education" ]]
-            then
+                elif [[ "$category" == "Programming" ]]
+                then
 
-                category_selection='All Applications!Accessories!Games!Graphics!Internet!Office!Programming!^Education!Multimedia!System Tools'
+                    category_selection='All Applications!Accessories!Games!Graphics!Internet!Office!^Programming!Education!Multimedia!System Tools'
 
-            elif [[ "$category" == "Multimedia" ]]
-            then
+                elif [[ "$category" == "Education" ]]
+                then
 
-                category_selection='All Applications!Accessories!Games!Graphics!Internet!Office!Programming!Education!^Multimedia!System Tools'
+                    category_selection='All Applications!Accessories!Games!Graphics!Internet!Office!Programming!^Education!Multimedia!System Tools'
 
-            else
+                elif [[ "$category" == "Multimedia" ]]
+                then
 
-                category_selection='All Applications!Accessories!Games!Graphics!Internet!Office!Programming!Education!Multimedia!^System Tools'
+                    category_selection='All Applications!Accessories!Games!Graphics!Internet!Office!Programming!Education!^Multimedia!System Tools'
 
-            fi
+                else
 
-            output="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --form --field="Keyword:" "$keyword" --field="Category:":CB "$category_selection" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
+                    category_selection='All Applications!Accessories!Games!Graphics!Internet!Office!Programming!Education!Multimedia!^System Tools'
 
-            ex=$?
+                fi
 
-            keyword="$(echo "$output" | awk -F'|' '{print $1}')"
+                output="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --form --field="Keyword:" "$keyword" --field="Category:":CB "$category_selection" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
 
-            category="$(echo "$output" | awk -F'|' '{print $2}')"
+                ex=$?
 
-	        page=0
+                keyword="$(echo "$output" | awk -F'|' '{print $1}')"
+
+                category="$(echo "$output" | awk -F'|' '{print $2}')"
+
+                if (("${#keyword}"<3)) && ((ex!=1))
+                then
+
+                    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="The search term must be a minimum of three characters long." --button="Retry"\!edit-undo
+
+                else
+
+                    success="TRUE"
+
+                fi
+
+            done
+
+            page=0
 
             if ((ex==1)) #show all
             then
 
                 keyword=""
-
-            elif ((ex==0)) #search
-            then
-
-                page=0
 
             fi
         
@@ -641,7 +668,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
 
             output=$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Jump to Page:":NUM "$page\!1..$(expr ${#results_full[@]} / $rows_per_page)" --button=Jump!gtk-jump-to-ltr)
 
-	        ex=$?
+            ex=$?
 
             if ((ex==0))
             then
