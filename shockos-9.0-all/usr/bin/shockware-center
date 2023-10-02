@@ -478,7 +478,7 @@ do
 
             fi
 
-            eval "yad --window-icon=/usr/share/shockware-center/icon.svg --width=800 --height=500 --title=\"Shockware Center\" --text=\"${category_text}Page $page of $((${#results_full[@]}/rows_per_page)) <small>Double-click on an app to install/remove it.</small>\" --list --column=\"Icon\":IMG --column=\"Name\" --column=\"TYPE\":HD --column=\"PACKAGE\":HD --column=\"ID\":HD --column=\"ICON\":HD ${yad_list[@]} --dclick-action=\"shockware-center-view-package $show_apt_packages $show_flatpaks\" --buttons-layout=spread --button=\"Settings\"\!gnome-settings:0 --button=\"Categories\"\!open-menu-symbolic:1 --button=\"Search\"\!gtk-find:2 $page_buttons"
+            eval "yad --window-icon=/usr/share/shockware-center/icon.svg --width=800 --height=500 --title=\"Shockware Center\" --text=\"${category_text}Page $page of $((${#results_full[@]}/rows_per_page)) <small>Double-click on an app to install/remove it.</small>\" --list --column=\"Icon\":IMG --column=\"Name\" --column=\"TYPE\":HD --column=\"PACKAGE\":HD --column=\"ID\":HD --column=\"ICON\":HD ${yad_list[@]} --dclick-action=\"shockware-center-view-package $show_apt_packages $show_flatpaks $flatpak_appstream_dir\" --buttons-layout=spread --button=\"Settings\"\!gnome-settings:0 --button=\"Categories\"\!open-menu-symbolic:1 --button=\"Search\"\!gtk-find:2 $page_buttons"
 
             ex=$?
 
