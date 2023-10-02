@@ -19,6 +19,8 @@ apt_appstream_dir="/var/lib/app-info"
 
 flatpak_appstream_dir="/var/lib/flatpak/appstream/flathub/${arch}/active"
 
+currently_loading="FALSE"
+
 #THE LOADING FUNCTIONS BEGIN
 
 function start_loading() {
@@ -355,7 +357,8 @@ do
 
                         type="B"
 
-                    else
+                    elif ! [[ "$show_apt_packages" == "FALSE" && "$show_flatpaks" == "TRUE" ]]
+                    then
 
                         type="SKIP"
 
