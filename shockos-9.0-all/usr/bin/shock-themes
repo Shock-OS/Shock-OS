@@ -8,6 +8,8 @@ nl="${#runuser}"
 
 nl=$((nl+1))
 
+system_themes="\"shock-dark-blue\" \"shock-dark-purple\" \"shock-light-green\" \"shock-light-red\" \"shock-dark-green\" \"shock-dark-red\" \"shock-light-orange\" \"shock-light-yellow\" \"shock-dark-orange\" \"shock-dark-yellow\" \"shock-light-pink\" \"shock-dark-pink\" \"shock-light-blue\" \"shock-light-purple\"" #THEME BANDAID FIX
+
 while true
 do
 
@@ -33,14 +35,19 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
             current_theme="$(basename "$i")"
 
-            if [[ "$(ls -d "$i"/*/)" == "${i}/metacity-1/" ]]
+            if [[ " $system_themes " != *" \"$current_theme\" "* ]] #OMIT SYSTEM THEMES FROM LIST (THEME BANDAID FIX)
             then
 
-			    yadlist+=("gnome-settings-theme" "Metacity theme" "${current_theme:$nl}")
+                if [[ "$(ls -d "$i"/*/)" == "${i}/metacity-1/" ]]
+                then
 
-            else
+			        yadlist+=("gnome-settings-theme" "Metacity theme" "${current_theme:$nl}")
 
-                yadlist+=("gnome-settings-theme" "Theme pack" "${current_theme:$nl}")
+                else
+
+                    yadlist+=("gnome-settings-theme" "Theme pack" "${current_theme:$nl}")
+
+                fi
 
             fi
 
@@ -236,27 +243,27 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
                             mkdir -p ~/.icons
 
-                            mkdir -p ~/.shock-icons
+                            mkdir -p ~/.shock/icons
 
-                            if [[ -d ~/.shock-icons/"$i" ]] #if directory with the same name already exists
+                            if [[ -d ~/.shock/icons/"$i" ]] #if directory with the same name already exists
                             then
 
                                 dn=1
 
-                                until [[ ! -d ~/.shock-icons/"$i ($dn)" ]]
+                                until [[ ! -d ~/.shock/icons/"$i ($dn)" ]]
                                 do
 
                                     dn=$((dn+1))
 
                                 done
 
-                                mkdir -p ~/.shock-icons/"$i ($dn)"
+                                mkdir -p ~/.shock/icons/"$i ($dn)"
 
-                                cp -rf "$i"/* ~/.shock-icons/"$i ($dn)"
+                                cp -rf "$i"/* ~/.shock/icons/"$i ($dn)"
 
                             else
 
-				                cp -rf "$i" ~/.shock-icons/"$i"
+				                cp -rf "$i" ~/.shock/icons/"$i"
 
                             fi
 
@@ -269,27 +276,27 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
                             mkdir -p ~/.themes
 
-                            mkdir -p ~/.shock-themes
+                            mkdir -p ~/.shock/themes
 
-                            if [[ -d ~/.shock-themes/"$i" ]] #if directory with the same name already exists
+                            if [[ -d ~/.shock/themes/"$i" ]] #if directory with the same name already exists
                             then
 
                                 dn=1
 
-                                until [[ ! -d ~/.shock-themes/"$i ($dn)" ]]
+                                until [[ ! -d ~/.shock/themes/"$i ($dn)" ]]
                                 do
 
                                     dn=$((dn+1))
 
                                 done
 
-                                mkdir -p ~/.shock-themes/"$i ($dn)"
+                                mkdir -p ~/.shock/themes/"$i ($dn)"
 
-                                cp -rf "$i"/* ~/.shock-themes/"$i ($dn)"
+                                cp -rf "$i"/* ~/.shock/themes/"$i ($dn)"
 
                             else
 
-                                cp -rf "$i" ~/.shock-themes/"$i"
+                                cp -rf "$i" ~/.shock/themes/"$i"
 
                             fi
 

@@ -24,24 +24,28 @@ style=\"$style\"" | tee "$user_home_dir"/.config/shock/slideshow-background
 
         rm "$user_home_dir"/.config/shock-wallpaper
 
-        source "$user_home_dir"/.config/shock_themes
-
-        echo "shock_gtk_theme=shock-${lod}-${color}
-    shock_icon_theme=shock-${lod}-${color}" | tee "$user_home_dir"/.config/shock/themes
-
-        rm "$user_home_dir"/.config/shock_themes
-
-        rm -r "$user_home_dir"/.cache/shock-release-scanner
-
-        mv "$user_home_dir"/.config/shock-welcome-indicator "$user_home_dir"/.config/shock/welcome-indicator
-
-        mv "$user_home_dir"/.config/userlogstat "$user_home_dir"/.config/shock/userlogstat
-
-        mv "$user_home_dir"/.config/shock_fonts "$user_home_dir"/.config/shock/fonts
-
-        mv "$user_home_dir"/.config/shockware-center "$user_home_dir"/.config/shock/shockware-center
-
     fi
+
+    source "$user_home_dir"/.config/shock_themes
+
+    echo "shock_gtk_theme=shock-${lod}-${color}
+shock_icon_theme=shock-${lod}-${color}" | tee "$user_home_dir"/.config/shock/themes
+
+    rm "$user_home_dir"/.config/shock_themes
+
+    rm -r "$user_home_dir"/.cache/shock-release-scanner
+
+    mv "$user_home_dir"/.config/shock-welcome-indicator "$user_home_dir"/.config/shock/welcome-indicator
+
+    mv "$user_home_dir"/.config/userlogstat "$user_home_dir"/.config/shock/userlogstat
+
+    mv "$user_home_dir"/.config/shock_fonts "$user_home_dir"/.config/shock/fonts
+
+    mv "$user_home_dir"/.config/shockware-center "$user_home_dir"/.config/shock/shockware-center
+
+    mkdir -p "$user_home_dir"/.themes #THEME BANDAID FIX
+
+    cp -r /usr/share/themes/shock-* "$user_home_dir"/.themes #THEME BANDAID FIX
 
 done
 
@@ -68,6 +72,8 @@ rm -r /usr/share/shock-pcstl
 
 #the pcstl -> screentime patch ends
 
+#NEW POSTINST LINES BEGIN
+
 cp /usr/bin/mate-appearance-properties /usr/bin/mate-appearance-properties-old
 
 cp /usr/bin/mate-window-properties /usr/bin/mate-window-properties-old
@@ -79,6 +85,13 @@ shock-backgrounds' | tee /usr/bin/mate-appearance-properties
 echo '#!/bin/bash
 
 shock-wm-settings' | tee /usr/bin/mate-window-properties
+
+cp -r /usr/share/themes/shock-* /etc/skel/.themes
+
+cp -r /usr/share/shock/install-temp/"Sample Videos" /etc/skel/Videos
+
+echo "shock_gtk_theme=shock-light-blue
+shock_icon_theme=shock-light-blue" | tee /etc/skel/.config/shock_themes
 
 
 

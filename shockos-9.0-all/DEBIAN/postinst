@@ -181,6 +181,10 @@ cp -r /usr/share/shock/install-temp/"Sample Videos" /etc/skel/Videos
 echo "shock_gtk_theme=shock-light-blue
 shock_icon_theme=shock-light-blue" | tee /etc/skel/.config/shock_themes
 
+mkdir -p /etc/skel/.themes #THEME BANDAID FIX
+
+cp -r /usr/share/themes/shock-* /etc/skel/.themes #THEME BANDAID FIX
+
 #the home directory building ends
 
 cp -r /usr/share/shock/applications/* /etc/skel/.local/share/applications

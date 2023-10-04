@@ -17,6 +17,8 @@ fi
 
 #the root check element ends
 
+system_themes="\"shock-dark-blue\" \"shock-dark-purple\" \"shock-light-green\" \"shock-light-red\" \"shock-dark-green\" \"shock-dark-red\" \"shock-light-orange\" \"shock-light-yellow\" \"shock-dark-orange\" \"shock-dark-yellow\" \"shock-light-pink\" \"shock-dark-pink\" \"shock-light-blue\" \"shock-light-purple\"" #THEME BANDAID FIX
+
 for user in /home/*
 do
 
@@ -35,34 +37,39 @@ do
 
                 theme="$(basename "$theme")"
 
-                if [[ -h /home/"$user"/."$type"/"$theme" ]]
+                if [[ " $system_themes " != *" \"$theme\" "* ]] #THEME BANDAID FIX (just this if loop, not its contents)
                 then
 
-                    link="$(readlink /home/"$user"/."$type"/"$theme")"
-
-                    if [[ -d "$link" ]]
+                    if [[ -h /home/"$user"/."$type"/"$theme" ]]
                     then
 
-                        linked_themes+=("\"$(basename "$link")\"")
+                        link="$(readlink /home/"$user"/."$type"/"$theme")"
 
-                        if [[ "$theme" != "$user_"* ]] #if theme not named to fit user
+                        if [[ -d "$link" ]]
                         then
 
-                            mv /home/"$user"/."$type"/"$theme" /home/"$user"/."$type"/"${user}_${theme}"
+                            linked_themes+=("\"$(basename "$link")\"")
 
-                            theme="${user}_${theme}"
+                            if [[ "$theme" != "$user_"* ]] #if theme not named to fit user
+                            then
+
+                                mv /home/"$user"/."$type"/"$theme" /home/"$user"/."$type"/"${user}_${theme}"
+
+                                theme="${user}_${theme}"
+
+                            fi
+
+                        else #remove symlink if target theme doesn't exist
+
+                            rm /home/"$user"/."$type"/"$theme"
 
                         fi
 
-                    else #remove symlink if target theme doesn't exist
+                    else #if file is not a symlink, move it to the .shock/(themes/icons) directory
 
-                        rm /home/"$user"/."$type"/"$theme"
+                        mv /home/"$user"/."$type"/"$theme" /home/"$user"/.shock/"$type"
 
                     fi
-
-                else #if file is not a symlink, move it to the .shock-(themes/icons) directory
-
-                    mv /home/"$user"/."$type"/"$theme" /home/"$user"/.shock-"$type"
 
                 fi
 
@@ -70,10 +77,10 @@ do
 
         fi
 
-        if (($(ls /home/"$user"/.shock-"$type" | wc -l)>0))
+        if (($(ls /home/"$user"/.shock/"$type" | wc -l)>0))
         then
 
-            for theme in /home/"$user"/.shock-"$type"/* #create links to new themes.
+            for theme in /home/"$user"/.shock/"$type"/* #create links to new themes.
             do
 
                 theme="$(basename "$theme")"
@@ -81,7 +88,7 @@ do
                 if [[ " ${linked_themes[@]} " != *"\"$theme\""* ]]
                 then
 
-                    ln -s /home/"$user"/.shock-"$type"/"$theme" /home/"$user"/."$type"/"${user}_${theme}"
+                    ln -s /home/"$user"/.shock/"$type"/"$theme" /home/"$user"/."$type"/"${user}_${theme}"
 
                 fi
 
