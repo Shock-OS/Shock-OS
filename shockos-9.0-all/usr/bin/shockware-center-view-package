@@ -59,7 +59,7 @@ then
 
 else
 
-    yad --notification --image=/usr/share/shockware-center/icon.svg --icon-size=30 --text="Software management processes are running. Please do not turn off your computer." --command='' & echo "$!" | tee ~/.cache/shock-tmp/shockware-center/indicator_killpid
+    yad --notification --image=/usr/share/shockware-center/icon.svg --icon-size=30 --text="The Shockware Center is running. Please do not turn off your computer." --command='' & echo "$!" | tee ~/.cache/shock-tmp/shockware-center/indicator_killpid
 
     echo "1" | tee ~/.cache/shock-tmp/shockware-center/indicator_instances
 
