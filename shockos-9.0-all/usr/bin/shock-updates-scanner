@@ -7,7 +7,7 @@ IFS=$'\n'
 while true
 do
 
-    rm ~/.cache/shock-update-manager/notification_pid
+    rm ~/.cache/shock-update-manager/indicator_pid
 
     updates=($(apt list --upgradable | awk '{ printf "\"%s\"\n", $0 }'))
 
@@ -65,14 +65,14 @@ do
 
             mkdir -p ~/.cache/shock-tmp/shock-update-manager
 
-            echo "$killpid" | tee ~/.cache/shock-tmp/shock-update-manager/notification_pid
+            echo "$killpid" | tee ~/.cache/shock-tmp/shock-update-manager/indicator_pid
 
             wait $killpid
 
-            if [[ -f ~/.cache/shock-tmp/shock-update-manager/updates_in_progress_notification_pid ]] #if updates are being installed, wait for them to finish.
+            if [[ -f ~/.cache/shock-tmp/shock-update-manager/updates_in_progress_indicator_pid ]] #if updates are being installed, wait for them to finish.
             then
 
-                wait "$(cat ~/.cache/shock-tmp/shock-update-manager/updates_in_progress_notification_pid)"
+                wait "$(cat ~/.cache/shock-tmp/shock-update-manager/updates_in_progress_indicator_pid)"
 
             fi
 
