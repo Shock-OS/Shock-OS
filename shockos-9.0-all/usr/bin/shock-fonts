@@ -45,7 +45,7 @@ do
     elif ((ex==1))
     then
 
-        file="$(yad --window-icon=preferences-desktop-font --title="Install Fonts" --file)"
+        file="$(yad --window-icon=preferences-desktop-font --title="Install Fonts" --file --button="Install"\!gtk-open)"
 
         info="$(file "$file")"
 
