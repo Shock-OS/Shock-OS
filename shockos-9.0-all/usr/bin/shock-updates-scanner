@@ -49,11 +49,17 @@ do
 
                 yad_text="${#updates[@]} updates are available. Click to install them."
 
+                notification_text="${#updates[@]} updates are available."
+
             else
 
-                yad_text="1 update is available. Click to install it."
+                yad_text="An update is available. Click to install it."
+
+                notification_text="An update is available."
 
             fi
+
+            notify-send --icon=system-software-update "Update Manager" "$notification_text"
 
             yad --notification --image=system-software-update --text="$yad_text" --command='shock-update-manager' & killpid=$!
 

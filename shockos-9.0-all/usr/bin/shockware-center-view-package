@@ -213,11 +213,11 @@ then
     if [[ " ${installed_packages[@]} " != *" $package "* ]] #if removed successfully
     then
 
-        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully removed." --button="Dismiss"\!gtk-quit
+        notify-send --icon=/usr/share/shockware-center/icon.svg "App Removed Successfully" "$full_name$both was successfully removed."
 
     else
 
-        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to remove $full_name$both." --button="Dismiss"\!gtk-quit
+        notify-send --icon=emblem-important "Failed to Remove App" "Failed to remove $full_name$both. There may be a problem with your system's package manager."
 
     fi
 
@@ -241,11 +241,11 @@ update_apt_queue
 if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed successfully
 then
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully installed." --button="Dismiss"\!gtk-quit
+    notify-send --icon="$icon" "App Installed Successfully" "$full_name$both was successfully installed."
 
 else
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $full_name$both. Please double check your internet connection and try again later." --button="Dismiss"\!gtk-quit
+    notify-send --icon=emblem-important "Failed to Install App" "Failed to install $full_name$both. Please double check your internet connection and try again later."
 
 fi
 
@@ -311,11 +311,11 @@ then
     if [[ " ${installed_flatpaks[@]} " != *" $id "* ]] #if removed successfully
     then
 
-        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully removed." --button="Dismiss"\!gtk-quit
+        notify-send --icon=/usr/share/shockware-center/icon.svg "App Removed Successfully" "$full_name$both was successfully removed."
 
     else
 
-        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to remove $full_name$both." --button="Dismiss"\!gtk-quit
+        notify-send --icon=emblem-important "Failed to Remove App" "Failed to remove $full_name$both. There may be a problem with Flatpak."
 
     fi
 
@@ -368,11 +368,11 @@ hide_notification
 if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed successfully
 then
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-default --title="Shockware Center" --text="$full_name$both was successfully installed." --button="Dismiss"\!gtk-quit
+    notify-send --icon="$icon" "App Installed Successfully" "$full_name$both was successfully installed."
 
 else
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="Failed to install $full_name$both. Please double check your internet connection and try again later." --button="Dismiss"\!gtk-quit
+    notify-send --icon=emblem-important "Failed to Install App" "Failed to install $full_name$both. Please double check your internet connection and try again later."
 
 fi
 

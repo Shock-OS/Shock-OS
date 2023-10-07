@@ -3,7 +3,7 @@
 if (($(ps aux | awk '{print $1,$11,$12}' | grep -c "$(whoami) /bin/bash /usr/bin/shock-update-manager")>2)) #exits the program if it is already running for this user
 then
 
-    wmctrl -a "Update Manager"
+    wmctrl -Fa "Update Manager"
 
     exit
 

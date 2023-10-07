@@ -1,5 +1,6 @@
 [Desktop Entry]
-Name=shock-startup.desktop
+Name=Shock OS Startup
+Comment=Required for Shock OS to function properly
 Exec=shock-startup
 X-GNOME-Autostart-Phase=Desktop
 Type=Application
