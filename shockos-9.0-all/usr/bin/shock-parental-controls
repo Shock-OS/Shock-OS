@@ -68,7 +68,7 @@ then
         if ((ex!=0)) && ((ex!=1))
         then
 
-            yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="Operation aborted. No changes were made to your system." --button="Dismiss"\!gtk-quit
+            notify-send --icon=/usr/share/shock/parental-controls.png --app-name="Parental Controls" "Parental Controls" "Operation aborted. No changes were made to your system."
 
             exit
 
@@ -79,7 +79,7 @@ then
 
             rm -r /usr/share/shock-screentime/"$user"/dailylimit
 
-            yad --window-icon=/usr/share/shock/parental-controls.png --title="Parental Controls" --text="The screen time limit for the user '$user_display_name' was removed successfully." --button="Dismiss"\!gtk-quit
+            notify-send --icon=/usr/share/shock/parental-controls.png --app-name="Parental Controls" "Parental Controls" "The screen time limit for the user '$user_display_name' was removed successfully."
 
             exit
 
@@ -99,7 +99,7 @@ then
         if ((ex!=0))
         then
 
-            yad --window-icon=/usr/share/shock/parental-controls.png --image=gtk-cancel --title="Parental Controls" --text="Operation aborted. No changes were made to your system." --button="Dismiss"\!gtk-quit
+            notify-send --icon=/usr/share/shock/parental-controls.png --app-name="Parental Controls" "Parental Controls" "Operation aborted. No changes were made to your system."
 
             exit
 
@@ -155,11 +155,11 @@ then
     if ((ex==0)) #if overwriting
     then
 
-        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --image=emblem-default --title="Parental Controls" --text="The daily screen time limit for the user $user_display_name has been changed to $total_display. If they have been logged in today, their timer will be restarted." --button="Dismiss"\!gtk-quit
+        notify-send --icon=/usr/share/shock/parental-controls.png --app-name="Parental Controls" "Parental Controls" "The daily screen time limit for the user $user_display_name has been changed to $total_display. If they have been logged in today, their timer will be restarted."
 
     else
 
-        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --image=emblem-default --title="Parental Controls" --text="A daily screen time limit of $total_display has been set for $user_display_name." --button="Dismiss"\!gtk-quit
+        notify-send --icon=/usr/share/shock/parental-controls.png --app-name="Parental Controls" "Parental Controls" "A daily screen time limit of $total_display has been set for $user_display_name."
 
     fi
 
@@ -221,7 +221,7 @@ then
 
         done
 
-        yad --window-icon=/usr/share/shock/parental-controls.png --width=500 --image=emblem-default --title="Parental Controls" --text="The screen time tracking settings for '$user' have been set." --button="Dismiss"\!gtk-quit
+        notify-send --icon=/usr/share/shock/parental-controls.png --app-name="Parental Controls" "Parental Controls" "The screen time tracking settings for '$user' have been set."
 
     fi
 

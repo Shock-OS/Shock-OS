@@ -169,11 +169,11 @@ then
     if [[ " ${installed_packages[@]} " == *" $package "* ]] && [[ "$current_version" == "$deb_version" ]] #if package installed successfully
     then
 
-        yad --window-icon=package --image=emblem-default --title="Package Installer" --text="$package_display_name was installed successfully." --button="Dismiss"\!gtk-quit
+        notify-send --icon=package --app-name="Package Installer" "Package Installed Successfully" "$package_display_name was installed successfully."
 
     else #if package was not installed successfully
 
-        zenity --error --text="Failed to install $package_display_name. Please double check your internet connection and try again later." --ok-label="Exit"
+        notify-send --icon=package --app-name="Package Installer" "Failed to Install Package" "Failed to install $package_display_name. Please double check your internet connection and try again later."
 
         exit 1
 
@@ -185,11 +185,11 @@ then
     if [[ " ${installed_packages[@]} " != *" $package "* ]] #if package removed successfully
     then
 
-        yad --window-icon=package --image=emblem-default --title="Package Installer" --text="$package_display_name was removed successfully." --button="Dismiss"\!gtk-quit
+        notify-send --icon=package --app-name="Package Installer" "Package Removed Successfully" "$package_display_name was removed successfully."
 
     else #if package was not installed successfully
 
-        zenity --error --text="Failed to remove $package_display_name." --ok-label="Exit"
+        notify-send --icon=package --app-name="Package Installer" "Failed to Remove Package" "Failed to remove $package_display_name."
 
         exit 1
 
@@ -197,7 +197,7 @@ then
 
 else #if action was to reinstall
 
-    yad --window-icon=package --image=emblem-default --title="Package Installer" --text="$package_display_name was reinstalled successfully." --button="Dismiss"\!gtk-quit
+    notify-send --icon=package --app-name="Package Installer" "Package Reinstalled Successfully" "$package_display_name was reinstalled successfully."
 
 fi
 
