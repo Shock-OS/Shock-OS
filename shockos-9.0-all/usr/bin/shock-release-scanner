@@ -54,7 +54,7 @@ do
 
                 fi
 
-                notify-send --urgency=critical --icon=/usr/share/shock/shock-release-upgrader.svg "System Upgrade Available" "The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available."
+                notify-send --app-name="Release Upgrader" --urgency=critical --icon=/usr/share/shock/shock-release-upgrader.svg "System Upgrade Available" "The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available."
 
                 yad --notification --image=/usr/share/shock/shock-release-upgrader.svg --icon-size=48 --text="The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available. Click to upgrade."
 

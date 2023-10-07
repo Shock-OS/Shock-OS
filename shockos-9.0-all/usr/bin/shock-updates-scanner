@@ -59,7 +59,7 @@ do
 
             fi
 
-            notify-send --icon=system-software-update "Update Manager" "$notification_text"
+            notify-send --app-name="Update Manager" --icon=system-software-update "Update Manager" "$notification_text"
 
             yad --notification --image=system-software-update --text="$yad_text" --command='shock-update-manager' & killpid=$!
 

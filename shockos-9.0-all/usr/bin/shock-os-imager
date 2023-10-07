@@ -376,7 +376,7 @@ then
 
 #THE WRITE SEGMENT ENDS
 
-	notify-send --icon=/usr/share/shock-os-imager/icon.svg "Flashing Complete" "$image_to_flash_display has successfully been flashed to $target_drive_display_name."
+	notify-send --app-name="Shock OS Imager" --icon=/usr/share/shock-os-imager/icon.svg "Flashing Complete" "$image_to_flash_display has successfully been flashed to $target_drive_display_name."
 
 	yad --window-icon=/usr/share/shock-os-imager/icon.svg --title="Shock OS Imager" --text="Congratulations! $image_to_flash_display has successfully been flashed to $target_drive_display_name. Thank you and enjoy!" --button="Dismiss"\!gtk-quit
 

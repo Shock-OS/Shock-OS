@@ -213,11 +213,11 @@ then
     if [[ " ${installed_packages[@]} " != *" $package "* ]] #if removed successfully
     then
 
-        notify-send --icon=/usr/share/shockware-center/icon.svg "App Removed Successfully" "$full_name$both was successfully removed."
+        notify-send --app-name="Shockware Center" --icon=/usr/share/shockware-center/icon.svg "App Removed Successfully" "$full_name$both was successfully removed."
 
     else
 
-        notify-send --icon=emblem-important "Failed to Remove App" "Failed to remove $full_name$both. There may be a problem with your system's package manager."
+        notify-send --app-name="Shockware Center" --icon=emblem-important "Failed to Remove App" "Failed to remove $full_name$both. There may be a problem with your system's package manager."
 
     fi
 
@@ -241,11 +241,11 @@ update_apt_queue
 if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed successfully
 then
 
-    notify-send --icon="$icon" "App Installed Successfully" "$full_name$both was successfully installed."
+    notify-send --app-name="Shockware Center" --icon="$icon" "App Installed Successfully" "$full_name$both was successfully installed."
 
 else
 
-    notify-send --icon=emblem-important "Failed to Install App" "Failed to install $full_name$both. Please double check your internet connection and try again later."
+    notify-send --app-name="Shockware Center" --icon=emblem-important "Failed to Install App" "Failed to install $full_name$both. Please double check your internet connection and try again later."
 
 fi
 
@@ -311,11 +311,11 @@ then
     if [[ " ${installed_flatpaks[@]} " != *" $id "* ]] #if removed successfully
     then
 
-        notify-send --icon=/usr/share/shockware-center/icon.svg "App Removed Successfully" "$full_name$both was successfully removed."
+        notify-send --app-name="Shockware Center" --icon=/usr/share/shockware-center/icon.svg "App Removed Successfully" "$full_name$both was successfully removed."
 
     else
 
-        notify-send --icon=emblem-important "Failed to Remove App" "Failed to remove $full_name$both. There may be a problem with Flatpak."
+        notify-send --app-name="Shockware Center" --icon=emblem-important "Failed to Remove App" "Failed to remove $full_name$both. There may be a problem with Flatpak."
 
     fi
 
@@ -368,11 +368,11 @@ hide_notification
 if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed successfully
 then
 
-    notify-send --icon="$icon" "App Installed Successfully" "$full_name$both was successfully installed."
+    notify-send --app-name="Shockware Center" --icon="$icon" "App Installed Successfully" "$full_name$both was successfully installed."
 
 else
 
-    notify-send --icon=emblem-important "Failed to Install App" "Failed to install $full_name$both. Please double check your internet connection and try again later."
+    notify-send --app-name="Shockware Center" --icon=emblem-important "Failed to Install App" "Failed to install $full_name$both. Please double check your internet connection and try again later."
 
 fi
 
