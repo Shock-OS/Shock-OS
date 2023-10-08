@@ -80,6 +80,17 @@ do
 
     fi
 
-    sleep 900
+    if [[ -f /usr/share/shock-update-manager/update-scan-interval ]]
+    then
+
+        interval=$(cat /usr/share/shock-update-manager/update-scan-interval)
+
+    else
+
+        interval=86400 #24 hours
+
+    fi
+
+    sleep $interval
 
 done

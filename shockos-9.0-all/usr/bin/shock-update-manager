@@ -65,42 +65,94 @@ else #if disabled
 
 fi
 
-settings="$(yad --window-icon=system-software-update --width=100 --title="Settings" --form --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --buttons-layout=edge --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0)"
-
-ex=$?
-
-if ((ex==0))
+if [[ -f /usr/share/shock-update-manager/update-scan-interval ]]
 then
 
-    automatic_updates="$(echo $settings | awk 'BEGIN {FS="|" } { print $2 }')"
+    interval=$(cat /usr/share/shock-update-manager/update-scan-interval)
 
-    notify_of_new_versions_of_shock_os="$(echo $settings | awk 'BEGIN {FS="|" } { print $4 }')"
+else
 
-    if [[ "$automatic_updates" == "TRUE" ]] && [[ ! -f /etc/sudoers.d/shock_automatic_updates ]] #enable automatic updates
-    then
-
-        echo 'ALL ALL=NOPASSWD:/usr/bin/shock-auto-updates' | pkexec tee /etc/sudoers.d/shock_automatic_updates
-
-    elif [[ "$automatic_updates" == "FALSE" ]] && [[ -f /etc/sudoers.d/shock_automatic_updates ]] #disable automatic updates
-    then
-
-        pkexec rm /etc/sudoers.d/shock_automatic_updates
-
-    fi
-
-    if [[ "$notify_of_new_versions_of_shock_os" == "TRUE" ]] && [[ -f /usr/share/shock-update-manager/disable-release-upgrader-indicator ]] #enable notification of new versions of Shock OS
-    then
-
-        pkexec rm /usr/share/shock-update-manager/disable-release-upgrader-indicator
-
-    elif [[ "$notify_of_new_versions_of_shock_os" == "FALSE" ]] && [[ ! -f /usr/share/shock-update-manager/disable-release-upgrader-indicator ]] #disable notification of new versions of Shock OS
-    then
-
-        pkexec touch /usr/share/shock-update-manager/disable-release-upgrader-indicator
-
-    fi
+    interval=86400 #24 hours
 
 fi
+
+hours=$((interval/60))
+
+minutes=$((interval%60))
+
+success="FALSE"
+
+until [[ "$success" == "TRUE" ]]
+do
+
+    output="$(yad --window-icon=system-software-update --width=100 --title="Settings" --form --field="Delay between each scan for updates:":LBL "" --field="Hours:":NUM "${hours}\!0..96" --field="Minutes:":NUM "${minutes}\!0..60" --field="":LBL "" --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="":LBL "" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --buttons-layout=edge --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0)"
+
+    ex=$?
+
+    if ((ex==0))
+    then
+
+        hours="$(echo "$output" | awk 'BEGIN {FS="|" } { print $2 }')"
+
+        minutes="$(echo "$output" | awk 'BEGIN {FS="|" } { print $3 }')"
+
+        automatic_updates="$(echo "$output" | awk 'BEGIN {FS="|" } { print $6 }')"
+
+        notify_of_new_versions_of_shock_os="$(echo "$output" | awk 'BEGIN {FS="|" } { print $9 }')"
+
+        minutes=$((hours*60+minutes))
+
+        if ((minutes<5))
+        then
+
+            yad --window-icon=emblem-important --title="Update Manager" --text="The delay between each scan for updates must be a minimum of five minutes." --button="Retry"\!gtk-undo
+
+        else    
+
+            pkexec bash -c '
+
+            if [[ "$automatic_updates" == "TRUE" ]] && [[ ! -f /etc/sudoers.d/shock_automatic_updates ]] #enable automatic updates
+            then
+
+                echo "ALL ALL=NOPASSWD:/usr/bin/shock-auto-updates" | tee /etc/sudoers.d/shock_automatic_updates
+
+            elif [[ "$automatic_updates" == "FALSE" ]] && [[ -f /etc/sudoers.d/shock_automatic_updates ]] #disable automatic updates
+            then
+
+                rm /etc/sudoers.d/shock_automatic_updates
+
+            fi
+
+            if [[ "$notify_of_new_versions_of_shock_os" == "TRUE" ]] && [[ -f /usr/share/shock-update-manager/disable-release-upgrader-indicator ]] #enable notification of new versions of Shock OS
+            then
+
+                rm /usr/share/shock-update-manager/disable-release-upgrader-indicator
+
+            elif [[ "$notify_of_new_versions_of_shock_os" == "FALSE" ]] && [[ ! -f /usr/share/shock-update-manager/disable-release-upgrader-indicator ]] #disable notification of new versions of Shock OS
+            then
+
+                touch /usr/share/shock-update-manager/disable-release-upgrader-indicator
+
+            fi
+            
+            if (($(cat /usr/share/shock-update-manager/update-scan-interval)!=minutes))
+            then
+
+                echo "$minutes" | tee /usr/share/shock-update-manager/update-scan-interval
+
+            fi'
+
+            success="TRUE"
+
+        fi
+
+    else
+
+        exit
+
+    fi
+
+done
 
 }
 
