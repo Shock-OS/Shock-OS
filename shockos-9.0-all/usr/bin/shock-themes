@@ -481,58 +481,67 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
             source ~/.config/shock/themes
 
-			if [[ "$shock_gtk_theme" == "shock-light-"* ]]
+			if [[ "$shock_gtk_theme" == *"-dark" ]]
 			then
 
+                theme_selection='Light!^Dark'
+
+            else
+
 				theme_selection='^Light!Dark'
-
-			else
-
-				theme_selection='Light!^Dark'
 
 			fi
 
             if [[ "$shock_gtk_theme" != "$shock_icon_theme" ]] #if mixed color scheme
             then
 
-                color_selection='Blue!Green!Orange!Pink!Purple!Red!Yellow!^Mixed'
+                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian!^Mixed'
 
-			elif [[ "$shock_gtk_theme" == *"blue" ]]
-			then
+            elif [[ "$shock_gtk_theme" == "Yaru-blue"* ]]
+            then
 
-				color_selection='^Blue!Green!Orange!Pink!Purple!Red!Yellow!Mixed'
+                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian!Mixed'
 
-			elif [[ "$shock_gtk_theme" == *"green" ]]
-			then
+            elif [[ "$shock_gtk_theme" == "Yaru-prussiangreen"* ]]
+            then
 
-				color_selection='Blue!^Green!Orange!Pink!Purple!Red!Yellow!Mixed'
+                color_selection='Blue!^Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian!Mixed'
 
-			elif [[ "$shock_gtk_theme" == *"orange" ]]
-			then
+            elif [[ "$shock_gtk_theme" == "Yaru-magenta"* ]]
+            then
 
-				color_selection='Blue!Green!^Orange!Pink!Purple!Red!Yellow!Mixed'
+                color_selection='Blue!Green!^Magenta!Olive!Orange!Purple!Red!Sage!Viridian!Mixed'
 
-			elif [[ "$shock_gtk_theme" == *"pink" ]]
-			then
+            elif [[ "$shock_gtk_theme" == "Yaru-olive"* ]]
+            then
 
-				color_selection='Blue!Green!Orange!^Pink!Purple!Red!Yellow!Mixed'
+                color_selection='Blue!Green!Magenta!^Olive!Orange!Purple!Red!Sage!Viridian!Mixed'
 
-			elif [[ "$shock_gtk_theme" == *"purple" ]]
-			then
+            elif [[ "$shock_gtk_theme" == "Yaru-purple"* ]]
+            then
 
-				color_selection='Blue!Green!Orange!Pink!^Purple!Red!Yellow!Mixed'
+                color_selection='Blue!Green!Magenta!Olive!Orange!^Purple!Red!Sage!Viridian!Mixed'
 
-			elif [[ "$shock_gtk_theme" == *"red" ]]
-			then
+            elif [[ "$shock_gtk_theme" == "Yaru-red"* ]]
+            then
 
-				color_selection='Blue!Green!Orange!Pink!Purple!^Red!Yellow!Mixed'
+                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!^Red!Sage!Viridian!Mixed'
 
-			elif [[ "$shock_gtk_theme" == *"yellow" ]]
-			then
+            elif [[ "$shock_gtk_theme" == "Yaru-sage"* ]]
+            then
 
-				color_selection='Blue!Green!Orange!Pink!Purple!Red!^Yellow!Mixed'
+                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!^Sage!Viridian!Mixed'
 
-			fi
+            elif [[ "$shock_gtk_theme" == "Yaru-viridian"* ]]
+            then
+
+                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!^Viridian!Mixed'
+
+            else #if orange
+
+                color_selection='Blue!Green!Magenta!Olive!^Orange!Purple!Red!Sage!Viridian!Mixed'
+
+            fi
 
 			output="$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
 
@@ -545,86 +554,126 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
 				lod="$(echo "$lod" | awk '{print tolower($0)}')" #this command makes all the letters lowercase
 
+                if [[ "$lod" == "dark" ]]
+                then
+
+                    lod="-dark"
+
+                else
+
+                    lod=""
+
+                fi
+
 				color="$(echo "$output" | awk -F'|' '{print $2}')"
 
 				color="$(echo "$color" | awk '{print tolower($0)}')" #this command makes all the letters lowercase
 
-                if [[ "$color" == "mixed" ]]
+                if [[ "$color" == "orange" ]]
+                then
+
+                    color=""
+
+                else
+
+                    color="-${color}"
+
+                fi
+
+                if [[ "$color" == "-mixed" ]]
                 then
 
                     source ~/.config/shock-themes-mixed-colors
 
-                    if [[ "$theme_color" == "blue" ]] || [[ ! -f ~/.config/shock-themes-mixed-colors ]]
+                    if [[ "$theme_color" == "green" ]]
                     then
 
-	                    theme_color_selection='^Blue!Green!Orange!Pink!Purple!Red!Yellow'
+                        theme_color_selection='Blue!^Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian'
 
-                    elif [[ "$theme_color" == "green" ]]
+                    elif [[ "$theme_color" == "magenta" ]]
                     then
 
-	                    theme_color_selection='Blue!^Green!Orange!Pink!Purple!Red!Yellow'
+                        theme_color_selection='Blue!Green!^Magenta!Olive!Orange!Purple!Red!Sage!Viridian'
+
+                    elif [[ "$theme_color" == "olive" ]]
+                    then
+
+                        theme_color_selection='Blue!Green!Magenta!^Olive!Orange!Purple!Red!Sage!Viridian'
 
                     elif [[ "$theme_color" == "orange" ]]
                     then
 
-	                    theme_color_selection='Blue!Green!^Orange!Pink!Purple!Red!Yellow'
-
-                    elif [[ "$theme_color" == "pink" ]]
-                    then
-
-	                    theme_color_selection='Blue!Green!Orange!^Pink!Purple!Red!Yellow'
+                        theme_color_selection='Blue!Green!Magenta!Olive!^Orange!Purple!Red!Sage!Viridian'
 
                     elif [[ "$theme_color" == "purple" ]]
                     then
 
-	                    theme_color_selection='Blue!Green!Orange!Pink!^Purple!Red!Yellow'
+                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!^Purple!Red!Sage!Viridian'
 
                     elif [[ "$theme_color" == "red" ]]
                     then
 
-	                    theme_color_selection='Blue!Green!Orange!Pink!Purple!^Red!Yellow'
+                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!^Red!Sage!Viridian'
 
-                    elif [[ "$theme_color" == "yellow" ]]
+                    elif [[ "$theme_color" == "sage" ]]
                     then
 
-	                    theme_color_selection='Blue!Green!Orange!Pink!Purple!Red!^Yellow'
+                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!^Sage!Viridian'
+
+                    elif [[ "$theme_color" == "viridian" ]]
+                    then
+
+                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!^Viridian'
+
+                    else #if theme is blue or mixed colors have not been used before
+
+                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian'
 
                     fi
 
-                    if [[ "$icon_color" == "blue" ]] || [[ ! -f ~/.config/shock-themes-mixed-colors ]]
+                    if [[ "$icon_color" == "green" ]]
                     then
 
-	                    icon_color_selection='^Blue!Green!Orange!Pink!Purple!Red!Yellow'
+                        icon_color_selection='Blue!^Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian'
 
-                    elif [[ "$icon_color" == "green" ]]
+                    elif [[ "$icon_color" == "magenta" ]]
                     then
 
-	                    icon_color_selection='Blue!^Green!Orange!Pink!Purple!Red!Yellow'
+                        icon_color_selection='Blue!Green!^Magenta!Olive!Orange!Purple!Red!Sage!Viridian'
+
+                    elif [[ "$icon_color" == "olive" ]]
+                    then
+
+                        icon_color_selection='Blue!Green!Magenta!^Olive!Orange!Purple!Red!Sage!Viridian'
 
                     elif [[ "$icon_color" == "orange" ]]
                     then
 
-	                    icon_color_selection='Blue!Green!^Orange!Pink!Purple!Red!Yellow'
-
-                    elif [[ "$icon_color" == "pink" ]]
-                    then
-
-	                    icon_color_selection='Blue!Green!Orange!^Pink!Purple!Red!Yellow'
+                        icon_color_selection='Blue!Green!Magenta!Olive!^Orange!Purple!Red!Sage!Viridian'
 
                     elif [[ "$icon_color" == "purple" ]]
                     then
 
-	                    icon_color_selection='Blue!Green!Orange!Pink!^Purple!Red!Yellow'
+                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!^Purple!Red!Sage!Viridian'
 
                     elif [[ "$icon_color" == "red" ]]
                     then
 
-	                    icon_color_selection='Blue!Green!Orange!Pink!Purple!^Red!Yellow'
+                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!^Red!Sage!Viridian'
 
-                    elif [[ "$icon_color" == "yellow" ]]
+                    elif [[ "$icon_color" == "sage" ]]
                     then
 
-	                    icon_color_selection='Blue!Green!Orange!Pink!Purple!Red!^Yellow'
+                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!^Sage!Viridian'
+
+                    elif [[ "$icon_color" == "viridian" ]]
+                    then
+
+                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!^Viridian'
+
+                    else #if theme is blue or mixed colors have not been used before
+
+                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian'
 
                     fi
 
@@ -648,17 +697,49 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
                         echo "theme_color=${theme_color}
 icon_color=${icon_color}" | tee ~/.config/shock-themes-mixed-colors
 
-                        shock_gtk_theme="shock-${lod}-${theme_color}"
+                        if [[ "$theme_color" == "green" ]]
+                        then
 
-                        shock_icon_theme="shock-${lod}-${icon_color}"
+                            theme_color="-prussiangreen"
+
+                        elif [[ "$theme_color" == "orange" ]]
+                        then
+
+                            theme_color=""
+
+                        else
+
+                            theme_color="-${theme_color}"
+
+                        fi
+
+                        if [[ "$icon_color" == "green" ]]
+                        then
+
+                            icon_color="-prussiangreen"
+
+                        elif [[ "$icon_color" == "orange" ]]
+                        then
+
+                            icon_color=""
+
+                        else
+
+                            icon_color="-${icon_color}"
+
+                        fi
+
+                        shock_gtk_theme="Yaru${theme_color}${lod}"
+
+                        shock_icon_theme="Yaru${icon_color}${lod}"
 
                     fi
 
                 else
 
-                    shock_gtk_theme="shock-${lod}-${color}"
+                    shock_gtk_theme="Yaru${color}${lod}"
 
-                    shock_icon_theme="shock-${lod}-${color}"
+                    shock_icon_theme="Yaru${color}${lod}"
 
                 fi
 
@@ -678,8 +759,8 @@ icon_color=${icon_color}" | tee ~/.config/shock-themes-mixed-colors
                     flatpak override --user --env=GTK_THEME="$shock_gtk_theme"
 
 				    echo "[Greeter]
-theme-name=shock-dark-${color}
-icon-theme-name=shock-dark-${color}
+theme-name=Yaru${color}-dark
+icon-theme-name=Yaru${color}-dark
 show-hostname=false
 show-power=false
 show-keyboard=false

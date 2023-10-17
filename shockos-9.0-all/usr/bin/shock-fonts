@@ -197,21 +197,21 @@ do
 
             detect_exit
 
-            dconf write /org/mate/desktop/interface/font-name "'Cantarell 11'"
+            dconf write /org/mate/desktop/interface/font-name "'Ubuntu 11'"
 
-            dconf write /org/gnome/desktop/interface/font-name "'Cantarell 11'" #MUTTER COMPATIBILITY
+            dconf write /org/gnome/desktop/interface/font-name "'Ubuntu 11'" #MUTTER COMPATIBILITY
 
-            current_appfont="Cantarell 11"
+            current_appfont="Ubuntu 11"
 
-            dconf write /org/mate/caja/desktop/font "'Cantarell 11'"
+            dconf write /org/mate/caja/desktop/font "'Ubuntu 11'"
 
-            current_deskfont="Cantarell 11"
+            current_deskfont="Ubuntu 11"
 
-            dconf write /org/mate/desktop/interface/document-font-name "'Cantarell 11'"
+            dconf write /org/mate/desktop/interface/document-font-name "'Ubuntu 11'"
 
-            dconf write /org/gnome/desktop/interface/document-font-name "'Cantarell 11'" #MUTTER COMPATIBILITY
+            dconf write /org/gnome/desktop/interface/document-font-name "'Ubuntu 11'" #MUTTER COMPATIBILITY
 
-            current_docfont="Cantarell 11"
+            current_docfont="Ubuntu 11"
 
             dconf write /org/mate/desktop/interface/monospace-font-name "'Monospace 13'"
 
@@ -219,11 +219,11 @@ do
 
             current_monospacefont="Monospace 13"
 
-            dconf write /org/mate/marco/general/titlebar-font "'Cantarell Bold 11'"
+            dconf write /org/mate/marco/general/titlebar-font "'Ubuntu Bold 11'"
 
-            dconf write /org/gnome/desktop/wm/preferences/titlebar-font "'Cantarell Bold 11'" #MUTTER COMPATIBILITY
+            dconf write /org/gnome/desktop/wm/preferences/titlebar-font "'Ubuntu Bold 11'" #MUTTER COMPATIBILITY
 
-            current_windowtitlefont="Cantarell Bold 11"
+            current_windowtitlefont="Ubuntu Bold 11"
 
         fi
     

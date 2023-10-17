@@ -20,6 +20,8 @@ fi
 if [[ -f ~/.config/shock/userlogstat ]]
 then
 
+    dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-glx'"
+
     #THE MUTTER SETTINGS PATCH BEGINS
 
     dconf write /org/gnome/desktop/wm/preferences/button-layout "':minimize,maximize,close'"
@@ -28,19 +30,37 @@ then
 
     #THE MUTTER SETTINGS PATCH ENDS
 
-    dconf write /org/mate/desktop/interface/gtk-theme "'shock-light-blue'"
+    dconf write /org/mate/desktop/interface/gtk-theme "'Yaru-blue'"
 
-    dconf write /org/mate/marco/general/theme "'shock-light-blue'"
+    dconf write /org/mate/marco/general/theme "'Yaru-blue'"
 
-    dconf write /org/mate/desktop/interface/icon-theme "'shock-light-blue'"
+    dconf write /org/mate/desktop/interface/icon-theme "'Yaru-blue'"
 
-    flatpak override --user --env=GTK_THEME="shock-light-blue"
+    flatpak override --user --env=GTK_THEME="Yaru-blue"
 
     dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
 
     dconf write /org/gnome/desktop/interface/cursor-theme "'mate-black'"
 
     dconf write /org/onboard/theme "'/usr/share/onboard/themes/Nightshade.theme'"
+
+    #THE DEFAULT FONT PATCH BEGINS
+
+    dconf write /org/mate/desktop/interface/font-name "'Ubuntu 11'"
+
+    dconf write /org/gnome/desktop/interface/font-name "'Ubuntu 11'" #MUTTER COMPATIBILITY
+
+    dconf write /org/mate/caja/desktop/font "'Ubuntu 11'"
+
+    dconf write /org/mate/desktop/interface/document-font-name "'Ubuntu 11'"
+
+    dconf write /org/gnome/desktop/interface/document-font-name "'Ubuntu 11'" #MUTTER COMPATIBILITY
+
+    dconf write /org/mate/marco/general/titlebar-font "'Ubuntu Bold 11'"
+
+    dconf write /org/gnome/desktop/wm/preferences/titlebar-font "'Ubuntu Bold 11'" #MUTTER COMPATIBILITY
+
+    #THE DEFAULT FONT PATCH ENDS
 
     #the above command sets the onboard theme to Nightshade
 
@@ -97,7 +117,7 @@ fi
 if (($(cat /usr/share/shock/setupvalue)==0)) #INITIAL SETUP (run as 'shock' user)
 then
 
-    dconf write /org/mate/marco/general/theme "'shock-light-blue'"
+    dconf write /org/mate/marco/general/theme "'Yaru-blue'"
 
     dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
 
@@ -105,7 +125,7 @@ then
 
     feh --bg-fill /usr/share/shock/initsetup-background.png
 
-    pulseaudio_autoconfig
+    #pulseaudio_autoconfig #UNCOMMENT WHEN PIPEWIRE SUPPORT HAS BEEN IMPLEMENTED
 
     while true
     do
@@ -120,15 +140,13 @@ then
     until [[ "$ex" == "0" ]]
     do
 
-        sudo env GTK_THEME=shock-light-blue DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata locales keyboard-configuration
+        sudo env GTK_THEME=Yaru-blue DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata locales keyboard-configuration
 
         ex=$?
 
     done
 
     sudo shock-users --setup #create a user
-
-    echo "shock-startup" | tee -a ~/.bashrc
 
     echo "1" | tee /usr/share/shock/setupvalue
     

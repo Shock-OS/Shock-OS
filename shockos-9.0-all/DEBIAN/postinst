@@ -2,9 +2,7 @@
 
 cd /
 
-ls
-
-cp /usr/share/shock/os-release /usr/lib
+sed -i '1s/.*/PRETTY_NAME="Shock OS 9.0 Issac"/' /usr/lib/os-release
 
 #the above set of commands copies the os release file to /usr/lib
 
@@ -66,8 +64,8 @@ touch /etc/lightdm/slick-greeter.conf
 chmod a+w /etc/lightdm/slick-greeter.conf
 
 echo "[Greeter]
-theme-name=shock-dark-blue
-icon-theme-name=shock-dark-blue
+theme-name=Yaru-blue
+icon-theme-name=Yaru-blue-dark
 show-hostname=false
 show-power=false
 show-keyboard=false
