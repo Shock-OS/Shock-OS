@@ -28,8 +28,8 @@ style=\"$style\"" | tee "$user_home_dir"/.config/shock/slideshow-background
 
     source "$user_home_dir"/.config/shock_themes
 
-    echo "shock_gtk_theme=shock-${lod}-${color}
-shock_icon_theme=shock-${lod}-${color}" | tee "$user_home_dir"/.config/shock/themes
+    echo "shock_gtk_theme=Yaru-blue
+shock_icon_theme=Yaru-blue" | tee "$user_home_dir"/.config/shock/themes
 
     rm "$user_home_dir"/.config/shock_themes
 
@@ -43,9 +43,56 @@ shock_icon_theme=shock-${lod}-${color}" | tee "$user_home_dir"/.config/shock/the
 
     mv "$user_home_dir"/.config/shockware-center "$user_home_dir"/.config/shock/shockware-center
 
-    mkdir -p "$user_home_dir"/.themes #THEME BANDAID FIX
+    if [[ "$(sudo -u "$user_home_dir" dconf read /org/mate/desktop/interface/font-name)" == "" ]]
+    then
 
-    cp -r /usr/share/themes/shock-* "$user_home_dir"/.themes #THEME BANDAID FIX
+        sudo -u "$user_home_dir" dconf write /org/mate/desktop/interface/font-name "'Ubuntu 11'"
+
+    fi
+
+    if [[ "$(sudo -u "$user_home_dir" dconf read /org/mate/caja/desktop/font)" == "" ]]
+    then
+
+        sudo -u "$user_home_dir" dconf write /org/mate/caja/desktop/font "'Ubuntu 11'"
+
+    fi
+
+    if [[ "$(sudo -u "$user_home_dir" dconf read /org/mate/desktop/interface/document-font-name)" == "" ]]
+    then
+
+        sudo -u "$user_home_dir" dconf write /org/mate/desktop/interface/document-font-name "'Ubuntu 11'"
+
+    fi
+
+    if [[ "$(sudo -u "$user_home_dir" dconf read /org/mate/marco/general/titlebar-font)" == "" ]]
+    then
+
+        sudo -u "$user_home_dir" dconf write /org/mate/marco/general/titlebar-font "'Ubuntu Bold 11'"
+
+    fi
+
+    if [[ "$(sudo -u "$user_home_dir" dconf read /org/mate/desktop/interface/gtk-theme)" == "shock-"* ]]
+    then
+
+        dconf write /org/mate/desktop/interface/gtk-theme "'Yaru-blue'"
+
+        flatpak override --user --env=GTK_THEME="Yaru-blue"
+
+    fi
+
+    if [[ "$(sudo -u "$user_home_dir" dconf read /org/mate/marco/general/theme)" == "shock-"* ]]
+    then
+
+        dconf write /org/mate/marco/general/theme "'Yaru-blue'"
+
+    fi
+
+    if [[ "$(sudo -u "$user_home_dir" dconf read /org/mate/desktop/interface/icon-theme)" == "shock-"* ]]
+    then
+
+        dconf write /org/mate/desktop/interface/icon-theme "'Yaru-blue'"
+
+    fi
 
 done
 
@@ -90,8 +137,16 @@ cp -r /usr/share/themes/shock-* /etc/skel/.themes
 
 cp -r /usr/share/shock/install-temp/"Sample Videos" /etc/skel/Videos
 
-echo "shock_gtk_theme=shock-light-blue
-shock_icon_theme=shock-light-blue" | tee /etc/skel/.config/shock_themes
+echo "shock_gtk_theme=Yaru-blue
+shock_icon_theme=Yaru-blue" | tee /etc/skel/.config/shock_themes
+
+echo "[Greeter]
+theme-name=Yaru-blue-dark
+icon-theme-name=Yaru-blue-dark
+show-hostname=false
+show-power=false
+show-keyboard=false
+show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
 
 

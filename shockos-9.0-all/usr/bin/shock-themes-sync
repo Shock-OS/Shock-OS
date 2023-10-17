@@ -17,8 +17,6 @@ fi
 
 #the root check element ends
 
-system_themes="\"shock-dark-blue\" \"shock-dark-purple\" \"shock-light-green\" \"shock-light-red\" \"shock-dark-green\" \"shock-dark-red\" \"shock-light-orange\" \"shock-light-yellow\" \"shock-dark-orange\" \"shock-dark-yellow\" \"shock-light-pink\" \"shock-dark-pink\" \"shock-light-blue\" \"shock-light-purple\"" #THEME BANDAID FIX
-
 for user in /home/*
 do
 
@@ -37,39 +35,34 @@ do
 
                 theme="$(basename "$theme")"
 
-                if [[ " $system_themes " != *" \"$theme\" "* ]] #THEME BANDAID FIX (just this if loop, not its contents)
+                if [[ -h /home/"$user"/."$type"/"$theme" ]]
                 then
 
-                    if [[ -h /home/"$user"/."$type"/"$theme" ]]
+                    link="$(readlink /home/"$user"/."$type"/"$theme")"
+
+                    if [[ -d "$link" ]]
                     then
 
-                        link="$(readlink /home/"$user"/."$type"/"$theme")"
+                        linked_themes+=("\"$(basename "$link")\"")
 
-                        if [[ -d "$link" ]]
+                        if [[ "$theme" != "$user_"* ]] #if theme not named to fit user
                         then
 
-                            linked_themes+=("\"$(basename "$link")\"")
+                            mv /home/"$user"/."$type"/"$theme" /home/"$user"/."$type"/"${user}_${theme}"
 
-                            if [[ "$theme" != "$user_"* ]] #if theme not named to fit user
-                            then
-
-                                mv /home/"$user"/."$type"/"$theme" /home/"$user"/."$type"/"${user}_${theme}"
-
-                                theme="${user}_${theme}"
-
-                            fi
-
-                        else #remove symlink if target theme doesn't exist
-
-                            rm /home/"$user"/."$type"/"$theme"
+                            theme="${user}_${theme}"
 
                         fi
 
-                    else #if file is not a symlink, move it to the .shock/(themes/icons) directory
+                    else #remove symlink if target theme doesn't exist
 
-                        mv /home/"$user"/."$type"/"$theme" /home/"$user"/.shock/"$type"
+                        rm /home/"$user"/."$type"/"$theme"
 
                     fi
+
+                else #if file is not a symlink, move it to the .shock/(themes/icons) directory
+
+                    mv /home/"$user"/."$type"/"$theme" /home/"$user"/.shock/"$type"
 
                 fi
 
@@ -129,20 +122,10 @@ do
 
         done
 
-        if [[ -f /home/"$user"/.config/shock_themes ]] #sets the user's fallback icon theme
+        if [[ -f /home/"$user"/.config/shock/themes ]] #sets the user's fallback icon theme
         then
 
-            source /home/"$user"/.config/shock_themes
-
-            if [[ "$(cat /home/"$user"/.config/shock_themes)" == "lod="* ]] #UPDATE COMPATIBILITY (9.0)
-            then
-
-                echo "shock_gtk_theme=shock-${lod}-${color}
-shock_icon_theme=shock-${lod}-${color}" | tee /home/"$user"/.config/shock_themes
-
-                source /home/"$user"/.config/shock_themes
-
-            fi
+            source /home/"$user"/.config/shock/themes
 
             rm /usr/share/icons/"${user}_shock_fallback_icon_theme"
 

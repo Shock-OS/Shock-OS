@@ -8,8 +8,6 @@ nl="${#runuser}"
 
 nl=$((nl+1))
 
-system_themes="\"shock-dark-blue\" \"shock-dark-purple\" \"shock-light-green\" \"shock-light-red\" \"shock-dark-green\" \"shock-dark-red\" \"shock-light-orange\" \"shock-light-yellow\" \"shock-dark-orange\" \"shock-dark-yellow\" \"shock-light-pink\" \"shock-dark-pink\" \"shock-light-blue\" \"shock-light-purple\"" #THEME BANDAID FIX
-
 while true
 do
 
@@ -18,8 +16,8 @@ do
 
 		touch ~/.config/shock/themes
 
-		echo 'shock_gtk_theme=shock-light-blue
-shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
+		echo 'shock_gtk_theme=Yaru-blue
+shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
 	fi
 
@@ -35,19 +33,14 @@ shock_icon_theme=shock-light-blue' | tee ~/.config/shock/themes
 
             current_theme="$(basename "$i")"
 
-            if [[ " $system_themes " != *" \"$current_theme\" "* ]] #OMIT SYSTEM THEMES FROM LIST (THEME BANDAID FIX)
+            if [[ "$(ls -d "$i"/*/)" == "${i}/metacity-1/" ]]
             then
 
-                if [[ "$(ls -d "$i"/*/)" == "${i}/metacity-1/" ]]
-                then
+		        yadlist+=("gnome-settings-theme" "Metacity theme" "${current_theme:$nl}")
 
-			        yadlist+=("gnome-settings-theme" "Metacity theme" "${current_theme:$nl}")
+            else
 
-                else
-
-                    yadlist+=("gnome-settings-theme" "Theme pack" "${current_theme:$nl}")
-
-                fi
+                yadlist+=("gnome-settings-theme" "Theme pack" "${current_theme:$nl}")
 
             fi
 
@@ -764,9 +757,9 @@ icon-theme-name=Yaru${color}-dark
 show-hostname=false
 show-power=false
 show-keyboard=false
-show-clock=false" > /etc/lightdm/slick-greeter.conf
+show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
-			    echo "shock_gtk_theme=${shock_gtk_theme}
+			        echo "shock_gtk_theme=${shock_gtk_theme}
 shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
 
                 fi

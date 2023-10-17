@@ -117,6 +117,8 @@ fi
 if (($(cat /usr/share/shock/setupvalue)==0)) #INITIAL SETUP (run as 'shock' user)
 then
 
+    dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-glx'"
+
     dconf write /org/mate/marco/general/theme "'Yaru-blue'"
 
     dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
