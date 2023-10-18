@@ -39,16 +39,43 @@ then
 
 fi
 
-output="$(yad --window-icon=preferences-system-windows --title="Windows" --text="Please choose a window manager." --form --field=:CB "$wm_selector" --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0)"
+current_buttons_layout="$(dconf read /org/mate/marco/general/button-layout)"
+
+if [[ "$current_buttons_layout" == "':minimize,maximize,close'" ]] #Right
+then
+
+    buttons_selector='Right!Left!Right (with menu)!Left (with menu)'
+
+elif [[ "$current_buttons_layout" == "'close,minimize,maximize:'" ]] #Left
+then
+
+    buttons_selector='Right!^Left!Right (with menu)!Left (with menu)'
+
+elif [[ "$current_buttons_layout" == "'close,minimize,maximize:menu'" ]] #Left (with menu)
+then
+
+    buttons_selector='Right!Left!Right (with menu)!^Left (with menu)'
+
+else #Right (with menu)
+
+    buttons_selector='Right!Left!^Right (with menu)!Left (with menu)'
+
+fi
+
+output="$(yad --window-icon=preferences-system-windows --title="Windows" --form --field="Window Manager:":CB "$wm_selector" --field="Buttons Layout:":CB "$buttons_selector" --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0)"
 
 ex=$?
 
 current_wm="$(echo "$output" | awk -F'|' '{print $1}')"
 
+current_buttons_layout="$(echo "$output" | awk -F'|' '{print $2}')"
+
 if ((ex==1)) #reset to default
 then
 
     dconf write /org/mate/desktop/session/required-components/windowmanager "'marco'"
+
+    dconf write /org/mate/marco/general/button-layout "':minimize,maximize,close'"
 
 elif ((ex==0)) #apply
 then
@@ -71,6 +98,27 @@ then
     else
 
         dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-no-composite'"
+
+    fi
+
+    if [[ "$current_buttons_layout" == "Right" ]]
+    then
+
+        dconf write /org/mate/marco/general/button-layout "':minimize,maximize,close'"
+
+    elif [[ "$current_buttons_layout" == "Left" ]]
+    then
+
+        dconf write /org/mate/marco/general/button-layout "'close,minimize,maximize:'"
+
+    elif [[ "$current_buttons_layout" == "Right (with menu)" ]]
+    then
+
+        dconf write /org/mate/marco/general/button-layout "'menu:minimize,maximize,close'"
+
+    else #Left (with menu)
+
+        dconf write /org/mate/marco/general/button-layout "'close,minimize,maximize:menu'"
 
     fi
 

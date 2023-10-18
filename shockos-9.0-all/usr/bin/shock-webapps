@@ -1,0 +1,237 @@
+#!/bin/bash
+
+IFS=$'\n'
+
+runuser="$(whoami)"
+
+webapp_list=()
+
+for webapp in ~/.local/share/applications/shock-webapps/*
+do
+
+    source "$webapp"
+
+    webapp_list+=("/home/${runuser}/.local/share/shock/webapps/icons/${shock_webapp_name}.png" "$shock_webapp_name" "$webapp")
+
+done
+
+output="$(yad --window-icon="[ICON HERE]" --title="Web Apps" --text="Create, edit and delete web apps." --list --always-print-result --column="Icon":IMG --column="Name" --column="FILEPATH":HD "${webapp_list[@]}" --button="Add"\!add --button="Remove"\!remove --button="Edit"\!gtk-edit)"
+
+webapp="$(echo "$output" | awk -F'|' '{print $3}')"
+
+action=$?
+
+if [[ "$action" == "0" ]] #add
+then
+
+    focus_field=1
+
+    shock_webapp_category="Internet"
+
+elif [[ "$action" == "2" ]] #edit
+then
+
+    focus_field=1
+
+    source "$webapp"
+
+    old_name="$shock_webapp_name"
+
+    old_icon="$shock_webapp_icon"
+
+fi
+
+if [[ "$action" == "0" ]] || [[ "$action" == "2" ]] #if add or edit selected
+then
+
+    installed_packages="$(apt list --installed | awk -F/ '{print $1}' | uniq)" #ChatGPT
+
+    browser_selection='Chromium!Thorium'
+
+    THE BROKEN SEGMENT THAT NEEDS REPLACEMENT BEGINS    
+
+    if [[ " $installed_packages " != *" chromium "* ]] && [[ " $installed_packages " != *" chromium-browser "* ]]
+    then
+
+        browser_selection="${browser_selection//'Chromium!'/}"
+
+    fi
+
+    if [[ " $installed_packages " != *" thorium-browser "* ]]
+    then
+
+        browser_selection="${browser_selection//'Thorium'/}"
+
+    fi
+
+    THE BROKEN SEGMENT THAT NEEDS REPLACEMENT ENDS
+
+    success="FALSE"
+
+    until [[ "$success" == "TRUE" ]]
+    do
+
+        categories_selection='Accessories!Administration!Education!Games!Graphics!Internet!Office!Preferences!Programming!Sound & Video!System Tools!Universal Access'
+
+        categories_selection="${categories_selection//${shock_webapp_category}/^${shock_webapp_category}}"
+
+        output="$(yad --window-icon="[ICON HERE]" --title="Web Apps" --form --focus-field="$focus_field" --field="Name:" "$shock_webapp_name" --field="Address:" "$shock_webapp_address" --field="Icon:":FL "$shock_webapp_iconpath" --field="Category:":CB "$categories_selection" --field="Browser":CB "$browser_selection" --field="Parameters:" "$shock_webapp_parameters" --field="Isolated Profile":CHK "$shock_webapp_isolated" --field="Private/Incognito Window":CHK "$shock_webapp_private" --button="Add"\!add)"
+
+        ex=$?
+
+        if [[ "$ex" == "0" ]]
+        then
+
+            shock_webapp_name="$(echo "$output" | awk -F'|' '{print $1}')"
+
+            shock_webapp_address="$(echo "$output" | awk -F'|' '{print $2}')"
+
+            shock_webapp_icon="$(echo "$output" | awk -F'|' '{print $3}')"
+
+            shock_webapp_category="$(echo "$output" | awk -F'|' '{print $4}')"
+
+            shock_webapp_browser="$(echo "$output" | awk -F'|' '{print $5}')"
+
+            shock_webapp_parameters="$(echo "$output" | awk -F'|' '{print $6}')"
+
+            shock_webapp_isolated="$(echo "$output" | awk -F'|' '{print $7}')"
+
+            shock_webapp_private="$(echo "$output" | awk -F'|' '{print $8}')"
+
+            if [[ "$shock_webapp_address" != "http://"* ]] && [[ "$shock_webapp_address" != "https://"* ]]
+            then
+
+                shock_webapp_address="https://${shock_webapp_address}"
+
+            fi
+
+            if [[ -f ~/.local/share/applications/shock-webapps/"${shock_webapp_name}.desktop" ]]
+            then
+
+                yad --window-icon="[ICON HERE]" --image=emblem-important --title="Web Apps" --text="There is already a web app named '$shock_webapp_name'. Please choose a different name." --button="Retry"\!edit-undo
+
+                focus_field=1
+
+            elif ! curl --output /dev/null --silent --head --fail "$shock_webapp_address"
+            then
+
+                yad --window-icon="[ICON HERE]" --image=emblem-important --title="Web Apps" --text="'$shock_webapp_address' is not a vaild website URL. Please enter a vaild URL." --button="Retry"\!edit-undo
+
+                focus_field=2
+
+            elif [[ "$(file "$shock_webapp_icon")" != *" image data, "* ]]
+            then
+
+                yad --window-icon="[ICON HERE]" --image=emblem-important --title="Web Apps" --text="'$shock_webapp_icon' is not a vaild image file. Please select an image to use for the icon." --button="Retry"\!edit-undo
+
+                focus_field=3
+
+            else
+
+                success="TRUE"
+
+            fi
+
+        else
+
+            exit
+
+        fi
+
+    done
+
+    if [[ "$shock_webapp_category" == "Accessories" ]]
+    then
+
+        category="Utility;"
+
+    elif [[ "$shock_webapp_category" == "Administration" ]]
+    then
+
+        category="System;Settings;"
+
+    elif [[ "$shock_webapp_category" == "Games" ]]
+    then
+
+        category="Game;"
+
+    elif [[ "$shock_webapp_category" == "Internet" ]]
+    then
+
+        category="Network;"
+
+    elif [[ "$shock_webapp_category" == "Preferences" ]]
+    then
+
+        category="Settings;"
+
+    elif [[ "$shock_webapp_category" == "Programming" ]]
+    then
+
+        category="Development;"
+
+    elif [[ "$shock_webapp_category" == "Sound & Video" ]]
+    then
+
+        category="AudioVideo;"
+
+    elif [[ "$shock_webapp_category" == "System Tools" ]]
+    then
+
+        category="System;"
+
+    elif [[ "$shock_webapp_category" == "Universal Access" ]]
+    then
+
+        category="Accessibility;"
+
+    else
+
+        category="${shock_webapp_category};"
+
+    fi
+
+    mkdir -p ~/.local/share/applications/shock-webapps
+
+    if [[ "$action" == "2" ]] && [[ "$old_name" != "$shock_webapp_name" ]] #edit
+    then
+
+        rm "$webapp"
+
+        rm "$old_icon"
+
+    fi
+
+    mkdir -p ~/.local/share/shock/webapps/icons
+
+    convert "$shock_webapp_icon" -resize "64x64" ~/.local/share/shock/webapps/icons/${shock_webapp_name}.png || echo "Failed to convert the icon."
+
+    echo "[Desktop Entry]
+Name=$shock_webapp_name
+Icon=~/.local/share/shock/webapps/icons/${shock_webapp_name}.png
+Exec=shock-webapp-launcher '~/.local/share/applications/shock-webapps/${shock_webapp_name}.desktop'
+Categories=$category
+
+shock_webapp_name='$shock_webapp_name'
+shock_webapp_address='$shock_webapp_address'
+shock_webapp_icon='$shock_webapp_icon'
+shock_webapp_category='$shock_webapp_category'
+shock_webapp_browser='$shock_webapp_browser'
+shock_webapp_parameters='$shock_webapp_parameters'
+shock_webapp_isolated='$shock_webapp_isolated'
+shock_webapp_private='$shock_webapp_private'" | tee ~/.local/share/applications/shock-webapps/"${shock_webapp_name}.desktop"
+
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+        

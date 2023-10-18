@@ -579,7 +579,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
         elif ((ex==1)) #categories
         then
 
-            output="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --list --no-headers --width=400 --height=300 --column="Icon":IMG --column="Category" open-menu-symbolic "All Applications" applications-accessories Accessories applications-games Games applications-graphics Graphics applications-internet Internet applications-office Office applications-development Programming applications-science Education applications-multimedia Multimedia applications-system "System Tools" --button="Go"\!go-next)"
+            output="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --list --no-headers --width=400 --height=300 --column="Icon":IMG --column="Category" open-menu-symbolic "All Applications" applications-accessories Accessories applications-science Education applications-games Games applications-graphics Graphics applications-internet Internet applications-office Office applications-development Programming applications-multimedia Multimedia applications-system "System Tools" --button="Go"\!go-next)"
 
             ex=$?
 

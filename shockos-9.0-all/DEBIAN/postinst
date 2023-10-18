@@ -289,8 +289,8 @@ systemctl daemon-reload
 mkdir -p /home/shock/.config/gtk-3.0
 
 echo "[Settings]
-gtk-theme-name=Yaru-blue
-gtk-icon-theme-name=Yaru-blue" | tee /home/shock/.config/gtk-3.0/settings.ini
+gtk-theme-name=Yaru-blue-dark
+gtk-icon-theme-name=Yaru-blue-dark" | tee /home/shock/.config/gtk-3.0/settings.ini
 
 echo 'xinit' | tee -a /home/shock/.bashrc
 

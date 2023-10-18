@@ -1,0 +1,26 @@
+#!/bin/bash
+
+source "$1"
+
+installed_packages="$(apt list --installed | awk -F/ '{print $1}' | uniq)" #ChatGPT
+
+if [[ "$shock_webapp_browser" == "Chromium" ]] && [[ " $installed_packages " == *" chromium "* ]]
+then
+
+    chromium --app="$shock_webapp_address" "$shock_webapp_parameters"
+
+elif [[ "$shock_webapp_browser" == "Chromium" ]] && [[ " $installed_packages " == *" chromium-browser "* ]]
+then
+
+    chromium-browser --app="$shock_webapp_address" "$shock_webapp_parameters"
+
+elif [[ "$shock_webapp_browser" == "Thorium" ]] && [[ " $installed_packages " == *" thorium-browser "* ]]
+then
+
+    thorium-browser --app="$shock_webapp_address" "$shock_webapp_parameters"
+
+else #if selected browser is not installed
+
+    PUT CODE HERE WHEN ALL COMPATIBLE BROWSERS HAVE BEEN IMPLEMENTED
+
+fi
