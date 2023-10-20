@@ -22,6 +22,8 @@ then
 
     dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-glx'"
 
+    dconf write /org/mate/desktop/interface/enable-animations "false"
+
     dconf write /org/mate/marco/general/button-layout "':minimize,maximize,close'"
 
     #THE MUTTER SETTINGS PATCH BEGINS
@@ -123,11 +125,13 @@ then
 
     dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-glx'"
 
+    dconf write /org/mate/desktop/interface/enable-animations "false"
+
+    dconf write /org/mate/marco/general/button-layout "':minimize,maximize,close'"
+
     dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
 
     dconf write /org/mate/marco/general/theme "'Yaru'"
-
-    dconf write /org/mate/marco/general/button-layout "':minimize,maximize,close'"
 
     dconf write /org/mate/marco/general/center-new-windows "true"
 

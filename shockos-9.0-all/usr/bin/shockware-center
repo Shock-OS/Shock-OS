@@ -2,7 +2,7 @@
 
 IFS=$'\n'
 
-yad --fixed --picture --window-icon=/usr/share/shockware-center/icon.svg --filename=/usr/share/shockware-center/shockware-loader.png --size=fit --width=1000 --height=397 --undecorated --no-buttons --skip-taskbar & splash_kilpid=$!
+yad --fixed --picture --window-icon=/usr/share/shock/icons/shockware-center.svg --filename=/usr/share/shockware-center/shockware-loader.png --size=fit --width=1000 --height=397 --undecorated --no-buttons --skip-taskbar & splash_kilpid=$!
 
 if (($(getconf LONG_BIT)==32))
 then
@@ -30,7 +30,7 @@ then
 
     currently_loading="TRUE"
 
-    yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Loading..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
+    yad --fixed --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --progress-text="Loading..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
 
 fi
 
@@ -481,13 +481,22 @@ do
 
             fi
 
-            eval "yad --window-icon=/usr/share/shockware-center/icon.svg --width=800 --height=500 --title=\"Shockware Center\" --text=\"${category_text}Page $page of $((${#results_full[@]}/rows_per_page)) <small>Double-click on an app to install/remove it.</small>\" --list --column=\"Icon\":IMG --column=\"Name\" --column=\"TYPE\":HD --column=\"PACKAGE\":HD --column=\"ID\":HD --column=\"ICON\":HD ${yad_list[@]} --dclick-action=\"shockware-center-view-package $show_apt_packages $show_flatpaks $flatpak_appstream_dir\" --buttons-layout=spread --button=\"Settings\"\!gnome-settings:0 --button=\"Categories\"\!open-menu-symbolic:1 --button=\"Search\"\!gtk-find:2 $page_buttons"
+            total_pages=$((${#results_full[@]}/rows_per_page))
+
+            if ((total_pages=0))
+            then
+
+                total_pages=1
+
+            fi
+
+            eval "yad --window-icon=/usr/share/shock/icons/shockware-center.svg --width=800 --height=500 --title=\"Shockware Center\" --text=\"${category_text}Page $page of $total_pages <small>Double-click on an app to install/remove it.</small>\" --list --column=\"Icon\":IMG --column=\"Name\" --column=\"TYPE\":HD --column=\"PACKAGE\":HD --column=\"ID\":HD --column=\"ICON\":HD ${yad_list[@]} --dclick-action=\"shockware-center-view-package $show_apt_packages $show_flatpaks $flatpak_appstream_dir\" --buttons-layout=spread --button=\"Settings\"\!tweaks-app:0 --button=\"Categories\"\!open-menu-symbolic:1 --button=\"Search\"\!gtk-find:2 $page_buttons"
 
             ex=$?
 
         else
 
-            yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="No results found. Please try a different keyword." --button="Retry"\!edit-undo
+            yad --window-icon=/usr/share/shock/icons/shockware-center.svg --image=emblem-important --title="Shockware Center" --text="No results found. Please try a different keyword." --button="Retry"\!edit-undo
 
             ex=2
 
@@ -528,7 +537,7 @@ do
 
             fi
 
-	        output="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Rows per page:":CB "$rows_per_page_selection" --field='':CB "$show_packages_selection" --buttons-layout=edge --button="Refresh Catalog"\!gtk-refresh:1 --button="Apply"\!gtk-ok:0)"
+	        output="$(yad --fixed --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --form --field="Rows per page:":CB "$rows_per_page_selection" --field='':CB "$show_packages_selection" --buttons-layout=edge --button="Refresh Catalog"\!gtk-refresh:1 --button="Apply"\!gtk-ok:0)"
 
 	        ex=$?
 
@@ -570,7 +579,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
 	        elif ((ex==1)) #refresh catalog
             then
 
-                sudo shock-update-manager-refresh | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --image=gtk-refresh --title="Shockware Center" --text="Refreshing application catalog..." --percentage-text="" --text-align=center --auto-close --progress --pulsate
+                sudo shock-update-manager-refresh | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shock/icons/shockware-center.svg --image=gtk-refresh --title="Shockware Center" --text="Refreshing application catalog..." --percentage-text="" --text-align=center --auto-close --progress --pulsate
 
             fi
 
@@ -579,7 +588,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
         elif ((ex==1)) #categories
         then
 
-            output="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --list --no-headers --width=400 --height=300 --column="Icon":IMG --column="Category" open-menu-symbolic "All Applications" applications-accessories Accessories applications-science Education applications-games Games applications-graphics Graphics applications-internet Internet applications-office Office applications-development Programming applications-multimedia Multimedia applications-system "System Tools" --button="Go"\!go-next)"
+            output="$(yad --fixed --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --list --no-headers --width=400 --height=300 --column="Icon":IMG --column="Category" open-menu-symbolic "All Applications" applications-accessories Accessories applications-science Education applications-games Games applications-graphics Graphics applications-internet Internet applications-office Office applications-development Programming applications-multimedia Multimedia applications-system "System Tools" --button="Go"\!go-next)"
 
             ex=$?
 
@@ -653,7 +662,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
 
                 fi
 
-                output="$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Please enter a search term." --form --field="Keyword:" "$keyword" --field="Category:":CB "$category_selection" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
+                output="$(yad --fixed --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --text="Please enter a search term." --form --field="Keyword:" "$keyword" --field="Category:":CB "$category_selection" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
 
                 ex=$?
 
@@ -664,7 +673,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
                 if (("${#keyword}"<3)) && ((ex!=1))
                 then
 
-                    yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="The search term must be a minimum of three characters long." --button="Retry"\!edit-undo
+                    yad --window-icon=/usr/share/shock/icons/shockware-center.svg --image=emblem-important --title="Shockware Center" --text="The search term must be a minimum of three characters long." --button="Retry"\!edit-undo
 
                 else
 
@@ -691,7 +700,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
         elif ((ex==4)) #jump to page
         then
 
-            output=$(yad --fixed --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --form --field="Jump to Page:":NUM "$page\!1..$(expr ${#results_full[@]} / $rows_per_page)" --button=Jump!gtk-jump-to-ltr)
+            output=$(yad --fixed --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --form --field="Jump to Page:":NUM "$page\!1..$(expr ${#results_full[@]} / $rows_per_page)" --button=Jump!gtk-jump-to-ltr)
 
             ex=$?
 

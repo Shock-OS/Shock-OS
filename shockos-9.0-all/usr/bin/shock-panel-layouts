@@ -11,7 +11,7 @@ else
 
 fi
 
-output="$(yad --picture --window-icon=mate-panel --width=300 --title="Panel Layouts" --text="Please choose a panel layout." --form --field="Panel Layout:":CB "$panel_layouts" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+output="$(yad --picture --window-icon=/usr/share/shock/icons/shock-panel-layouts.svg --width=300 --title="Panel Layouts" --text="Please choose a panel layout." --form --field="Panel Layout:":CB "$panel_layouts" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
 
 ex=$?
 

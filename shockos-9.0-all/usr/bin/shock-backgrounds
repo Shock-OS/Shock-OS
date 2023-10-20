@@ -110,7 +110,7 @@ then
 
             else
 
-                yad --window-icon=background --image=emblem-important --title="Not an Image" --text="The file you selected does not appear to be an image." --button="Dismiss"\!gtk-quit
+                yad --window-icon=preferences-desktop-wallpaper --image=emblem-important --title="Not an Image" --text="The file you selected does not appear to be an image." --button="Dismiss"\!gtk-quit
 
             fi
 
@@ -130,7 +130,7 @@ then
     until ((directory_count>1)) && [[ "$directory_contains_images" == *"image"* ]]
     do
 
-        output="$(yad --form --width=400 --height=200 --window-icon=background --title="Slideshow Background" --field="Folder containing images:":DIR "$directory" --field="Delay (minutes):":NUM "$delay"'!1..100!1' --field="Style:":CB "$style_yad_cb" --field="Play images in random order":CHK "$random_boolean" --field="Change Background Colors":BTN 'shock-background-color-chooser' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+        output="$(yad --form --width=400 --height=200 --window-icon=preferences-desktop-wallpaper --title="Slideshow Background" --field="Folder containing images:":DIR "$directory" --field="Delay (minutes):":NUM "$delay"'!1..100!1' --field="Style:":CB "$style_yad_cb" --field="Play images in random order":CHK "$random_boolean" --field="Change Background Colors":BTN 'shock-background-color-chooser' --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
 
         ex=$?
 

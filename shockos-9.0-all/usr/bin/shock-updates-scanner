@@ -34,7 +34,7 @@ do
 
             fi
 
-            yad --notification --image=/usr/share/shock/auto-updates.svg --icon-size=48 --text="Automatic updates are being installed. Please do not turn off your computer." --command="" & killpid=$!
+            yad --notification --image=aptdaemon-upgrade --icon-size=48 --text="Automatic updates are being installed. Please do not turn off your computer." --command="" & killpid=$!
 
             wait $auto_updates_killpid
 
@@ -59,9 +59,9 @@ do
 
             fi
 
-            notify-send --app-name="Update Manager" --icon=system-software-update "Update Manager" "$notification_text"
+            notify-send --app-name="Update Manager" --icon=software-update-available "Update Manager" "$notification_text"
 
-            yad --notification --image=system-software-update --text="$yad_text" --command='shock-update-manager' & killpid=$!
+            yad --notification --image=software-update-available --text="$yad_text" --command='shock-update-manager' & killpid=$!
 
             mkdir -p ~/.cache/shock-tmp/shock-update-manager
 

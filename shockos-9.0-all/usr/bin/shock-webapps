@@ -78,7 +78,7 @@ do
 
     fi
 
-    output="$(yad --window-icon="[ICON HERE]" --width=400 --height=300 --title="Web Apps" --text="Create, edit and delete web apps." --list --always-print-result --column="Icon":IMG --column="Name" --column="FILEPATH":HD "${webapp_list[@]}" --buttons-layout=spread --button="Add"\!add --button="Remove"\!remove --button="Edit"\!gtk-edit)"
+    output="$(yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --width=400 --height=300 --title="Web Apps" --text="Create, edit and delete web apps." --list --always-print-result --column="Icon":IMG --column="Name" --column="FILEPATH":HD "${webapp_list[@]}" --buttons-layout=spread --button="Add"\!add --button="Remove"\!remove --button="Edit"\!gtk-edit)"
 
     action=$?
 
@@ -110,7 +110,7 @@ do
     elif [[ "$action" == "1" ]] #remove
     then
 
-        yad --window-icon="[ICON HERE]" --title="Web Apps" --image=gtk-delete --text="Are you sure you want to delete ${shock_webapp_name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
+        yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --title="Web Apps" --image=gtk-delete --text="Are you sure you want to delete ${shock_webapp_name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
 
         ex=$?
 
@@ -172,9 +172,9 @@ do
 
             categories_selection='Accessories!Administration!Education!Games!Graphics!Internet!Office!Preferences!Programming!Sound & Video!System Tools!Universal Access'
 
-            categories_selection="${categories_selection//${shock_webapp_category}/^${shock_webapp_category}}"
+            categories_selection="${categories_selection//"${shock_webapp_category}"/"^${shock_webapp_category}"}"
 
-            output="$(yad --window-icon="[ICON HERE]" --title="Web Apps" --form --focus-field="$focus_field" --field="Name:" "$shock_webapp_name" --field="Address:" "$shock_webapp_address" --field="Icon:":FL "$shock_webapp_icon" --field="Category:":CB "$categories_selection" --field="Browser":CB "$browser_selection" --field="Parameters:" "$shock_webapp_parameters" --field="Isolated Profile":CHK "$shock_webapp_isolated" --field="Private/Incognito Window":CHK "$shock_webapp_private" --button="Save"\!edit-save)"
+            output="$(yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --title="Web Apps" --form --focus-field="$focus_field" --field="Name:" "$shock_webapp_name" --field="Address:" "$shock_webapp_address" --field="Icon:":FL "$shock_webapp_icon" --field="Category:":CB "$categories_selection" --field="Browser":CB "$browser_selection" --field="Parameters:" "$shock_webapp_parameters" --field="Isolated Profile":CHK "$shock_webapp_isolated" --field="Private/Incognito Window":CHK "$shock_webapp_private" --button="Save"\!media-floppy)"
 
             ex=$?
 
@@ -204,31 +204,31 @@ do
 
                 fi
 
-                if [[ -f ~/.local/share/applications/shock-webapps/"${shock_webapp_name}.desktop" ]]
+                if [[ -f ~/.local/share/applications/shock-webapps/"${shock_webapp_name}.desktop" ]] && [[ "$action" == "0" ]]
                 then
 
-                    yad --window-icon="[ICON HERE]" --image=emblem-important --title="Web Apps" --text="There is already a web app named '$shock_webapp_name'. Please choose a different name." --button="Retry"\!edit-undo
+                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="There is already a web app named '$shock_webapp_name'. Please choose a different name." --button="Retry"\!edit-undo
 
                     focus_field=1
 
                 elif ! curl --output /dev/null --silent --head --fail "$shock_webapp_address"
                 then
 
-                    yad --window-icon="[ICON HERE]" --image=emblem-important --title="Web Apps" --text="'$shock_webapp_address' is not a vaild website URL. Please enter a vaild URL." --button="Retry"\!edit-undo
+                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="'$shock_webapp_address' is not a vaild website URL. Please enter a vaild URL." --button="Retry"\!edit-undo
 
                     focus_field=2
 
                 elif [[ -z "$shock_webapp_icon" ]]
                 then
 
-                    yad --window-icon="[ICON HERE]" --image=emblem-important --title="Web Apps" --text="No icon was provided. Please select an image to use for the icon." --button="Retry"\!edit-undo
+                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="No icon was provided. Please select an image to use for the icon." --button="Retry"\!edit-undo
 
                     focus_field=3
 
                 elif [[ "$(file "$shock_webapp_icon")" != *" image data, "* ]]
                 then
 
-                    yad --window-icon="[ICON HERE]" --image=emblem-important --title="Web Apps" --text="'$shock_webapp_icon' is not a vaild image file. Please select an image to use for the icon." --button="Retry"\!edit-undo
+                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="'$shock_webapp_icon' is not a vaild image file. Please select an image to use for the icon." --button="Retry"\!edit-undo
 
                     focus_field=3
 
@@ -314,8 +314,8 @@ do
 
         echo "[Desktop Entry]
 Name=$shock_webapp_name
-Icon=~/.local/share/shock/webapps/icons/${shock_webapp_name}.png
-Exec=shock-webapp-launcher '~/.local/share/applications/shock-webapps/${shock_webapp_name}.desktop'
+Icon=/home/${runuser}/.local/share/shock/webapps/icons/${shock_webapp_name}.png
+Exec=shock-webapp-launcher '/home/${runuser}/.local/share/applications/shock-webapps/${shock_webapp_name}.desktop'
 Terminal=false
 Type=Application
 Categories=$category

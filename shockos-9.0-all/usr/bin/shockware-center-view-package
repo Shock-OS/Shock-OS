@@ -32,7 +32,7 @@ fi
 
 function start_loading() {
 
-yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --progress-text="Loading app info..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
+yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --progress-text="Loading app info..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
 
 }
 
@@ -59,7 +59,7 @@ then
 
 else
 
-    yad --notification --image=/usr/share/shockware-center/icon.svg --icon-size=30 --text="The Shockware Center is running. Please do not turn off your computer." --command='' & echo "$!" | tee ~/.cache/shock-tmp/shockware-center/indicator_killpid
+    yad --notification --image=/usr/share/shock/icons/shockware-center.svg --icon-size=30 --text="The Shockware Center is running. Please do not turn off your computer." --command='' & echo "$!" | tee ~/.cache/shock-tmp/shockware-center/indicator_killpid
 
     echo "1" | tee ~/.cache/shock-tmp/shockware-center/indicator_instances
 
@@ -102,7 +102,7 @@ then
 
         end_loading
 
-        yad --window-icon=/usr/share/shockware-center/icon.svg --image=emblem-important --title="Shockware Center" --text="$full_name is not available." --button="Dismiss"\!gtk-quit
+        yad --window-icon=/usr/share/shock/icons/shockware-center.svg --image=emblem-important --title="Shockware Center" --text="$full_name is not available." --button="Dismiss"\!gtk-quit
 
         exit
 
@@ -193,7 +193,7 @@ fi
 
 function apt_remove() {
 
-yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!gtk-remove --button="No, keep"\!gtk-cancel
+yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!gtk-remove --button="No, keep"\!gtk-cancel
 
 ex=$?
 
@@ -202,7 +202,7 @@ then
 
     show_indicator
 
-	{ wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt remove -y $package; } | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --image="$icon" --title="Shockware Center" --text="Removing $full_name$both..." --text-align=center --progress-text="" --auto-close --progress --pulsate
+	{ wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt remove -y $package; } | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shock/icons/shockware-center.svg --image="$icon" --title="Shockware Center" --text="Removing $full_name$both..." --text-align=center --progress-text="" --auto-close --progress --pulsate
 
     installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
@@ -213,7 +213,7 @@ then
     if [[ " ${installed_packages[@]} " != *" $package "* ]] #if removed successfully
     then
 
-        notify-send --app-name="Shockware Center" --icon=/usr/share/shockware-center/icon.svg "App Removed Successfully" "$full_name$both was successfully removed."
+        notify-send --app-name="Shockware Center" --icon=/usr/share/shock/icons/shockware-center.svg "App Removed Successfully" "$full_name$both was successfully removed."
 
     else
 
@@ -229,7 +229,7 @@ function apt_install() {
 
 show_indicator
 
-{ wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt-get install --show-progress -y $package | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Pending..."; stdbuf -o0 sed 's/.*/&\n#&%/g'); } | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --image="$icon" --text="Installing $full_name$both...
+{ wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt-get install --show-progress -y $package | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Pending..."; stdbuf -o0 sed 's/.*/&\n#&%/g'); } | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --image="$icon" --text="Installing $full_name$both...
 <small>The installation will continue in the background if this window is closed.</small>" --text-align=center --auto-close --progress
 
 installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
@@ -293,7 +293,7 @@ flatpak run "$id" &
 
 function flatpak_remove() {
 
-yad --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!remove --button="No, keep"\!gtk-cancel
+yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!remove --button="No, keep"\!gtk-cancel
 
 ex=$?
 
@@ -302,7 +302,7 @@ then
 
     show_indicator
 
-	flatpak uninstall -y "$id" | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --image="$icon" --text="Removing $full_name$both..." --text-align=center --progress-text="" --auto-close --progress --pulsate
+	flatpak uninstall -y "$id" | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --image="$icon" --text="Removing $full_name$both..." --text-align=center --progress-text="" --auto-close --progress --pulsate
 
     installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
 
@@ -311,7 +311,7 @@ then
     if [[ " ${installed_flatpaks[@]} " != *" $id "* ]] #if removed successfully
     then
 
-        notify-send --app-name="Shockware Center" --icon=/usr/share/shockware-center/icon.svg "App Removed Successfully" "$full_name$both was successfully removed."
+        notify-send --app-name="Shockware Center" --icon=/usr/share/shock/icons/shockware-center.svg "App Removed Successfully" "$full_name$both was successfully removed."
 
     else
 
@@ -358,7 +358,7 @@ do
 
     fi
 
-done | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shockware-center/icon.svg --title="Shockware Center" --image="$icon" --text="Installing $full_name$both...
+done | yad --no-buttons --no-escape --fixed --width=400 --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --image="$icon" --text="Installing $full_name$both...
 <small>The installation will continue in the background if this window is closed.</small>" --text-align=center --auto-close --progress
 
 installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
@@ -407,7 +407,7 @@ then
 
 	end_loading
 
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="APT package" --width=830 --height=300 --image="$icon" --text-info --filename="$tmpfile" $irbuttons_apt
+	yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Details of $full_name" --text="APT package" --width=830 --height=300 --image="$icon" --text-info --filename="$tmpfile" $irbuttons_apt
 
 	ex=$?
 
@@ -437,7 +437,7 @@ then
 
 	end_loading
 
-	yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="Flatpak application" --width=830 --height=300 --image="$icon" --text-info --wrap --filename="$tmpfile2" $irbuttons_flatpak
+	yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Details of $full_name" --text="Flatpak application" --width=830 --height=300 --image="$icon" --text-info --wrap --filename="$tmpfile2" $irbuttons_flatpak
 
 	ex=$?
 
@@ -498,7 +498,7 @@ else #if both
 
     fi
 
-    yad --window-icon=/usr/share/shockware-center/icon.svg --title="Details of $full_name" --text="$full_name is available from both APT and Flatpak." --width=830 --height=300 --notebook --key=$key --tab="APT" --tab="Flatpak" "$irbuttons_apt" "$irbuttons_apt_2" "$irbuttons_flatpak" "$irbuttons_flatpak_2"
+    yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Details of $full_name" --text="$full_name is available from both APT and Flatpak." --width=830 --height=300 --notebook --key=$key --tab="APT" --tab="Flatpak" "$irbuttons_apt" "$irbuttons_apt_2" "$irbuttons_flatpak" "$irbuttons_flatpak_2"
 
     ex=$?
 

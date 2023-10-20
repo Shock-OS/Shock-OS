@@ -7,7 +7,7 @@ do
 
     cd "$directory"
 
-    file="$(yad --window-icon=sound --title="Startup Sound" --text="Please select an audio file to use as the startup sound." --file --buttons-layout=edge --button="Reset to Default"\!gtk-revert:2 --button="Choose"\!fileopen:0)"
+    file="$(yad --window-icon=gnome-music --title="Startup Sound" --text="Please select an audio file to use as the startup sound." --file --buttons-layout=edge --button="Reset to Default"\!gtk-revert:2 --button="Choose"\!fileopen:0)"
 
     ex=$?
 
@@ -23,13 +23,13 @@ do
 
             cp "$file" ~/.shock/startup-sound
 
-            yad --window-icon=sound --image=emblem-default --title="Startup Sound" --text="'$(basename "$file")' has been set as the startup sound." --button="Dismiss"\!gtk-quit
+            yad --window-icon=gnome-music --image=emblem-default --title="Startup Sound" --text="'$(basename "$file")' has been set as the startup sound." --button="Dismiss"\!gtk-quit
 
             exit
 
         else
 
-            yad --window-icon=sound --image=emblem-important --title="Startup Sound" --text="The selected file does not appear to be an audio file. Please select an audio file." --button="Retry"\!edit-undo
+            yad --window-icon=gnome-music --image=emblem-important --title="Startup Sound" --text="The selected file does not appear to be an audio file. Please select an audio file." --button="Retry"\!edit-undo
 
             ex=$?
 
@@ -47,7 +47,7 @@ do
 
         rm ~/.shock/startup-sound
 
-        yad --window-icon=sound --image=emblem-default --title="Startup Sound" --text="The startup sound has been reset to the default." --button="Dismiss"\!gtk-quit
+        yad --window-icon=gnome-music --image=emblem-default --title="Startup Sound" --text="The startup sound has been reset to the default." --button="Dismiss"\!gtk-quit
 
         exit
 

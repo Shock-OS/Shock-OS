@@ -80,7 +80,7 @@ fi
 if [[ "${#installed_browsers[@]}" == "0" ]] #if no compatible browsers are installed
 then
 
-    yad --window-icon="[ICON HERE]" --image=emblem-important --title="No Compatible Browser Found" --text="No compatible browsers were found to launch your web app. 
+    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="No Compatible Browser Found" --text="No compatible browsers were found to launch your web app. 
 Please install one of the following supported browsers:
 
 Chromium (APT or Flatpak)
@@ -98,7 +98,11 @@ then
 
     browser="${installed_browsers[0]}"
 
-    sed -i "s/^shock_webapp_browser/shock_webapp_browser=${browser}/" "$1" #update the .desktop file
+    sed -i "/^shock_webapp_browser/c shock_webapp_browser='${browser}'" "$1" #update the .desktop file
+
+else
+
+    browser="$shock_webapp_browser"
 
 fi
 
@@ -148,6 +152,6 @@ then
 
 fi
 
-"$browser" --app="$shock_webapp_address" "$shock_webapp_parameters"
+eval "$browser --app=$shock_webapp_address $shock_webapp_parameters"
 
 

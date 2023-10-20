@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1
+Name=Web Apps
+GenericName=Web Apps
+Comment=Run websites as if they were apps
+Exec=shock-webapps
+TryExec=shock-webapps
+Icon=/usr/share/shock/icons/shock-webapps.svg
+Terminal=false
+Type=Application
+Categories=Network;
+Keywords=web;app;website;google;chromium;chrome;shortcut;

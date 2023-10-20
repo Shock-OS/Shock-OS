@@ -15,13 +15,13 @@ IFS=$'\n'
 
 function start_preloading() {
 
-yad --window-icon=system-software-update --title="Update Manager" --progress-text="Refreshing..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & preloader_killpid=$!
+yad --window-icon=software-update-available --title="Update Manager" --progress-text="Refreshing..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & preloader_killpid=$!
 
 }
 
 function start_loading() {
 
-yad --window-icon=system-software-update --title="Update Manager" --progress-text="Loading..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
+yad --window-icon=software-update-available --title="Update Manager" --progress-text="Loading..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
 
 }
 
@@ -85,7 +85,7 @@ success="FALSE"
 until [[ "$success" == "TRUE" ]]
 do
 
-    output="$(yad --window-icon=system-software-update --width=100 --title="Settings" --form --field="Delay between each scan for updates:":LBL "" --field="Hours:":NUM "${hours}\!0..96" --field="Minutes:":NUM "${minutes}\!0..60" --field="":LBL "" --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="":LBL "" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --buttons-layout=edge --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0)"
+    output="$(yad --window-icon=software-update-available --width=100 --title="Settings" --form --field="Delay between each scan for updates:":LBL "" --field="Hours:":NUM "${hours}\!0..96" --field="Minutes:":NUM "${minutes}\!0..60" --field="":LBL "" --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="":LBL "" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --buttons-layout=edge --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0)"
 
     ex=$?
 
@@ -177,7 +177,7 @@ else
 
 fi
 
-yad --notification --image=system-software-update --text="$yad_text" --command='' & notification_killpid=$!
+yad --notification --image=software-update-available --text="$yad_text" --command='' & notification_killpid=$!
 
 mkdir -p ~/.cache/shock-tmp/shock-update-manager
 
@@ -186,7 +186,7 @@ echo "$notification_killpid" | tee ~/.cache/shock-tmp/shock-update-manager/updat
 if ((${#apt_updates[@]}>0))
 then
 
-    pkexec env DEBIAN_FRONTEND=gnome apt-get upgrade --show-progress -y | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Downloading updates, please wait..."; stdbuf -o0 sed 's/.*/&\n#&%/g') | yad --window-icon=system-software-update --image=system-software-update --width=400 --title="Update Manager" --text="Installing APT Updates...
+    pkexec env DEBIAN_FRONTEND=gnome apt-get upgrade --show-progress -y | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Downloading updates, please wait..."; stdbuf -o0 sed 's/.*/&\n#&%/g') | yad --window-icon=software-update-available --image=software-update-available --width=400 --title="Update Manager" --text="Installing APT Updates...
 <small>Updates will continue in the background if this window is closed.</small>" --text-align=center --fixed --progress --auto-close --no-cancel  --no-buttons --no-esape
 
 fi
@@ -225,7 +225,7 @@ then
 
         fi
 
-    done | yad --window-icon=system-software-update --image=system-software-update --width=400 --title="Update Manager" --text="Installing Flatpak Updates...
+    done | yad --window-icon=software-update-available --image=software-update-available --width=400 --title="Update Manager" --text="Installing Flatpak Updates...
 <small>Updates will continue in the background if this window is closed.</small>" --text-align=center --fixed --progress --auto-close --no-cancel  --no-buttons --no-esape
 
 fi
@@ -280,7 +280,7 @@ then
 
     rm ~/.cache/shock-tmp/shock-update-manager/indicator_pid
 
-    yad --window-icon=emblem-default --image=emblem-default --buttons-layout=edge --title="Update Manager" --text="Your system is up to date." --button="Settings"\!gnome-settings --button="Dismiss"\!gtk-quit --width=300
+    yad --window-icon=emblem-default --image=emblem-default --buttons-layout=edge --title="Update Manager" --text="Your system is up to date." --button="Settings"\!tweaks-app --button="Dismiss"\!gtk-quit --width=300
 
     ex=$?
 
@@ -387,7 +387,7 @@ do
 
     end_loading
 
-    yad --window-icon=system-software-update --title="Update Manager" --width=800 --height=500 --text="$window_text" --list --no-click --buttons-layout=edge --column="Type":IMG --column="Name" $page_buttons --button="Settings"\!gnome-settings:1 --button="Install Updates"\!system-software-update:2 "${update_list[@]}"
+    yad --window-icon=software-update-available --title="Update Manager" --width=800 --height=500 --text="$window_text" --list --no-click --buttons-layout=edge --column="Type":IMG --column="Name" $page_buttons --button="Settings"\!tweaks-app:1 --button="Install Updates"\!software-update-available:2 "${update_list[@]}"
 
     ex=$?
 
@@ -404,7 +404,7 @@ do
     elif ((ex==50)) #jump
     then
 
-        jump_page=$(yad --window-icon=system-software-update --title="Update Manager" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
+        jump_page=$(yad --window-icon=software-update-available --title="Update Manager" --form --field="Jump to Page:":NUM "$((page+1))\!1..$(($(expr ${#search_results_prep_full[@]} / $rows_per_page)+1))" --button=Jump!gtk-jump-to-ltr)
 
         ex=$?
 
@@ -427,7 +427,7 @@ do
 
         install_updates
 
-        yad --window-icon=system-software-update --title="Update Manager" --progress-text="Refreshing cache..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & refresh_killpid=$!
+        yad --window-icon=software-update-available --title="Update Manager" --progress-text="Refreshing cache..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & refresh_killpid=$!
 
         fetch_updates
 
@@ -444,7 +444,7 @@ do
 
             rm ~/.cache/shock-tmp/shock-update-manager/indicator_pid
 
-	        notify-send --icon=system-software-update --app-name="Update Manager" "Update Manager" "Your system is up to date."
+	        notify-send --icon=software-update-available --app-name="Update Manager" "Update Manager" "Your system is up to date."
 
         fi
 
