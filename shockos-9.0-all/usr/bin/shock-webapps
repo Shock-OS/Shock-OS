@@ -59,17 +59,6 @@ then
 
 fi
 
-browser_selection=""
-
-for browser in "${installed_browsers[@]}"
-do
-
-    browser_selection+="!${browser}"
-
-done
-
-browser_selection="${browser_selection:1}"
-
 while true
 do
 
@@ -89,7 +78,7 @@ do
 
     fi
 
-    output="$(yad --window-icon="[ICON HERE]" --width=400 --height=300 --title="Web Apps" --text="Create, edit and delete web apps." --list --always-print-result --column="Icon":IMG --column="Name" --column="FILEPATH":HD "${webapp_list[@]}" --button="Add"\!add --button="Remove"\!remove --button="Edit"\!gtk-edit)"
+    output="$(yad --window-icon="[ICON HERE]" --width=400 --height=300 --title="Web Apps" --text="Create, edit and delete web apps." --list --always-print-result --column="Icon":IMG --column="Name" --column="FILEPATH":HD "${webapp_list[@]}" --buttons-layout=spread --button="Add"\!add --button="Remove"\!remove --button="Edit"\!gtk-edit)"
 
     action=$?
 
@@ -161,11 +150,31 @@ do
         until [[ "$success" == "TRUE" ]]
         do
 
+            browser_selection=""
+
+            for browser in "${installed_browsers[@]}"
+            do
+
+                if [[ "$shock_webapp_browser" == "$browser" ]]
+                then
+
+                    browser_selection+="!^${browser}"
+
+                else
+
+                    browser_selection+="!${browser}"
+
+                fi
+
+            done
+
+            browser_selection="${browser_selection:1}"
+
             categories_selection='Accessories!Administration!Education!Games!Graphics!Internet!Office!Preferences!Programming!Sound & Video!System Tools!Universal Access'
 
             categories_selection="${categories_selection//${shock_webapp_category}/^${shock_webapp_category}}"
 
-            output="$(yad --window-icon="[ICON HERE]" --title="Web Apps" --form --focus-field="$focus_field" --field="Name:" "$shock_webapp_name" --field="Address:" "$shock_webapp_address" --field="Icon:":FL "$shock_webapp_iconpath" --field="Category:":CB "$categories_selection" --field="Browser":CB "$browser_selection" --field="Parameters:" "$shock_webapp_parameters" --field="Isolated Profile":CHK "$shock_webapp_isolated" --field="Private/Incognito Window":CHK "$shock_webapp_private" --button="Add"\!add)"
+            output="$(yad --window-icon="[ICON HERE]" --title="Web Apps" --form --focus-field="$focus_field" --field="Name:" "$shock_webapp_name" --field="Address:" "$shock_webapp_address" --field="Icon:":FL "$shock_webapp_icon" --field="Category:":CB "$categories_selection" --field="Browser":CB "$browser_selection" --field="Parameters:" "$shock_webapp_parameters" --field="Isolated Profile":CHK "$shock_webapp_isolated" --field="Private/Incognito Window":CHK "$shock_webapp_private" --button="Save"\!edit-save)"
 
             ex=$?
 
@@ -304,21 +313,21 @@ do
         convert "$shock_webapp_icon" -scale "64x64" ~/.local/share/shock/webapps/icons/${shock_webapp_name}.png || echo "Failed to convert the icon."
 
         echo "[Desktop Entry]
-    Name=$shock_webapp_name
-    Icon=~/.local/share/shock/webapps/icons/${shock_webapp_name}.png
-    Exec=shock-webapp-launcher '~/.local/share/applications/shock-webapps/${shock_webapp_name}.desktop'
-    Terminal=false
-    Type=Application
-    Categories=$category
+Name=$shock_webapp_name
+Icon=~/.local/share/shock/webapps/icons/${shock_webapp_name}.png
+Exec=shock-webapp-launcher '~/.local/share/applications/shock-webapps/${shock_webapp_name}.desktop'
+Terminal=false
+Type=Application
+Categories=$category
 
-    shock_webapp_name='$shock_webapp_name'
-    shock_webapp_address='$shock_webapp_address'
-    shock_webapp_icon='$shock_webapp_icon'
-    shock_webapp_category='$shock_webapp_category'
-    shock_webapp_browser='$shock_webapp_browser'
-    shock_webapp_parameters='$shock_webapp_parameters'
-    shock_webapp_isolated='$shock_webapp_isolated'
-    shock_webapp_private='$shock_webapp_private'" | tee ~/.local/share/applications/shock-webapps/"${shock_webapp_name}.desktop"
+shock_webapp_name='$shock_webapp_name'
+shock_webapp_address='$shock_webapp_address'
+shock_webapp_icon='$shock_webapp_icon'
+shock_webapp_category='$shock_webapp_category'
+shock_webapp_browser='$shock_webapp_browser'
+shock_webapp_parameters='$shock_webapp_parameters'
+shock_webapp_isolated='$shock_webapp_isolated'
+shock_webapp_private='$shock_webapp_private'" | tee ~/.local/share/applications/shock-webapps/"${shock_webapp_name}.desktop"
 
     fi
 

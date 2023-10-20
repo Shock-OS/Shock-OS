@@ -7,7 +7,14 @@ eval "$(grep '^shock_webapp' "$1")"
 if [[ "$shock_webapp_isolated" == "TRUE" ]]
 then
 
-    shock_webapp_parameters="--user-data-dir /home/$(whoami)/.local/share/shock/webapps/profiles/${shock_webapp_name} ${shock_webapp_parameters}"
+    shock_webapp_parameters="--user-data-dir=/home/$(whoami)/.local/share/shock/webapps/profiles/${shock_webapp_name} ${shock_webapp_parameters}"
+
+fi
+
+if [[ "$shock_webapp_private" == "TRUE" ]]
+then
+
+    shock_webapp_parameters="--incognito ${shock_webapp_parameters}"
 
 fi
 
@@ -80,7 +87,9 @@ Chromium (APT or Flatpak)
 Ungoogled Chromium (Flatpak)
 Thorium (APT)
 Vivaldi (APT)
-Brave (APT or Flatpak)" --button="Dismiss"\!gtk-cancel:1
+Brave (APT or Flatpak)
+
+Chromium, Ungoogled Chromium, and Brave can be installed from the Shockware Center. Thorium and Vivaldi can be downloaded online." --button="Dismiss"\!gtk-cancel:1
 
     exit
 
@@ -88,6 +97,8 @@ elif [[ " ${installed_browsers[@]} " != *" $shock_webapp_browser "* ]] #if brows
 then
 
     browser="${installed_browsers[0]}"
+
+    sed -i "s/^shock_webapp_browser/shock_webapp_browser=${browser}/" "$1" #update the .desktop file
 
 fi
 
