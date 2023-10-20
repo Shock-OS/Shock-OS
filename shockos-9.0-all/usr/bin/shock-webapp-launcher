@@ -1,26 +1,142 @@
 #!/bin/bash
 
-source "$1"
+IFS=$'\n'
 
-installed_packages="$(apt list --installed | awk -F/ '{print $1}' | uniq)" #ChatGPT
+eval "$(grep '^shock_webapp' "$1")"
 
-if [[ "$shock_webapp_browser" == "Chromium" ]] && [[ " $installed_packages " == *" chromium "* ]]
+if [[ "$shock_webapp_isolated" == "TRUE" ]]
 then
 
-    chromium --app="$shock_webapp_address" "$shock_webapp_parameters"
-
-elif [[ "$shock_webapp_browser" == "Chromium" ]] && [[ " $installed_packages " == *" chromium-browser "* ]]
-then
-
-    chromium-browser --app="$shock_webapp_address" "$shock_webapp_parameters"
-
-elif [[ "$shock_webapp_browser" == "Thorium" ]] && [[ " $installed_packages " == *" thorium-browser "* ]]
-then
-
-    thorium-browser --app="$shock_webapp_address" "$shock_webapp_parameters"
-
-else #if selected browser is not installed
-
-    PUT CODE HERE WHEN ALL COMPATIBLE BROWSERS HAVE BEEN IMPLEMENTED
+    shock_webapp_parameters="--user-data-dir /home/$(whoami)/.local/share/shock/webapps/profiles/${shock_webapp_name} ${shock_webapp_parameters}"
 
 fi
+
+#CHECK FOR INSTALLED BROWSERS
+
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
+
+installed_browsers=()
+
+if [[ " ${installed_packages[@]} " == *" chromium "* ]] || [[ " ${installed_packages[@]} " == *" chromium-browser "* ]]
+then
+
+    installed_browsers+=("Chromium")
+
+fi
+
+if [[ " ${installed_flatpaks[@]} " == *" org.chromium.Chromium "* ]]
+then
+
+    installed_browsers+=("Chromium (Flatpak)")
+
+fi
+
+if [[ " ${installed_flatpaks[@]} " == *" com.github.Eloston.UngoogledChromium "* ]]
+then
+
+    installed_browsers+=("Ungoogled Chromium (Flatpak)")
+
+fi
+
+if [[ " ${installed_packages[@]} " == *" thorium-browser "* ]]
+then
+
+    installed_browsers+=("Thorium")
+
+fi
+
+if [[ " ${installed_packages[@]} " == *" vivaldi-stable "* ]]
+then
+
+    installed_browsers+=("Vivaldi")
+
+fi
+
+if [[ " ${installed_packages[@]} " == *" brave-browser "* ]]
+then
+
+    installed_browsers+=("Brave")
+
+fi
+
+if [[ " ${installed_flatpaks[@]} " == *" com.brave.Browser "* ]]
+then
+
+    installed_browsers+=("Brave (Flatpak)")
+
+fi
+
+#END CHECKING FOR INSTALLED BROWSERS
+
+if [[ "${#installed_browsers[@]}" == "0" ]] #if no compatible browsers are installed
+then
+
+    yad --window-icon="[ICON HERE]" --image=emblem-important --title="No Compatible Browser Found" --text="No compatible browsers were found to launch your web app. 
+Please install one of the following supported browsers:
+
+Chromium (APT or Flatpak)
+Ungoogled Chromium (Flatpak)
+Thorium (APT)
+Vivaldi (APT)
+Brave (APT or Flatpak)" --button="Dismiss"\!gtk-cancel:1
+
+    exit
+
+elif [[ " ${installed_browsers[@]} " != *" $shock_webapp_browser "* ]] #if browser is not installed
+then
+
+    browser="${installed_browsers[0]}"
+
+fi
+
+if [[ "$browser" == "Chromium" ]]
+then
+
+    if [[ " ${installed_packages[@]} " == *" chromium "* ]]
+    then
+
+        browser="chromium"
+
+    else
+
+        browser="chromium-browser"
+
+    fi
+
+elif [[ "$browser" == "Chromium (Flatpak)" ]]
+then
+
+    browser="flatpak run org.chromium.Chromium"
+
+elif [[ "$browser" == "Ungoogled Chromium" ]]
+then
+
+    browser="flatpak run com.github.Eloston.UngoogledChromium"
+
+elif [[ "$browser" == "Thorium" ]]
+then
+
+    browser="thorium-browser"
+
+elif [[ "$browser" == "Vivaldi" ]]
+then
+
+    browser="vivaldi-stable"
+
+elif [[ "$browser" == "Brave" ]]
+then
+
+    browser="brave-browser"
+
+elif [[ "$browser" == "Brave (Flatpak)" ]]
+then
+
+    browser="flatpak run com.brave.Browser"
+
+fi
+
+"$browser" --app="$shock_webapp_address" "$shock_webapp_parameters"
+
+

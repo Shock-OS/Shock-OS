@@ -36,11 +36,11 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
             if [[ "$(ls -d "$i"/*/)" == "${i}/metacity-1/" ]]
             then
 
-		        yadlist+=("gnome-settings-theme" "Metacity theme" "${current_theme:$nl}")
+		        yadlist+=("preferences-desktop-theme" "Metacity theme" "${current_theme:$nl}")
 
             else
 
-                yadlist+=("gnome-settings-theme" "Theme pack" "${current_theme:$nl}")
+                yadlist+=("preferences-desktop-theme" "Theme pack" "${current_theme:$nl}")
 
             fi
 
@@ -76,7 +76,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
 	done
 
-	output="$(yad --window-icon=gnome-settings-theme --title="Themes" --text="Install, remove, rename or use themes, icons and cursors." --list --column="Type":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=4 --height=300 --buttons-layout=spread --button="Browse"\!applications-internet --button="Install"\!add --button="Remove"\!remove --button="Rename"\!gtk-edit --button="Use"\!dialog-ok "${yadlist[@]}"
+	output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --text="Install, remove, rename or use themes, icons and cursors." --list --column="Type":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=4 --height=300 --buttons-layout=spread --button="Browse"\!applications-internet --button="Install"\!add --button="Remove"\!remove --button="Rename"\!gtk-edit --button="Use"\!dialog-ok "${yadlist[@]}"
 )"
 
 	ex=$?
@@ -95,7 +95,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
 		cd ~/
 
-		file="$(yad --window-icon=gnome-settings-theme --title="Install" --text="Please select a theme, icon or cursor pack to install. You may select a folder or a compressed archive." --file --button="Install"\!fileopen)"
+		file="$(yad --window-icon=preferences-desktop-theme --title="Install" --text="Please select a theme, icon or cursor pack to install. You may select a folder or a compressed archive." --file --button="Install"\!fileopen)"
 
 		ex=$?
 
@@ -105,11 +105,11 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
             if [[ "$file" == *".deb" ]]
             then
 
-                yad --window-icon=gnome-settings-theme --image=emblem-important --title="Install" --text="$file is not a compatible theme file. Please choose a folder or a compressed archive containing the theme you want to install." --button="Dismiss"\!gtk-quit
+                yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Install" --text="$file is not a compatible theme file. Please choose a folder or a compressed archive containing the theme you want to install." --button="Dismiss"\!gtk-quit
 
             else
 
-                yad --fixed --window-icon=gnome-settings-theme --title="Themes" --progress-text="Installing $(basename "$file")..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
+                yad --fixed --window-icon=preferences-desktop-theme --title="Themes" --progress-text="Installing $(basename "$file")..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
 
                 tmpdir="$(mktemp -d)"
 
@@ -308,7 +308,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
                 if [[ "$worked" == "FALSE" ]]
                 then
 
-                    yad --window-icon=gnome-settings-theme --image=emblem-important --title="Install" --text="$file does not appear to contain any themes, icon packs or cursor packs." --button="Dismiss"\!gtk-quit
+                    yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Install" --text="$file does not appear to contain any themes, icon packs or cursor packs." --button="Dismiss"\!gtk-quit
 
                 fi
 
@@ -322,7 +322,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 		if [[ "$type" == "The default Shock OS look and feel" ]]
         then
 
-			yad --window-icon=gnome-settings-theme --title="Themes" --image=emblem-important --text="You cannot remove the default theme." --button="Dismiss"\!gtk-quit
+			yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove the default theme." --button="Dismiss"\!gtk-quit
 
 		elif [[ "$type" == "Theme pack" ]] || [[ "$type" == "Metacity theme" ]] #if theme pack
 		then
@@ -330,13 +330,22 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
             if [[ "$(dconf read /org/mate/desktop/interface/gtk-theme)" == "'${runuser}_${name}'" ]] || [[ "$(dconf read /org/mate/marco/general/theme)" == "'${runuser}_${name}'" ]]
             then
 
-                yad --window-icon=gnome-settings-theme --title="Themes" --image=emblem-important --text="You cannot remove $name because it is currently in use. Please switch to a different theme before removing $name." --button="Dismiss"\!gtk-quit
+                yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different theme before removing ${name}." --button="Dismiss"\!gtk-quit
 
             else
 
-                ttr="$(readlink ~/.themes/"${runuser}_$name")"
+                yad --window-icon=preferences-desktop-theme --title="Themes" --image=gtk-delete --text="Are you sure you want to delete ${name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
 
-			    rm -r "$ttr"
+                ex=$?
+
+                if [[ "$ex" == "0" ]]
+                then
+
+                    ttr="$(readlink ~/.themes/"${runuser}_${name}")"
+
+			        rm -r "$ttr"
+
+                fi
 
             fi
 
@@ -348,19 +357,28 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
                 if [[ "$type" == "Icon pack" ]]
                 then
 
-                    yad --window-icon=gnome-settings-theme --title="Themes" --image=emblem-important --text="You cannot remove $name because it is currently in use. Please switch to a different icon theme before removing $name." --button="Dismiss"\!gtk-quit
+                    yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different icon theme before removing ${name}." --button="Dismiss"\!gtk-quit
 
                 else
 
-                    yad --window-icon=gnome-settings-theme --title="Themes" --image=emblem-important --text="You cannot remove $name because it is currently in use. Please switch to a different cursor theme before removing $name." --button="Dismiss"\!gtk-quit
+                    yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different cursor theme before removing ${name}." --button="Dismiss"\!gtk-quit
 
                 fi
 
             else
 
-                ttr="$(readlink ~/.icons/"${runuser}_$name")"
+                yad --window-icon=preferences-desktop-theme --title="Themes" --image=gtk-delete --text="Are you sure you want to delete ${name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
 
-			    rm -r "$ttr"
+                ex=$?
+
+                if [[ "$ex" == "0" ]]
+                then
+
+                    ttr="$(readlink ~/.icons/"${runuser}_$name")"
+
+			        rm -r "$ttr"
+
+                fi
 
             fi
 
@@ -372,7 +390,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
         if [[ "$type" == "The default Shock OS look and feel" ]]
 		then
 
-            yad --window-icon=gnome-settings-theme --title="Rename" --image=emblem-important --text="You cannot rename the default theme." --button="Dismiss"\!gtk-quit
+            yad --window-icon=preferences-desktop-theme --title="Rename" --image=emblem-important --text="You cannot rename the default theme." --button="Dismiss"\!gtk-quit
 
         else
 
@@ -380,7 +398,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
 		    until [[ "$success" == "yes" ]]
 		    do
-			    newname="$(yad --window-icon=gnome-settings-theme --title="Rename" --text="Please enter the new name for your theme pack." --entry --entry-text="$name" --button="Rename"\!gtk-edit)"
+			    newname="$(yad --window-icon=preferences-desktop-theme --title="Rename" --text="Please enter the new name for your theme pack." --entry --entry-text="$name" --button="Rename"\!gtk-edit)"
 
 			    ex=$?
 
@@ -395,7 +413,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 					    if [[ -e ~/.themes/"$newname" ]] #if theme with that name already exists
 					    then
 
-						    yad --window-icon=gnome-settings-theme --image=emblem-important --title="Rename" --text="There is already a theme pack named '$newname'. Please choose a different name." --button="Retry"\!edit-undo
+						    yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Rename" --text="There is already a theme pack named '$newname'. Please choose a different name." --button="Retry"\!edit-undo
 
 						    success="no"
 
@@ -426,7 +444,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 					    if [[ -e ~/.icons/"$newname" ]] #if icon or cursor pack with that name already exists
 					    then
 
-						    yad --window-icon=gnome-settings-theme --image=emblem-important --title="Rename" --text="There is already an icon/cursor pack named '$newname'. Please choose a different name." --button="Retry"\!edit-undo
+						    yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Rename" --text="There is already an icon/cursor pack named '$newname'. Please choose a different name." --button="Retry"\!edit-undo
 
 						    success="no"
 
@@ -536,7 +554,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
             fi
 
-			output="$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+			output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Themes" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
 
 			ex=$?
 
@@ -675,7 +693,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
                     fi
 
-                    output="$(yad --width=300 --window-icon=gnome-settings-theme --title="Themes" --form --field="Theme Color:":CB "$theme_color_selection" --field="Icon Color:":CB "$icon_color_selection" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+                    output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Themes" --form --field="Theme Color:":CB "$theme_color_selection" --field="Icon Color:":CB "$icon_color_selection" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
 
                     ex=$?
 
@@ -797,7 +815,7 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
             if [[ "$(dconf read /org/mate/desktop/session/required-components/windowmanager)" == "'mutter'" ]] #MUTTER COMPATIBILITY
             then
 
-                yad --window-icon=gnome-settings-theme --image=emblem-important --title="Themes" --text="Mutter, the current window manager, does not support metacity themes. To use metacity themes, please select a different window manager in the 'Window Manager' app." --button="Dismiss"\!gtk-quit
+                yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Themes" --text="Mutter, the current window manager, does not support metacity themes. To use metacity themes, please select a different window manager in the 'Window Manager' app." --button="Dismiss"\!gtk-quit
 
             else
 

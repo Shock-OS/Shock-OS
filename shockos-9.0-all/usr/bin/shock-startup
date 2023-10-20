@@ -135,12 +135,12 @@ then
 
     #pulseaudio_autoconfig #UNCOMMENT WHEN PIPEWIRE SUPPORT HAS BEEN IMPLEMENTED
 
-    while true
-    do
+    #while true
+    #do
 
-        mpg123 /usr/share/shock/"Space Ambience.mp3"
+        #mpg123 /usr/share/shock/"Space Ambience.mp3"
 
-    done &
+    #done &
 
     yad --window-icon=/usr/share/shock/shock-logo.svg --title="Welcome" --picture --size=fit --filename=/usr/share/shock/initsetup-welcome-logo.png --text="
 <span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --buttons-layout=center --button="Next"\!go-next --width=400
