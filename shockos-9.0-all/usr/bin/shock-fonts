@@ -20,8 +20,6 @@ do
 
     sudo shock-fonts-sync
 
-    source ~/.config/shock/fonts
-
     if (($(ls ~/.fonts | wc -l)>0))
     then
 
@@ -116,7 +114,7 @@ do
 
         fonts=($(ls ~/.fonts))
 
-        font_to_remove="$(yad --window-icon=preferences-desktop-font --title="Remove Fonts" --width=400 --height=300 --list --column="Name" --no-headers "${fonts[@]}" --button="Cancel"\!gtk-cancel:1 --button="Remove"\!remove:0)"
+        font_to_remove="$(yad --window-icon=preferences-desktop-font --title="Remove Fonts" --width=400 --height=300 --list --column="Name" --no-headers "${fonts[@]}" --button="Remove"\!remove)"
 
         detect_exit
 
@@ -130,112 +128,92 @@ do
         if [[ "$font_to_change" == "Application Font|" ]]
         then
 
-            new_font="$(yad --font --title="Application Font" --window-icon=preferences-desktop-font --fontname="$current_appfont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+            new_font="$(yad --font --title="Application Font" --window-icon=preferences-desktop-font --fontname="$(gsettings get org.mate.interface font-name | sed "s/'//g")" --button="Apply"\!gtk-ok)"
 
             detect_exit
 
-            dconf write /org/mate/desktop/interface/font-name "'$new_font'"
+            gsettings set org.mate.interface font-name "$new_font"
 
-            dconf write /org/gnome/desktop/interface/font-name "'$new_font'" #MUTTER COMPATIBILITY
-
-            current_appfont="$new_font"
+            gsettings set org.gnome.desktop.interface font-name "$new_font" #MUTTER COMPATIBILITY
 
         elif [[ "$font_to_change" == "Desktop Font|" ]]
         then
 
-            new_font="$(yad --font --title="Desktop Font" --window-icon=preferences-desktop-font --fontname="$current_deskfont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+            new_font="$(yad --font --title="Desktop Font" --window-icon=preferences-desktop-font --fontname="$(gsettings get org.mate.caja.desktop font | sed "s/'//g")" --button="Apply"\!gtk-ok)"
 
             detect_exit
 
-            dconf write /org/mate/caja/desktop/font "'$new_font'"
-
-            current_deskfont="$new_font"
+            gsettings set org.mate.caja.desktop font "$new_font"
 
         elif [[ "$font_to_change" == "Document Font|" ]]
         then
 
-            new_font="$(yad --font --title="Document Font" --window-icon=preferences-desktop-font --fontname="$current_docfont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+            new_font="$(yad --font --title="Document Font" --window-icon=preferences-desktop-font --fontname="$(gsettings get org.mate.interface document-font-name | sed "s/'//g")" --button="Apply"\!gtk-ok)"
 
             detect_exit
 
-            dconf write /org/mate/desktop/interface/document-font-name "'$new_font'"
+            gsettings set org.mate.interface document-font-name "$new_font"
 
-            dconf write /org/gnome/desktop/interface/document-font-name "'$new_font'" #MUTTER COMPATIBILITY
-
-            current_docfont="$new_font"
+            gsettings set org.gnome.desktop.interface document-font-name "$new_font" #MUTTER COMPATIBILITY
 
         elif [[ "$font_to_change" == "Monospace Font|" ]]
         then
 
-            new_font="$(yad --font --title="Monospace Font" --window-icon=preferences-desktop-font --fontname="$current_monospacefont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+            new_font="$(yad --font --title="Monospace Font" --window-icon=preferences-desktop-font --fontname="$(gsettings get org.mate.interface monospace-font-name | sed "s/'//g")" --button="Apply"\!gtk-ok)"
 
             detect_exit
 
-            dconf write /org/mate/desktop/interface/monospace-font-name "'$new_font'"
+            gsettings set org.mate.interface monospace-font-name "$new_font"
 
-            dconf write /org/gnome/desktop/interface/monospace-font-name "'$new_font'" #MUTTER COMPATIBILITY
-
-            current_monospacefont="$new_font"
+            gsettings set org.gnome.desktop.interface monospace-font-name "$new_font" #MUTTER COMPATIBILITY
 
         elif [[ "$font_to_change" == "Window Title Font|" ]]
         then
 
-            new_font="$(yad --font --title="Window Title Font" --window-icon=preferences-desktop-font --fontname="$current_windowtitlefont" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+            new_font="$(yad --font --title="Window Title Font" --window-icon=preferences-desktop-font --fontname="$(gsettings get org.mate.Marco.general titlebar-font | sed "s/'//g")" --button="Apply"\!gtk-ok)"
 
             detect_exit
 
-            dconf write /org/mate/marco/general/titlebar-font "'$new_font'"
+            gsettings set org.mate.Marco.general titlebar-font "$new_font"
 
-            dconf write /org/gnome/desktop/wm/preferences/titlebar-font "'$new_font'" #MUTTER COMPATIBILITY
-
-            current_windowtitlefont="$new_font"
+            gsettings set org.gnome.desktop.wm.preferences titlebar-font "$new_font" #MUTTER COMPATIBILITY
 
         elif [[ "$font_to_change" == "Reset All Fonts to Defaults|" ]]
         then
 
-            yad --window-icon=preferences-desktop-font --title="Fonts" --text="Are you sure you would like to reset all fonts to their defaults?" --buttons-layout=spread --button="Yes"\!gtk-yes --button="No"\!gtk-cancel
+            yad --window-icon=preferences-desktop-font --title="Fonts" --text="Are you sure you would like to reset all fonts to their defaults?" --buttons-layout=spread --button="Yes"\!gtk-yes --button="No"\!cancel
 
             detect_exit
 
-            dconf write /org/mate/desktop/interface/font-name "'Ubuntu 11'"
+            gsettings set org.mate.interface font-name "Ubuntu 11"
 
-            dconf write /org/gnome/desktop/interface/font-name "'Ubuntu 11'" #MUTTER COMPATIBILITY
+            gsettings set org.gnome.desktop.interface font-name "Ubuntu 11" #MUTTER COMPATIBILITY
 
             current_appfont="Ubuntu 11"
 
-            dconf write /org/mate/caja/desktop/font "'Ubuntu 11'"
+            gsettings set org.mate.caja.desktop font "Ubuntu 11"
 
             current_deskfont="Ubuntu 11"
 
-            dconf write /org/mate/desktop/interface/document-font-name "'Ubuntu 11'"
+            gsettings set org.mate.desktop.interface document-font-name "Ubuntu 11"
 
-            dconf write /org/gnome/desktop/interface/document-font-name "'Ubuntu 11'" #MUTTER COMPATIBILITY
+            gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11" #MUTTER COMPATIBILITY
 
             current_docfont="Ubuntu 11"
 
-            dconf write /org/mate/desktop/interface/monospace-font-name "'Monospace 13'"
+            gsettings set org.mate.desktop.interface monospace-font-name "Monospace 13"
 
-            dconf write /org/gnome/desktop/interface/monospace-font-name "'Monospace 13'" #MUTTER COMPATIBILITY
+            gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13" #MUTTER COMPATIBILITY
 
             current_monospacefont="Monospace 13"
 
-            dconf write /org/mate/marco/general/titlebar-font "'Ubuntu Bold 11'"
+            gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
 
-            dconf write /org/gnome/desktop/wm/preferences/titlebar-font "'Ubuntu Bold 11'" #MUTTER COMPATIBILITY
+            gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11" #MUTTER COMPATIBILITY
 
             current_windowtitlefont="Ubuntu Bold 11"
 
         fi
-    
-        echo "current_appfont=\"$current_appfont\"
-
-current_deskfont=\"$current_deskfont\"
-
-current_docfont=\"$current_docfont\"
-
-current_monospacefont=\"$current_monospacefont\"
-
-current_windowtitlefont=\"$current_windowtitlefont\"" | tee ~/.config/shock/fonts
 
     else
 

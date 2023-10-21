@@ -89,7 +89,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
     rm -rf /usr/share/shock-release-upgrader/upgrades/*
 
-    { wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
+    { wget https://sourceforge.net/projects/shock-os-download-mirror/files/Upgrade-Packages/shock-release-upgrader/"$upgrto_version.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!cancel:1
 
     cd /usr/share/shock-release-upgrader/upgrades
 
@@ -121,7 +121,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
     # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Verifying" --text="Verifying the upgrade pack..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
+    yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --title="Verifying" --text="Verifying the upgrade pack..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!cancel:1 & yad_pid=$!
 
     # Wait for either the command to finish or the YAD window to close
     wait -n $command_pid $yad_pid
@@ -160,7 +160,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
     # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Unpacking the Upgrade Pack" --text="Unpacking the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!gtk-cancel:1 & yad_pid=$!
+    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Unpacking the Upgrade Pack" --text="Unpacking the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!cancel:1 & yad_pid=$!
 
     # Wait for either the command to finish or the YAD window to close
     wait -n $command_pid $yad_pid
@@ -201,7 +201,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
     # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!gtk-cancel:1 & yad_pid=$!
+    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Preparing to Upgrade..." --text="Preparing to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!cancel:1 & yad_pid=$!
 
     # Wait for either the command to finish or the YAD window to close
     wait -n $command_pid $yad_pid
@@ -249,7 +249,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
     # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!gtk-cancel:1 & yad_pid=$!
+    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Upgrading to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please sit tight, this may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel Upgrade"\!cancel:1 & yad_pid=$!
 
     # Wait for either the command to finish or the YAD window to close
     wait -n $command_pid $yad_pid
@@ -321,7 +321,7 @@ Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Up
 
     else
 
-	    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --image=emblem-important --title="Upgrade Failed" --text="Failed to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please try again later." --button="Dismiss"\!gtk-quit
+	    yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --image=emblem-important --title="Upgrade Failed" --text="Failed to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please try again later." --button="Dismiss"\!cancel
 
     fi
 

@@ -62,7 +62,7 @@ else #Right (with menu)
 
 fi
 
-output="$(yad --window-icon=preferences-system-windows --title="Windows" --form --field="Window Manager:":CB "$wm_selector" --field="Buttons Layout:":CB "$buttons_selector" --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0)"
+output="$(yad --window-icon=preferences-system-windows --title="Windows" --form --field="Window Manager:":CB "$wm_selector" --field="Buttons Layout:":CB "$buttons_selector" --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
 ex=$?
 

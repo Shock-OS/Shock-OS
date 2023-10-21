@@ -105,7 +105,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
             if [[ "$file" == *".deb" ]]
             then
 
-                yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Install" --text="$file is not a compatible theme file. Please choose a folder or a compressed archive containing the theme you want to install." --button="Dismiss"\!gtk-quit
+                yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Install" --text="$file is not a compatible theme file. Please choose a folder or a compressed archive containing the theme you want to install." --button="Dismiss"\!cancel
 
             else
 
@@ -308,7 +308,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
                 if [[ "$worked" == "FALSE" ]]
                 then
 
-                    yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Install" --text="$file does not appear to contain any themes, icon packs or cursor packs." --button="Dismiss"\!gtk-quit
+                    yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Install" --text="$file does not appear to contain any themes, icon packs or cursor packs." --button="Dismiss"\!cancel
 
                 fi
 
@@ -322,7 +322,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 		if [[ "$type" == "The default Shock OS look and feel" ]]
         then
 
-			yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove the default theme." --button="Dismiss"\!gtk-quit
+			yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove the default theme." --button="Dismiss"\!cancel
 
 		elif [[ "$type" == "Theme pack" ]] || [[ "$type" == "Metacity theme" ]] #if theme pack
 		then
@@ -330,11 +330,11 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
             if [[ "$(dconf read /org/mate/desktop/interface/gtk-theme)" == "'${runuser}_${name}'" ]] || [[ "$(dconf read /org/mate/marco/general/theme)" == "'${runuser}_${name}'" ]]
             then
 
-                yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different theme before removing ${name}." --button="Dismiss"\!gtk-quit
+                yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different theme before removing ${name}." --button="Dismiss"\!cancel
 
             else
 
-                yad --window-icon=preferences-desktop-theme --title="Themes" --image=gtk-delete --text="Are you sure you want to delete ${name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
+                yad --window-icon=preferences-desktop-theme --title="Themes" --image=gtk-delete --text="Are you sure you want to delete ${name}?" --button="Cancel"\!cancel:1 --button="Delete"\!gtk-delete:0
 
                 ex=$?
 
@@ -357,17 +357,17 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
                 if [[ "$type" == "Icon pack" ]]
                 then
 
-                    yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different icon theme before removing ${name}." --button="Dismiss"\!gtk-quit
+                    yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different icon theme before removing ${name}." --button="Dismiss"\!cancel
 
                 else
 
-                    yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different cursor theme before removing ${name}." --button="Dismiss"\!gtk-quit
+                    yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different cursor theme before removing ${name}." --button="Dismiss"\!cancel
 
                 fi
 
             else
 
-                yad --window-icon=preferences-desktop-theme --title="Themes" --image=gtk-delete --text="Are you sure you want to delete ${name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
+                yad --window-icon=preferences-desktop-theme --title="Themes" --image=gtk-delete --text="Are you sure you want to delete ${name}?" --button="Cancel"\!cancel:1 --button="Delete"\!gtk-delete:0
 
                 ex=$?
 
@@ -390,7 +390,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
         if [[ "$type" == "The default Shock OS look and feel" ]]
 		then
 
-            yad --window-icon=preferences-desktop-theme --title="Rename" --image=emblem-important --text="You cannot rename the default theme." --button="Dismiss"\!gtk-quit
+            yad --window-icon=preferences-desktop-theme --title="Rename" --image=emblem-important --text="You cannot rename the default theme." --button="Dismiss"\!cancel
 
         else
 
@@ -554,7 +554,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
             fi
 
-			output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Themes" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+			output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Themes" --form --field="Theme:":CB "$theme_selection" --field="Color:":CB "$color_selection" --button="Apply"\!gtk-ok)"
 
 			ex=$?
 
@@ -693,7 +693,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
                     fi
 
-                    output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Themes" --form --field="Theme Color:":CB "$theme_color_selection" --field="Icon Color:":CB "$icon_color_selection" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+                    output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Themes" --form --field="Theme Color:":CB "$theme_color_selection" --field="Icon Color:":CB "$icon_color_selection" --button="Apply"\!gtk-ok)"
 
                     ex=$?
 
@@ -815,7 +815,7 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
             if [[ "$(dconf read /org/mate/desktop/session/required-components/windowmanager)" == "'mutter'" ]] #MUTTER COMPATIBILITY
             then
 
-                yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Themes" --text="Mutter, the current window manager, does not support metacity themes. To use metacity themes, please select a different window manager in the 'Window Manager' app." --button="Dismiss"\!gtk-quit
+                yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Themes" --text="Mutter, the current window manager, does not support metacity themes. To use metacity themes, please select a different window manager in the 'Window Manager' app." --button="Dismiss"\!cancel
 
             else
 

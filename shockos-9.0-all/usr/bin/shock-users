@@ -40,7 +40,7 @@ fi
 if [[ "$1" != "--setup" ]]
 then
 
-    yad --window-icon=system-users --title="Users" --text="Would you like to add or remove users?" --button="Add"\!add --button="Remove"\!remove --button="Advanced"\!gnome-settings --button="Cancel"\!gtk-cancel --buttons-layout=center
+    yad --window-icon=system-users --title="Users" --text="Would you like to add or remove users?" --button="Add"\!add --button="Remove"\!remove --button="Advanced"\!tweaks-app --button="Cancel"\!cancel --buttons-layout=center
 
     ex=$?
 
@@ -265,7 +265,7 @@ then
 
         else #Do not show congrats screen during intial setup
 
-            yad --window-icon=system-users --title="User Created Successfully" --text="Congratulations! You have successfully created the user '$username'." --button="Dismiss"\!gtk-quit
+            yad --window-icon=system-users --title="User Created Successfully" --text="Congratulations! You have successfully created the user '$username'." --button="Dismiss"\!cancel
 
         fi
 
@@ -296,14 +296,14 @@ then
 
         user_to_remove="$(echo "$output" | awk -F'|' '{print $2}')"
 
-        yad --window-icon=system-users --title="Remove User" --text="You are about to remove the user '$user_to_remove_display_name'. THIS ACTION IS IRREVERSABLE AND WILL ERASE ALL THEIR DATA. Are you sure you would like to delete '$user_to_remove_display_name'?" --button="DELETE USER"\!remove --button="Cancel"\!gtk-cancel
+        yad --window-icon=system-users --title="Remove User" --text="You are about to remove the user '$user_to_remove_display_name'. THIS ACTION IS IRREVERSABLE AND WILL ERASE ALL THEIR DATA. Are you sure you would like to delete '$user_to_remove_display_name'?" --button="DELETE USER"\!remove --button="Cancel"\!cancel
 
         ex=$?
 
         if ((ex!=0))
         then
 
-            yad --window-icon=system-users --title="Operation Aborted" --text="The user '$user_to_remove_display_name' was not removed. No changes were made to your system." --button="Dismiss"\!gtk-quit
+            yad --window-icon=system-users --title="Operation Aborted" --text="The user '$user_to_remove_display_name' was not removed. No changes were made to your system." --button="Dismiss"\!cancel
 
             exit
 
@@ -323,7 +323,7 @@ then
         elif [[ "$(ps -u $user_to_remove)" == *":"* ]]
         then
 
-            yad --window-icon=system-users --title="Cannot Remove User" --text="The user '$user_to_remove_display_name' cannot be removed because they have been logged in and are still occupied by some system processes. To delete this user, reboot the system (without loggin in as '$user_to_remove_display_name') and try again." --button="Dismiss"\!gtk-quit
+            yad --window-icon=system-users --title="Cannot Remove User" --text="The user '$user_to_remove_display_name' cannot be removed because they have been logged in and are still occupied by some system processes. To delete this user, reboot the system (without loggin in as '$user_to_remove_display_name') and try again." --button="Dismiss"\!cancel
 
             exit
 
@@ -350,7 +350,7 @@ then
 
     deluser --remove-home $user_to_remove || (zenity --error --text="Failed to remove $user_to_remove. The program will now exit." --ok-label="Exit" ; kill $$)
 
-    yad --window-icon=system-users --title="User Successfully Removed" --text="Congratulations! The user '$user_to_remove_display_name' has successfully been removed." --button="Dismiss"\!gtk-quit
+    yad --window-icon=system-users --title="User Successfully Removed" --text="Congratulations! The user '$user_to_remove_display_name' has successfully been removed." --button="Dismiss"\!cancel
 
 elif ((ex==2))
 then

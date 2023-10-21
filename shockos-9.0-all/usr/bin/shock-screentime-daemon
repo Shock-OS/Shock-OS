@@ -119,6 +119,11 @@ do
 
             current_usage=$(cat /usr/share/shock-screentime/"$current_user"/dates/"$current_date")
 
+        elif [[ -f /usr/share/shock-screentime/"$current_user"/today-limit/"$current_date" ]]
+        then
+
+            current_usage=$(cat /usr/share/shock-screentime/"$current_user"/today-limit/"$current_date")
+
         else
 
             current_usage=0

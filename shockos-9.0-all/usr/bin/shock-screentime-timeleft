@@ -86,7 +86,7 @@ do
 
     sleep 30
 
-done | yad --window-icon=/usr/share/shock/icons/shock-screentime.svg --title="Screen Time Limit" --text="Your parent/guardian/administrator has set a daily screen time limit of $total_minutes_display on your profile." --progress --button="Dismiss"\!gtk-quit
+done | yad --window-icon=/usr/share/shock/icons/shock-screentime.svg --title="Screen Time Limit" --text="Your parent/guardian/administrator has set a daily screen time limit of $total_minutes_display on your profile." --progress --button="Dismiss"\!cancel
 
 
 

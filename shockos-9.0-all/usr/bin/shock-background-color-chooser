@@ -18,7 +18,7 @@ else
 
 fi
 
-output="$(yad --window-icon=preferences-desktop-wallpaper --title="Background Colors" --form --field="Shading Type:":CB "$shading_type" --field="Choose Primary Color":FBTN 'bash -c "echo primary_color=\$(eval \"yad --window-icon=preferences-desktop-wallpaper --title=Primary\ Color --color --gtk-palette --expand-palette --init-color=\$(dconf read /org/mate/desktop/background/primary-color)\")"' --field="Choose Secondary Color":FBTN 'bash -c "echo secondary_color=\$(eval \"yad --window-icon=preferences-desktop-wallpaper --title=Secondary\ Color --color --gtk-palette --expand-palette --init-color=\$(dconf read /org/mate/desktop/background/secondary-color)\")"' --button="Reset to Default"\!gtk-revert:1 --button="Apply"\!gtk-ok:0 --button="Cancel"\!gtk-cancel:2)"
+output="$(yad --window-icon=preferences-desktop-wallpaper --title="Background Colors" --form --field="Shading Type:":CB "$shading_type" --field="Choose Primary Color":FBTN 'bash -c "echo primary_color=\$(eval \"yad --window-icon=preferences-desktop-wallpaper --title=Primary\ Color --color --gtk-palette --expand-palette --init-color=\$(dconf read /org/mate/desktop/background/primary-color)\")"' --field="Choose Secondary Color":FBTN 'bash -c "echo secondary_color=\$(eval \"yad --window-icon=preferences-desktop-wallpaper --title=Secondary\ Color --color --gtk-palette --expand-palette --init-color=\$(dconf read /org/mate/desktop/background/secondary-color)\")"' --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
 ex=$?
 

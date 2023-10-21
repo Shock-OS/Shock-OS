@@ -21,7 +21,7 @@ fi
 
 source ~/.config/shock-desktop-icons
 
-output="$(yad --title="Desktop Icons" --window-icon=/usr/share/shock/icons/shock-desktop-icons.svg --form --field="Show Desktop Icons":CHK "$show_desktop_icons" --field="The following options will only apply if desktop icons are enabled:":LBL '' --field="Computer":CHK "$computer" --field="Home":CHK "$home" --field="Trash":CHK "$trash" --field="Network":CHK "$network" --field="Mounted Volumes":CHK "$mounted_volumes" --button="Apply"\!gtk-ok --button="Cancel"\!gtk-cancel)"
+output="$(yad --title="Desktop Icons" --window-icon=/usr/share/shock/icons/shock-desktop-icons.svg --form --field="Show Desktop Icons":CHK "$show_desktop_icons" --field="The following options will only apply if desktop icons are enabled:":LBL '' --field="Computer":CHK "$computer" --field="Home":CHK "$home" --field="Trash":CHK "$trash" --field="Network":CHK "$network" --field="Mounted Volumes":CHK "$mounted_volumes" --button="Apply"\!gtk-ok)"
 
 ex=$?
 

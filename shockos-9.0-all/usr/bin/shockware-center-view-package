@@ -102,7 +102,7 @@ then
 
         end_loading
 
-        yad --window-icon=/usr/share/shock/icons/shockware-center.svg --image=emblem-important --title="Shockware Center" --text="$full_name is not available." --button="Dismiss"\!gtk-quit
+        yad --window-icon=/usr/share/shock/icons/shockware-center.svg --image=emblem-important --title="Shockware Center" --text="$full_name is not available." --button="Dismiss"\!cancel
 
         exit
 
@@ -193,7 +193,7 @@ fi
 
 function apt_remove() {
 
-yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!gtk-remove --button="No, keep"\!gtk-cancel
+yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!gtk-remove --button="No, keep"\!cancel
 
 ex=$?
 
@@ -293,7 +293,7 @@ flatpak run "$id" &
 
 function flatpak_remove() {
 
-yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!remove --button="No, keep"\!gtk-cancel
+yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!remove --button="No, keep"\!cancel
 
 ex=$?
 

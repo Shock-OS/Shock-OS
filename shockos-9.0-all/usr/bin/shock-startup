@@ -228,7 +228,7 @@ fi
 if [[ " $(groups "$(whoami)") " == *" shock-child "* ]] && [[ -f /usr/share/shock-screentime/"$(whoami)"/dailylimit ]] #if account is a child profile with a screen time limit set
 then
 
-    yad --notification --image=/usr/share/shock/parental-controls.png --text='Screen time limit is enabled for this user.' --icon-size=48 --command='' --menu='Remaining Time!shock-screentime-timeleft!time' & killpid=$!
+    yad --notification --image=/usr/share/shock/icons/shock-parental-controls.svg --text='Screen time limit is enabled for this user.' --icon-size=48 --command='' --menu='Remaining Time!shock-screentime-timeleft!timer-sand-symbolic' & killpid=$!
 
     echo "$killpid" | tee ~/.cache/shock-tmp/screentime-limit-notification
 

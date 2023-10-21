@@ -85,7 +85,7 @@ success="FALSE"
 until [[ "$success" == "TRUE" ]]
 do
 
-    output="$(yad --window-icon=software-update-available --width=100 --title="Settings" --form --field="Delay between each scan for updates:":LBL "" --field="Hours:":NUM "${hours}\!0..96" --field="Minutes:":NUM "${minutes}\!0..60" --field="":LBL "" --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="":LBL "" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --buttons-layout=edge --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0)"
+    output="$(yad --window-icon=software-update-available --width=100 --title="Settings" --form --field="Delay between each scan for updates:":LBL "" --field="Hours:":NUM "${hours}\!0..96" --field="Minutes:":NUM "${minutes}\!0..60" --field="":LBL "" --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="":LBL "" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --buttons-layout=edge --button="Cancel"\!cancel:1 --button="Apply"\!gtk-ok:0)"
 
     ex=$?
 
@@ -280,7 +280,7 @@ then
 
     rm ~/.cache/shock-tmp/shock-update-manager/indicator_pid
 
-    yad --window-icon=emblem-default --image=emblem-default --buttons-layout=edge --title="Update Manager" --text="Your system is up to date." --button="Settings"\!tweaks-app --button="Dismiss"\!gtk-quit --width=300
+    yad --window-icon=emblem-default --image=emblem-default --buttons-layout=edge --title="Update Manager" --text="Your system is up to date." --button="Settings"\!tweaks-app --button="Dismiss"\!cancel --width=300
 
     ex=$?
 

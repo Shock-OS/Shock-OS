@@ -110,7 +110,7 @@ do
     elif [[ "$action" == "1" ]] #remove
     then
 
-        yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --title="Web Apps" --image=gtk-delete --text="Are you sure you want to delete ${shock_webapp_name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
+        yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --title="Web Apps" --image=gtk-delete --text="Are you sure you want to delete ${shock_webapp_name}?" --button="Cancel"\!cancel:1 --button="Delete"\!gtk-delete:0
 
         ex=$?
 
@@ -197,19 +197,33 @@ do
 
                 shock_webapp_private="$(echo "$output" | awk -F'|' '{print $8}')"
 
-                if [[ "$shock_webapp_address" != "http://"* ]] && [[ "$shock_webapp_address" != "https://"* ]]
+                if [[ "$shock_webapp_address" != "http://"* ]] && [[ "$shock_webapp_address" != "https://"* ]] && [[ -n "$shock_webapp_address" ]]
                 then
 
                     shock_webapp_address="https://${shock_webapp_address}"
 
                 fi
 
-                if [[ -f ~/.local/share/applications/shock-webapps/"${shock_webapp_name}.desktop" ]] && [[ "$action" == "0" ]]
+                if [[ -z "$shock_webapp_name" ]]
+                then
+
+                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="The name cannot be blank. Please choose a name for your web app." --button="Retry"\!edit-undo
+
+                    focus_field=1
+
+                elif [[ -f ~/.local/share/applications/shock-webapps/"${shock_webapp_name}.desktop" ]] && [[ "$action" == "0" ]]
                 then
 
                     yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="There is already a web app named '$shock_webapp_name'. Please choose a different name." --button="Retry"\!edit-undo
 
                     focus_field=1
+
+                elif [[ -z "$shock_webapp_address" ]]
+                then
+
+                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="The web address (URL) cannot be blank. Please enter the URL of the website you want to use as a web app." --button="Retry"\!edit-undo
+
+                    focus_field=2
 
                 elif ! curl --output /dev/null --silent --head --fail "$shock_webapp_address"
                 then
