@@ -306,6 +306,8 @@ flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flat
 
 flatpak update #refreshes the flatpak cache and downloads the icons for the Shockware Center
 
+flatpak install -y org.gtk.Gtk3theme.Yaru org.gtk.Gtk3theme.Yaru-dark org.gtk.Gtk3theme.Yaru-Blue org.gtk.Gtk3theme.Yaru-Blue-dark org.gtk.Gtk3theme.Yaru-magenta org.gtk.Gtk3theme.Yaru-magenta-dark org.gtk.Gtk3theme.Yaru-olive org.gtk.Gtk3theme.Yaru-olive-dark org.gtk.Gtk3theme.Yaru-prussiangreen org.gtk.Gtk3theme.Yaru-prussiangreen-dark org.gtk.Gtk3theme.Yaru-Purple org.gtk.Gtk3theme.Yaru-Purple-dark org.gtk.Gtk3theme.Yaru-Red org.gtk.Gtk3theme.Yaru-Red-dark org.gtk.Gtk3theme.Yaru-sage org.gtk.Gtk3theme.Yaru-sage-dark
+
 #the systemd services patch begins
 
 sudo systemctl daemon-reload

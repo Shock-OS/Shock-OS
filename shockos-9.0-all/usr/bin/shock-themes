@@ -506,51 +506,46 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
             if [[ "$shock_gtk_theme" != "$shock_icon_theme" ]] #if mixed color scheme
             then
 
-                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian!^Mixed'
+                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!^Mixed'
 
             elif [[ "$shock_gtk_theme" == "Yaru-blue"* ]]
             then
 
-                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian!Mixed'
+                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!Mixed'
 
             elif [[ "$shock_gtk_theme" == "Yaru-prussiangreen"* ]]
             then
 
-                color_selection='Blue!^Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian!Mixed'
+                color_selection='Blue!^Green!Magenta!Olive!Orange!Purple!Red!Sage!Mixed'
 
             elif [[ "$shock_gtk_theme" == "Yaru-magenta"* ]]
             then
 
-                color_selection='Blue!Green!^Magenta!Olive!Orange!Purple!Red!Sage!Viridian!Mixed'
+                color_selection='Blue!Green!^Magenta!Olive!Orange!Purple!Red!Sage!Mixed'
 
             elif [[ "$shock_gtk_theme" == "Yaru-olive"* ]]
             then
 
-                color_selection='Blue!Green!Magenta!^Olive!Orange!Purple!Red!Sage!Viridian!Mixed'
+                color_selection='Blue!Green!Magenta!^Olive!Orange!Purple!Red!Sage!Mixed'
 
             elif [[ "$shock_gtk_theme" == "Yaru-purple"* ]]
             then
 
-                color_selection='Blue!Green!Magenta!Olive!Orange!^Purple!Red!Sage!Viridian!Mixed'
+                color_selection='Blue!Green!Magenta!Olive!Orange!^Purple!Red!Sage!Mixed'
 
             elif [[ "$shock_gtk_theme" == "Yaru-red"* ]]
             then
 
-                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!^Red!Sage!Viridian!Mixed'
+                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!^Red!Sage!Mixed'
 
             elif [[ "$shock_gtk_theme" == "Yaru-sage"* ]]
             then
 
-                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!^Sage!Viridian!Mixed'
-
-            elif [[ "$shock_gtk_theme" == "Yaru-viridian"* ]]
-            then
-
-                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!^Viridian!Mixed'
+                color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!^Sage!Mixed'
 
             else #if orange
 
-                color_selection='Blue!Green!Magenta!Olive!^Orange!Purple!Red!Sage!Viridian!Mixed'
+                color_selection='Blue!Green!Magenta!Olive!^Orange!Purple!Red!Sage!Mixed'
 
             fi
 
@@ -604,92 +599,82 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
                     if [[ "$theme_color" == "green" ]]
                     then
 
-                        theme_color_selection='Blue!^Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian'
+                        theme_color_selection='Blue!^Green!Magenta!Olive!Orange!Purple!Red!Sage'
 
                     elif [[ "$theme_color" == "magenta" ]]
                     then
 
-                        theme_color_selection='Blue!Green!^Magenta!Olive!Orange!Purple!Red!Sage!Viridian'
+                        theme_color_selection='Blue!Green!^Magenta!Olive!Orange!Purple!Red!Sage'
 
                     elif [[ "$theme_color" == "olive" ]]
                     then
 
-                        theme_color_selection='Blue!Green!Magenta!^Olive!Orange!Purple!Red!Sage!Viridian'
+                        theme_color_selection='Blue!Green!Magenta!^Olive!Orange!Purple!Red!Sage'
 
                     elif [[ "$theme_color" == "orange" ]]
                     then
 
-                        theme_color_selection='Blue!Green!Magenta!Olive!^Orange!Purple!Red!Sage!Viridian'
+                        theme_color_selection='Blue!Green!Magenta!Olive!^Orange!Purple!Red!Sage'
 
                     elif [[ "$theme_color" == "purple" ]]
                     then
 
-                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!^Purple!Red!Sage!Viridian'
+                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!^Purple!Red!Sage'
 
                     elif [[ "$theme_color" == "red" ]]
                     then
 
-                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!^Red!Sage!Viridian'
+                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!^Red!Sage'
 
                     elif [[ "$theme_color" == "sage" ]]
                     then
 
-                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!^Sage!Viridian'
-
-                    elif [[ "$theme_color" == "viridian" ]]
-                    then
-
-                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!^Viridian'
+                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!^Sage'
 
                     else #if theme is blue or mixed colors have not been used before
 
-                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian'
+                        theme_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage'
 
                     fi
 
                     if [[ "$icon_color" == "green" ]]
                     then
 
-                        icon_color_selection='Blue!^Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian'
+                        icon_color_selection='Blue!^Green!Magenta!Olive!Orange!Purple!Red!Sage'
 
                     elif [[ "$icon_color" == "magenta" ]]
                     then
 
-                        icon_color_selection='Blue!Green!^Magenta!Olive!Orange!Purple!Red!Sage!Viridian'
+                        icon_color_selection='Blue!Green!^Magenta!Olive!Orange!Purple!Red!Sage'
 
                     elif [[ "$icon_color" == "olive" ]]
                     then
 
-                        icon_color_selection='Blue!Green!Magenta!^Olive!Orange!Purple!Red!Sage!Viridian'
+                        icon_color_selection='Blue!Green!Magenta!^Olive!Orange!Purple!Red!Sage'
 
                     elif [[ "$icon_color" == "orange" ]]
                     then
 
-                        icon_color_selection='Blue!Green!Magenta!Olive!^Orange!Purple!Red!Sage!Viridian'
+                        icon_color_selection='Blue!Green!Magenta!Olive!^Orange!Purple!Red!Sage'
 
                     elif [[ "$icon_color" == "purple" ]]
                     then
 
-                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!^Purple!Red!Sage!Viridian'
+                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!^Purple!Red!Sage'
 
                     elif [[ "$icon_color" == "red" ]]
                     then
 
-                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!^Red!Sage!Viridian'
+                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!^Red!Sage'
 
                     elif [[ "$icon_color" == "sage" ]]
                     then
 
-                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!^Sage!Viridian'
-
-                    elif [[ "$icon_color" == "viridian" ]]
-                    then
-
-                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!^Viridian'
+                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!^Sage'
 
                     else #if theme is blue or mixed colors have not been used before
 
-                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage!Viridian'
+                        icon_color_selection='Blue!Green!Magenta!Olive!Orange!Purple!Red!Sage'
 
                     fi
 
