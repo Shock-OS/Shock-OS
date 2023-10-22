@@ -324,7 +324,7 @@ do
 
         mkdir -p ~/.local/share/shock/webapps/icons
 
-        convert "$shock_webapp_icon" -scale "64x64" ~/.local/share/shock/webapps/icons/${shock_webapp_name}.png || echo "Failed to convert the icon."
+        convert "$shock_webapp_icon" -resize 64x64 -gravity center -background none -extent 64x64 ~/.local/share/shock/webapps/icons/${shock_webapp_name}.png || echo "Failed to convert the icon."
 
         echo "[Desktop Entry]
 Name=$shock_webapp_name
