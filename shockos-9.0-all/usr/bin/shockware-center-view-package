@@ -28,6 +28,17 @@ then
 
 fi
 
+#THE CHROMIUM BANDAID FIX BEGINS
+
+if [[ "$package" == "chromium" ]]
+then
+
+    package="rpi-chromium-mods"
+
+fi
+
+#THE CHROMIUM BANDAID FIX ENDS
+
 #THE LOADING FUNCTIONS BEGIN
 
 function start_loading() {

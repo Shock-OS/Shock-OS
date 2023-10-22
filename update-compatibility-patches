@@ -148,6 +148,15 @@ show-power=false
 show-keyboard=false
 show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
+if [[ " ${installed_packages[@]} " == *" chromium "* ]] || [[ " ${installed_packages[@]} " == *" chromium-browser "* ]]
+then
+
+    sudo apt remove -y chromium chromium-browser
+
+    sudo apt install -y rpi-chromium-mods
+
+fi
 
 
