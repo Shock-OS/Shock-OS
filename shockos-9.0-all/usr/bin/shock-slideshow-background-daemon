@@ -9,7 +9,7 @@ then
 
     source ~/.config/shock/slideshow-background
 
-    current_background="$(dconf read /org/mate/desktop/background/picture-filename)"
+    current_background="$(gsettings get org.mate.background picture-filename)"
 
     backgrounds=("$directory"/*)
 
@@ -72,7 +72,7 @@ then
 
         done
 
-        dconf write /org/mate/desktop/background/picture-filename "'$background'"
+        gsettings set org.mate.background picture-filename "$background"
 
         current_background="$background"
 

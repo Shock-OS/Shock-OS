@@ -20,51 +20,55 @@ fi
 if [[ -f ~/.config/shock/userlogstat ]]
 then
 
-    dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-glx'"
+    gsettings set org.mate.session.required-components windowmanager "marco-glx"
 
-    dconf write /org/mate/desktop/interface/enable-animations "false"
+    gsettings set org.mate.interface enable-animations "false"
 
-    dconf write /org/mate/marco/general/button-layout "':minimize,maximize,close'"
+    gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
 
     #THE MUTTER SETTINGS PATCH BEGINS
 
-    dconf write /org/gnome/desktop/wm/preferences/button-layout "':minimize,maximize,close'"
+    gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
 
-    dconf write /org/gnome/desktop/wm/keybindings/panel-main-menu "['Super']"
+    gsettings set org.gnome.desktop.wm.keybindings panel-main-menu "['Super']"
 
     #THE MUTTER SETTINGS PATCH ENDS
 
     marco --replace &
 
-    dconf write /org/mate/desktop/interface/gtk-theme "'Yaru-blue'"
+    gsettings set org.mate.interface gtk-theme "Yaru-blue"
 
-    dconf write /org/mate/marco/general/theme "'Yaru'"
+    gsettings set org.mate.Marco.general theme "Yaru"
 
-    dconf write /org/mate/desktop/interface/icon-theme "'Yaru-blue'"
+    gsettings set org.mate.interface icon-theme "Yaru-blue"
 
     flatpak override --user --env=GTK_THEME="Yaru-blue"
 
-    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
+    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
 
-    dconf write /org/gnome/desktop/interface/cursor-theme "'mate-black'"
+    gsettings set org.gnome.desktop.interface cursor-theme "Yaru-dark"
 
-    dconf write /org/onboard/theme "'/usr/share/onboard/themes/Nightshade.theme'"
+    gsettings set org.onboard theme "/usr/share/onboard/themes/Nightshade.theme"
 
     #THE DEFAULT FONT PATCH BEGINS
 
-    dconf write /org/mate/desktop/interface/font-name "'Ubuntu 11'"
+    gsettings set org.mate.interface font-name "Ubuntu 11"
 
-    dconf write /org/gnome/desktop/interface/font-name "'Ubuntu 11'" #MUTTER COMPATIBILITY
+    gsettings set org.gnome.desktop.interface font-name "Ubuntu 11" #MUTTER COMPATIBILITY
 
-    dconf write /org/mate/caja/desktop/font "'Ubuntu 11'"
+    gsettings set org.mate.caja.desktop font "Ubuntu 11"
 
-    dconf write /org/mate/desktop/interface/document-font-name "'Ubuntu 11'"
+    gsettings set org.mate.desktop.interface document-font-name "Ubuntu 11"
 
-    dconf write /org/gnome/desktop/interface/document-font-name "'Ubuntu 11'" #MUTTER COMPATIBILITY
+    gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11" #MUTTER COMPATIBILITY
 
-    dconf write /org/mate/marco/general/titlebar-font "'Ubuntu Bold 11'"
+    gsettings set org.mate.desktop.interface monospace-font-name "Monospace 13"
 
-    dconf write /org/gnome/desktop/wm/preferences/titlebar-font "'Ubuntu Bold 11'" #MUTTER COMPATIBILITY
+    gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13" #MUTTER COMPATIBILITY
+
+    gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
+
+    gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11" #MUTTER COMPATIBILITY
 
     #THE DEFAULT FONT PATCH ENDS
 
@@ -76,31 +80,31 @@ then
 
     #the above set of commands sets the mate-dock-applet defaults
 
-    dconf write /org/mate/screensaver/themes "['screensavers-gnomelogo-floaters']"
+    gsettings set org.mate.screensaver themes "['screensavers-gnomelogo-floaters']"
 
     #the above command sets Lightning Bolt as the default screensaver
 
-    dconf write /org/mate/marco/general/center-new-windows "true"
+    gsettings set org.mate.Marco.general center-new-windows "true"
 
-    dconf write /org/gnome/mutter/center-new-windows "true"
+    gsettings set org.gnome.mutter center-new-windows "true"
         
     #the above command sets the new window placement to the center
 
-    dconf write /org/mate/desktop/background/show-desktop-icons "true"
+    gsettings set org.mate.background show-desktop-icons "true"
 
-    dconf write /org/mate/caja/desktop/computer-icon-visible "false"
+    gsettings set org.mate.caja.desktop computer-icon-visible "false"
 
-    dconf write /org/mate/caja/desktop/home-icon-visible "true"
+    gsettings set org.mate.caja.desktop home-icon-visible "true"
 
-    dconf write /org/mate/caja/desktop/trash-icon-visible "true"
+    gsettings set org.mate.caja.desktop trash-icon-visible "true"
 
-    dconf write /org/mate/caja/desktop/network-icon-visible "false"
+    gsettings set org.mate.caja.desktop network-icon-visible "false"
 
-    dconf write /org/mate/caja/desktop/volumes-visible "true"
+    gsettings set org.mate.caja.desktop volumes-visible "true"
 
     #the above set of commands sets the default Shock OS desktop icons
 
-    dconf write /org/mate/desktop/session/idle-delay 15 #sets the computer to regard the session as idle after 15 minutes (screensaver starts after 15 minutes)
+    gsettings set org.mate.session idle-delay 15 #sets the computer to regard the session as idle after 15 minutes (screensaver starts after 15 minutes)
 
     #THE FLATPAK GTK THEMING PATCH BEGINS
 
@@ -123,17 +127,17 @@ fi
 if (($(cat /usr/share/shock/setupvalue)==0)) #INITIAL SETUP (run as 'shock' user)
 then
 
-    dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-glx'"
+    gsettings set org.mate.session.required-components windowmanager "marco-glx"
 
-    dconf write /org/mate/desktop/interface/enable-animations "false"
+    gsettings set org.mate.interface enable-animations "false"
 
-    dconf write /org/mate/marco/general/button-layout "':minimize,maximize,close'"
+    gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
 
-    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
+    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
 
-    dconf write /org/mate/marco/general/theme "'Yaru'"
+    gsettings set org.mate.Marco.general theme "Yaru"
 
-    dconf write /org/mate/marco/general/center-new-windows "true"
+    gsettings set org.mate.Marco.general center-new-windows "true"
 
     feh --bg-fill /usr/share/shock/initsetup-background.png
 
@@ -195,7 +199,7 @@ then
 
 fi
 
-dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" #ensures that the user can logout and shutdown (fixes the shutdown menu being locked if the system crashed during automatic updates)
+gsettings org.mate.lockdown disable-log-out "false" #ensures that the user can logout and shutdown (fixes the shutdown menu being locked if the system crashed during automatic updates)
 
 mkdir -p ~/.cache/shock-tmp
 

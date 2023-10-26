@@ -9,7 +9,7 @@ then
 
 fi
 
-style="$(dconf read /org/mate/desktop/background/picture-options)"
+style="$(gsettings get org.mate.background picture-options)"
 
 yad --width=320 --text-align=center --buttons-layout=center --title="Desktop Background" --window-icon=preferences-desktop-wallpaper --text="Please choose a background style:" --button="Single Image"\!image-x-generic --button="Slideshow"\!folder-images
 
@@ -76,15 +76,15 @@ then
 
             rm ~/.config/shock/slideshow-background
 
-            dconf reset /org/mate/desktop/background/picture-options
+            gsettings reset org.mate.background picture-options
 
-            dconf reset /org/mate/desktop/background/picture-filename
+            gsettings reset org.mate.background picture-filename
 
-            dconf reset /org/mate/desktop/background/color-shading-type
+            gsettings reset org.mate.background color-shading-type
 
-            dconf reset /org/mate/desktop/background/primary-color
+            gsettings reset org.mate.background primary-color
 
-            dconf reset /org/mate/desktop/background/secondary-color
+            gsettings reset org.mate.background secondary-color
 
             exit
 
@@ -104,9 +104,9 @@ then
 
                 rm ~/.config/shock/slideshow-background
 
-                dconf write /org/mate/desktop/background/picture-options "'$style'"
+                gsettings set org.mate.background picture-options "$style"
 
-                dconf write /org/mate/desktop/background/picture-filename "'$background'"
+                gsettings set org.mate.background picture-filename "$background"
 
             else
 
@@ -219,9 +219,9 @@ style=\"$style\"" | tee ~/.config/shock/slideshow-background
 
     fi
 
-    dconf write /org/mate/desktop/background/picture-options "'$style'"
+    gsettings set org.mate.background picture-options "$style"
 
-    dconf write /org/mate/desktop/background/picture-filename "'$ws'"
+    gsettings set org.mate.background picture-filename "$ws"
 
     systemctl --user restart shock-slideshow-background-daemon.service
 

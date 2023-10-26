@@ -1,6 +1,6 @@
 #!/bin/bash
 
-shading_type="$(dconf read /org/mate/desktop/background/color-shading-type)"
+shading_type="$(gsettings get org.mate.background color-shading-type)"
 
 if [[ "$shading_type" == "'solid'" ]]
 then
@@ -18,18 +18,18 @@ else
 
 fi
 
-output="$(yad --window-icon=preferences-desktop-wallpaper --title="Background Colors" --form --field="Shading Type:":CB "$shading_type" --field="Choose Primary Color":FBTN 'bash -c "echo primary_color=\$(eval \"yad --window-icon=preferences-desktop-wallpaper --title=Primary\ Color --color --gtk-palette --expand-palette --init-color=\$(dconf read /org/mate/desktop/background/primary-color)\")"' --field="Choose Secondary Color":FBTN 'bash -c "echo secondary_color=\$(eval \"yad --window-icon=preferences-desktop-wallpaper --title=Secondary\ Color --color --gtk-palette --expand-palette --init-color=\$(dconf read /org/mate/desktop/background/secondary-color)\")"' --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
+output="$(yad --window-icon=preferences-desktop-wallpaper --title="Background Colors" --form --field="Shading Type:":CB "$shading_type" --field="Choose Primary Color":FBTN 'bash -c "echo primary_color=\$(eval \"yad --window-icon=preferences-desktop-wallpaper --title=Primary\ Color --color --gtk-palette --expand-palette --init-color=\$(gsettings get org.mate.background primary-color)\")"' --field="Choose Secondary Color":FBTN 'bash -c "echo secondary_color=\$(eval \"yad --window-icon=preferences-desktop-wallpaper --title=Secondary\ Color --color --gtk-palette --expand-palette --init-color=\$(gsettings get org.mate.background secondary-color)\")"' --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
 ex=$?
 
 if ((ex==1)) #reset to default
 then
 
-    dconf reset /org/mate/desktop/background/color-shading-type
+    gsettings reset org.mate.background color-shading-type
 
-    dconf reset /org/mate/desktop/background/primary-color
+    gsettings reset org.mate.background primary-color
 
-    dconf reset /org/mate/desktop/background/secondary-color
+    gsettings reset org.mate.background secondary-color
 
 elif ((ex==0)) #apply
 then
@@ -44,19 +44,19 @@ then
 
     eval "$output" #errors produced by this command are healthy errors
 
-    dconf write /org/mate/desktop/background/color-shading-type "'$shading_type'"
+    gsettings set org.mate.background color-shading-type "$shading_type"
 
     if [[ -n "$primary_color" ]]
     then
 
-        dconf write /org/mate/desktop/background/primary-color "'$primary_color'"
+        gsettings set org.mate.background primary-color "$primary_color"
 
     fi
 
     if [[ -n "$secondary_color" ]]
     then
 
-        dconf write /org/mate/desktop/background/secondary-color "'$secondary_color'"
+        gsettings set org.mate.background secondary-color "$secondary_color"
 
     fi
 

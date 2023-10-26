@@ -189,29 +189,19 @@ do
 
             gsettings set org.gnome.desktop.interface font-name "Ubuntu 11" #MUTTER COMPATIBILITY
 
-            current_appfont="Ubuntu 11"
-
             gsettings set org.mate.caja.desktop font "Ubuntu 11"
-
-            current_deskfont="Ubuntu 11"
 
             gsettings set org.mate.desktop.interface document-font-name "Ubuntu 11"
 
             gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11" #MUTTER COMPATIBILITY
 
-            current_docfont="Ubuntu 11"
-
             gsettings set org.mate.desktop.interface monospace-font-name "Monospace 13"
 
             gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13" #MUTTER COMPATIBILITY
 
-            current_monospacefont="Monospace 13"
-
             gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
 
             gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11" #MUTTER COMPATIBILITY
-
-            current_windowtitlefont="Ubuntu Bold 11"
 
         fi
 

@@ -160,7 +160,7 @@ done
 
 function install_updates() {
 
-dconf write /org/mate/desktop/lockdown/disable-log-out "true" #stops the user from accessing the shutdown menu while updates are being applied.
+gsettings set org.mate.lockdown disable-log-out "true" #stops the user from accessing the shutdown menu while updates are being applied.
 
 kill "$(cat ~/.cache/shock-tmp/shock-update-manager/indicator_pid)"
 
@@ -234,7 +234,7 @@ rm ~/.cache/shock-tmp/shock-update-manager/updates_in_progress_indicator_pid
 
 kill "$notification_killpid"
 
-dconf write /org/mate/desktop/lockdown/disable-log-out "'false'" #allows the user to access the shutdown menu.
+gsettings set org.mate.lockdown disable-log-out "false" #allows the user to access the shutdown menu.
 
 }
 

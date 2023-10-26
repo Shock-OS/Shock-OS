@@ -25,6 +25,13 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
 	yadlist=("/usr/share/shock/shock-logo.svg" "The default Shock OS look and feel" "Default")
 
+    if [[ "$(gsettings get org.mate.interface gtk-theme)" == "'${runuser}_"* ]]
+    then
+
+        yadlist+=("tweaks-app" "Change settings used by some apps to help them better match your theme" "Custom theme settings")
+
+    fi
+
 	if (($(ls ~/.themes | wc -l)>0))
 	then
 
@@ -327,7 +334,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 		elif [[ "$type" == "Theme pack" ]] || [[ "$type" == "Metacity theme" ]] #if theme pack
 		then
 
-            if [[ "$(dconf read /org/mate/desktop/interface/gtk-theme)" == "'${runuser}_${name}'" ]] || [[ "$(dconf read /org/mate/marco/general/theme)" == "'${runuser}_${name}'" ]]
+            if [[ "$(gsettings get org.mate.interface gtk-theme)" == "'${runuser}_${name}'" ]] || [[ "$(gsettings get org.mate.Marco.general theme)" == "'${runuser}_${name}'" ]]
             then
 
                 yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different theme before removing ${name}." --button="Dismiss"\!cancel
@@ -351,7 +358,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
 		else #if icon or cursor pack
 
-            if [[ "$(dconf read /org/mate/desktop/interface/icon-theme)" == "'${runuser}_${name}'" ]] || [[ "$(dconf write /org/mate/desktop/peripherals/mouse/cursor-theme)" == "'${runuser}_${name}'" ]]
+            if [[ "$(gsettings get org.mate.interface icon-theme)" == "'${runuser}_${name}'" ]] || [[ "$(gsettings get org.mate.peripherals-mouse cursor-theme)" == "'${runuser}_${name}'" ]]
             then
 
                 if [[ "$type" == "Icon pack" ]]
@@ -421,19 +428,19 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
 						    mv ~/.themes/"${runuser}_$name" ~/.themes/"${runuser}_$newname"
 
-						    if [[ "$(dconf read /org/mate/desktop/interface/gtk-theme)" == "'${runuser}_${name}'" || "$(dconf read /org/mate/marco/general/theme)" == "'${runuser}_${name}'" ]] && [[ "$type" == "Theme pack" ]] #if regular theme
+						    if [[ "$(gsettings get org.mate.interface gtk-theme)" == "'${runuser}_${name}'" || "$(gsettings get org.mate.Marco.general theme)" == "'${runuser}_${name}'" ]] && [[ "$type" == "Theme pack" ]] #if regular theme
 						    then
 
-							    dconf write /org/mate/desktop/interface/gtk-theme "'${runuser}_${newname}'"
+							    gsettings set org.mate.interface gtk-theme "${runuser}_${newname}"
 
-							    dconf write /org/mate/marco/general/theme "'${runuser}_${newname}'"
+							    gsettings set org.mate.Marco.general theme "${runuser}_${newname}"
 
                                 flatpak override --user --env=GTK_THEME="${runuser}_${newname}"
 
-						    elif [[ "$(dconf read /org/mate/marco/general/theme)" == "'${runuser}_${name}'" ]] && [[ "$type" == "Metacity theme" ]] #if metacity theme
+						    elif [[ "$(gsettings get org.mate.Marco.general theme)" == "'${runuser}_${name}'" ]] && [[ "$type" == "Metacity theme" ]] #if metacity theme
                             then
 
-                                dconf write /org/mate/marco/general/theme "'${runuser}_${newname}'"
+                                gsettings set org.mate.Marco.general theme "${runuser}_${newname}"
 
                             fi
 
@@ -452,21 +459,21 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
 						    mv ~/.icons/"${runuser}_$name" ~/.icons/"${runuser}_$newname"
 
-						    if [[ "$(dconf read /org/mate/desktop/interface/icon-theme)" == "'${runuser}_${name}'" ]]
+						    if [[ "$(gsettings get org.mate.interface icon-theme)" == "'${runuser}_${name}'" ]]
 						    then
 
-							    dconf write /org/mate/desktop/interface/icon-theme "'${runuser}_${newname}'"
+							    gsettings set org.mate.interface icon-theme "${runuser}_${newname}"
 
                                 flatpak override --user --env=ICON_THEME="${runuser}_${newname}"
 
 						    fi
 
-						    if [[ "$(dconf write /org/mate/desktop/peripherals/mouse/cursor-theme)" == "'${runuser}_${name}'" ]]
+						    if [[ "$(gsettings get org.mate.peripherals-mouse cursor-theme)" == "'${runuser}_${name}'" ]]
 						    then
 
-							    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'${runuser}_${newname}'"
+							    gsettings set org.mate.peripherals-mouse cursor-theme "${runuser}_${newname}"
 
-                                dconf write /org/gnome/desktop/interface/cursor-theme "'${runuser}_${newname}'" #MUTTER COMPATIBILITY
+                                gsettings set org.gnome.desktop.interface cursor-theme "${runuser}_${newname}" #MUTTER COMPATIBILITY
 
 						    fi
 
@@ -747,26 +754,26 @@ icon_color=${icon_color}" | tee ~/.config/shock-themes-mixed-colors
                 if ((ex==0))
                 then
 
-				    dconf write /org/mate/desktop/interface/gtk-theme "'$shock_gtk_theme'"
+				    gsettings set org.mate.interface gtk-theme "$shock_gtk_theme"
 
-				    dconf write /org/mate/marco/general/theme "'Yaru${lod}'"
+				    gsettings set org.mate.Marco.general theme "Yaru${lod}"
 
-				    dconf write /org/mate/desktop/interface/icon-theme "'$shock_icon_theme'"
+				    gsettings set org.mate.interface icon-theme "$shock_icon_theme"
 
-				    dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'mate-black'"
+				    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
 
-                    dconf write /org/gnome/desktop/interface/cursor-theme "'mate-black'" #MUTTER COMPATIBILITY
+                    gsettings set org.gnome.desktop.interface cursor-theme "Yaru-dark" #MUTTER COMPATIBILITY
 
                     flatpak override --user --env=GTK_THEME="$shock_gtk_theme"
 
                     if [[ "$lod" == "-dark" ]]
                     then
 
-                        dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
+                        gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
 
                     else
 
-                        dconf write /org/gnome/desktop/interface/color-scheme "'prefer-light'"
+                        gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
 
                     fi
 
@@ -785,42 +792,106 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
 
 			fi
 
+        elif [[ "$type" == "Change settings used by some apps to help them better match your theme" ]]
+        then
+
+            color_scheme="$(gsettings get org.gnome.desktop.interface color-scheme)"
+
+            if [[ "$color_scheme" == "'prefer-dark'" ]]
+            then
+
+                color_scheme_selection='Default!^Dark!Light'
+
+            elif [[ "$color_scheme" == "'prefer-light'" ]]
+            then
+
+                color_scheme_selection='Default!Dark!^Light'
+
+            else
+
+                color_scheme_selection='Default!Dark!Light'
+
+            fi
+
+            output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Custom Theme Settings" --form --field="<b>Color Scheme</b>":LBL '' --field="This setting is used by some apps to determine whether to use light or dark mode to better match your theme. This settings is usually set automatically, but you may want to change it manually if some apps don't match the light/dark theme.":LBL '' --field='':CB "$color_scheme_selection" --button="Apply"\!gtk-ok)"
+
+            ex=$?
+
+            if [[ "$ex" == "0" ]]
+            then
+
+                color_scheme="$(echo "$output" | awk -F'|' '{print $3}')"
+
+                if [[ "$color_scheme" == "Dark" ]]
+                then
+
+                    gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+
+                elif [[ "$color_scheme" == "Light" ]]
+                then
+
+                    gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
+
+                else
+
+                    gsettings reset org.gnome.desktop.interface color-scheme
+
+                fi
+
+            fi
+
 		elif [[ "$type" == "Theme pack" ]]
 		then
 
-			dconf write /org/mate/desktop/interface/gtk-theme "'${runuser}_${name}'"
+			gsettings set org.mate.interface gtk-theme "${runuser}_${name}"
 
-			dconf write /org/mate/marco/general/theme "'${runuser}_${name}'"
+			gsettings set org.mate.Marco.general theme "${runuser}_${name}"
 
             flatpak override --user --env=GTK_THEME="${runuser}_${name}"
+
+            if [[ "$(echo "$name" | awk '{print tolower($0)}')" == *"dark"* ]] || [[ "$(cat ~/.themes/"'${runuser}_${name}'"/index.theme | awk '{print tolower($0)}')" == *"dark"* ]]
+            then
+
+                gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+
+            elif [[ "$(echo "$name" | awk '{print tolower($0)}')" == *"light"* ]] || [[ "$(cat ~/.themes/"'${runuser}_${name}'"/index.theme | awk '{print tolower($0)}')" == *"light"* ]]
+            then
+
+                gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
+
+            else
+
+                gsettings reset org.gnome.desktop.interface color-scheme
+
+            fi
 
         elif [[ "$type" == "Metacity theme" ]]
         then
 
-            if [[ "$(dconf read /org/mate/desktop/session/required-components/windowmanager)" == "'mutter'" ]] #MUTTER COMPATIBILITY
+            if [[ "$(gsettings get org.mate.session.required-components windowmanager)" == "'mutter'" ]] #MUTTER COMPATIBILITY
             then
 
                 yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Themes" --text="Mutter, the current window manager, does not support metacity themes. To use metacity themes, please select a different window manager in the 'Window Manager' app." --button="Dismiss"\!cancel
 
             else
 
-                dconf write /org/mate/marco/general/theme "'${runuser}_${name}'"
+                gsettings set org.mate.Marco.general theme "${runuser}_${name}"
 
             fi
 
 		elif [[ "$type" == "Icon pack" ]]
 		then
 
-			dconf write /org/mate/desktop/interface/icon-theme "'${runuser}_${name}'"
+			gsettings set org.mate.interface icon-theme "${runuser}_${name}"
 
             flatpak override --user --env=ICON_THEME="${runuser}_${name}"
 
 		elif [[ "$type" == "Cursor pack" ]]
 		then
 
-			dconf write /org/mate/desktop/peripherals/mouse/cursor-theme "'${runuser}_${name}'"
+			gsettings set org.mate.peripherals-mouse cursor-theme "${runuser}_${name}"
 
-            dconf write /org/gnome/desktop/interface/cursor-theme "'${runuser}_${name}'" #MUTTER COMPATIBILITY
+            gsettings set org.gnome.desktop.interface cursor-theme "${runuser}_${name}" #MUTTER COMPATIBILITY
 
 		fi
 

@@ -2,7 +2,7 @@
 
 installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
-current_wm="$(dconf read /org/mate/desktop/session/required-components/windowmanager)"
+current_wm="$(gsettings get org.mate.session.required-components windowmanager)"
 
 if [[ "$current_wm" == "'marco-no-composite'" ]]
 then
@@ -39,7 +39,7 @@ then
 
 fi
 
-current_buttons_layout="$(dconf read /org/mate/marco/general/button-layout)"
+current_buttons_layout="$(gsettings get org.mate.Marco.general button-layout)"
 
 if [[ "$current_buttons_layout" == "':minimize,maximize,close'" ]] #Right
 then
@@ -73,9 +73,9 @@ current_buttons_layout="$(echo "$output" | awk -F'|' '{print $2}')"
 if ((ex==1)) #reset to default
 then
 
-    dconf write /org/mate/desktop/session/required-components/windowmanager "'marco'"
+    gsettings set org.mate.session.required-components windowmanager "marco"
 
-    dconf write /org/mate/marco/general/button-layout "':minimize,maximize,close'"
+    gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
 
 elif ((ex==0)) #apply
 then
@@ -83,42 +83,42 @@ then
     if [[ "$current_wm" == "Marco" ]]
     then
 
-        dconf write /org/mate/desktop/session/required-components/windowmanager "'marco'"
+        gsettings set org.mate.session.required-components windowmanager "marco"
 
     elif [[ "$current_wm" == "Compton" ]]
     then
 
-        dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-compton'"
+        gsettings set org.mate.session.required-components windowmanager "marco-compton"
 
     elif [[ "$current_wm" == "Mutter (experimental)" ]]
     then
 
-        dconf write /org/mate/desktop/session/required-components/windowmanager "'mutter'"
+        gsettings set org.mate.session.required-components windowmanager "mutter"
 
     else
 
-        dconf write /org/mate/desktop/session/required-components/windowmanager "'marco-no-composite'"
+        gsettings set org.mate.session.required-components windowmanager "marco-no-composite"
 
     fi
 
     if [[ "$current_buttons_layout" == "Right" ]]
     then
 
-        dconf write /org/mate/marco/general/button-layout "':minimize,maximize,close'"
+        gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
 
     elif [[ "$current_buttons_layout" == "Left" ]]
     then
 
-        dconf write /org/mate/marco/general/button-layout "'close,minimize,maximize:'"
+        gsettings set org.mate.Marco.general button-layout "close,minimize,maximize:"
 
     elif [[ "$current_buttons_layout" == "Right (with menu)" ]]
     then
 
-        dconf write /org/mate/marco/general/button-layout "'menu:minimize,maximize,close'"
+        gsettings set org.mate.Marco.general button-layout "menu:minimize,maximize,close"
 
     else #Left (with menu)
 
-        dconf write /org/mate/marco/general/button-layout "'close,minimize,maximize:menu'"
+        gsettings set org.mate.Marco.general button-layout "close,minimize,maximize:menu"
 
     fi
 
