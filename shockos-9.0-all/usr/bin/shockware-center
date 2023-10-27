@@ -483,7 +483,7 @@ do
 
             total_pages=$((${#results_full[@]}/rows_per_page))
 
-            if ((total_pages=0))
+            if ((total_pages==0))
             then
 
                 total_pages=1

@@ -159,4 +159,8 @@ then
 
 fi
 
+sudo apt remove xscreensaver-data-extra
+
+sudo apt install xscreensaver-gl-extra
+
 

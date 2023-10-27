@@ -885,7 +885,7 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
             if [[ "$(gsettings get org.mate.session.required-components windowmanager)" == "'mutter'" ]] #MUTTER COMPATIBILITY
             then
 
-                yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Themes" --text="Mutter, the current window manager, does not support metacity themes. To use metacity themes, please select a different window manager in the 'Window Manager' app." --button="Dismiss"\!gtk-cancel
+                yad --width=400 --window-icon=preferences-desktop-theme --image=emblem-important --title="Themes" --text="Mutter, the current window manager, does not support metacity themes. To use metacity themes, please select a different window manager in the 'Windows' app." --button="Dismiss"\!gtk-cancel
 
             else
 

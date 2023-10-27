@@ -204,7 +204,7 @@ fi
 
 function apt_remove() {
 
-yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!gtk-remove --button="No, keep"\!gtk-cancel
+yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!gtk-delete --button="No, keep"\!gtk-cancel
 
 ex=$?
 
@@ -304,7 +304,7 @@ flatpak run "$id" &
 
 function flatpak_remove() {
 
-yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!remove --button="No, keep"\!gtk-cancel
+yad --window-icon=/usr/share/shock/icons/shockware-center.svg --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!gtk-delete --button="No, keep"\!gtk-cancel
 
 ex=$?
 

@@ -4,24 +4,39 @@ installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #Chat
 
 current_wm="$(gsettings get org.mate.session.required-components windowmanager)"
 
-if [[ "$current_wm" == "'marco-no-composite'" ]]
+if [[ "$current_wm" == "'marco'" ]]
 then
 
-    wm_selector+='Marco!Compton!Mutter (experimental)!^None'
+    wm_selector='^Marco!Picom: Xrender!Picom: GLX!Picom: Hybrid!Compton!Mutter (experimental)!No Compositor'
+
+elif [[ "$current_wm" == "'marco-xrender'" ]]
+then
+
+    wm_selector='Marco!^Picom: Xrender!Picom: GLX!Picom: Hybrid!Compton!Mutter (experimental)!No Compositor'
+
+elif [[ "$current_wm" == "'marco-glx'" ]]
+then
+
+    wm_selector='Marco!Picom: Xrender!^Picom: GLX!Picom: Hybrid!Compton!Mutter (experimental)!No Compositor'
+
+elif [[ "$current_wm" == "'marco-xr_glx_hybrid'" ]]
+then
+
+    wm_selector='Marco!Picom: Xrender!Picom: GLX!^Picom: Hybrid!Compton!Mutter (experimental)!No Compositor'
 
 elif [[ "$current_wm" == "'marco-compton'" ]]
 then
 
-    wm_selector='Marco!^Compton!Mutter (experimental)!None'
+    wm_selector='Marco!Picom: Xrender!Picom: GLX!Picom: Hybrid!^Compton!Mutter (experimental)!No Compositor'
 
 elif [[ "$current_wm" == "'mutter'" ]]
 then
 
-    wm_selector='Marco!Compton!^Mutter (experimental)!None'
+    wm_selector='Marco!Picom: Xrender!Picom: GLX!Picom: Hybrid!Compton!^Mutter (experimental)!No Compositor'
 
 else
 
-    wm_selector='Marco!Compton!Mutter (experimental)!None'
+    wm_selector='Marco!Picom: Xrender!Picom: GLX!Picom: Hybrid!Compton!Mutter (experimental)!^No Compositor'
 
 fi
 
@@ -73,7 +88,7 @@ current_buttons_layout="$(echo "$output" | awk -F'|' '{print $2}')"
 if ((ex==1)) #reset to default
 then
 
-    gsettings set org.mate.session.required-components windowmanager "marco"
+    gsettings set org.mate.session.required-components windowmanager "marco-glx"
 
     gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
 
@@ -84,6 +99,21 @@ then
     then
 
         gsettings set org.mate.session.required-components windowmanager "marco"
+
+    elif [[ "$current_wm" == "Picom: Xrender" ]]
+    then
+
+        gsettings set org.mate.session.required-components windowmanager "marco-xrender"
+
+    elif [[ "$current_wm" == "Picom: GLX" ]]
+    then
+
+        gsettings set org.mate.session.required-components windowmanager "marco-glx"
+
+    elif [[ "$current_wm" == "Picom: Hybrid" ]]
+    then
+
+        gsettings set org.mate.session.required-components windowmanager "marco-xr_glx_hybrid"
 
     elif [[ "$current_wm" == "Compton" ]]
     then
@@ -106,19 +136,27 @@ then
 
         gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
 
+        gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close" #MUTTER COMPATIBILITY
+
     elif [[ "$current_buttons_layout" == "Left" ]]
     then
 
         gsettings set org.mate.Marco.general button-layout "close,minimize,maximize:"
+
+        gsettings set org.gnome.desktop.wm.preferences button-layout "close,minimize,maximize:" #MUTTER COMPATIBILITY
 
     elif [[ "$current_buttons_layout" == "Right (with menu)" ]]
     then
 
         gsettings set org.mate.Marco.general button-layout "menu:minimize,maximize,close"
 
+        gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close" #MUTTER COMPATIBILITY
+
     else #Left (with menu)
 
         gsettings set org.mate.Marco.general button-layout "close,minimize,maximize:menu"
+
+        gsettings set org.gnome.desktop.wm.preferences button-layout "close,minimize,maximize:" #MUTTER COMPATIBILITY
 
     fi
 
@@ -135,6 +173,8 @@ then
 
     if [[ "$current_wm" == "Mutter (experimental)" ]]
     then
+
+        gsettings set org.gnome.mutter center-new-windows "true" #MUTTER COMPATIBILITY
 
         mutter --replace &
 

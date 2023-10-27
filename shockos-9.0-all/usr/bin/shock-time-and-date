@@ -1,0 +1,47 @@
+#!/bin/bash
+
+clock_format="$(gsettings get org.gnome.desktop.interface clock-format)"
+
+if [[ "$clock_format" == "'24h'" ]]
+then
+
+    clock_format_selection='12 hour!^24 hour'
+
+else
+
+    clock_format_selection='12 hour!24 hour'
+
+fi
+
+output="$(yad --window-icon=time-admin --title="Time and Date" --form --always-print-result --field="Clock Format":CB "$clock_format_selection" --button="Advanced Time Settings"\!tweaks-app:1 --button="Apply"\!gtk-ok:0)"
+
+ex=$?
+
+if [[ "$ex" == "0" ]] || [[ "$ex" == "1" ]]
+then
+
+    if [[ "$output" == "12 hour|" ]]
+    then
+
+        gsettings set org.gnome.desktop.interface clock-format "12h"
+
+        dconf write /org/mate/panel/objects/clockapplet/prefs/format "'12-hour'"
+
+    else
+
+        gsettings set org.gnome.desktop.interface clock-format "24h"
+
+        dconf write /org/mate/panel/objects/clockapplet/prefs/format "'24-hour'"
+
+    fi
+
+fi
+
+if [[ "$ex" == "1" ]]
+then
+
+    time-admin
+
+fi
+
+

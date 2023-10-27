@@ -179,9 +179,7 @@ cp -r /usr/share/shock/install-temp/"Sample Videos" /etc/skel/Videos
 echo "shock_gtk_theme=shock-light-blue
 shock_icon_theme=shock-light-blue" | tee /etc/skel/.config/shock_themes
 
-mkdir -p /etc/skel/.themes #THEME BANDAID FIX
-
-cp -r /usr/share/themes/shock-* /etc/skel/.themes #THEME BANDAID FIX
+cp /usr/share/shock/face /etc/skel/.face
 
 #the home directory building ends
 
@@ -262,7 +260,7 @@ sudo chown -R shock /home/shock
 
 #the 'shock' temporary autologin patch ends
 
-sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/config.txt #this command enables the two front USB ports on the DeskPi Lite
+sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/firmware/config.txt #this command enables the two front USB ports on the DeskPi Lite
 
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo #adds the FlatHub repository
 
