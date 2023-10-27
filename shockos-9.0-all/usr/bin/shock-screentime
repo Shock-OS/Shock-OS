@@ -136,7 +136,7 @@ do
         if ((${#tabs[@]}==0))
         then
 
-            yad --window-icon=/usr/share/shock/icons/shock-screentime.svg --image=info --title="Screen Time" --text="Screen time tracking is currently disabled for all users." --button="Dismiss"\!cancel:3
+            yad --window-icon=/usr/share/shock/icons/shock-screentime.svg --image=info --title="Screen Time" --text="Screen time tracking is currently disabled for all users." --button="Dismiss"\!gtk-cancel:3
 
         else
 
@@ -151,7 +151,7 @@ do
 
             yad --window-icon=/usr/share/shock/icons/shock-screentime.svg --image=info --title="Screen Time" --text="Screen time tracking is currently disabled for all users. Would you like to begin tracking your screen time?
 
-NOTE: To manage the screen time tracking settings of child profiles, use the Parental Controls app." --button="Enable screen time tracking for my account"\!gtk-ok --button="Dismiss"\!cancel
+NOTE: To manage the screen time tracking settings of child profiles, use the Parental Controls app." --button="Enable screen time tracking for my account"\!gtk-ok --button="Dismiss"\!gtk-cancel
 
             ex=$?
 

@@ -110,7 +110,7 @@ do
     elif [[ "$action" == "1" ]] #remove
     then
 
-        yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --title="Web Apps" --image=gtk-delete --text="Are you sure you want to delete ${shock_webapp_name}?" --button="Cancel"\!cancel:1 --button="Delete"\!gtk-delete:0
+        yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --title="Web Apps" --image=gtk-delete --text="Are you sure you want to delete ${shock_webapp_name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
 
         ex=$?
 

@@ -110,7 +110,7 @@ then
 
             else
 
-                yad --window-icon=preferences-desktop-wallpaper --image=emblem-important --title="Not an Image" --text="The file you selected does not appear to be an image." --button="Dismiss"\!cancel
+                yad --window-icon=preferences-desktop-wallpaper --image=emblem-important --title="Not an Image" --text="The file you selected does not appear to be an image." --button="Dismiss"\!gtk-cancel
 
             fi
 

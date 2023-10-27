@@ -58,7 +58,7 @@ do
 
                 yad --notification --image=/usr/share/shock/shock-release-upgrader.svg --icon-size=48 --text="The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available. Click to upgrade."
 
-                yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --width=100 --title="Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Are you sure you would like to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename at this time? If not, you can always choose to upgrade at a later time." --button="Yes, proceed to upgrade"\!gtk-ok --button="No, abort upgrade"\!cancel
+                yad --window-icon=/usr/share/shock/shock-release-upgrader.svg --width=100 --title="Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Are you sure you would like to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename at this time? If not, you can always choose to upgrade at a later time." --button="Yes, proceed to upgrade"\!gtk-ok --button="No, abort upgrade"\!gtk-cancel
 
                 ex=$?
 

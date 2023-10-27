@@ -147,7 +147,7 @@ do
 
         fi
 
-        yad --window-icon=/usr/share/shock/icons/shock-os-imager.svg --title="Shock OS Imager" --text="$rmci_text" --button="Yes, remove"\!gtk-ok --button="No, keep"\!cancel
+        yad --window-icon=/usr/share/shock/icons/shock-os-imager.svg --title="Shock OS Imager" --text="$rmci_text" --button="Yes, remove"\!gtk-ok --button="No, keep"\!gtk-cancel
 
         ex=$?
 
@@ -156,7 +156,7 @@ do
 
             rm -rf /usr/share/shock-os-imager/cached-images/*
 
-            yad --window-icon=/usr/share/shock/icons/shock-os-imager.svg --image=emblem-default --title="Shock OS Imager" --text="All cached images have been successfully removed." --button="Dismiss"\!cancel
+            yad --window-icon=/usr/share/shock/icons/shock-os-imager.svg --image=emblem-default --title="Shock OS Imager" --text="All cached images have been successfully removed." --button="Dismiss"\!gtk-cancel
 
         fi
 
@@ -236,7 +236,7 @@ then
 
             }
 
-        } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock/icons/shock-os-imager.svg --progress --title="Downloading $image_to_flash_display" --width=310 --text="Downloading $image_to_flash_display. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel"\!cancel:1
+        } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock/icons/shock-os-imager.svg --progress --title="Downloading $image_to_flash_display" --width=310 --text="Downloading $image_to_flash_display. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel"\!gtk-cancel:1
 
 		mv /usr/share/shock-os-imager/cached-images/download /usr/share/shock-os-imager/cached-images/$filename
 
@@ -285,7 +285,7 @@ then
 
     # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock/icons/shock-os-imager.svg --title="Verifying the Image" --text="Verifying $filename..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!cancel:1 & yad_pid=$!
+    yad --window-icon=/usr/share/shock/icons/shock-os-imager.svg --title="Verifying the Image" --text="Verifying $filename..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
 
     # Wait for either the command to finish or the YAD window to close
     wait -n "$command_pid" "$yad_pid"
@@ -342,7 +342,7 @@ then
 
     # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock/icons/shock-os-imager.svg --title="Shock OS Imager" --text="Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel"\!cancel:1 & yad_pid=$!
+    yad --window-icon=/usr/share/shock/icons/shock-os-imager.svg --title="Shock OS Imager" --text="Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
 
     # Wait for either the command to finish or the YAD window to close
     wait -n "$command_pid" "$yad_pid"
@@ -378,7 +378,7 @@ then
 
 	notify-send --app-name="Shock OS Imager" --icon=/usr/share/shock/icons/shock-os-imager.svg "Flashing Complete" "$image_to_flash_display has successfully been flashed to $target_drive_display_name."
 
-	yad --window-icon=/usr/share/shock/icons/shock-os-imager.svg --title="Shock OS Imager" --text="Congratulations! $image_to_flash_display has successfully been flashed to $target_drive_display_name. Thank you and enjoy!" --button="Dismiss"\!cancel
+	yad --window-icon=/usr/share/shock/icons/shock-os-imager.svg --title="Shock OS Imager" --text="Congratulations! $image_to_flash_display has successfully been flashed to $target_drive_display_name. Thank you and enjoy!" --button="Dismiss"\!gtk-cancel
 
 elif ((ex!=10))
 then

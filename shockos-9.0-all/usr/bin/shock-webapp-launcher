@@ -89,7 +89,7 @@ Thorium (APT)
 Vivaldi (APT)
 Brave (APT or Flatpak)
 
-Chromium, Ungoogled Chromium, and Brave can be installed from the Shockware Center. Thorium and Vivaldi can be downloaded online." --button="Dismiss"\!cancel:1
+Chromium, Ungoogled Chromium, and Brave can be installed from the Shockware Center. Thorium and Vivaldi can be downloaded online." --button="Dismiss"\!gtk-cancel:1
 
     exit
 

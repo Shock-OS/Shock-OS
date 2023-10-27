@@ -191,44 +191,6 @@ cp -r /usr/share/shock/applications/* /usr/share/applications
 
 #the above command renames the apps to Shock OS friendly names
 
-#the XScreenSaver imperfect screensaver removal patch begins
-
-rm /usr/share/applications/screensavers/binaryring.desktop
-
-rm /usr/share/applications/screensavers/deluxe.desktop
-
-rm /usr/share/applications/screensavers/fireworkx.desktop
-
-rm /usr/share/applications/screensavers/fluidballs.desktop
-
-rm /usr/share/applications/screensavers/fontglide.desktop
-
-rm /usr/share/applications/screensavers/fuzzyflakes.desktop
-
-rm /usr/share/applications/screensavers/glitchpeg.desktop
-
-rm /usr/share/applications/screensavers/goop.desktop
-
-rm /usr/share/applications/screensavers/interference.desktop
-
-rm /usr/share/applications/screensavers/kumppa.desktop
-
-rm /usr/share/applications/screensavers/metaballs.desktop
-
-rm /usr/share/applications/screensavers/qix.desktop
-
-rm /usr/share/applications/screensavers/rd-bomb.desktop
-
-rm /usr/share/applications/screensavers/rocks.desktop
-
-rm /usr/share/applications/screensavers/spotlight.desktop
-
-rm /usr/share/applications/screensavers/strange.desktop
-
-rm /usr/share/applications/screensavers/vidwhacker.desktop
-
-#the XScreenSaver imperfect screensaver removal patch ends
-
 cp /usr/bin/mate-appearance-properties /usr/bin/mate-appearance-properties-old
 
 cp /usr/bin/mate-window-properties /usr/bin/mate-window-properties-old
@@ -324,8 +286,14 @@ echo "$newcmdline" | tee /boot/cmdline.txt
 
 echo "[Daemon]
 Theme=shockspin
-ShowDelay=4
+ShowDelay=0
 Enable=1" | tee /etc/plymouth/plymouthd.conf
+
+rm /usr/share/plymouth/themes/debian-theme
+
+ln -s /usr/share/plymouth/themes/shockspin /usr/share/plymouth/themes/debian-theme
+
+update-initramfs -u
 
 #the splash screen patch ends
 

@@ -112,7 +112,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
             if [[ "$file" == *".deb" ]]
             then
 
-                yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Install" --text="$file is not a compatible theme file. Please choose a folder or a compressed archive containing the theme you want to install." --button="Dismiss"\!cancel
+                yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Install" --text="$file is not a compatible theme file. Please choose a folder or a compressed archive containing the theme you want to install." --button="Dismiss"\!gtk-cancel
 
             else
 
@@ -315,7 +315,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
                 if [[ "$worked" == "FALSE" ]]
                 then
 
-                    yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Install" --text="$file does not appear to contain any themes, icon packs or cursor packs." --button="Dismiss"\!cancel
+                    yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Install" --text="$file does not appear to contain any themes, icon packs or cursor packs." --button="Dismiss"\!gtk-cancel
 
                 fi
 
@@ -329,7 +329,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 		if [[ "$type" == "The default Shock OS look and feel" ]]
         then
 
-			yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove the default theme." --button="Dismiss"\!cancel
+			yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove the default theme." --button="Dismiss"\!gtk-cancel
 
 		elif [[ "$type" == "Theme pack" ]] || [[ "$type" == "Metacity theme" ]] #if theme pack
 		then
@@ -337,11 +337,11 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
             if [[ "$(gsettings get org.mate.interface gtk-theme)" == "'${runuser}_${name}'" ]] || [[ "$(gsettings get org.mate.Marco.general theme)" == "'${runuser}_${name}'" ]]
             then
 
-                yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different theme before removing ${name}." --button="Dismiss"\!cancel
+                yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different theme before removing ${name}." --button="Dismiss"\!gtk-cancel
 
             else
 
-                yad --window-icon=preferences-desktop-theme --title="Themes" --image=gtk-delete --text="Are you sure you want to delete ${name}?" --button="Cancel"\!cancel:1 --button="Delete"\!gtk-delete:0
+                yad --window-icon=preferences-desktop-theme --title="Themes" --image=gtk-delete --text="Are you sure you want to delete ${name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
 
                 ex=$?
 
@@ -364,17 +364,17 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
                 if [[ "$type" == "Icon pack" ]]
                 then
 
-                    yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different icon theme before removing ${name}." --button="Dismiss"\!cancel
+                    yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different icon theme before removing ${name}." --button="Dismiss"\!gtk-cancel
 
                 else
 
-                    yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different cursor theme before removing ${name}." --button="Dismiss"\!cancel
+                    yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove ${name} because it is currently in use. Please switch to a different cursor theme before removing ${name}." --button="Dismiss"\!gtk-cancel
 
                 fi
 
             else
 
-                yad --window-icon=preferences-desktop-theme --title="Themes" --image=gtk-delete --text="Are you sure you want to delete ${name}?" --button="Cancel"\!cancel:1 --button="Delete"\!gtk-delete:0
+                yad --window-icon=preferences-desktop-theme --title="Themes" --image=gtk-delete --text="Are you sure you want to delete ${name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
 
                 ex=$?
 
@@ -397,7 +397,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
         if [[ "$type" == "The default Shock OS look and feel" ]]
 		then
 
-            yad --window-icon=preferences-desktop-theme --title="Rename" --image=emblem-important --text="You cannot rename the default theme." --button="Dismiss"\!cancel
+            yad --window-icon=preferences-desktop-theme --title="Rename" --image=emblem-important --text="You cannot rename the default theme." --button="Dismiss"\!gtk-cancel
 
         else
 
@@ -845,7 +845,21 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
 
 			gsettings set org.mate.interface gtk-theme "${runuser}_${name}"
 
-			gsettings set org.mate.Marco.general theme "${runuser}_${name}"
+            if [[ "$(gsettings get org.mate.session.required-components windowmanager)" != "'mutter'" ]]
+            then
+
+                if [[ -d /home/"$runuser"/.themes/"${runuser}_${name}"/metacity-1 ]]
+                then
+
+			        gsettings set org.mate.Marco.general theme "${runuser}_${name}"
+
+                else
+
+                    yad --width=400 --window-icon=preferences-desktop-theme --image=emblem-important --title="Themes" --text="This theme does not contain a metacity theme (window manager theme), so the window manager will continue to use the previous theme. You can use a different metacity theme with this theme if you like." --button="Dismiss"\!gtk-cancel
+
+                fi
+
+            fi
 
             flatpak override --user --env=GTK_THEME="${runuser}_${name}"
 
@@ -871,7 +885,7 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
             if [[ "$(gsettings get org.mate.session.required-components windowmanager)" == "'mutter'" ]] #MUTTER COMPATIBILITY
             then
 
-                yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Themes" --text="Mutter, the current window manager, does not support metacity themes. To use metacity themes, please select a different window manager in the 'Window Manager' app." --button="Dismiss"\!cancel
+                yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Themes" --text="Mutter, the current window manager, does not support metacity themes. To use metacity themes, please select a different window manager in the 'Window Manager' app." --button="Dismiss"\!gtk-cancel
 
             else
 

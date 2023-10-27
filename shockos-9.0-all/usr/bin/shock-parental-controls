@@ -41,7 +41,7 @@ done
 if [[ -z "$userlist" ]]
 then
 
-    yad --window-icon=/usr/share/shock/icons/shock-parental-controls.svg --width=400 --title="Parental Controls" --text="There are currently no child profiles on your system. To add a child profile, create a new user through the 'Users' application and tick the 'Child Profile' checkbox." --button="Dismiss"\!cancel
+    yad --window-icon=/usr/share/shock/icons/shock-parental-controls.svg --width=400 --title="Parental Controls" --text="There are currently no child profiles on your system. To add a child profile, create a new user through the 'Users' application and tick the 'Child Profile' checkbox." --button="Dismiss"\!gtk-cancel
 
     exit
 
@@ -61,7 +61,7 @@ then
     if [[ -f /usr/share/shock-screentime/"$user"/dailylimit ]]
     then
 
-        yad --window-icon=/usr/share/shock/icons/shock-parental-controls.svg --title="Parental Controls" --text="This user already has a screen time limit set. What would you like to do?" --button="Overwrite"\!gtk-edit:0 --button="Remove"\!remove:1 --button="Cancel"\!cancel:2
+        yad --window-icon=/usr/share/shock/icons/shock-parental-controls.svg --title="Parental Controls" --text="This user already has a screen time limit set. What would you like to do?" --button="Overwrite"\!gtk-edit:0 --button="Remove"\!remove:1 --button="Cancel"\!gtk-cancel:2
 
         ex=$?
 

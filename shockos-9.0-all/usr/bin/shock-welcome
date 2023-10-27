@@ -4,7 +4,7 @@
 
 output="$(yad --form --width=500 --window-icon=/usr/share/shock/gnome-logo-white.svg --title="Welcome to Shock OS" --field="Welcome to Shock OS! Here are a few things you can do to personalize your system:":LBL "" --field="Set Desktop Wallpaper"\!preferences-desktop-wallpaper:FBTN "shock-backgrounds" --field="Choose Themes and Accent Colors"\!preferences-desktop-theme:FBTN "shock-themes" --field="Choose Panel Layout"\!/usr/share/shock/icons/shock-panel-layouts.svg:FBTN "shock-panel-layouts" --field="":LBL "" --field="Search for, install, and remove apps and games with the Shockware Center.":LBL "" --field="Browse the Shockware Center"\!/usr/share/shock/icons/shockware-center.svg:FBTN "shockware-center" --field="":LBL "" --field="By default, Shock OS outputs audio through the 3.5mm headphone jack, but you may want to switch to HDMI or another source.":LBL "" --field="Select Audio Output Device"\!audio-speakers:FBTN "mate-volume-control --page=output" --field="":LBL "" --field="Thank you for choosing Shock OS! We hope you love it!
 
-Isaiah 40:31":LBL "" --field="":LBL "" --field="Launch this window at startup":CHK "TRUE" --button="Dismiss"\!cancel)"
+Isaiah 40:31":LBL "" --field="":LBL "" --field="Launch this window at startup":CHK "TRUE" --button="Dismiss"\!gtk-cancel)"
 
 if [[ "$output" == *"FALSE"* ]]
 then

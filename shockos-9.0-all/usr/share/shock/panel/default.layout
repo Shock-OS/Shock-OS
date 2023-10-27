@@ -1,45 +1,70 @@
 [Toplevel toplevel-0]
-orientation=bottom
-expand=true
+enable-buttons=false
 size=40
+screen=0
+monitor=0
+expand=true
+orientation=bottom
 
 [Object briskmenu]
-locked=true
-position=0
 panel-right-stick=false
-toplevel-id=toplevel-0
+position=0
+relative-to-edge=start
 applet-iid=BriskMenuFactory::BriskMenu
+locked=true
+toplevel-id=toplevel-0
 object-type=applet
 
 [Object clockapplet]
-locked=true
-position=72
 panel-right-stick=true
-toplevel-id=toplevel-0
+position=72
+relative-to-edge=end
 applet-iid=ClockAppletFactory::ClockApplet
+locked=true
+toplevel-id=toplevel-0
 object-type=applet
 
 [Object notificationarea]
-locked=true
-position=184
-panel-right-stick=true
-toplevel-id=toplevel-0
+panel-right-stick=false
+position=130
+relative-to-edge=end
 applet-iid=NotificationAreaAppletFactory::NotificationArea
+locked=true
+toplevel-id=toplevel-0
 object-type=applet
 
 [Object showdesktopapplet]
-locked=true
-position=96
 panel-right-stick=false
-toplevel-id=toplevel-0
+position=96
+relative-to-edge=start
 applet-iid=WnckletFactory::ShowDesktopApplet
+locked=true
+toplevel-id=toplevel-0
 object-type=applet
 
 [Object dockapplet]
-locked=true
-position=138
 panel-right-stick=false
-toplevel-id=toplevel-0
+position=138
+relative-to-edge=start
 applet-iid=DockAppletFactory::DockApplet
+locked=true
+toplevel-id=toplevel-0
 object-type=applet
+
+[Object object-0]
+panel-right-stick=false
+position=80
+relative-to-edge=end
+applet-iid=IndicatorAppletCompleteFactory::IndicatorAppletComplete
+locked=true
+toplevel-id=toplevel-0
+object-type=applet
+
+[Customsetting maximusdecoration]
+mate-maximus-recorded=False
+
+[Customsetting windowcontrollayout]
+mate-general=:minimize,maximize,close
+mate-interface=menu:minimize,maximize,close
+gnome-wm-preferences=:minimize,maximize,close
 
