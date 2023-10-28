@@ -140,7 +140,7 @@ do
 
         else
 
-            yad --window-icon=/usr/share/shock/icons/shock-screentime.svg --width=600 --height=400 --title="Screen Time" --notebook --key=$key "${tabs[@]}" --buttons-layout=edge --button="Refresh"\!gtk-refresh --button="Close"\!gtk-close
+            yad --window-icon=/usr/share/shock/icons/shock-screentime.svg --width=600 --height=400 --title="Screen Time" --notebook --key=$key "${tabs[@]}" --button="Refresh"\!gtk-refresh
 
         fi
 
