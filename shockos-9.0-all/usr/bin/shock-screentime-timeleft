@@ -76,9 +76,7 @@ do
 
     remaining_minutes_display="$(convert_time $remaining_minutes)"
 
-    percentage=$(echo "scale=2; $remaining_minutes / $total_minutes * 100" | bc)
-
-    percentage=$((100-percentage))
+    percentage=$(echo "scale=0; ($remaining_minutes * 100) / $total_minutes" | bc)
 
     echo "$percentage"
 
