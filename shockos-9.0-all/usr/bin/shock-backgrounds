@@ -2,6 +2,41 @@
 
 #this script is the applicaton that sets wallpapers (both single image and slideshow)
 
+function set_yad_style_selection() {
+
+if [[ "$style" == "wallpaper" ]]
+then
+
+    yad_style_selection='Zoom!^Tile!Centered!Scaled!Stretched!Spanned'
+
+elif [[ "$style" == "centered" ]]
+then
+
+    yad_style_selection='Zoom!Tile!^Centered!Scaled!Stretched!Spanned'
+
+elif [[ "$style" == "scaled" ]]
+then
+
+    yad_style_selection='Zoom!Tile!Centered!^Scaled!Stretched!Spanned'
+
+elif [[ "$style" == "stretched" ]]
+then
+
+    yad_style_selection='Zoom!Tile!Centered!Scaled!^Stretched!Spanned'
+
+elif [[ "$style" == "spanned" ]]
+then
+
+    yad_style_selection='Zoom!Tile!Centered!Scaled!Stretched!^Spanned'
+
+else
+
+    yad_style_selection='Zoom!Tile!Centered!Scaled!Stretched!Spanned'
+
+fi
+
+}
+
 if [[ -f ~/.config/shock/slideshow-background ]]
 then
 
@@ -9,7 +44,7 @@ then
 
 fi
 
-style="$(gsettings get org.mate.background picture-options)"
+style="$(gsettings get org.mate.background picture-options | sed "s/'//g")"
 
 yad --width=320 --text-align=center --buttons-layout=center --title="Desktop Background" --window-icon=preferences-desktop-wallpaper --text="Please choose a background style:" --button="Single Image"\!image-x-generic --button="Slideshow"\!folder-images
 
@@ -23,38 +58,16 @@ then
     until [[ "$file_is_image" == "yes" ]]
     do
 
-        if [[ "$style" == "wallpaper" ]]
+        set_yad_style_selection
+
+        if [[ ! -f ~/.config/shock/slideshow-background ]]
         then
 
-            style_yad_cb='Zoom!^Tile!Centered!Scaled!Stretched!Spanned'
-
-        elif [[ "$style" == "centered" ]]
-        then
-
-            style_yad_cb='Zoom!Tile!^Centered!Scaled!Stretched!Spanned'
-
-        elif [[ "$style" == "scaled" ]]
-        then
-
-            style_yad_cb='Zoom!Tile!Centered!^Scaled!Stretched!Spanned'
-
-        elif [[ "$style" == "stretched" ]]
-        then
-
-            style_yad_cb='Zoom!Tile!Centered!Scaled!^Stretched!Spanned'
-
-        elif [[ "$style" == "spanned" ]]
-        then
-
-            style_yad_cb='Zoom!Tile!Centered!Scaled!Stretched!^Spanned'
-
-        else
-
-            style_yad_cb='^Zoom!Tile!Centered!Scaled!Stretched!Spanned'
+            background="$(gsettings get org.mate.background picture-filename | sed "s/'//g")"
 
         fi
     
-        output="$(yad --width=300 --title="Single Image Background" --window-icon=preferences-desktop-wallpaper --form --field="Image:":FL "$background" --field="Style:":CB "$style_yad_cb" --field="Change Background Colors"\!preferences-color:FBTN 'shock-background-color-chooser' --field="Download Backgrounds Online"\!applications-internet:FBTN 'xdg-open https://www.wallpaperflare.com/search?wallpaper=desktop' --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
+        output="$(yad --width=300 --title="Single Image Background" --window-icon=preferences-desktop-wallpaper --form --field="Image:":FL "$background" --field="Style:":CB "$yad_style_selection" --field="Change Background Colors"\!preferences-color:FBTN 'shock-background-color-chooser' --field="Download Backgrounds Online"\!applications-internet:FBTN 'xdg-open https://www.wallpaperflare.com/search?wallpaper=desktop' --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
         ex=$?
 
@@ -130,7 +143,16 @@ then
     until ((directory_count>1)) && [[ "$directory_contains_images" == *"image"* ]]
     do
 
-        output="$(yad --form --width=400 --height=200 --window-icon=preferences-desktop-wallpaper --title="Slideshow Background" --field="Folder containing images:":DIR "$directory" --field="Delay (minutes):":NUM "$delay"'!1..100!1' --field="Style:":CB "$style_yad_cb" --field="Play images in random order":CHK "$random_boolean" --field="Change Background Colors"\!preferences-color:FBTN 'shock-background-color-chooser' --field="Download Backgrounds Online"\!applications-internet:FBTN 'xdg-open https://www.wallpaperflare.com/search?wallpaper=desktop' --button="Apply"\!gtk-ok)"
+        if [[ -f ~/.config/shock/slideshow-background ]]
+        then
+
+            source ~/.config/shock/slideshow-background
+
+        fi
+
+        set_yad_style_selection
+
+        output="$(yad --form --width=400 --height=200 --window-icon=preferences-desktop-wallpaper --title="Slideshow Background" --field="Folder containing images:":DIR "$directory" --field="Delay (minutes):":NUM "$delay"'!1..100!1' --field="Style:":CB "$yad_style_selection" --field="Play images in random order":CHK "$random_boolean" --field="Change Background Colors"\!preferences-color:FBTN 'shock-background-color-chooser' --field="Download Backgrounds Online"\!applications-internet:FBTN 'xdg-open https://www.wallpaperflare.com/search?wallpaper=desktop' --button="Apply"\!gtk-ok)"
 
         ex=$?
 
