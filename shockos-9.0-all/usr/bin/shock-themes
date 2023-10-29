@@ -8,18 +8,77 @@ nl="${#runuser}"
 
 nl=$((nl+1))
 
+function read_settings() {
+
+if [[ ! -f ~/.config/shock/themes ]]
+then
+
+    mkdir -p ~/.config/shock
+
+    echo 'shock_gtk_theme=Yaru-blue
+shock_icon_theme=Yaru-blue
+use_libadwaita_theme=TRUE' | tee ~/.config/shock/themes
+
+fi
+
+source ~/.config/shock/themes  
+
+}
+
+function write_settings() {
+
+mkdir -p ~/.config/shock
+
+echo "shock_gtk_theme=${shock_gtk_theme}
+shock_icon_theme=${shock_icon_theme}
+use_libadwaita_theme=${use_libadwaita_theme}" | tee ~/.config/shock/themes
+
+}
+
+function apply_libadwaita_theme() {
+
+read_settings
+
+if [[ "$use_libadwaita_theme" == "TRUE" ]] && [[ "$(gsettings get org.mate.interface gtk-theme)" == "'${runuser}_"* ]] && [[ -d "$1" ]]
+then
+
+    mkdir -p ~/.config/gtk-4.0
+
+    rm -r ~/.config/gtk-4.0/*
+
+    files=()
+
+    for file in "$1"/*
+    do
+
+        if [[ -h "$file" ]] #uses symlink's target location
+        then
+
+            file="$(readlink -f "$file")"
+
+        fi
+
+        files+=("$file")
+
+    done
+
+    for file in "${files[@]}"
+    do
+
+        cp -r "$file" ~/.config/gtk-4.0
+
+    done
+
+else
+
+    rm -r ~/.config/gtk-4.0/*
+
+fi
+
+}
+
 while true
 do
-
-    if [[ ! -f ~/.config/shock/themes ]] #creates the config file if it doesn't already exist
-	then
-
-		touch ~/.config/shock/themes
-
-		echo 'shock_gtk_theme=Yaru-blue
-shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
-
-	fi
 
     sudo shock-themes-sync
 
@@ -44,6 +103,11 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
             then
 
 		        yadlist+=("preferences-desktop-theme" "Metacity theme" "${current_theme:$nl}")
+
+            elif [[ "$(basename "$(readlink -f "$i")" | awk '{print tolower($0)}')" == *"libadwaita"* ]] && [[ -f "$(find "$i"/* -name gtk*.css | head -n1)" ]]
+            then
+
+                yadlist+=("preferences-desktop-theme" "LibAdwaita theme" "${current_theme:$nl}")
 
             else
 
@@ -269,7 +333,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 
 			            fi
 
-                        if [[ "$(cat "$i/index.theme")" == *"X-GNOME-Metatheme"* ]] || [[ -d "$(find "$i" -name metacity-1 | head -n1)" ]] || [[ -d "$(find "$i" -name 'gtk-*' | head -n1)" ]] || [[ -f "$i/settings.ini" ]]
+                        if [[ "$(cat "$i/index.theme")" == *"X-GNOME-Metatheme"* ]] || [[ -d "$(find "$i" -name metacity-1 | head -n1)" ]] || [[ -d "$(find "$i" -name 'gtk-*' | head -n1)" ]] || [[ -f "$i/settings.ini" ]] || [[ "$(basename "$i" | awk '{print tolower($0)}')" == *"libadwaita"* && -f "$(find "$i" -name gtk*.css | head -n1)" ]]
                         then
 
                             worked="TRUE"
@@ -497,7 +561,7 @@ shock_icon_theme=Yaru-blue' | tee ~/.config/shock/themes
 		if [[ "$type" == "The default Shock OS look and feel" ]]
 		then
 
-            source ~/.config/shock/themes
+            read_settings
 
 			if [[ "$shock_gtk_theme" == *"-dark" ]]
 			then
@@ -754,6 +818,8 @@ icon_color=${icon_color}" | tee ~/.config/shock-themes-mixed-colors
                 if ((ex==0))
                 then
 
+                    rm -r ~/.config/gtk-4.0/* #Resets the GTK4 Libadwaita theme to default
+
 				    gsettings set org.mate.interface gtk-theme "$shock_gtk_theme"
 
 				    gsettings set org.mate.Marco.general theme "Yaru${lod}"
@@ -785,14 +851,13 @@ show-power=false
 show-keyboard=false
 show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
-			        echo "shock_gtk_theme=${shock_gtk_theme}
-shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
+			        write_settings
 
                 fi
 
 			fi
 
-        elif [[ "$type" == "Change settings used by some apps to help them better match your theme" ]]
+        elif [[ "$type" == "Change settings used by some apps to help them better match your theme" ]] #Custom theme settings
         then
 
             color_scheme="$(gsettings get org.gnome.desktop.interface color-scheme)"
@@ -813,7 +878,9 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
 
             fi
 
-            output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Custom Theme Settings" --form --field="<b>Color Scheme</b>":LBL '' --field="This setting is used by some apps to determine whether to use light or dark mode to better match your theme. This settings is usually set automatically, but you may want to change it manually if some apps don't match the light/dark theme.":LBL '' --field='':CB "$color_scheme_selection" --button="Apply"\!gtk-ok)"
+            read_settings
+
+            output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Custom Theme Settings" --form --field="<b>Color Scheme</b>":LBL '' --field="This setting is used by some apps to determine whether to use light or dark mode to better match your theme. This settings is usually set automatically, but you may want to change it manually if some apps don't match the light/dark theme.":LBL '' --field='':CB "$color_scheme_selection" --field='':LBL '' --field="<b>Use LibAdwaita Theme</b>":LBL '' --field="This setting only applies to themes that provide support for LibAdwaita apps. If this option is disabled, or if the current theme doesn't support LibAdwaita, then LibAdwaita apps will use the default LibAdwaita theme.":LBL '' --field="Use LibAdwaita Theme":CHK "$use_libadwaita_theme" --button="Apply"\!gtk-ok)"
 
             ex=$?
 
@@ -838,12 +905,27 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
 
                 fi
 
+                read_settings
+
+                use_libadwaita_theme="$(echo "$output" | awk -F'|' '{print $7}')"
+
+                write_settings
+
+                apply_libadwaita_theme /home/"$runuser"/.themes/"$shock_gtk_theme"/gtk-4.0
+
             fi
 
 		elif [[ "$type" == "Theme pack" ]]
 		then
 
 			gsettings set org.mate.interface gtk-theme "${runuser}_${name}"
+
+            if [[ -d /home/"$runuser"/.themes/"${runuser}_${name}"/gtk-4.0 ]] #GTK4 Libadwaita themes patch
+            then
+
+                apply_libadwaita_theme /home/"$runuser"/.themes/"${runuser}_${name}"/gtk-4.0
+
+            fi
 
             if [[ "$(gsettings get org.mate.session.required-components windowmanager)" != "'mutter'" ]]
             then
@@ -878,6 +960,11 @@ shock_icon_theme=${shock_icon_theme}" | tee ~/.config/shock/themes
                 gsettings reset org.gnome.desktop.interface color-scheme
 
             fi
+
+        elif [[ "$type" == "LibAdwaita theme" ]]
+        then
+
+            apply_libadwaita_theme /home/"$runuser"/.themes/"${runuser}_${name}"
 
         elif [[ "$type" == "Metacity theme" ]]
         then
