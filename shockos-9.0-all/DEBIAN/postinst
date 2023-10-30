@@ -176,8 +176,9 @@ mkdir -p /etc/skel/.local/share/applications
 
 cp -r /usr/share/shock/install-temp/"Sample Videos" /etc/skel/Videos
 
-echo "shock_gtk_theme=shock-light-blue
-shock_icon_theme=shock-light-blue" | tee /etc/skel/.config/shock_themes
+echo 'shock_gtk_theme=Yaru-blue
+shock_icon_theme=Yaru-blue
+use_libadwaita_theme=FALSE' | tee /etc/skel/.config/shock/themes
 
 cp /usr/share/shock/face /etc/skel/.face
 
