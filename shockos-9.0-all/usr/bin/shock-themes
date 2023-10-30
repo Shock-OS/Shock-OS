@@ -17,7 +17,7 @@ then
 
     echo 'shock_gtk_theme=Yaru-blue
 shock_icon_theme=Yaru-blue
-use_libadwaita_theme=TRUE' | tee ~/.config/shock/themes
+use_libadwaita_theme=FALSE' | tee ~/.config/shock/themes
 
 fi
 
@@ -911,7 +911,7 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
                 write_settings
 
-                apply_libadwaita_theme /home/"$runuser"/.themes/"$shock_gtk_theme"/gtk-4.0
+                apply_libadwaita_theme /home/"$runuser"/.themes/"$(gsettings get org.mate.interface gtk-theme | sed "s/'//g")"/gtk-4.0
 
             fi
 
