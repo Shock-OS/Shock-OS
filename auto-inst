@@ -2,12 +2,23 @@
 
 #this script installs the Shock OS .deb in the current directory
 
-until [[ "$(apt show shock-os-metapackage)" == *"Installed: yes"* ]]
+until [[ " ${installed_packages[@]} " == *" pipewire-audio "* ]]
 do
 
     sudo apt update
 
+    sudo apt install pipewire-audio
+
+    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+done
+
+until [[ " ${installed_packages[@]} " == *" shock-os-metapackage "* ]]
+do
+
     sudo apt install -y ./shockos*
+
+    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
 done
 
