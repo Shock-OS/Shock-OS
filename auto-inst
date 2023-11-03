@@ -7,7 +7,7 @@ do
 
     sudo apt update
 
-    sudo apt install pipewire-audio
+    sudo apt install -y pipewire-audio
 
     installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
