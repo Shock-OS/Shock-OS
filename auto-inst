@@ -16,7 +16,7 @@ done
 until [[ " ${installed_packages[@]} " == *" shock-os-core "* ]]
 do
 
-    sudo apt install -y ./shock-os-core-*
+    sudo apt install -y ./shock-os-core_*
 
     installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
@@ -25,7 +25,7 @@ done
 until [[ " ${installed_packages[@]} " == *" shock-os-mate-desktop "* ]]
 do
 
-    sudo apt install -y ./shock-os-*-desktop
+    sudo apt install -y ./shock-os-*-desktop_*
 
     installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 

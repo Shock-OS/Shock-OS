@@ -16,7 +16,7 @@ cp /usr/share/shock/login-background.svg /usr/share/images/desktop-base
 
 #the above command will replace the default Debian wallpapers with the Shock OS wallpapers
 
-for a in /usr/share/shock-themes/16x16/*
+for a in /usr/share/shock-themes/icons/symbolic/16x16/*
 do
 
     for b in $(find /usr/share/icons -name "$(basename "$a")")
@@ -25,7 +25,7 @@ do
         if [[ -n "$b" ]]
         then
 
-            cp -f "/usr/share/shock-themes/$(identify -format "%wx%h" "$b")/$(basename "$a")" "$b"
+            cp -f "/usr/share/shock-themes/icons/symbolic/$(identify -format "%wx%h" "$b")/$(basename "$a")" "$b"
 
         fi
 

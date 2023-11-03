@@ -77,6 +77,31 @@ fi
 
 }
 
+function replace_start_icons() {
+
+local dir="$1"
+
+read_settings
+
+for a in /usr/share/shock-themes/icons/"$start_icon_type"/16x16/*
+do
+
+    for b in $(find "$dir" -name "$(basename "$a")")
+    do
+
+        if [[ -n "$b" ]]
+        then
+
+            cp -f "/usr/share/shock-themes/icons/${start_icon_type}/$(identify -format "%wx%h" "$b")/$(basename "$a")" "$b"
+
+        fi
+
+    done
+
+done
+
+}
+
 while true
 do
 
@@ -880,7 +905,20 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
             read_settings
 
-            output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Custom Theme Settings" --form --field="<b>Color Scheme</b>":LBL '' --field="This setting is used by some apps to determine whether to use light or dark mode to better match your theme. This settings is usually set automatically, but you may want to change it manually if some apps don't match the light/dark theme.":LBL '' --field='':CB "$color_scheme_selection" --field='':LBL '' --field="<b>Use LibAdwaita Theme</b>":LBL '' --field="This setting only applies to themes that provide support for LibAdwaita apps. If this option is disabled, or if the current theme doesn't support LibAdwaita, then LibAdwaita apps will use the default LibAdwaita theme.":LBL '' --field="Use LibAdwaita Theme":CHK "$use_libadwaita_theme" --button="Apply"\!gtk-ok)"
+            old_start_icon_type="$start_icon_type"
+
+            if [[ "$start_icon_type" == "symbolic" ]]
+            then
+
+                start_icon_type_selection='Standard!^Symbolic'
+
+            else
+
+                start_icon_type_selection='Standard!Symbolic'
+
+            fi
+
+            output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Custom Theme Settings" --form --field="<b>Color Scheme</b>":LBL '' --field="This setting is used by some apps to determine whether to use light or dark mode to better match your theme. This settings is usually set automatically, but you may want to change it manually if some apps don't match the light/dark theme.":LBL '' --field='':CB "$color_scheme_selection" --field='':LBL '' --field="<b>Use LibAdwaita Theme</b>":LBL '' --field="This setting only applies to themes that provide support for LibAdwaita apps. If this option is disabled, or if the current theme doesn't support LibAdwaita, then LibAdwaita apps will use the default LibAdwaita theme.":LBL '' --field="Use LibAdwaita Theme":CHK "$use_libadwaita_theme" --field='':LBL '' --field="<b>Start Icon Type</b>":LBL '' --field="Choose whether the start menu icon should be a standard icon or a symbolic icon to better match your theme. Beacuse of the symbolic nature of newer themes, the standard icon may look broken on some themes, but older themes may look better with the standard icon.":LBL '' --field='':CB "$start_icon_type_selection" --button="Apply"\!gtk-ok)"
 
             ex=$?
 
@@ -909,9 +947,18 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
                 use_libadwaita_theme="$(echo "$output" | awk -F'|' '{print $7}')"
 
+                start_icon_type="$(echo "$output" | awk -F'|' '{print $11}' | awk '{print tolower($0)}')"
+
                 write_settings
 
                 apply_libadwaita_theme /home/"$runuser"/.themes/"$(gsettings get org.mate.interface gtk-theme | sed "s/'//g")"/gtk-4.0
+
+                if [[ "$start_icon_type" != "$old_start_icon_type" ]]
+                then
+
+                    replace_start_icons ~/.icons/"$(gsettings get org.mate.interface icon-theme | sed "s/'//g")"
+
+                fi
 
             fi
 
