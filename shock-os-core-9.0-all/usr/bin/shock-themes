@@ -17,7 +17,8 @@ then
 
     echo 'shock_gtk_theme=Yaru-blue
 shock_icon_theme=Yaru-blue
-use_libadwaita_theme=FALSE' | tee ~/.config/shock/themes
+use_libadwaita_theme=FALSE
+start_icon_type=symbolic' | tee ~/.config/shock/themes
 
 fi
 
@@ -31,7 +32,8 @@ mkdir -p ~/.config/shock
 
 echo "shock_gtk_theme=${shock_gtk_theme}
 shock_icon_theme=${shock_icon_theme}
-use_libadwaita_theme=${use_libadwaita_theme}" | tee ~/.config/shock/themes
+use_libadwaita_theme=${use_libadwaita_theme}
+start_icon_type=${start_icon_type}" | tee ~/.config/shock/themes
 
 }
 
@@ -79,14 +81,12 @@ fi
 
 function replace_start_icons() {
 
-local dir="$1"
-
 read_settings
 
 for a in /usr/share/shock-themes/icons/"$start_icon_type"/16x16/*
 do
 
-    for b in $(find "$dir" -name "$(basename "$a")")
+    for b in $(find "$1"/* -name "$(basename "$a")")
     do
 
         if [[ -n "$b" ]]
@@ -246,28 +246,40 @@ do
 
                         inherit_line="$(grep -m 1 -e '^Inherits=' "$i")"
 
-                        inherit_line="$(echo "$inherit_line" | sed 's/,Adwaita//')" #removes Adwaita
+                        inherit_line="${inherit_line:9}"
 
-                        inherit_line="$(echo "$inherit_line" | sed 's/Adwaita,//')" #removes Adwaita
+                        IFS=','
 
-                        inherit_line="$(echo "$inherit_line" | sed 's/Adwaita//')" #removes Adwaita
+                        read -a inherits <<< "$inherit_line"
 
-                        inherit_line="$(echo "$inherit_line" | sed 's/,hicolor//')" #removes hicolor
+                        IFS=$'\n'
 
-                        inherit_line="$(echo "$inherit_line" | sed 's/hicolor,//')" #removes hicolor
+                        inherit_line="Inherits="
 
-                        inherit_line="$(echo "$inherit_line" | sed 's/hicolor//')" #removes hicolor
+                        for theme in "${inherits[@]}"
+                        do
+
+                            if [[ "$theme" != "Adwaita" ]] && [[ "$theme" != "hicolor" ]]
+                            then
+
+                                inherit_line+="${runuser}_${theme},"
+
+                            fi
+
+                        done
 
                         if ((${#inherit_line}==9)) #if no fallback themes
                         then
 
-                            sed -i "s|^Inherits=.*|Inherits=${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor|" "$i"
+                            inherit_line="Inherits=${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor"
 
                         else
 
-                            sed -i "s|^Inherits=.*|${inherit_line},${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor|" "$i"
+                            inherit_line+=",${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor"
 
                         fi
+
+                        sed -i "s|^Inherits=.*|${inherit_line}|" "$i"
 
                     done
 
@@ -305,22 +317,7 @@ do
                 if [[ "$found_dir" == "TRUE" ]]
                 then
 
-                    #for a in /usr/share/shock-themes/16x16/*
-                    #do
-
-                        #for b in $(find . -name "$(basename "$a")")
-                        #do
-
-                            #if [[ -n "$b" ]]
-                            #then
-
-                                #cp -f "/usr/share/shock-themes/$(identify -format "%wx%h" "$b")/$(basename "$a")" "$b"
-
-                            #fi
-
-                        #done
-
-                    #done
+                    replace_start_icons .
 
 			        for i in *
 			        do
@@ -1029,6 +1026,8 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
 		elif [[ "$type" == "Icon pack" ]]
 		then
+
+            replace_start_icons ~/.icons/"${runuser}_${name}"
 
 			gsettings set org.mate.interface icon-theme "${runuser}_${name}"
 
