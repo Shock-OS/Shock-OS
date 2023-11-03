@@ -1,0 +1,3 @@
+#!/bin/bash
+
+dpkg-deb --build -Zxz shock-os-core-9.0-all shock-os-mate-desktop-9.0-all
