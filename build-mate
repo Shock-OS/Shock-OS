@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "$(date '+%A, %B %eth, %Y')" | tee shock-os-core-*-all/usr/share/shock/build-date
+
 rm -r BUILD-OUT
 
 mkdir BUILD-OUT

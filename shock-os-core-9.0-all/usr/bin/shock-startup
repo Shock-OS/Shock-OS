@@ -141,17 +141,17 @@ then
 
     feh --bg-fill /usr/share/shock/initsetup-background.png
 
-    pulseaudio_autoconfig #UNCOMMENT WHEN PIPEWIRE SUPPORT HAS BEEN IMPLEMENTED
+    pulseaudio_autoconfig
 
     while true
     do
 
-        mpg123 /usr/share/shock/"Space Ambience.mp3"
+        mpv --no-video /usr/share/shock/"Space Ambience.mp3"
 
     done &
 
-    yad --window-icon=/usr/share/shock/shock-logo.svg --title="Welcome" --picture --size=fit --filename=/usr/share/shock/initsetup-welcome-logo.png --text="
-<span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --buttons-layout=center --button="Next"\!go-next --width=400
+    yad --window-icon=/usr/share/shock/shock-logo.svg --width=400 --title="Welcome" --picture --size=fit --filename=/usr/share/shock/initsetup-welcome-logo.png --text="
+<span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --buttons-layout=center --button="Next"\!go-next
 
     until [[ "$ex" == "0" ]]
     do

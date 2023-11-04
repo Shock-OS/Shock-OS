@@ -28,8 +28,10 @@ style=\"$style\"" | tee "$user_home_dir"/.config/shock/slideshow-background
 
     source "$user_home_dir"/.config/shock_themes
 
-    echo "shock_gtk_theme=Yaru-blue
-shock_icon_theme=Yaru-blue" | tee "$user_home_dir"/.config/shock/themes
+    echo 'shock_gtk_theme=Yaru-blue
+shock_icon_theme=Yaru-blue
+use_libadwaita_theme=FALSE
+start_icon_type=symbolic' | tee "$user_home_dir"/.config/shock/themes
 
     rm "$user_home_dir"/.config/shock_themes
 
@@ -137,8 +139,10 @@ cp -r /usr/share/themes/shock-* /etc/skel/.themes
 
 cp -r /usr/share/shock/install-temp/"Sample Videos" /etc/skel/Videos
 
-echo "shock_gtk_theme=Yaru-blue
-shock_icon_theme=Yaru-blue" | tee /etc/skel/.config/shock_themes
+echo 'shock_gtk_theme=Yaru-blue
+shock_icon_theme=Yaru-blue
+use_libadwaita_theme=FALSE
+start_icon_type=symbolic' | tee /etc/skel/.config/shock/themes
 
 echo "[Greeter]
 theme-name=Yaru-blue-dark
