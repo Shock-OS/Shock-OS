@@ -41,7 +41,7 @@ function apply_libadwaita_theme() {
 
 read_settings
 
-if [[ "$use_libadwaita_theme" == "TRUE" ]] && [[ "$(gsettings get org.mate.interface gtk-theme)" == "'${runuser}_"* ]] && [[ -d "$1" ]]
+if [[ "$use_libadwaita_theme" == "TRUE" || "$(gsettings get org.mate.interface gtk-theme)" != "'${runuser}_"* ]] && [[ -d "$1" ]]
 then
 
     mkdir -p ~/.config/gtk-4.0

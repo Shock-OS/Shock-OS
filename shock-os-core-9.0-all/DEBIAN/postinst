@@ -6,16 +6,6 @@ sed -i '1s/.*/PRETTY_NAME="Shock OS 9.0 Issac"/' /usr/lib/os-release
 
 #the above set of commands copies the os release file to /usr/lib
 
-cp -r /usr/share/shock/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
-
-cp -r /usr/share/shock/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
-
-rm /usr/share/images/desktop-base/login-background.svg
-
-cp /usr/share/shock/login-background.svg /usr/share/images/desktop-base
-
-#the above command will replace the default Debian wallpapers with the Shock OS wallpapers
-
 for a in /usr/share/shock-themes/icons/symbolic/16x16/*
 do
 
@@ -34,10 +24,6 @@ do
 done
 
 #the above command replaces GNOME and MATE start menu icons with the Shock OS logo
-
-cp -r /usr/share/shock/logos/* /usr/share/desktop-base/debian-logos
-
-#the above command replaces the Debian branding with Shock OS branding
 
 chmod -R a+w /usr/share/shock
 
@@ -94,8 +80,6 @@ echo 'shock_gtk_theme=Yaru-blue
 shock_icon_theme=Yaru-blue
 use_libadwaita_theme=FALSE
 start_icon_type=symbolic' | tee /etc/skel/.config/shock/themes
-
-cp /usr/share/shock/face /etc/skel/.face
 
 #the home directory building ends
 

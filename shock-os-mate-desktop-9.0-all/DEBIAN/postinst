@@ -1,5 +1,19 @@
 #!/bin/bash
 
+cp -r /usr/share/shock/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
+
+cp -r /usr/share/shock/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
+
+rm /usr/share/images/desktop-base/login-background.svg
+
+cp /usr/share/shock/login-background.svg /usr/share/images/desktop-base
+
+#the above command will replace the default Debian wallpapers with the Shock OS wallpapers
+
+cp -r /usr/share/shock/logos/* /usr/share/desktop-base/debian-logos
+
+#the above command replaces the Debian branding with Shock OS branding
+
 cp -r /usr/share/shock-themes/scalable/mate-logo.svg /usr/share/mate-menu/icons
 
 #the above command sets the start menu icon to the Shock OS logo
@@ -86,9 +100,13 @@ rm /usr/share/applications/picom.desktop
 
 #removes the shortcuts for unwanted apps in the applications directory
 
+#the home directory building begins
+
 cp /usr/share/shock/mate_dock_applet.conf /etc/skel/.config
 
-#the above command sets the mate-dock applet settings
+cp /usr/share/shock/face /etc/skel/.face
+
+#the home directory building ends
 
 cp -r /usr/share/shock/applications/* /etc/skel/.local/share/applications
 
