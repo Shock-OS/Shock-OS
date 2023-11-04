@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$(cat ~/.config/shock-panel)" == "Traditional|" ]]
+if [[ "$(cat ~/.config/shock/panel)" == "Traditional|" ]]
 then
 
     panel_layouts='Modern!^Traditional'
@@ -32,7 +32,7 @@ then
 
     fi
 
-    echo "$output" | tee ~/.config/shock-panel
+    echo "$output" | tee ~/.config/shock/panel
 
     sleep 5
 

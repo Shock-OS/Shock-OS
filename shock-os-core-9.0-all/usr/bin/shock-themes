@@ -840,8 +840,6 @@ icon_color=${icon_color}" | tee ~/.config/shock-themes-mixed-colors
                 if ((ex==0))
                 then
 
-                    rm -r ~/.config/gtk-4.0/* #Resets the GTK4 Libadwaita theme to default
-
 				    gsettings set org.mate.interface gtk-theme "$shock_gtk_theme"
 
 				    gsettings set org.mate.Marco.general theme "Yaru${lod}"
@@ -874,6 +872,8 @@ show-keyboard=false
 show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
 			        write_settings
+
+                    apply_libadwaita_theme /usr/share/themes/"$shock_gtk_theme"/gtk-4.0
 
                 fi
 
