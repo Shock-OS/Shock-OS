@@ -92,7 +92,8 @@ cp -r /usr/share/shock/install-temp/"Sample Videos" /etc/skel/Videos
 
 echo 'shock_gtk_theme=Yaru-blue
 shock_icon_theme=Yaru-blue
-use_libadwaita_theme=FALSE' | tee /etc/skel/.config/shock/themes
+use_libadwaita_theme=FALSE
+start_icon_type=symbolic' | tee /etc/skel/.config/shock/themes
 
 cp /usr/share/shock/face /etc/skel/.face
 

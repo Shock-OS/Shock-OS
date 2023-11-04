@@ -86,6 +86,10 @@ rm /usr/share/applications/picom.desktop
 
 #removes the shortcuts for unwanted apps in the applications directory
 
+cp /usr/share/shock/mate_dock_applet.conf /etc/skel/.config
+
+#the above command sets the mate-dock applet settings
+
 cp -r /usr/share/shock/applications/* /etc/skel/.local/share/applications
 
 cp -r /usr/share/shock/applications/* /usr/share/applications
