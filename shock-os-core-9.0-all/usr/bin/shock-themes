@@ -41,41 +41,54 @@ function apply_libadwaita_theme() {
 
 read_settings
 
-if [[ "$use_libadwaita_theme" == "TRUE" || "$(gsettings get org.mate.interface gtk-theme)" != "'${runuser}_"* ]] && [[ -d "$1" ]]
+if [[ "$1" == "--override" ]]
 then
 
-    mkdir -p ~/.config/gtk-4.0
-
-    rm -r ~/.config/gtk-4.0/*
-
-    files=()
-
-    for file in "$1"/*
-    do
-
-        if [[ -h "$file" ]] #uses symlink's target location
-        then
-
-            file="$(readlink -f "$file")"
-
-        fi
-
-        files+=("$file")
-
-    done
-
-    for file in "${files[@]}"
-    do
-
-        cp -r "$file" ~/.config/gtk-4.0
-
-    done
+    local theme="$2"
 
 else
 
-    rm -r ~/.config/gtk-4.0/*
+    local theme="$(gsettings get org.mate.interface gtk-theme | sed "s/'//g")"
 
 fi
+
+if [[ "$use_libadwaita_theme" == "TRUE" ]] && [[ "$theme" == "${runuser}_"* ]] && [[ -d ~/.themes/"$theme"/gtk-4.0 ]]
+then
+
+    local dir="/home/${runuser}/.themes/${theme}/gtk-4.0"
+
+else
+
+    local dir="/usr/share/themes/${shock_gtk_theme}/gtk-4.0"
+
+fi
+
+mkdir -p ~/.config/gtk-4.0
+
+rm -r ~/.config/gtk-4.0/*
+
+files=()
+
+for file in "$dir"/*
+do
+
+    if [[ -h "$file" ]] #uses symlink's target location
+    then
+
+        file="$(readlink -f "$file")"
+
+    fi
+
+    files+=("$file")
+
+done
+
+for file in "${files[@]}"
+do
+
+    cp -r "$file" ~/.config/gtk-4.0
+
+done
 
 }
 
@@ -99,6 +112,68 @@ do
     done
 
 done
+
+}
+
+function check_for_dir_in_theme() {
+
+#checks for a file or directory from the root directory of a theme
+
+#USAGE: identify_dir_in_inherent_themes [--icon/--theme] <THEME_NAME> <FILE/DIR>
+
+#use '--icon' for searching an icon theme and '--theme' for searching a GTK theme
+
+#<THEME> is the theme you want to scan
+
+#function will echo 'TRUE' if a match is found, and 'FALSE' if no match is found
+
+if [[ "$1" == "--icon" ]]
+then
+
+    local dir="icons"
+
+else
+
+    local dir="themes"
+
+fi
+
+local found="FALSE"
+
+if [[ -e ~/."$dir"/"$2"/"$3" ]]
+then
+
+    found="TRUE"
+
+else
+
+    inherit_line="$(grep -m 1 -e '^Inherits=' ~/."$dir"/"$2"/index.theme)"
+
+    inherit_line="${inherit_line:9}"
+
+    IFS=','
+
+    read -a inherent_themes <<< "$inherit_line"
+
+    IFS=$'\n'
+
+    for theme in "${inherent_themes[@]}"
+    do
+
+        if [[ "$theme" == "${runuser}_"* ]] && [[ -e ~/."$dir"/"$theme"/"$3" ]]
+        then
+
+            found="TRUE"
+
+            break
+
+        fi
+
+    done
+
+fi
+
+echo "$found"
 
 }
 
@@ -226,7 +301,7 @@ do
 
                 found_dir="TRUE"
 
-                itd="$(find "$tmpdir" -name index.theme | head -n1 | rev | cut -d '/' -f 2- | rev)"
+                itd="$(find "$tmpdir" -name index*.theme | head -n1 | rev | cut -d '/' -f 2- | rev)"
 
                 mtd="$(find "$tmpdir" -name metacity-1 | head -n1 | rev | cut -d '/' -f 2- | rev)"
 
@@ -873,7 +948,7 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
 			        write_settings
 
-                    apply_libadwaita_theme /usr/share/themes/"$shock_gtk_theme"/gtk-4.0
+                    apply_libadwaita_theme
 
                 fi
 
@@ -915,7 +990,7 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
             fi
 
-            output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Custom Theme Settings" --form --field="<b>Color Scheme</b>":LBL '' --field="This setting is used by some apps to determine whether to use light or dark mode to better match your theme. This settings is usually set automatically, but you may want to change it manually if some apps don't match the light/dark theme.":LBL '' --field='':CB "$color_scheme_selection" --field='':LBL '' --field="<b>Use LibAdwaita Theme</b>":LBL '' --field="This setting only applies to themes that provide support for LibAdwaita apps. If this option is disabled, or if the current theme doesn't support LibAdwaita, then LibAdwaita apps will use the default LibAdwaita theme.":LBL '' --field="Use LibAdwaita Theme":CHK "$use_libadwaita_theme" --field='':LBL '' --field="<b>Start Icon Type</b>":LBL '' --field="Choose whether the start menu icon should be a standard icon or a symbolic icon to better match your theme. Beacuse of the symbolic nature of newer themes, the standard icon may look broken on some themes, but older themes may look better with the standard icon.":LBL '' --field='':CB "$start_icon_type_selection" --button="Apply"\!gtk-ok)"
+            output="$(yad --width=300 --window-icon=preferences-desktop-theme --title="Custom Theme Settings" --form --field="<b>Color Scheme</b>":LBL '' --field="This setting is used by some apps to determine whether to use light or dark mode to better match your theme. This settings is usually set automatically, but you may want to change it manually if some apps don't match the light/dark theme.":LBL '' --field='':CB "$color_scheme_selection" --field='':LBL '' --field="<b>Use LibAdwaita Theme</b>":LBL '' --field="This setting only applies to themes that provide support for LibAdwaita apps. If this option is disabled, or if the current theme doesn't support LibAdwaita, then LibAdwaita apps will use the default Shock OS theme. LibAdwaita apps will need to be restarted for this setting to take effect.":LBL '' --field="Use LibAdwaita Theme":CHK "$use_libadwaita_theme" --field='':LBL '' --field="<b>Start Icon Type</b>":LBL '' --field="Choose whether the start menu icon should be a standard icon or a symbolic icon to better match your theme. Beacuse of the symbolic nature of newer themes, the standard icon may look broken on some themes, but older themes may look better with the standard icon.":LBL '' --field='':CB "$start_icon_type_selection" --button="Apply"\!gtk-ok)"
 
             ex=$?
 
@@ -948,7 +1023,7 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
                 write_settings
 
-                apply_libadwaita_theme /home/"$runuser"/.themes/"$(gsettings get org.mate.interface gtk-theme | sed "s/'//g")"/gtk-4.0
+                apply_libadwaita_theme
 
                 if [[ "$start_icon_type" != "$old_start_icon_type" ]]
                 then
@@ -964,17 +1039,30 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
 			gsettings set org.mate.interface gtk-theme "${runuser}_${name}"
 
-            if [[ -d /home/"$runuser"/.themes/"${runuser}_${name}"/gtk-4.0 ]] #GTK4 Libadwaita themes patch
+            flatpak override --user --env=GTK_THEME="${runuser}_${name}"
+
+            if [[ "$(echo "$name" | awk '{print tolower($0)}')" == *"dark"* ]] || [[ -f ~/.themes/"'${runuser}_${name}'"/index-dark.theme ]] || [[ -f ~/.themes/"'${runuser}_${name}'"/index_dark.theme ]] || [[ "$(cat ~/.themes/"'${runuser}_${name}'"/index.theme | awk '{print tolower($0)}')" == *"dark"* ]]
             then
 
-                apply_libadwaita_theme /home/"$runuser"/.themes/"${runuser}_${name}"/gtk-4.0
+                gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+
+            elif [[ "$(echo "$name" | awk '{print tolower($0)}')" == *"light"* ]] || [[ -f ~/.themes/"'${runuser}_${name}'"/index-light.theme ]] || [[ -f ~/.themes/"'${runuser}_${name}'"/index_light.theme ]] || [[ "$(cat ~/.themes/"'${runuser}_${name}'"/index.theme | awk '{print tolower($0)}')" == *"light"* ]]
+            then
+
+                gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
+
+            else
+
+                gsettings reset org.gnome.desktop.interface color-scheme
 
             fi
+
+            apply_libadwaita_theme
 
             if [[ "$(gsettings get org.mate.session.required-components windowmanager)" != "'mutter'" ]]
             then
 
-                if [[ -d /home/"$runuser"/.themes/"${runuser}_${name}"/metacity-1 ]]
+                if [[ "$(check_for_dir_in_theme --theme "${runuser}_${name}" metacity-1)" == "TRUE" ]]
                 then
 
 			        gsettings set org.mate.Marco.general theme "${runuser}_${name}"
@@ -987,28 +1075,10 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
             fi
 
-            flatpak override --user --env=GTK_THEME="${runuser}_${name}"
-
-            if [[ "$(echo "$name" | awk '{print tolower($0)}')" == *"dark"* ]] || [[ "$(cat ~/.themes/"'${runuser}_${name}'"/index.theme | awk '{print tolower($0)}')" == *"dark"* ]]
-            then
-
-                gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
-
-            elif [[ "$(echo "$name" | awk '{print tolower($0)}')" == *"light"* ]] || [[ "$(cat ~/.themes/"'${runuser}_${name}'"/index.theme | awk '{print tolower($0)}')" == *"light"* ]]
-            then
-
-                gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
-
-            else
-
-                gsettings reset org.gnome.desktop.interface color-scheme
-
-            fi
-
         elif [[ "$type" == "LibAdwaita theme" ]]
         then
 
-            apply_libadwaita_theme /home/"$runuser"/.themes/"${runuser}_${name}"
+            apply_libadwaita_theme --override "${runuser}_${name}"
 
         elif [[ "$type" == "Metacity theme" ]]
         then

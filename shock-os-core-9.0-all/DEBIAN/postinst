@@ -59,6 +59,10 @@ touch /etc/skel/.config/shock/welcome-indicator
 
 touch /etc/skel/.config/shock/userlogstat
 
+mkdir -p /etc/skel/.config/gtk-4.0
+
+cp -r /usr/share/themes/Yaru-blue/gtk-4.0/* /etc/skel/.config/gtk-4.0
+
 echo 'XDG_DESKTOP_DIR="$HOME/Desktop"
 XDG_DOWNLOAD_DIR="$HOME/Downloads"
 XDG_TEMPLATES_DIR="$HOME/Templates"
