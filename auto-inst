@@ -33,7 +33,7 @@ done
 
 sudo apt update
 
-sudo apt purge -y pluma xterm #gets rid of pluma (because gedit is installed instead), and xterm
+#sudo apt purge -y xterm #gets rid of xterm
 
 sudo apt autopurge -y
 

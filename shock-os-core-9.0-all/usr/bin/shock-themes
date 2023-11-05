@@ -350,7 +350,7 @@ do
 
                         else
 
-                            inherit_line+=",${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor"
+                            inherit_line+="${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor"
 
                         fi
 

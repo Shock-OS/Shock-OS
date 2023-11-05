@@ -76,7 +76,7 @@ else
 
 fi
 
-hours=$((interval/60))
+hours=$((interval/60/60))
 
 minutes=$((interval%60))
 
@@ -85,7 +85,7 @@ success="FALSE"
 until [[ "$success" == "TRUE" ]]
 do
 
-    output="$(yad --window-icon=software-update-available --width=100 --title="Settings" --form --field="Delay between each scan for updates:":LBL "" --field="Hours:":NUM "${hours}\!0..96" --field="Minutes:":NUM "${minutes}\!0..60" --field="":LBL "" --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="":LBL "" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --buttons-layout=edge --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0)"
+    output="$(yad --window-icon=software-update-available --width=100 --title="Settings" --form --field="Delay between each scan for updates:":LBL "" --field="Hours:":NUM "${hours}\!0..96" --field="Minutes:":NUM "${minutes}\!0..59" --field="":LBL "" --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="":LBL "" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --buttons-layout=edge --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0)"
 
     ex=$?
 
@@ -101,6 +101,8 @@ do
         notify_of_new_versions_of_shock_os="$(echo "$output" | awk 'BEGIN {FS="|" } { print $9 }')"
 
         minutes=$((hours*60+minutes))
+
+        seconds=$((minutes*60))
 
         if ((minutes<5))
         then
@@ -138,7 +140,7 @@ do
             if (($(cat /usr/share/shock-update-manager/update-scan-interval)!=minutes))
             then
 
-                echo "$minutes" | tee /usr/share/shock-update-manager/update-scan-interval
+                echo "$seconds" | tee /usr/share/shock-update-manager/update-scan-interval
 
             fi'
 
