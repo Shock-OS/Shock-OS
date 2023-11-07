@@ -9,11 +9,11 @@ do
 
     rm ~/.cache/shock-update-manager/indicator_pid
 
-    updates=($(apt list --upgradable | awk '{ printf "\"%s\"\n", $0 }'))
+    sudo shock-update-manager-refresh
 
-    unset "updates[0]" #removes "Listing..." from the list because it is obviously not a package
+    updates=($(cat /usr/share/shock-update-manager/cache))
 
-    updates+=($(flatpak remote-ls --updates --columns=app))
+    updates=$((updates/2)) #divides updates array by two because there are two columns (Name and Type) for each updates
 
     if ((${#updates[@]}>0))
     then

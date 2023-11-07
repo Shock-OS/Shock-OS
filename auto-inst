@@ -33,7 +33,7 @@ done
 
 sudo apt update
 
-#sudo apt purge -y xterm #gets rid of xterm
+sudo apt purge -y xterm #gets rid of xterm
 
 sudo apt autopurge -y
 

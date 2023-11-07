@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#This script saves the automatic update, update scan interval, and notify of new versions of Shock OS settings (the GUI is in the shock-update-manager script, this script just saves the settings once 'Apply' is hit)
+
+if [[ "$1" == "TRUE" ]] && [[ ! -f /etc/sudoers.d/shock_automatic_updates ]] #enable automatic updates
+then
+
+    echo "ALL ALL=NOPASSWD:/usr/bin/shock-auto-updates" | tee /etc/sudoers.d/shock_automatic_updates
+
+elif [[ "$1" == "FALSE" ]] && [[ -f /etc/sudoers.d/shock_automatic_updates ]] #disable automatic updates
+then
+
+    rm /etc/sudoers.d/shock_automatic_updates
+
+fi
+
+if [[ "$2" == "TRUE" ]] && [[ -f /usr/share/shock-update-manager/disable-release-upgrader-indicator ]] #enable notification of new versions of Shock OS
+then
+
+    rm /usr/share/shock-update-manager/disable-release-upgrader-indicator
+
+elif [[ "$2" == "FALSE" ]] && [[ ! -f /usr/share/shock-update-manager/disable-release-upgrader-indicator ]] #disable notification of new versions of Shock OS
+then
+
+    touch /usr/share/shock-update-manager/disable-release-upgrader-indicator
+
+fi
+
+if (($(cat /usr/share/shock-update-manager/update-scan-interval)!=$4))
+then
+
+    echo "$3" | tee /usr/share/shock-update-manager/update-scan-interval
+
+fi
