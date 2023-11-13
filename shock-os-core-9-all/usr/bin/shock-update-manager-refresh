@@ -1,0 +1,182 @@
+#!/bin/bash
+
+#The system will now check for new updates...
+
+if (($(id -u)!=0))
+then
+
+    echo "Script must be run as root. Exiting..."
+
+    exit
+
+fi
+
+apt_appstream_dir="/var/lib/app-info" #Change line to fit the system configuration if needed
+
+sudo apt update
+
+sudo mkdir -p "$apt_appstream_dir"/xml
+
+if (($(getconf LONG_BIT)==32)) #if 32-bit system
+then
+
+    codename="$(lsb_release -cs)"
+
+    sudo mkdir -p "$apt_appstream_dir"/yaml
+
+    sudo mkdir -p "$apt_appstream_dir"/icons/debian-"$codename"-contrib/48x48
+
+    sudo mkdir -p "$apt_appstream_dir"/icons/debian-"$codename"-main/48x48
+
+    sudo mkdir -p "$apt_appstream_dir"/icons/debian-"$codename"-non-free/48x48
+
+    sudo mkdir -p "$apt_appstream_dir"/icons/debian-"$codename"-contrib/64x64
+
+    sudo mkdir -p "$apt_appstream_dir"/icons/debian-"$codename"-main/64x64
+
+    sudo mkdir -p "$apt_appstream_dir"/icons/debian-"$codename"-non-free/64x64
+
+    if [[ "$(sudo wget https://appstream.debian.org/data/"$codename"/contrib/icons-48x48.tar.gz -P "$apt_appstream_dir"/icons/debian-"$codename"-contrib/48x48 2>&1)" != *"fail"* ]]
+    then
+
+        sudo wget https://appstream.debian.org/data/"$codename"/main/icons-48x48.tar.gz -P "$apt_appstream_dir"/icons/debian-"$codename"-main/48x48
+
+        sudo wget https://appstream.debian.org/data/"$codename"/non-free/icons-48x48.tar.gz -P "$apt_appstream_dir"/icons/debian-"$codename"-non-free/48x48
+
+        sudo wget https://appstream.debian.org/data/"$codename"/contrib/icons-64x64.tar.gz -P "$apt_appstream_dir"/icons/debian-"$codename"-contrib/64x64
+
+        sudo wget https://appstream.debian.org/data/"$codename"/main/icons-64x64.tar.gz -P "$apt_appstream_dir"/icons/debian-"$codename"-main/64x64
+
+        sudo wget https://appstream.debian.org/data/"$codename"/non-free/icons-64x64.tar.gz -P "$apt_appstream_dir"/icons/debian-"$codename"-non-free/64x64
+
+        cd "$apt_appstream_dir"/icons/debian-"$codename"-contrib/48x48
+
+        sudo unp -f *.gz
+
+        sudo rm *.gz
+
+        cd "$apt_appstream_dir"/icons/debian-"$codename"-main/48x48
+
+        sudo unp -f *.gz
+
+        sudo rm *.gz
+
+        cd "$apt_appstream_dir"/icons/debian-"$codename"-non-free/48x48
+
+        sudo unp -f *.gz
+
+        sudo rm *.gz
+
+        cd "$apt_appstream_dir"/icons/debian-"$codename"-contrib/64x64
+
+        sudo unp -f *.gz
+
+        sudo rm *.gz
+
+        cd "$apt_appstream_dir"/icons/debian-"$codename"-main/64x64
+
+        sudo unp -f *.gz
+
+        sudo rm *.gz
+
+        cd "$apt_appstream_dir"/icons/debian-"$codename"-non-free/64x64
+
+        sudo unp -f *.gz
+
+        sudo rm *.gz
+
+        sudo wget https://appstream.debian.org/data/"$codename"/contrib/Components-armhf.yml.gz -O "$apt_appstream_dir"/yaml/debian-"$codename"-contrib-Components-armhf.yml.gz
+
+        sudo wget https://appstream.debian.org/data/"$codename"/main/Components-armhf.yml.gz -O "$apt_appstream_dir"/yaml/debian-"$codename"-main-Components-armhf.yml.gz
+
+        sudo wget https://appstream.debian.org/data/"$codename"/non-free/Components-armhf.yml.gz -O "$apt_appstream_dir"/yaml/debian-"$codename"-non-free-Components-armhf.yml.gz
+
+    fi
+
+fi
+
+for i in "$apt_appstream_dir"/yaml/*
+do
+
+    sudo appstreamcli convert "$i" "$apt_appstream_dir"/xml/"$(basename "$i")".xml
+
+done
+
+IFS=$'\n'
+
+all_updates=($(apt list --upgradable | awk '{ printf "\"%s [A]\"\n", $0 }'))
+
+apt_updates=("${all_updates[@]}")
+
+unset "all_updates[0]" #removes "Listing..." from the list because it is obviously not a package
+
+appstream_file="/var/lib/flatpak/appstream/flathub/$(uname -m)/active/appstream.xml"
+
+appstream_icons_dir="/var/lib/flatpak/appstream/flathub/$(uname -m)/active/icons/64x64"
+
+flatpak_ids=($(flatpak remote-ls --updates --columns=app))
+
+for i in "${flatpak_ids[@]}"
+do
+
+    all_updates+=("\"$(flatpak search "$i" --columns=app,name | grep -w "$i" | awk '{str=""; for(i=2;i<=NF;i++) str=str $i " "; sub(/ $/, "", str); printf "%s\n", str}') [F]\"")
+
+done
+
+all_updates=($(printf "%s\n" "${all_updates[@]}" | sort))
+
+if [[ "${#all_updates[@]}" != "0" ]]
+then
+
+    update_list=()
+
+    for i in "${all_updates[@]}"
+    do
+
+        if [[ "$i" == *" [F]\"" ]] #if Flatpak application
+        then
+
+            name="${i::-6}\""
+
+            name="${name#\"}"
+
+            name="${name%\"}"
+
+            icon="/usr/share/shock-update-manager/flatpak.svg"
+            
+            update_list+=("$icon" "$name")
+
+        else #if APT package
+
+            name="${i::-6}\""
+
+            name="${i%%/*}"
+
+            name="${name#\"}"
+
+            icon="/usr/share/shock-update-manager/apt.svg"
+
+            full_name="$(grep -A 10000 "<pkgname>$name</pkgname>" /var/lib/app-info/xml/*.xml | grep '<name>' | head -n1 | awk -F'[<>]' '{print $3}')"
+
+            if [[ -n "$full_name" ]]
+            then
+
+                name="$full_name"
+
+            fi
+
+            update_list+=("$icon" "$name")
+
+        fi
+
+    done
+
+    printf "%s\n" "${update_list[@]}" | tee /usr/share/shock-update-manager/cache
+
+else
+
+    rm /usr/share/shock-update-manager/cache
+
+fi
+
+

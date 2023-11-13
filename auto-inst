@@ -22,7 +22,7 @@ do
 
 done
 
-until [[ " ${installed_packages[@]} " == *" shock-os-mate-desktop "* ]]
+until [[ " ${installed_packages[@]} " == *" shock-os-mate-desktop "* ]] || [[ " ${installed_packages[@]} " == *" shock-os-gnome-desktop "* ]]
 do
 
     sudo apt install -y ./shock-os-*-desktop_*

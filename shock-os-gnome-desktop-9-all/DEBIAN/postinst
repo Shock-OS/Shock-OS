@@ -1,0 +1,60 @@
+#!/bin/bash
+
+cp -r /usr/share/shock/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
+
+cp -r /usr/share/shock/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
+
+rm /usr/share/images/desktop-base/login-background.svg
+
+cp /usr/share/shock/login-background.svg /usr/share/images/desktop-base
+
+#the above command will replace the default Debian wallpapers with the Shock OS wallpapers
+
+cp -r /usr/share/shock/logos/* /usr/share/desktop-base/debian-logos
+
+#the above command replaces the Debian branding with Shock OS branding
+
+rm /usr/share/applications/yad-icon-browser.desktop
+
+rm /usr/share/applications/display-im6.q16.desktop
+
+rm /usr/share/applications/htop.desktop
+
+rm /usr/share/applications/libreoffice-startcenter.desktop
+
+rm /usr/share/applications/ca.desrt.dconf-editor.desktop
+
+rm /usr/share/applications/mpv.desktop
+
+#removes the shortcuts for unwanted apps in the applications directory
+
+#the home directory building begins
+
+cp /usr/share/shock/face /etc/skel/.face
+
+#the home directory building ends
+
+cp -r /usr/share/shock/applications/* /etc/skel/.local/share/applications
+
+cp -r /usr/share/shock/applications/* /usr/share/applications
+
+#the above command renames the apps to Shock OS friendly names
+
+systemctl set-default multi-user #ensures the target is set to multi-user
+
+#the 'shock' temporary autologin patch begins
+
+mkdir -p /home/shock/.config/gtk-3.0
+
+echo "[Settings]
+gtk-theme-name=Yaru-blue
+gtk-icon-theme-name=Yaru-blue" | tee /home/shock/.config/gtk-3.0/settings.ini
+
+echo 'mutter --wayland & shock-startup' | tee -a /home/shock/.bashrc
+
+sudo chown -R shock /home/shock
+
+#the 'shock' temporary autologin patch ends
+
+
+

@@ -1,0 +1,79 @@
+#!/bin/bash
+
+#This script checks for an available upgrade to a newer version of Shock OS and notifies the user if one is available
+
+while true
+do
+
+    if [[ -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]]
+    then
+
+        echo "Checking for and upgrading to new releases of Shock OS is currently disabled. To re-enable this functionality, go to the Update Manager -> Settings and check the box that says 'Notify me of new versions of Shock OS'. Will retry later..."
+
+    else
+
+        current_version="$(apt show shock-os-core | grep Version: | awk '{print $2}')"
+
+        mkdir -p ~/.cache/shock-tmp/shock-release-scanner/codenames
+
+        rm ~/.cache/shock-tmp/shock-release-scanner/codenames
+
+        wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/codenames -P ~/.cache/shock-tmp/shock-release-scanner
+
+        if  [[ ! -f ~/.cache/shock-tmp/shock-release-scanner/codenames ]]
+        then
+
+            echo "An internet connection is required. Will retry later..."
+
+        else
+
+            latest_version="$(cat ~/.cache/shock-tmp/shock-release-scanner/codenames | wc -l)"
+
+            upgrto_version=$((current_version+1))
+
+            wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/available_upgrades -P ~/.cache/shock-tmp/shock-release-scanner
+
+            if ((latest_version>current_version)) && [[ "$(cat ~/.cache/shock-tmp/shock-release-scanner/available_upgrades)" == *"${current_version}-->${upgrto_version}"* ]]
+            then
+
+                upgrto_version_codename="$(sed -n "$upgrto_version"p ~/.cache/shock-tmp/shock-release-scanner/codenames)"
+
+                notify-send --app-name="Release Upgrader" --urgency=critical --icon=/usr/share/shock/icons/shock-release-upgrader.svg "System Upgrade Available" "The upgrade to Shock OS $upgrto_version $upgrto_version_codename is available."
+
+                yad --notification --image=/usr/share/shock/icons/shock-release-upgrader.svg --icon-size=48 --text="The upgrade to Shock OS $upgrto_version $upgrto_version_codename is available. Click to upgrade."
+
+                yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --width=100 --title="Upgrade to Shock OS $upgrto_version $upgrto_version_codename" --text="Are you sure you would like to upgrade to Shock OS $upgrto_version $upgrto_version_codename at this time? If not, you can always choose to upgrade at a later time." --button="Yes, proceed to upgrade"\!gtk-ok --button="No, abort upgrade"\!gtk-cancel
+
+                ex=$?
+
+                if ((ex==0)) #If 'Yes, proceed to upgrade' was clicked
+                then
+
+                    gsettings set org.mate.lockdown disable-log-out "true" # Stops the user from accessing the shutdown menu while the system is being upgraded.
+
+                    pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shock-release-upgrader
+
+                    gsettings set org.mate.lockdown disable-log-out "false" # Allows the user to access the shutdown menu.
+
+                fi
+
+            fi
+
+        fi
+
+    fi
+
+    if [[ -f /usr/share/shock-update-manager/update-scan-interval ]]
+    then
+
+        interval=$(cat /usr/share/shock-update-manager/update-scan-interval)
+
+    else
+
+        interval=86400 #24 hours
+
+    fi
+
+    sleep $interval
+
+done

@@ -31,7 +31,7 @@
     if [[ "$ex" != "0" ]]
     then
 
-        zenity --error --window-icon=ICON HERE --title="ERROR" --text="TEXT HERE" --ok-label="Exit" ; kill $$
+        yad --window-icon=ICON HERE --image=emblem-important --title="ERROR" --text="TEXT HERE" --button="Exit"\!gtk-cancel ; kill $$
 
     fi
 

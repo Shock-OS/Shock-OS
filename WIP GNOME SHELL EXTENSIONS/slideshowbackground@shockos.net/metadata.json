@@ -1,0 +1,8 @@
+{
+  "name": "Slideshow Wallpaper",
+  "description": "Enables slideshow wallpaper support from the Appearance panel in GNOME System Settings.",
+  "uuid": "slideshowbackground@shockos.net",
+  "shell-version": [
+    "43"
+  ]
+}

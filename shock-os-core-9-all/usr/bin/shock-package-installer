@@ -1,0 +1,203 @@
+#!/bin/bash
+
+file="$1"
+
+if [[ -z "$file" ]]
+then
+
+    file="$(yad --window-icon=package --title="Package Installer" --file --text="Please select a .deb package to install." --button="Install"\!gtk-open)"
+
+fi
+
+if [[ -d "$file" ]] #if a directory was selected instead of a file
+then
+
+    zenity --error --text="$(basename "$file") is a folder, not a .deb package." --ok-label="Exit"
+
+    exit 1
+
+elif [[ "$file" != *".deb" ]] #if not a .deb package
+then
+
+    zenity --error --text="$(basename "$file") is not a .deb package." --ok-label="Exit"
+
+    exit 1
+
+fi
+
+package="$(dpkg -I "$file" | grep Package: | awk '{print $2}')"
+
+package_display_name="$package"
+
+arch="$(dpkg -I "$file" | grep Architecture: | awk '{print $2}')"
+
+if ! [[ "$arch" == "all" || "$arch" == *"arm"* ]] #if not an ARM package
+then
+
+    zenity --error --text="$(basename "$file") is in an architecture that is incompatible with your system. Please use an ARM (armhf or arm64) version of the package if possible. i386 and amd64 packages will NOT work." --ok-label="Exit"
+
+    exit 1
+
+elif [[ "$(getconf LONG_BIT)" == "32" ]] && ! [[ "$arch" == "all" || "$arch" == *"armhf"* ]] #if it is an ARM package, check for compatibility on 32-bit systems (32-bit)
+then
+
+    zenity --error --text="$(basename "$file") is a 64-bit package (arm64), but your system is only 32-bit (armhf). Please use a 32-bit (armhf) version of the package if possible." --ok-label="Exit"
+
+    exit 1
+
+fi
+
+package="$(echo "$package" | awk '{print tolower($0)}')" #this command makes all the letters lowercase
+
+action="install"
+
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+if [[ " ${installed_packages[@]} " == *" $package "* ]] #if package is already installed, then check for updates
+then
+
+    current_version="$(apt show "$package" | grep Version: | awk '{print $2}')"
+
+    deb_version="$(dpkg -I "$file" | grep Version: | awk '{print $2}')"
+
+    dpkg --compare-versions "$current_version" lt "$deb_version"
+
+    ex=$?
+
+    if ((ex==0)) #deb is an upgrade
+    then
+
+        yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, but $(basename "$file") contains an upgraded version of it. Would you like to upgrade or remove $package_display_name?" --button="Upgrade"\!gtk-ok --button="Remove"\!remove --button="Cancel"\!gtk-cancel
+
+        ex=$?
+
+        if ((ex==1))
+        then
+
+            action="remove"
+
+        elif ((ex!=0))
+        then
+
+            exit
+
+        fi
+
+    elif [[ "$current_version" == "$deb_version" ]] #if versions are the same
+    then
+
+        yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, and $(basename "$file") contains the same version you have installed. Reinstalling the software is unnecessary in most cases. Would you like to reinstall or remove $package_display_name?" --button="Reinstall"\!gtk-refresh --button="Remove"\!remove --button="Cancel"\!gtk-cancel
+
+        ex=$?
+
+        if ((ex==0))
+        then
+
+            action="reinstall"
+
+        elif ((ex==1))
+        then
+
+            action="remove"
+
+        else
+
+            exit
+
+        fi
+
+    else #if deb is a downgrade
+    
+        yad --window-icon=package --width=400 --title="Package Installer" --text="$package_display_name is already installed on your system, and $(basename "$file") contains an older version of the software. Downgrading is not recommended in most cases. Would you like to downgrade or remove $package_display_name?" --button="Downgrade"\!edit-undo --button="Remove"\!remove --button="Cancel"\!gtk-cancel
+
+        ex=$?
+
+        if ((ex==0))
+        then
+
+            action="reinstall"
+
+        elif ((ex==1))
+        then
+
+            action="remove"
+
+        else
+
+            exit
+
+        fi
+
+    fi
+
+fi
+
+if [[ "$action" == "remove" ]]
+then
+
+    file="$package"
+
+fi
+
+if [[ "$action" == "install" ]]
+then
+
+    text="Installing"
+
+elif [[ "$action" == "remove" ]]
+then
+
+    text="Removing"
+
+else
+
+    text="Reinstalling"
+
+fi
+
+pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY DEBIAN_FRONTEND=gnome apt "$action" -y "$file" | zenity --window-icon=package --title="Package Installer" --progress --pulsate --text="$text $package_display_name..." --no-cancel --auto-close
+
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+if [[ "$action" == "install" ]] #if action was to install
+then
+
+    current_version="$(apt show "$package" | grep Version: | awk '{print $2}')"
+
+    deb_version="$(dpkg -I "$file" | grep Version: | awk '{print $2}')"
+
+    if [[ " ${installed_packages[@]} " == *" $package "* ]] && [[ "$current_version" == "$deb_version" ]] #if package installed successfully
+    then
+
+        notify-send --icon=package --app-name="Package Installer" "Package Installed Successfully" "$package_display_name was installed successfully."
+
+    else #if package was not installed successfully
+
+        notify-send --icon=package --app-name="Package Installer" "Failed to Install Package" "Failed to install $package_display_name. Please double check your internet connection and try again later."
+
+        exit 1
+
+    fi
+
+elif [[ "$action" == "remove" ]] #if action was to remove
+then
+
+    if [[ " ${installed_packages[@]} " != *" $package "* ]] #if package removed successfully
+    then
+
+        notify-send --icon=package --app-name="Package Installer" "Package Removed Successfully" "$package_display_name was removed successfully."
+
+    else #if package was not installed successfully
+
+        notify-send --icon=package --app-name="Package Installer" "Failed to Remove Package" "Failed to remove $package_display_name."
+
+        exit 1
+
+    fi
+
+else #if action was to reinstall
+
+    notify-send --icon=package --app-name="Package Installer" "Package Reinstalled Successfully" "$package_display_name was reinstalled successfully."
+
+fi
+

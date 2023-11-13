@@ -1,0 +1,158 @@
+#!/bin/bash
+
+#the root check element begins
+
+if (($(id -u)!=0))
+then
+
+    echo "Script must be run as root. Exiting..."
+
+    exit
+
+elif [[ -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]]
+then
+
+    yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --image=emblem-important --title="Upgrading is Disabled" --text="Checking for and upgrading to new releases of Shock OS is currently disabled. To re-enable this functionality, go to the Update Manager -> Settings, check the box that says 'Notify me of new versions of Shock OS', and try again later." --button="Dismiss"\!gtk-close
+
+    exit
+
+fi
+
+#the root check element ends
+
+function verify() {
+
+#USAGE: verify [.SIG FILE] [FILE] [Window text]
+
+# Launch the command in the background and capture its PID
+gpg --verify "$1" "$2" > /dev/null 2>&1 & command_pid=$!
+
+# Show the progress window using YAD
+
+yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --title="Verifying..." --text="$3" --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
+
+# Wait for either the command to finish or the YAD window to close
+wait -n "$command_pid" "$yad_pid"
+
+# Get the command's exit code
+ex=$?
+
+# Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
+if ps -p "$command_pid"
+then
+
+    kill "$command_pid"
+
+else
+
+    kill "$yad_pid"
+
+fi
+
+# Check if the command exited with a non-zero code and show an error message if needed
+if [[ "$ex" != "0" ]]
+then
+
+    yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --image=emblem-important --title="Upgrade Canceled" --text="The upgrade has been cancelled." --button="Exit"\!gtk-cancel ; kill $$
+
+fi
+
+}
+
+
+
+current_version="$(apt show shock-os-core | grep Version: | awk '{print $2}')"
+
+mkdir -p /usr/share/shock-release-upgrader/codenames
+
+rm /usr/share/shock-release-upgrader/codenames
+
+wget --timeout 5 https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/codenames -P /usr/share/shock-release-upgrader
+
+if  [[ ! -f /usr/share/shock-release-upgrader/codenames ]]
+then
+
+    echo "An internet connection is required. Exiting..."
+
+    yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --image=emblem-important --title="No Internet" --text="An internet connection is required to upgrade. Please verify that your internet connection is stable and reliable and try again later." --button="Dismiss"\!gtk-close
+
+    exit 1
+
+fi
+
+latest_version="$(cat /usr/share/shock-release-upgrader/codenames | wc -l)"
+
+upgrto_version=$((current_version+1))
+
+if ((latest_version>current_version))
+then
+
+    upgrto_version_codename="$(sed -n "$upgrto_version"p /usr/share/shock-release-upgrader/codenames)"
+
+    notify-send --app-name="Release Upgrader" --icon=/usr/share/shock/icons/shock-release-upgrader.svg "Upgrade Available" "The upgrade to Shock OS $upgrto_version $upgrto_version_codename is available."
+
+    yad --notification --image=/usr/share/shock/icons/shock-relase-upgrader.svg --icon-size=30 --text="The upgrade to Shock OS $upgrto_version $upgrto_version_codename is available. Click here to begin the upgrade."
+
+    zenity --question --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Prepare to Upgrade" --text="Before upgrading, please make sure of the following:
+
+1. The system is connected to a constant power supply.
+
+2. The internet connection is stable and reliable.
+
+3. No APT packages are being installed, removed or upgraded. If the Shockware Center or the Update Manager is running, please wait for it to finish and then close it out before continuing.
+
+NOTE: The logout and power options in the start menu will be temporarily disabled while upgrading because powering off the machine during the upgrade process is highly discouraged and may render your system unusable.
+
+Please press 'Continue' when you are ready to go on." --width=500 --ok-label="Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename" --cancel-label="Cancel"
+
+    ex=$?
+
+    if ((ex!=0))
+    then
+
+        exit
+
+    fi
+
+    mkdir -p /usr/share/shock-release-upgrader/upgrades
+
+    rm -rf /usr/share/shock-release-upgrader/upgrades/*
+
+    { wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-core.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
+
+    wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-core.zip.sig" -P /usr/share/shock-release-upgrader/upgrades
+
+    verify /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-core.zip.sig" /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-core.zip" "Verifying the core update package..."
+
+    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq))
+
+    if [[ " ${installed_packages[@]} " == *" shock-os-mate-desktop "* ]]
+    then
+
+        { wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-mate.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { zenity --error --window-icon=/usr/share/shock/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
+
+        wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-mate.zip.sig" -P /usr/share/shock-release-upgrader/upgrades
+
+        verify /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-mate.zip.sig" /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-mate.zip" "Verifying the MATE Edition update package..."
+
+    fi
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

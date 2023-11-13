@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "$(date '+%A, %B %eth, %Y')" | tee shock-os-core-9-all/usr/share/shock/build-date
+
+rm -r BUILD-OUT
+
+mkdir BUILD-OUT
+
+cp auto-inst BUILD-OUT
+
+dpkg-deb --build -Zxz shock-os-core-9-all BUILD-OUT
+
+dpkg-deb --build -Zxz shock-os-"$1"-desktop-9-all BUILD-OUT
