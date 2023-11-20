@@ -20,91 +20,29 @@ fi
 if [[ -f ~/.config/shock/userlogstat ]]
 then
 
-    gsettings set org.mate.session.required-components windowmanager "marco-glx"
-
-    gsettings set org.mate.interface enable-animations "false"
-
-    gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
-
-    #THE MUTTER SETTINGS PATCH BEGINS
-
     gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
 
-    gsettings set org.gnome.desktop.wm.keybindings panel-main-menu "['Super']"
+    gsettings set org.gnome.mutter center-new-windows "true"
 
-    #THE MUTTER SETTINGS PATCH ENDS
+    gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
 
-    marco --replace &
+    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-blue"
 
-    gsettings set org.mate.interface gtk-theme "Yaru-blue"
-
-    gsettings set org.mate.Marco.general theme "Yaru"
-
-    gsettings set org.mate.interface icon-theme "Yaru-blue"
+    gsettings set org.gnome.desktop.interface icon-theme "Yaru-blue"
 
     flatpak override --user --env=GTK_THEME="Yaru-blue"
 
-    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
-
-    gsettings set org.gnome.desktop.interface cursor-theme "Yaru-dark"
-
-    gsettings set org.onboard theme "/usr/share/onboard/themes/Nightshade.theme"
-
     #THE DEFAULT FONT PATCH BEGINS
 
-    gsettings set org.mate.interface font-name "Ubuntu 11"
+    gsettings set org.gnome.desktop.interface font-name "Ubuntu 11"
 
-    gsettings set org.gnome.desktop.interface font-name "Ubuntu 11" #MUTTER COMPATIBILITY
+    gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11"
 
-    gsettings set org.mate.caja.desktop font "Ubuntu 11"
+    gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13"
 
-    gsettings set org.mate.desktop.interface document-font-name "Ubuntu 11"
-
-    gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11" #MUTTER COMPATIBILITY
-
-    gsettings set org.mate.desktop.interface monospace-font-name "Monospace 13"
-
-    gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13" #MUTTER COMPATIBILITY
-
-    gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
-
-    gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11" #MUTTER COMPATIBILITY
+    gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11"
 
     #THE DEFAULT FONT PATCH ENDS
-
-    #the above command sets the onboard theme to Nightshade
-
-    dconf write /org/mate/panel/objects/dockapplet/prefs/win-from-cur-workspace-only "'true'"
-
-    dconf write /org/mate/panel/objects/dockapplet/prefs/pinned-apps "['chromium-browser.desktop', 'caja-browser.desktop', 'mate-terminal.desktop', 'shockware-center.desktop']"
-
-    #the above set of commands sets the mate-dock-applet defaults
-
-    gsettings set org.mate.screensaver themes "['screensavers-gnomelogo-floaters']"
-
-    #the above command sets Lightning Bolt as the default screensaver
-
-    gsettings set org.mate.Marco.general center-new-windows "true"
-
-    gsettings set org.gnome.mutter center-new-windows "true"
-        
-    #the above command sets the new window placement to the center
-
-    gsettings set org.mate.background show-desktop-icons "true"
-
-    gsettings set org.mate.caja.desktop computer-icon-visible "false"
-
-    gsettings set org.mate.caja.desktop home-icon-visible "true"
-
-    gsettings set org.mate.caja.desktop trash-icon-visible "true"
-
-    gsettings set org.mate.caja.desktop network-icon-visible "false"
-
-    gsettings set org.mate.caja.desktop volumes-visible "true"
-
-    #the above set of commands sets the default Shock OS desktop icons
-
-    gsettings set org.mate.session idle-delay 15 #sets the computer to regard the session as idle after 15 minutes (screensaver starts after 15 minutes)
 
     #THE FLATPAK GTK THEMING PATCH BEGINS
 
@@ -127,19 +65,15 @@ fi
 if (($(cat /usr/share/shock/setupvalue)==0)) #INITIAL SETUP (run as 'shock' user)
 then
 
-    gsettings set org.mate.session.required-components windowmanager "marco-glx"
+    gsettings set org.gnome.mutter center-new-windows "true"
 
-    gsettings set org.mate.interface enable-animations "false"
+    gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
 
-    gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
+    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-blue"
 
-    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
+    gsettings set org.gnome.desktop.interface icon-theme "Yaru-blue"
 
-    gsettings set org.mate.Marco.general theme "Yaru"
-
-    gsettings set org.mate.Marco.general center-new-windows "true"
-
-    feh --bg-fill /usr/share/shock/initsetup-background.png
+    #PUT BG FILLER LINE HERE
 
     pulseaudio_autoconfig
 

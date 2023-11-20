@@ -54,7 +54,16 @@ fi
 
 hours=$((interval/60/60))
 
-minutes=$((interval%60))
+if ((hours>0))
+then
+
+    minutes=$((interval/60%60))
+
+else
+
+    minutes=$((interval/60))
+
+fi
 
 success="FALSE"
 
@@ -83,7 +92,7 @@ do
         if ((minutes<5))
         then
 
-            yad --window-icon=emblem-important --title="Update Manager" --text="The delay between each scan for updates must be a minimum of five minutes." --button="Retry"\!gtk-undo
+            yad --window-icon=emblem-important --title="Update Manager" --text="The delay between each scan for updates must be a minimum of five minutes." --button="Retry"\!edit-undo
 
         else    
 

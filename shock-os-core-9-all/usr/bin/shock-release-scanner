@@ -14,11 +14,11 @@ do
 
         current_version="$(apt show shock-os-core | grep Version: | awk '{print $2}')"
 
-        mkdir -p ~/.cache/shock-tmp/shock-release-scanner/codenames
+        mkdir -p ~/.cache/shock-tmp/shock-release-scanner
 
         rm ~/.cache/shock-tmp/shock-release-scanner/codenames
 
-        wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/codenames -P ~/.cache/shock-tmp/shock-release-scanner
+        wget --timeout 5 https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/codenames -P ~/.cache/shock-tmp/shock-release-scanner
 
         if  [[ ! -f ~/.cache/shock-tmp/shock-release-scanner/codenames ]]
         then
@@ -31,18 +31,29 @@ do
 
             upgrto_version=$((current_version+1))
 
-            wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/upgrades/available_upgrades -P ~/.cache/shock-tmp/shock-release-scanner
+            if [[ "$upgrto_version" == "10" ]]
+            then
 
-            if ((latest_version>current_version)) && [[ "$(cat ~/.cache/shock-tmp/shock-release-scanner/available_upgrades)" == *"${current_version}-->${upgrto_version}"* ]]
+                upgrto_version_display_name="X"
+
+            else
+
+                upgrto_version_display_name="$upgrto_version"
+
+            fi
+
+            wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/available-upgrades -P ~/.cache/shock-tmp/shock-release-scanner
+
+            if ((latest_version>current_version)) && [[ "$(cat ~/.cache/shock-tmp/shock-release-scanner/available-upgrades)" == *"${current_version}-->${upgrto_version}"* ]]
             then
 
                 upgrto_version_codename="$(sed -n "$upgrto_version"p ~/.cache/shock-tmp/shock-release-scanner/codenames)"
 
-                notify-send --app-name="Release Upgrader" --urgency=critical --icon=/usr/share/shock/icons/shock-release-upgrader.svg "System Upgrade Available" "The upgrade to Shock OS $upgrto_version $upgrto_version_codename is available."
+                notify-send --app-name="Release Upgrader" --urgency=critical --icon=/usr/share/shock/icons/shock-release-upgrader.svg "System Upgrade Available" "The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available."
 
-                yad --notification --image=/usr/share/shock/icons/shock-release-upgrader.svg --icon-size=48 --text="The upgrade to Shock OS $upgrto_version $upgrto_version_codename is available. Click to upgrade."
+                yad --notification --image=/usr/share/shock/icons/shock-release-upgrader.svg --icon-size=48 --text="The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available. Click to upgrade."
 
-                yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --width=100 --title="Upgrade to Shock OS $upgrto_version $upgrto_version_codename" --text="Are you sure you would like to upgrade to Shock OS $upgrto_version $upgrto_version_codename at this time? If not, you can always choose to upgrade at a later time." --button="Yes, proceed to upgrade"\!gtk-ok --button="No, abort upgrade"\!gtk-cancel
+                yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --width=100 --title="Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Are you sure you would like to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename at this time? If not, you can always choose to upgrade at a later time." --button="Yes, proceed to upgrade"\!gtk-ok --button="No, abort upgrade"\!gtk-cancel
 
                 ex=$?
 

@@ -1,13 +1,22 @@
 #!/bin/bash
 
-echo "$(date '+%A, %B %eth, %Y')" | tee shock-os-core-9-all/usr/share/shock/build-date
+if [[ "$1" == "mate" ]] || [[ "$1" == "gnome" ]]
+then
 
-rm -r BUILD-OUT
+    echo "$(date '+%A, %B %eth, %Y')" | tee shock-os-core-9-all/usr/share/shock/build-date
 
-mkdir BUILD-OUT
+    rm -r BUILD-OUT
 
-cp auto-inst BUILD-OUT
+    mkdir BUILD-OUT
 
-dpkg-deb --build -Zxz shock-os-core-9-all BUILD-OUT
+    cp auto-inst BUILD-OUT
 
-dpkg-deb --build -Zxz shock-os-"$1"-desktop-9-all BUILD-OUT
+    dpkg-deb --build -Zxz shock-os-core-9-all BUILD-OUT
+
+    dpkg-deb --build -Zxz shock-os-"$1"-desktop-9-all BUILD-OUT
+
+else
+
+    echo "ERROR: Must use either 'gnome' or 'mate' as an argument."
+
+fi

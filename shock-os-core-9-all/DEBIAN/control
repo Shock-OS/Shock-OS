@@ -3,7 +3,7 @@ Version: 9
 Architecture: all
 Essential: no
 Priority: optional
-Depends: xinit,zenity,yad,mpg123,btrfs-progs,network-manager-gnome,dosfstools,mtools,wget,xz-utils,apt-config-icons,unp,ntpdate,gnupg,libgtk3-perl,feh,wmctrl,libnotify-bin,fonts-ubuntu,yaru-theme-gtk,yaru-theme-icon,imagemagick
+Depends: xinit,zenity,yad,mpg123,btrfs-progs,network-manager-gnome,dosfstools,mtools,wget,xz-utils,apt-config-icons,unp,ntpdate,gnupg,libgtk3-perl,wmctrl,libnotify-bin,fonts-ubuntu,yaru-theme-gtk,yaru-theme-icon,imagemagick
 Recommends: rpi-chromium-mods,rhythmbox,celluloid,libreoffice,libreoffice-gnome,cups,system-config-printer,ntp,plymouth,plymouth-themes,flatpak
 Maintainer: Carson Grover
 Description: Core apps and system files for Shock OS. This package contains critical Shock OS software. Removing or tampering with this package will break your system.

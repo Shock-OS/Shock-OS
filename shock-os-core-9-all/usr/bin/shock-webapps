@@ -228,7 +228,7 @@ do
                 elif ! curl --output /dev/null --silent --head --fail "$shock_webapp_address"
                 then
 
-                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="'$shock_webapp_address' is not a vaild website URL. Please enter a vaild URL." --button="Retry"\!edit-undo
+                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="'$shock_webapp_address' is not a vaild website URL. Please enter a vaild URL. If your computer is not connected to the internet, please connect to the internet before retrying." --button="Retry"\!edit-undo
 
                     focus_field=2
 

@@ -50,7 +50,7 @@ echo "[Settings]
 gtk-theme-name=Yaru-blue
 gtk-icon-theme-name=Yaru-blue" | tee /home/shock/.config/gtk-3.0/settings.ini
 
-echo 'mutter --wayland & shock-startup' | tee -a /home/shock/.bashrc
+echo 'mutter --wayland & { sleep 5; shock-startup; }' | tee -a /home/shock/.bashrc
 
 sudo chown -R shock /home/shock
 
