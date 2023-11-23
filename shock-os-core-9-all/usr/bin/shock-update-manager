@@ -139,7 +139,7 @@ mkdir -p ~/.cache/shock-tmp/shock-update-manager
 
 echo "$notification_killpid" | tee ~/.cache/shock-tmp/shock-update-manager/updates_in_progress_indicator_pid
 
-if [[ "$all_updates" == *" [A]"* ]] #if APT updates are available
+if [[ "${all_updates[@]}" == *" [A]"* ]] #if APT updates are available
 then
 
     pkexec env DEBIAN_FRONTEND=gnome apt-get upgrade --show-progress -y | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Downloading updates, please wait..."; stdbuf -o0 sed 's/.*/&\n#&%/g') | yad --window-icon=software-update-available --image=software-update-available --width=400 --title="Update Manager" --text="Installing APT Updates...
@@ -147,7 +147,7 @@ then
 
 fi
 
-if [[ "$all_updates" == *" [F]"* ]] #if Flatpak updates are available
+if [[ "${all_updates[@]}" == *" [F]"* ]] #if Flatpak updates are available
 then
 
     flatpak update -y | stdbuf -o0 grep 'Installing' | while read progress

@@ -139,6 +139,20 @@ then
 
     gsettings set org.mate.Marco.general center-new-windows "true"
 
+    #THE DEFAULT FONT PATCH BEGINS
+
+    gsettings set org.mate.interface font-name "Ubuntu 11"
+
+    gsettings set org.mate.caja.desktop font "Ubuntu 11"
+
+    gsettings set org.mate.desktop.interface document-font-name "Ubuntu 11"
+
+    gsettings set org.mate.desktop.interface monospace-font-name "Monospace 13"
+
+    gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
+
+    #THE DEFAULT FONT PATCH ENDS
+
     feh --bg-fill /usr/share/shock/initsetup-background.png
 
     pulseaudio_autoconfig
