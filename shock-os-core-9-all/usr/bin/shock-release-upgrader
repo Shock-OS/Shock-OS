@@ -31,7 +31,7 @@ function verify() {
 
 # Show the progress window using YAD
 
-yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --title="Verifying... This may take a while..." --text="$3" --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
+yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --image=/usr/share/shock/icons/shock-release-upgrader.svg --title="Verifying... This may take a while..." --text="$3" --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
 
 # Wait for either the command to finish or the YAD window to close
 wait -n "$command_pid" "$yad_pid"
@@ -77,7 +77,7 @@ function create_deb() {
 
     # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --title="Packaging..." --text="Packaging $(basename "$1")... This may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
+    yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --image=/usr/share/shock/icons/shock-release-upgrader.svg --title="Packaging..." --text="Packaging $(basename "$1")... This may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
 
     # Wait for either the command to finish or the YAD window to close
     wait -n "$command_pid" "$yad_pid"
@@ -207,7 +207,7 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
 
     rm -rf /usr/share/shock-release-upgrader/upgrades/*
 
-    { wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-core.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { zenity --error --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename core upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
+    { wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-core.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { zenity --error --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --image=/usr/share/shock/icons/shock-release-upgrader.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename core upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
 
     wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-core.zip.sig" -P /usr/share/shock-release-upgrader/upgrades
 
@@ -218,7 +218,7 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
     if [[ " ${installed_packages[@]} " == *" shock-os-mate-desktop "* ]] #GET MATE EDITION UPGRADES
     then
 
-        { wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-mate.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { zenity --error --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename MATE Edition upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
+        { wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-mate.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { zenity --error --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --image=/usr/share/shock/icons/shock-release-upgrader.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename MATE Edition upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
 
         wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-mate.zip.sig" -P /usr/share/shock-release-upgrader/upgrades
 
@@ -226,7 +226,7 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
 
     else #GET GNOME EDITION UPGRADES
 
-        { wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-gnome.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { zenity --error --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename GNOME Edition upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
+        { wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-gnome.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { zenity --error --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --ok-label="Exit"; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --image=/usr/share/shock/icons/shock-release-upgrader.svg --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename GNOME Edition upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
 
         wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-gnome.zip.sig" -P /usr/share/shock-release-upgrader/upgrades
 
@@ -245,7 +245,7 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
 
     # Show the progress window using YAD
 
-    yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --title="Extracting Files..." --text="Extracting the upgrade packages. This may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
+    yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --image=/usr/share/shock/icons/shock-release-upgrader.svg --title="Extracting Files..." --text="Extracting the upgrade packages. This may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
 
     # Wait for either the command to finish or the YAD window to close
     wait -n "$command_pid" "$yad_pid"
