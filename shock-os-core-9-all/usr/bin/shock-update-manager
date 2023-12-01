@@ -209,9 +209,15 @@ gsettings set org.mate.lockdown disable-log-out "false" #allows the user to acce
 
 }
 
+function fetch_cache() {
+
 all_updates=($(cat /usr/share/shock-update-manager/cache))
 
 all_updates_num=$(("${#all_updates[@]}"/2))
+
+}
+
+fetch_cache
 
 if ((all_updates_num==0))
 then
@@ -266,6 +272,8 @@ do
         yad --window-icon=software-update-available --title="Update Manager" --progress-text="Refreshing cache..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & refresh_killpid=$!
 
         sudo shock-update-manager-refresh
+
+        fetch_cache
 
         kill -9 $refresh_killpid
 
