@@ -137,18 +137,30 @@ mkdir -p /usr/share/shock-release-upgrader
 
 rm /usr/share/shock-release-upgrader/codenames
 
-wget --timeout 5 https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/codenames -P /usr/share/shock-release-upgrader
+until [[ -f /usr/share/shock-release-upgrader/codenames ]]
+do
 
-if  [[ ! -f /usr/share/shock-release-upgrader/codenames ]]
-then
+    wget --timeout 5 https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/codenames -P /usr/share/shock-release-upgrader
 
-    echo "An internet connection is required. Exiting..."
+    if  [[ ! -f /usr/share/shock-release-upgrader/codenames ]]
+    then
 
-    yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --image=emblem-important --title="No Internet" --text="An internet connection is required to upgrade. Please verify that your internet connection is stable and reliable and try again later." --button="Dismiss"\!gtk-close
+        echo "An internet connection is required. Exiting..."
 
-    exit 1
+        yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --image=emblem-important --title="No Internet" --text="An internet connection is required to upgrade. Please verify that your internet connection is stable and reliable before upgrading." --button="Retry"\!edit-undo --button="Cancel"\!gtk-cancel
 
-fi
+        ex=$?
+
+        if [[ "$ex" != "0" ]]
+        then
+
+            exit 1
+
+        fi
+
+    fi
+
+done
 
 latest_version="$(cat /usr/share/shock-release-upgrader/codenames | wc -l)"
 
