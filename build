@@ -3,7 +3,30 @@
 if [[ "$1" == "mate" ]] || [[ "$1" == "gnome" ]]
 then
 
-    echo "$(date '+%A, %B %eth, %Y')" | tee shock-os-core-9-all/usr/share/shock/build-date
+    day=$(date '+%e')
+
+    if [[ "$day" == "11" ]] || [[ "$day" == "12" ]] || [[ "$day" == "13" ]]
+    then
+
+      suffix="th"
+
+    else
+
+      case $((day % 10)) in
+
+        1) suffix="st";;
+
+        2) suffix="nd";;
+
+        3) suffix="rd";;
+
+        *) suffix="th";;
+
+      esac
+
+    fi
+
+    echo "$(date "+%A, %B %e$suffix, %Y")" | tee shock-os-core-9-all/usr/share/shock/build-date
 
     rm -r BUILD-OUT
 
@@ -11,9 +34,9 @@ then
 
     cp auto-inst BUILD-OUT
 
-    dpkg-deb --build -Zxz shock-os-core-9-all BUILD-OUT
+    dpkg-deb --build shock-os-core-9-all BUILD-OUT
 
-    dpkg-deb --build -Zxz shock-os-"$1"-desktop-9-all BUILD-OUT
+    dpkg-deb --build shock-os-"$1"-desktop-9-all BUILD-OUT
 
 else
 
