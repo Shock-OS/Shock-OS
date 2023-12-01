@@ -9,7 +9,7 @@ then
 
     exit
 
-elif [[ -f /usr/share/shock-os-update-manager/disable-release-upgrader-indicator ]]
+elif [[ -f /usr/share/shock-update-manager/disable-release-upgrader-indicator ]]
 then
 
     yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --image=emblem-important --title="Upgrading is Disabled" --text="Checking for and upgrading to new releases of Shock OS is currently disabled. To re-enable this functionality, go to the Update Manager -> Settings, check the box that says 'Notify me of new versions of Shock OS', and try again later." --button="Dismiss"\!gtk-close
