@@ -26,7 +26,7 @@ then
 
 fi
 
-if (($(cat /usr/share/shock-update-manager/update-scan-interval)!=$4))
+if (($(cat /usr/share/shock-update-manager/update-scan-interval)!=$3))
 then
 
     echo "$3" | tee /usr/share/shock-update-manager/update-scan-interval

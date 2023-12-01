@@ -48,20 +48,20 @@ then
 
 else
 
-    interval=86400 #24 hours
+    interval=1440 #24 hours
 
 fi
 
-hours=$((interval/60/60))
+hours=$((interval/60))
 
 if ((hours>0))
 then
 
-    minutes=$((interval/60%60))
+    minutes=$((interval%60))
 
 else
 
-    minutes=$((interval/60))
+    minutes=$interval
 
 fi
 
@@ -87,8 +87,6 @@ do
 
         minutes=$((hours*60+minutes))
 
-        seconds=$((minutes*60))
-
         if ((minutes<5))
         then
 
@@ -96,7 +94,7 @@ do
 
         else    
 
-            pkexec shock-update-manager-pkexec-settings-script "$automatic_updates" "$notify_of_new_versions_of_shock_os" "$seconds" "$minutes"
+            pkexec shock-update-manager-pkexec-settings-script "$automatic_updates" "$notify_of_new_versions_of_shock_os" "$minutes"
 
             success="TRUE"
 
@@ -104,7 +102,7 @@ do
 
     else
 
-        exit
+        success="TRUE"
 
     fi
 
@@ -113,6 +111,23 @@ done
 }
 
 #THE SETTINGS FUNCTION ENDS
+
+function wait_apt_lock() {
+
+mkdir -p ~/.cache/shock-tmp/shockware-center
+
+until (($(lslocks | grep -c apt)==0)) && [[ ! -f ~/.cache/shock-tmp/shockware-center/apt-queue ]] #waits until /var/lib/dpkg/lock-frontend is not being held
+do
+
+    echo "#Waiting for APT lock..."
+
+    sleep 3
+
+done
+
+echo "#"
+
+}
 
 function install_updates() {
 
@@ -139,15 +154,15 @@ mkdir -p ~/.cache/shock-tmp/shock-update-manager
 
 echo "$notification_killpid" | tee ~/.cache/shock-tmp/shock-update-manager/updates_in_progress_indicator_pid
 
-if [[ "${all_updates[@]}" == *" [A]"* ]] #if APT updates are available
+if [[ " ${all_updates[@]} " == *" /usr/share/shock-update-manager/apt.svg "* ]] #if APT updates are available
 then
 
-    pkexec env DEBIAN_FRONTEND=gnome apt-get upgrade --show-progress -y | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Downloading updates, please wait..."; stdbuf -o0 sed 's/.*/&\n#&%/g') | yad --window-icon=software-update-available --image=software-update-available --width=400 --title="Update Manager" --text="Installing APT Updates...
+    { wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt-get upgrade --show-progress -y | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Downloading updates, please wait..."; stdbuf -o0 sed 's/.*/&\n#&%/g') ;} | yad --window-icon=software-update-available --image=software-update-available --width=400 --title="Update Manager" --text="Installing APT Updates...
 <small>Updates will continue in the background if this window is closed.</small>" --text-align=center --fixed --progress --auto-close --no-cancel  --no-buttons --no-esape
 
 fi
 
-if [[ "${all_updates[@]}" == *" [F]"* ]] #if Flatpak updates are available
+if [[ " ${all_updates[@]} " == *" /usr/share/shock-update-manager/flatpak.svg "* ]] #if Flatpak updates are available
 then
 
     flatpak update -y | stdbuf -o0 grep 'Installing' | while read progress
@@ -234,7 +249,7 @@ page=0
 while true
 do
 
-    yad --window-icon=software-update-available --title="Update Manager" --width=800 --height=500 --text="$window_text" --list --no-click --buttons-layout=edge --column="Type":IMG --column="Name" $page_buttons --button="Settings"\!tweaks-app:1 --button="Install Updates"\!software-update-available:2 "${all_updates[@]}"
+    yad --window-icon=software-update-available --title="Update Manager" --width=800 --height=500 --text="$window_text" --list --no-click --dclick-action="" --buttons-layout=edge --column="Type":IMG --column="Name" $page_buttons --button="Settings"\!tweaks-app:1 --button="Install Updates"\!software-update-available:2 "${all_updates[@]}"
 
     ex=$?
 

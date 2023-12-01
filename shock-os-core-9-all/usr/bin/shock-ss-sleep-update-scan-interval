@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#This script waits for as many minutes as the update scan interval is set to. If the update scan interval is changed while this script is running, this script will reset to wait for the new interval.
+
+function get_interval() {
+
+if [[ -f /usr/share/shock-update-manager/update-scan-interval ]]
+then
+
+    if [[ "$(cat /usr/share/shock-update-manager/update-scan-interval)" != "$interval" ]]
+    then
+
+        slept_minutes=0
+
+    fi
+
+    interval=$(cat /usr/share/shock-update-manager/update-scan-interval)
+
+else
+
+    interval=1440 #24 hours
+
+fi
+
+}
+
+slept_minutes=0
+
+get_interval
+
+while ((interval>=slept_minutes))
+do
+
+    sleep 60
+
+    slept_minutes=$((slept_minutes+1))
+
+    get_interval
+
+done
