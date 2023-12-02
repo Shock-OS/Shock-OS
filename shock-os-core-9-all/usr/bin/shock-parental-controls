@@ -132,25 +132,7 @@ then
 
     chattr +i /usr/share/shock-screentime/"$user"/dailylimit
 
-    if ((hours>0))
-    then
-
-        if ((minutes>0))
-        then
-
-            total_display="$hours hours and $minutes minutes"
-
-        else
-
-            total_display="$hours hours"
-
-        fi
-
-    else
-
-        total_display="$minutes minutes"
-
-    fi
+    total_display="$(shock-ss-pretty-time $total_minutes)"
 
     if ((ex==0)) #if overwriting
     then
@@ -165,7 +147,7 @@ then
 
     #the time limit patch ends
 
-elif [[ "$limit" == "Manage Screen Time Track Days" ]]
+elif [[ "$limit" == "Manage Screen Time Tracking Settings" ]]
 then
 
     if [[ -f /usr/share/shock-screentime/"$user"/track-screentime ]]

@@ -1,0 +1,47 @@
+#!/bin/bash
+
+#This script converts a given amount of minutes into a pretty, human-readable format. For example: "124" --> "2 hours and 4 minutes"
+
+hours=$(($1/60))
+
+minutes=$(($1%60))
+
+if ((hours!=1))
+then
+
+    hours="$hours hours"
+
+else
+
+    hours="1 hour"
+
+fi
+
+if ((minutes!=1))
+then
+
+    minutes="$minutes minutes"
+
+else
+
+    minutes="1 minute"
+
+fi
+
+if [[ "$hours" != "0 hours" ]] && [[ "$minutes" != "0 minutes" ]]
+then
+
+    time_display="$hours and $minutes"
+
+elif [[ "$hours" != "0 hours" ]]
+then
+
+    time_display="$hours"
+
+else
+
+    time_display="$minutes"
+
+fi
+
+echo "$time_display"

@@ -2,56 +2,6 @@
 
 runuser="$(whoami)"
 
-function convert_time() {
-
-local used_minutes=$1
-
-local hours=$((used_minutes/60))
-
-local minutes=$((used_minutes%60))
-
-if ((hours!=1))
-then
-
-    hours="$hours hours"
-
-else
-
-    hours="1 hour"
-
-fi
-
-if ((minutes!=1))
-then
-
-    minutes="$minutes minutes"
-
-else
-
-    minutes="1 minute"
-
-fi
-
-if [[ "$hours" != "0 hours" ]] && [[ "$minutes" != "0 minutes" ]]
-then
-
-    local time_display="$hours and $minutes"
-
-elif [[ "$hours" != "0 hours" ]]
-then
-
-    local time_display="$hours"
-
-else
-
-    local time_display="$minutes"
-
-fi
-
-echo "$time_display"
-
-}
-
 while true
 do
 
@@ -59,7 +9,7 @@ do
 
     total_minutes=$(cat /usr/share/shock-screentime/"$runuser"/dailylimit)
 
-    total_minutes_display="$(convert_time $total_minutes)"
+    total_minutes_display="$(shock-ss-pretty-time $total_minutes)"
 
     if [[ -f /usr/share/shock-screentime/"$runuser"/today-limit/"$current_date" ]] #if user logged in less than a minute ago for the first time today
     then
@@ -74,7 +24,7 @@ do
 
     remaining_minutes=$((total_minutes-used_minutes))
 
-    remaining_minutes_display="$(convert_time $remaining_minutes)"
+    remaining_minutes_display="$(shock-ss-pretty-time $remaining_minutes)"
 
     percentage=$(echo "scale=0; ($remaining_minutes * 100) / $total_minutes" | bc)
 

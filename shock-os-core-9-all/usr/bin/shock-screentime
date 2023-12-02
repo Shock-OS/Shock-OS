@@ -2,56 +2,6 @@
 
 IFS=$'\n'
 
-function convert_time() {
-
-local used_minutes=$1
-
-local hours=$((used_minutes/60))
-
-local minutes=$((used_minutes%60))
-
-if ((hours!=1))
-then
-
-    hours="$hours hours"
-
-else
-
-    hours="1 hour"
-
-fi
-
-if ((minutes!=1))
-then
-
-    minutes="$minutes minutes"
-
-else
-
-    minutes="1 minute"
-
-fi
-
-if [[ "$hours" != "0 hours" ]] && [[ "$minutes" != "0 minutes" ]]
-then
-
-    local time_display="$hours and $minutes"
-
-elif [[ "$hours" != "0 hours" ]]
-then
-
-    local time_display="$hours"
-
-else
-
-    local time_display="$minutes"
-
-fi
-
-echo "$time_display"
-
-}
-
 if [[ " $(groups "$(whoami)") " == *" shock-child "* ]]
 then
 
@@ -100,14 +50,14 @@ do
 
             fi
 
-            total_minutes_display="$(convert_time $total_minutes)"
+            total_minutes_display="$(shock-ss-pretty-time $total_minutes)"
 
             for date in $(ls -t /usr/share/shock-screentime/"$user"/dates/*)
             do
 
                 used_minutes=$(cat "$date")
 
-                screentimes+=("$(basename "$date")" "$(convert_time $used_minutes)" "$(echo "scale=2; $used_minutes / $total_minutes * 100" | bc)")
+                screentimes+=("$(basename "$date")" "$(shock-ss-pretty-time $used_minutes)" "$(echo "scale=2; $used_minutes / $total_minutes * 100" | bc)")
 
             done
 
