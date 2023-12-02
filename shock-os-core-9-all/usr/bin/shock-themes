@@ -191,12 +191,12 @@ do
 
     sudo shock-themes-sync
 
-	yadlist=("/usr/share/shock/shock-logo.svg" "The default Shock OS look and feel" "Default")
+	yadlist=("/usr/share/shock/shock-logo.svg" "The default Shock OS look and feel" "Default" "/usr/share/shock-themes/na.png" "/usr/share/shock-themes/na.png" "/usr/share/shock-themes/na.png")
 
     if [[ "$(gsettings get org.mate.interface gtk-theme)" == "'${runuser}_"* ]]
     then
 
-        yadlist+=("tweaks-app" "Change settings used by some apps to help them better match your theme" "Custom theme settings")
+        yadlist+=("tweaks-app" "Change settings used by some apps to help them better match your theme" "Custom theme settings" "/usr/share/shock-themes/na.png" "/usr/share/shock-themes/na.png" "/usr/share/shock-themes/na.png")
 
     fi
 
@@ -211,16 +211,49 @@ do
             if [[ "$(ls -d "$i"/*/)" == "${i}/metacity-1/" ]]
             then
 
-		        yadlist+=("preferences-desktop-theme" "Metacity theme" "${current_theme:$nl}")
+		        yadlist+=("preferences-desktop-theme" "Metacity theme" "${current_theme:$nl}" "dialog-no" "dialog-yes" "dialog-no")
 
             elif [[ "$(basename "$(readlink -f "$i")" | awk '{print tolower($0)}')" == *"libadwaita"* ]] && [[ -f "$(find "$i"/* -name gtk*.css | head -n1)" ]]
             then
 
-                yadlist+=("preferences-desktop-theme" "LibAdwaita theme" "${current_theme:$nl}")
+                yadlist+=("preferences-desktop-theme" "LibAdwaita theme" "${current_theme:$nl}" "dialog-no" "dialog-no" "dialog-yes")
 
             else
 
-                yadlist+=("preferences-desktop-theme" "Theme pack" "${current_theme:$nl}")
+                if [[ "$(ls -d "$i"/*/)" == *"${i}/gtk-3"* ]]
+                then
+
+                    gtk3_support="dialog-yes"
+
+                else
+
+                    gtk3_support="dialog-no"
+
+                fi
+
+                if [[ "$(ls -d "$i"/*/)" == *"${i}/metacity-1/"* ]]
+                then
+
+                    metacity_support="dialog-yes"
+
+                else
+
+                    metacity_support="dialog-no"
+
+                fi
+
+                if [[ "$(ls -d "$i"/*/)" == *"${i}/gtk-4"* ]]
+                then
+
+                    libadwaita_support="dialog-yes"
+
+                else
+
+                    libadwaita_support="dialog-no"
+
+                fi
+
+                yadlist+=("preferences-desktop-theme" "Theme pack" "${current_theme:$nl}" "$gtk3_support" "$metacity_support" "$libadwaita_support")
 
             fi
 
@@ -236,7 +269,7 @@ do
 		if  [[ -d "$(find "$i"/* -name places | head -n1)" || -d "$(find "$i"/* -name status | head -n1)" ]] && [[ "$(cat "$i/index.theme")" == *"[Icon Theme]"* ]]
 		then
 
-			yadlist+=("folder-images" "Icon pack" "${current_theme:$nl}")
+			yadlist+=("folder-images" "Icon pack" "${current_theme:$nl}" "/usr/share/shock-themes/na.png" "/usr/share/shock-themes/na.png" "/usr/share/shock-themes/na.png")
 
 		fi
 
@@ -250,13 +283,15 @@ do
 		if  [[ -d "$(find "$i"/* -name cursors | head -n1)" ]] || [[ -f "$i/cursors.theme" ]]
 		then
 
-			yadlist+=("input-mouse" "Cursor pack" "${current_theme:$nl}")
+			yadlist+=("input-mouse" "Cursor pack" "${current_theme:$nl}" "/usr/share/shock-themes/na.png" "/usr/share/shock-themes/na.png" "/usr/share/shock-themes/na.png")
 
 		fi
 
 	done
 
-	output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --text="Install, remove, rename or use themes, icons and cursors." --list --column="Type":IMG --column=ToolTip:HD --column=Name --tooltip-column=2 --always-print-result --search-column=3 --response=4 --height=300 --buttons-layout=spread --button="Browse"\!applications-internet --button="Install"\!add --button="Remove"\!remove --button="Rename"\!gtk-edit --button="Use"\!dialog-ok "${yadlist[@]}"
+    #Yes, all the spaces in the Name column are necesarry. It makes the Name column wider and pushes over the checkboxes.
+
+	output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --text="Install, remove, rename or use themes, icons and cursors." --list --column="Type":IMG --column=ToolTip:HD --column="Name                                                         " --column="GTK+":IMG --column="Metacity":IMG --column="LibAdwaita":IMG --tooltip-column=2 --always-print-result --search-column=3 --response=4 --height=300 --buttons-layout=spread --button="Browse"\!applications-internet --button="Install"\!add --button="Remove"\!remove --button="Rename"\!gtk-edit --button="Use"\!dialog-ok "${yadlist[@]}"
 )"
 
 	ex=$?
