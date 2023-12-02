@@ -52,10 +52,19 @@ else
 
 fi
 
-if [[ "$use_libadwaita_theme" == "TRUE" ]] && [[ "$theme" == "${runuser}_"* ]] && [[ -d ~/.themes/"$theme"/gtk-4.0 ]]
+if [[ "$use_libadwaita_theme" == "TRUE" ]] && [[ "$theme" == "${runuser}_"* ]] && [[ -d ~/.themes/"$theme"/gtk-4.0 || "$type" == "LibAdwaita theme" ]]
 then
 
-    local dir="/home/${runuser}/.themes/${theme}/gtk-4.0"
+    if [[ "$type" == "LibAdwaita theme" ]]
+    then
+
+        local dir="/home/${runuser}/.themes/${theme}"
+
+    else
+
+        local dir="/home/${runuser}/.themes/${theme}/gtk-4.0"
+
+    fi
 
 else
 
@@ -1079,6 +1088,8 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
         then
 
             apply_libadwaita_theme --override "${runuser}_${name}"
+
+            notify-send --app-name="Themes" --icon=preferences-desktop-theme "LibAdwaita Theme Set" "'${name}' has been set as the theme for LibAdwaita apps. Currently running LibAdwaita apps will need to be restarted for the change to take affect."
 
         elif [[ "$type" == "Metacity theme" ]]
         then
