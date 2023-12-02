@@ -1,0 +1,72 @@
+#!/bin/bash
+
+#LOG FILE SYNTAX:
+
+#APP_NAME
+#ICON
+#TITLE
+#TEXT
+#SEPARATOR LINE (---------)
+
+LOG_FILE="log"
+
+# Create the log file if it doesn't exist
+touch "$LOG_FILE"
+
+# Flag to indicate when to start processing a new notification
+new_notification=false
+
+# Counter to keep track of the number of strings processed
+string_count=0
+
+# Temporary variables to store notification details
+app_name=""
+icon=""
+title=""
+text=""
+
+# Monitor D-Bus for notification events and log them
+dbus-monitor "interface='org.freedesktop.Notifications'" |
+while IFS= read -r line; do
+    if [[ $new_notification == true && $line =~ "string " ]]; then
+        value=$(grep -oP "(?<=string \")(.*?)(?=\")" <<< "$line")
+
+        if [ -z "${value}" ]; then
+            value=""
+        fi
+
+        case "$string_count" in
+            0) app_name="$value";;
+            1) icon="$value";;
+            2) title="$value";;
+            3) text="$value";;
+
+            # If there are more than four strings, ignore them
+        esac
+
+        ((string_count++))
+
+        # Log the information to the file after processing the fourth string
+        if [[ $string_count -eq 4 ]]; then
+            echo "$app_name" >> "$LOG_FILE"
+            echo "$icon" >> "$LOG_FILE"
+            echo "$title" >> "$LOG_FILE"
+            echo "$text" >> "$LOG_FILE"
+            echo "----------------------------------------" >> "$LOG_FILE"
+
+            # Reset variables and the counter after processing a notification
+            app_name=""
+            icon=""
+            title=""
+            text=""
+            string_count=0
+            new_notification=false
+        fi
+    fi
+
+    # Set the flag when encountering the start of a new notification
+    if [[ $line =~ "path=/org/freedesktop/Notifications; interface=org.freedesktop.Notifications; member=Notify" ]]; then
+        new_notification=true
+    fi
+done
+

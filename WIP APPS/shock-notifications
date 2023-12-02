@@ -1,0 +1,93 @@
+#!/bin/bash
+
+IFS=$'\n'
+
+# Get the screen dimensions
+screen_width=$(xrandr --current | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -f1)
+
+screen_height=$(xrandr --current | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -f2)
+
+# Set the window width and height
+window_width=200
+
+window_height=100
+
+# Calculate the position
+posx=$((screen_width-window_width))
+
+posy=$((screen_height-window_height))
+
+
+
+#THE SEGMENT THAT NEEDS FIXING BEGINS
+
+counter=1
+
+app_name=""
+
+icon=""
+
+title=""
+
+text=""
+
+yad_list=
+
+lines=$(cat log | wc -l)
+
+for line_num in {1..20}
+do
+
+    line="$(sed -n "$line_num"p ./log)"
+
+    if [[ "$counter" == "1" ]]
+    then
+
+        app_name="$line"
+
+    elif [[ "$counter" == "2" ]]
+    then
+
+        icon="$line"
+
+    elif [[ "$counter" == "3" ]]
+    then
+
+        title="$line"
+
+    elif [[ "$counter" == "4" ]]
+    then
+
+        text="$line"
+
+    else #if separator line
+
+        yad_list+="\"$icon\" \"<b>${title}</b>
+$text\" "
+
+        app_name=""
+
+        icon=""
+
+        title=""
+
+        text=""
+
+        counter=0
+
+    fi
+
+    counter=$((counter+1))
+
+done
+
+echo "$yad_list"
+
+
+#THE SEGMENT THAT NEEDS FIXING ENDS
+
+
+
+# Launch YAD with the specified position
+yad --width=$window_width --height=$window_height --posx=$posx --posy=$posy --fixed --undecorated --skip-taskbar --close-on-unfocus --list --no-click --dclick-action="" --column="Icon":IMG --column="Text" "$yad_list" --buttons-layout=edge --button="Do Not Disturb" --button="Clear All"
+
