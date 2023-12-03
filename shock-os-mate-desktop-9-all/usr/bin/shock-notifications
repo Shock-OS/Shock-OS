@@ -107,7 +107,7 @@ posx=$((screen_width-window_width))
 posy=$((screen_height-window_height))
 
 # Launch YAD with the specified position
-eval "yad --width=$window_width --height=$window_height --posx=$posx --posy=$posy --fixed --undecorated --skip-taskbar --close-on-unfocus --list --no-click --dclick-action=\"\" --column=\"Icon\":IMG --column=\"Text\" ${yad_list[@]} --buttons-layout=edge $dnd_button --button=\"Clear All\"\!edit-clear-all-symbolic"
+eval "yad --width=$window_width --height=$window_height --posx=$posx --posy=$posy --fixed --undecorated --skip-taskbar --close-on-unfocus --list --grid-lines=horizontal --no-click --dclick-action=\"\" --column=\"Icon\":IMG --column=\"Text\" ${yad_list[@]} --buttons-layout=edge $dnd_button --button=\"Clear All\"\!edit-clear-all-symbolic"
 
 ex=$?
 
