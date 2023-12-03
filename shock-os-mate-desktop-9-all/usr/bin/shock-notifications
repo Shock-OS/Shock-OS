@@ -17,7 +17,7 @@ yad_list=()
 if [[ "$(gsettings get org.mate.NotificationDaemon do-not-disturb)" == "true" ]]
 then
 
-    dnd_icon="--button=\"Do Not Disturb ON\"\!notifications-disabled-symbolic"
+    dnd_button="--button=\"Do Not Disturb ON\"\!notifications-disabled-symbolic"
 
     dnd="TRUE"
 
@@ -117,7 +117,7 @@ then
     if [[ "$dnd" == "TRUE" ]]
     then
 
-        gsettings set org.mate.NotificationDaemon do-not-disturb "true"
+        gsettings set org.mate.NotificationDaemon do-not-disturb "false"
 
     else
 
