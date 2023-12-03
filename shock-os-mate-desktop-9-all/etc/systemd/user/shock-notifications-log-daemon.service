@@ -1,0 +1,6 @@
+[Unit]
+Description=Notification Log Daemon
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/shock-notifications-log-daemon

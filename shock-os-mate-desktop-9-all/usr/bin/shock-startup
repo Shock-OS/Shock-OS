@@ -232,9 +232,13 @@ fi
 
 systemctl --user start shock-slideshow-background-daemon.service
 
+systemctl --user start shock-notifications-log-daemon.service
+
 systemctl --user start shock-updates-scanner.service
 
 systemctl --user start shock-release-scanner.service
+
+yad --notification --image=preferences-system-notifications-symbolic --command=shock-notifications --text="Notifications"
 
 if [[ -f ~/.config/shock/welcome-indicator ]]
 then

@@ -8,7 +8,7 @@
 #TEXT
 #SEPARATOR LINE (---------)
 
-LOG_FILE="log"
+LOG_FILE="~/.cache/shock-tmp/notifications-log"
 
 # Create the log file if it doesn't exist
 touch "$LOG_FILE"
