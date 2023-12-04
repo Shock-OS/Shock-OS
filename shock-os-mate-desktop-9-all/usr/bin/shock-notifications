@@ -60,7 +60,7 @@ else
             fi
 
             yad_list+=("\"$icon\"" "\"<b>${title}</b>
-    $text\"")
+$text\"")
 
             app_name=""
 
