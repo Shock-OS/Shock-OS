@@ -94,7 +94,7 @@ window_width=200
 
 window_height=$((${#yad_list[@]}/2*50+100))
 
-if ((window_height>screen_height))
+if ((window_height>=$((screen_height-100))))
 then
 
     window_height=$((screen_height-100))
