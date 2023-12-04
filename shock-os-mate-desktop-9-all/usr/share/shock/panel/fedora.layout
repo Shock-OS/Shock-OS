@@ -17,7 +17,7 @@ object-type=applet
 
 [Object windowlistapplet]
 panel-right-stick=false
-position=285
+position=279
 relative-to-edge=start
 applet-iid=WnckletFactory::WindowListApplet
 locked=true
@@ -35,7 +35,7 @@ object-type=applet
 
 [Object notificationarea]
 panel-right-stick=false
-position=166
+position=119
 relative-to-edge=end
 applet-iid=NotificationAreaAppletFactory::NotificationArea
 locked=true
@@ -47,15 +47,6 @@ panel-right-stick=false
 position=86
 relative-to-edge=start
 applet-iid=WnckletFactory::ShowDesktopApplet
-locked=true
-toplevel-id=toplevel-0
-object-type=applet
-
-[Object object-0]
-panel-right-stick=false
-position=123
-relative-to-edge=end
-applet-iid=IndicatorAppletCompleteFactory::IndicatorAppletComplete
 locked=true
 toplevel-id=toplevel-0
 object-type=applet
@@ -93,8 +84,28 @@ object-type=launcher
 [Object object-4]
 panel-right-stick=false
 menu-path=applications:/
-position=252
+position=246
 launcher-location=/usr/share/applications/shockware-center.desktop
+relative-to-edge=start
+locked=true
+toplevel-id=toplevel-0
+object-type=launcher
+
+[Object object-5]
+panel-right-stick=false
+menu-path=applications:/
+position=173
+launcher-location=/home/issac/.local/share/applications/caja-browser.desktop
+relative-to-edge=start
+locked=true
+toplevel-id=toplevel-0
+object-type=launcher
+
+[Object object-6]
+panel-right-stick=false
+menu-path=applications:/
+position=210
+launcher-location=/home/issac/.local/share/applications/mate-terminal.desktop
 relative-to-edge=start
 locked=true
 toplevel-id=toplevel-0

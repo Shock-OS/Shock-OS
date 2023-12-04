@@ -1,5 +1,5 @@
 [general]
-object-id-list=['briskmenu', 'clockapplet', 'notificationarea', 'showdesktopapplet', 'dockapplet', 'object-0']
+object-id-list=['briskmenu', 'clockapplet', 'notificationarea', 'showdesktopapplet', 'dockapplet']
 toplevel-id-list=['toplevel-0']
 
 [objects/briskmenu]
@@ -8,6 +8,7 @@ locked=true
 object-type='applet'
 panel-right-stick=false
 position=0
+relative-to-edge='start'
 toplevel-id='toplevel-0'
 
 [objects/clockapplet]
@@ -29,27 +30,28 @@ locked=true
 object-type='applet'
 panel-right-stick=false
 position=138
+relative-to-edge='start'
 toplevel-id='toplevel-0'
 
 [objects/dockapplet/prefs]
 app-spacing=0
 apps-from-all-workspaces=true
 attention-type=0
-bg-type=0
+bg-type=1
 change-panel-color=false
 change-panel-color-dock-only=false
 click-action=0
 dock-fixed-size=-1
 fallback-bar-col=['128', '128', '128']
 first-run=false
-indicator-type=0
+indicator-type=8
 multi-ind=false
 panel-act-list=false
 pinned-apps=['chromium-browser.desktop', 'caja-browser.desktop', 'mate-terminal.desktop', 'shockware-center.desktop']
 pinned-apps-on-all-workspaces=true
 popup-delay=1000
 saved-configs=@as []
-theme=0
+theme=3
 use-win-list=true
 win-from-cur-workspace-only=false
 win-switch-unity-style=false
@@ -59,15 +61,7 @@ applet-iid='NotificationAreaAppletFactory::NotificationArea'
 locked=true
 object-type='applet'
 panel-right-stick=false
-position=130
-relative-to-edge='end'
-toplevel-id='toplevel-0'
-
-[objects/object-0]
-applet-iid='IndicatorAppletCompleteFactory::IndicatorAppletComplete'
-locked=true
-object-type='applet'
-position=80
+position=76
 relative-to-edge='end'
 toplevel-id='toplevel-0'
 
@@ -77,10 +71,13 @@ locked=true
 object-type='applet'
 panel-right-stick=false
 position=96
+relative-to-edge='start'
 toplevel-id='toplevel-0'
 
 [toplevels/toplevel-0]
+enable-buttons=false
 expand=true
+monitor=0
 orientation='bottom'
 screen=0
 size=40

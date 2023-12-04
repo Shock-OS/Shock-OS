@@ -1,6 +1,6 @@
 [general]
 default-layout='fedora'
-object-id-list=['briskmenu', 'windowlistapplet', 'clockapplet', 'notificationarea', 'showdesktopapplet', 'object-0', 'object-1', 'object-2', 'object-3', 'object-4']
+object-id-list=['briskmenu', 'windowlistapplet', 'clockapplet', 'notificationarea', 'showdesktopapplet', 'object-1', 'object-2', 'object-3', 'object-4', 'object-5', 'object-6']
 toplevel-id-list=['toplevel-0']
 
 [objects/briskmenu]
@@ -9,6 +9,7 @@ locked=true
 object-type='applet'
 panel-right-stick=false
 position=0
+relative-to-edge='start'
 toplevel-id='toplevel-0'
 
 [objects/clockapplet]
@@ -29,44 +30,62 @@ applet-iid='NotificationAreaAppletFactory::NotificationArea'
 locked=true
 object-type='applet'
 panel-right-stick=false
-position=166
-relative-to-edge='end'
-toplevel-id='toplevel-0'
-
-[objects/object-0]
-applet-iid='IndicatorAppletCompleteFactory::IndicatorAppletComplete'
-locked=true
-object-type='applet'
-position=123
+position=119
 relative-to-edge='end'
 toplevel-id='toplevel-0'
 
 [objects/object-1]
 launcher-location='/usr/share/applications/chromium-browser.desktop'
 locked=true
+menu-path='applications:/'
 object-type='launcher'
+panel-right-stick=false
 position=137
+relative-to-edge='start'
 toplevel-id='toplevel-0'
 
 [objects/object-2]
 launcher-location='/home/carson/.local/share/applications/caja-browser.desktop'
 locked=true
+menu-path='applications:/'
 object-type='launcher'
+panel-right-stick=false
 position=175
+relative-to-edge='start'
 toplevel-id='toplevel-0'
 
 [objects/object-3]
 launcher-location='/home/carson/.local/share/applications/mate-terminal.desktop'
 locked=true
+menu-path='applications:/'
 object-type='launcher'
+panel-right-stick=false
 position=214
+relative-to-edge='start'
 toplevel-id='toplevel-0'
 
 [objects/object-4]
 launcher-location='/usr/share/applications/shockware-center.desktop'
 locked=true
+menu-path='applications:/'
 object-type='launcher'
-position=252
+panel-right-stick=false
+position=246
+relative-to-edge='start'
+toplevel-id='toplevel-0'
+
+[objects/object-5]
+launcher-location='/home/issac/.local/share/applications/caja-browser.desktop'
+locked=true
+object-type='launcher'
+position=173
+toplevel-id='toplevel-0'
+
+[objects/object-6]
+launcher-location='/home/issac/.local/share/applications/mate-terminal.desktop'
+locked=true
+object-type='launcher'
+position=210
 toplevel-id='toplevel-0'
 
 [objects/showdesktopapplet]
@@ -75,6 +94,7 @@ locked=true
 object-type='applet'
 panel-right-stick=false
 position=86
+relative-to-edge='start'
 toplevel-id='toplevel-0'
 
 [objects/windowlistapplet]
@@ -82,11 +102,14 @@ applet-iid='WnckletFactory::WindowListApplet'
 locked=true
 object-type='applet'
 panel-right-stick=false
-position=285
+position=279
+relative-to-edge='start'
 toplevel-id='toplevel-0'
 
 [toplevels/toplevel-0]
+enable-buttons=false
 expand=true
+monitor=0
 orientation='bottom'
 screen=0
 size=33

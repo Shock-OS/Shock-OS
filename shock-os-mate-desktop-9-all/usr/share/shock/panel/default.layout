@@ -26,7 +26,7 @@ object-type=applet
 
 [Object notificationarea]
 panel-right-stick=false
-position=130
+position=76
 relative-to-edge=end
 applet-iid=NotificationAreaAppletFactory::NotificationArea
 locked=true
@@ -47,15 +47,6 @@ panel-right-stick=false
 position=138
 relative-to-edge=start
 applet-iid=DockAppletFactory::DockApplet
-locked=true
-toplevel-id=toplevel-0
-object-type=applet
-
-[Object object-0]
-panel-right-stick=false
-position=80
-relative-to-edge=end
-applet-iid=IndicatorAppletCompleteFactory::IndicatorAppletComplete
 locked=true
 toplevel-id=toplevel-0
 object-type=applet
