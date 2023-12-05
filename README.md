@@ -17,17 +17,20 @@ Here are some ideas to get you started:
 - ⚡ Fun fact: ...
 -->
 
-Shock OS is a desktop Linux distribution designed specifically for the Raspberry Pi 4 (although it can very easily be ported to x86 if those who are interested would like to contribute towards that). This GitHub repository contains the source code for Shock OS, including prototypes for the next release. The development branch always has the latest prototype, and other branches are named after their release codename. For example, branch 'finlay' contains the source code for Shock OS 6.0 Finlay. 
+Shock OS is a desktop Linux distribution designed specifically for the Raspberry Pi 4, 400, & 5 (although it can very easily be ported to x86 if those who are interested would like to contribute towards that). This GitHub repository contains the source code for Shock OS, including prototypes for the next release. The development branch always has the latest prototype, and other branches, with the exception of the `upgrades` branch, are frozen in the state they were when their correspondingly codenamed version of Shock OS was released. For example, branch `finlay` contains the source code for Shock OS 6.0 Finlay.
+
+### Information
+Visit [the Shock OS website](https://www.shockos.net/) for information about what Shock OS is, the features it provides, and more!
 
 ### Building
 
 Shock OS is built by installing a .deb package on top of a fresh install of Raspberry Pi OS Lite. To test-run the latest prototype, use the following commands to build a .deb package to install:
 
-```$ git clone https://github.com/Shock-OS/Shock-OS.git```
+`$ git clone https://github.com/Shock-OS/Shock-OS.git`
 
-```cd Shock-OS```
+`cd Shock-OS`
 
-```$ dpkg-deb --build -Zxz shockos-*.0-all.deb```
+`$ dpkg-deb --build shockos-*.0-all.deb`
 
 And there you go! Simply install that on top of a fresh install of Raspberry Pi OS Lite (32-bit or 64-bit NON-Legacy) and you've got a test-build!
 
