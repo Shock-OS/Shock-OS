@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   height="32.0354"
+   height="31.999872"
    width="32"
    version="1.1"
    id="svg200"
-   sodipodi:docname="icon.svg"
+   sodipodi:docname="shockware-center.svg"
    inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -109,10 +109,10 @@
      inkscape:pagecheckerboard="0"
      showgrid="false"
      inkscape:zoom="4.3229166"
-     inkscape:cx="46.033735"
-     inkscape:cy="39.093976"
+     inkscape:cx="46.033736"
+     inkscape:cy="39.093977"
      inkscape:window-width="1920"
-     inkscape:window-height="1012"
+     inkscape:window-height="1008"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -449,7 +449,10 @@
   </linearGradient>
   <g
      id="g967"
-     transform="matrix(0.34758995,0,0,0.34758995,-0.68431771,-0.99650787)">
+     transform="matrix(0.34758995,0,0,0.34720448,-0.68431771,-0.99540276)"
+     inkscape:export-filename="/home/carson/Xtra/Shock OS/9.0 Issac/shock-os-core-9-all/usr/share/shock/icons/Yaru/shockware-center.png"
+     inkscape:export-xdpi="1536"
+     inkscape:export-ydpi="1536">
     <g
        transform="matrix(1,0,0,0.81047962,0,18.010358)"
        id="g106">
