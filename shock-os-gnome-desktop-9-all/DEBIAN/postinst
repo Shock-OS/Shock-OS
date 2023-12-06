@@ -1,16 +1,16 @@
 #!/bin/bash
 
-cp -r /usr/share/shock/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
+cp -r /usr/share/shock/install-temp/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
 
-cp -r /usr/share/shock/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
+cp -r /usr/share/shock/install-temp/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
 
 rm /usr/share/images/desktop-base/login-background.svg
 
-cp /usr/share/shock/login-background.svg /usr/share/images/desktop-base
+cp /usr/share/shock/install-temp/login-background.svg /usr/share/images/desktop-base
 
 #the above command will replace the default Debian wallpapers with the Shock OS wallpapers
 
-cp -r /usr/share/shock/logos/* /usr/share/desktop-base/debian-logos
+cp -r /usr/share/shock/install-temp/logos/* /usr/share/desktop-base/debian-logos
 
 #the above command replaces the Debian branding with Shock OS branding
 
@@ -30,13 +30,13 @@ rm /usr/share/applications/mpv.desktop
 
 #the home directory building begins
 
-cp /usr/share/shock/face /etc/skel/.face
+cp /usr/share/shock/install-temp/face /etc/skel/.face
 
 #the home directory building ends
 
-cp -r /usr/share/shock/applications/* /etc/skel/.local/share/applications
+cp -r /usr/share/shock/install-temp/applications/* /etc/skel/.local/share/applications
 
-cp -r /usr/share/shock/applications/* /usr/share/applications
+cp -r /usr/share/shock/install-temp/applications/* /usr/share/applications
 
 #the above command renames the apps to Shock OS friendly names
 
@@ -55,6 +55,8 @@ echo 'mutter --wayland & { sleep 5; shock-startup; }' | tee -a /home/shock/.bash
 sudo chown -R shock /home/shock
 
 #the 'shock' temporary autologin patch ends
+
+rm -r /usr/share/shock/install-temp
 
 
 

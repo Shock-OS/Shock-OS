@@ -78,7 +78,7 @@ do
 
     fi
 
-    output="$(yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --width=400 --height=300 --title="Web Apps" --text="Create, edit and delete web apps." --list --always-print-result --column="Icon":IMG --column="Name" --column="FILEPATH":HD "${webapp_list[@]}" --buttons-layout=spread --button="Add"\!add --button="Remove"\!remove --button="Edit"\!gtk-edit)"
+    output="$(yad --window-icon=shock-webapps --width=400 --height=300 --title="Web Apps" --text="Create, edit and delete web apps." --list --always-print-result --column="Icon":IMG --column="Name" --column="FILEPATH":HD "${webapp_list[@]}" --buttons-layout=spread --button="Add"\!add --button="Remove"\!remove --button="Edit"\!gtk-edit)"
 
     action=$?
 
@@ -110,7 +110,7 @@ do
     elif [[ "$action" == "1" ]] #remove
     then
 
-        yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --title="Web Apps" --image=gtk-delete --text="Are you sure you want to delete ${shock_webapp_name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
+        yad --window-icon=shock-webapps --title="Web Apps" --image=gtk-delete --text="Are you sure you want to delete ${shock_webapp_name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
 
         ex=$?
 
@@ -174,7 +174,7 @@ do
 
             categories_selection="${categories_selection//"${shock_webapp_category}"/"^${shock_webapp_category}"}"
 
-            output="$(yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --title="Web Apps" --form --focus-field="$focus_field" --field="Name:" "$shock_webapp_name" --field="Address:" "$shock_webapp_address" --field="Icon:":FL "$shock_webapp_icon" --field="Category:":CB "$categories_selection" --field="Browser":CB "$browser_selection" --field="Parameters:" "$shock_webapp_parameters" --field="Isolated Profile":CHK "$shock_webapp_isolated" --field="Private/Incognito Window":CHK "$shock_webapp_private" --button="Save"\!media-floppy)"
+            output="$(yad --window-icon=shock-webapps --title="Web Apps" --form --focus-field="$focus_field" --field="Name:" "$shock_webapp_name" --field="Address:" "$shock_webapp_address" --field="Icon:":FL "$shock_webapp_icon" --field="Category:":CB "$categories_selection" --field="Browser":CB "$browser_selection" --field="Parameters:" "$shock_webapp_parameters" --field="Isolated Profile":CHK "$shock_webapp_isolated" --field="Private/Incognito Window":CHK "$shock_webapp_private" --button="Save"\!media-floppy)"
 
             ex=$?
 
@@ -207,42 +207,42 @@ do
                 if [[ -z "$shock_webapp_name" ]]
                 then
 
-                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="The name cannot be blank. Please choose a name for your web app." --button="Retry"\!edit-undo
+                    yad --window-icon=shock-webapps --image=emblem-important --title="Web Apps" --text="The name cannot be blank. Please choose a name for your web app." --button="Retry"\!edit-undo
 
                     focus_field=1
 
                 elif [[ -f ~/.local/share/applications/shock-webapps/"${shock_webapp_name}.desktop" ]] && [[ "$action" == "0" ]]
                 then
 
-                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="There is already a web app named '$shock_webapp_name'. Please choose a different name." --button="Retry"\!edit-undo
+                    yad --window-icon=shock-webapps --image=emblem-important --title="Web Apps" --text="There is already a web app named '$shock_webapp_name'. Please choose a different name." --button="Retry"\!edit-undo
 
                     focus_field=1
 
                 elif [[ -z "$shock_webapp_address" ]]
                 then
 
-                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="The web address (URL) cannot be blank. Please enter the URL of the website you want to use as a web app." --button="Retry"\!edit-undo
+                    yad --window-icon=shock-webapps --image=emblem-important --title="Web Apps" --text="The web address (URL) cannot be blank. Please enter the URL of the website you want to use as a web app." --button="Retry"\!edit-undo
 
                     focus_field=2
 
                 elif ! curl --output /dev/null --silent --head --fail "$shock_webapp_address"
                 then
 
-                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="'$shock_webapp_address' is not a vaild website URL. Please enter a vaild URL. If your computer is not connected to the internet, please connect to the internet before retrying." --button="Retry"\!edit-undo
+                    yad --window-icon=shock-webapps --image=emblem-important --title="Web Apps" --text="'$shock_webapp_address' is not a vaild website URL. Please enter a vaild URL. If your computer is not connected to the internet, please connect to the internet before retrying." --button="Retry"\!edit-undo
 
                     focus_field=2
 
                 elif [[ -z "$shock_webapp_icon" ]]
                 then
 
-                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="No icon was provided. Please select an image to use for the icon." --button="Retry"\!edit-undo
+                    yad --window-icon=shock-webapps --image=emblem-important --title="Web Apps" --text="No icon was provided. Please select an image to use for the icon." --button="Retry"\!edit-undo
 
                     focus_field=3
 
                 elif [[ "$(file "$shock_webapp_icon")" != *"image"* ]]
                 then
 
-                    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="Web Apps" --text="'$shock_webapp_icon' is not a vaild image file. Please select an image to use for the icon." --button="Retry"\!edit-undo
+                    yad --window-icon=shock-webapps --image=emblem-important --title="Web Apps" --text="'$shock_webapp_icon' is not a vaild image file. Please select an image to use for the icon." --button="Retry"\!edit-undo
 
                     focus_field=3
 

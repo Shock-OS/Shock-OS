@@ -72,7 +72,7 @@ XDG_MUSIC_DIR="$HOME/Music"
 XDG_PICTURES_DIR="$HOME/Pictures"
 XDG_VIDEOS_DIR="$HOME/Videos"' | tee /etc/skel/.config/user-dirs.dirs
 
-cp -r /usr/share/shock/chromium /etc/skel/.config
+cp -r /usr/share/shock/install-temp/chromium /etc/skel/.config
 
 mkdir -p /etc/skel/.cache
 
@@ -158,7 +158,7 @@ update-initramfs -u
 
 #the splash screen patch ends
 
+cp -r /usr/share/shock/install-temp/icons/Yaru /usr/share/icons
+
 rm -rf /usr/share/shock/install-temp
-
-
 

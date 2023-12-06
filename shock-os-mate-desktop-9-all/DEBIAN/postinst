@@ -1,24 +1,24 @@
 #!/bin/bash
 
-cp -r /usr/share/shock/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
+cp -r /usr/share/shock/install-temp/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
 
-cp -r /usr/share/shock/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
+cp -r /usr/share/shock/install-temp/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
 
 rm /usr/share/images/desktop-base/login-background.svg
 
-cp /usr/share/shock/login-background.svg /usr/share/images/desktop-base
+cp /usr/share/shock/install-temp/login-background.svg /usr/share/images/desktop-base
 
 #the above command will replace the default Debian wallpapers with the Shock OS wallpapers
 
-cp -r /usr/share/shock/logos/* /usr/share/desktop-base/debian-logos
+cp -r /usr/share/shock/install-temp/logos/* /usr/share/desktop-base/debian-logos
 
 #the above command replaces the Debian branding with Shock OS branding
 
-cp -r /usr/share/shock-themes/scalable/mate-logo.svg /usr/share/mate-menu/icons
+cp -r /usr/share/shock/install-temp-themes/scalable/mate-logo.svg /usr/share/mate-menu/icons
 
 #the above command sets the start menu icon to the Shock OS logo
 
-cp -r /usr/share/shock/panel/* /usr/share/mate-panel/layouts
+cp -r /usr/share/shock/install-temp/panel/* /usr/share/mate-panel/layouts
 
 #the above command installs the Shock OS panel layout and sets it as the default
 
@@ -26,11 +26,11 @@ rm /etc/lightdm/lightdm.conf
 
 rm /usr/share/icons/mate/cursor.theme
 
-cp /usr/share/shock/lightdm.conf /etc/lightdm
+cp /usr/share/shock/install-temp/lightdm.conf /etc/lightdm
 
-cp /usr/share/shock/lightdm-gtk-greeter.conf /etc/lightdm
+cp /usr/share/shock/install-temp/lightdm-gtk-greeter.conf /etc/lightdm
 
-cp /usr/share/shock/cursor.theme /usr/share/icons/mate
+cp /usr/share/shock/install-temp/cursor.theme /usr/share/icons/mate
 
 #the above set of commands sets the default Shock OS screen
 
@@ -50,7 +50,7 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
 rm /usr/share/applications/mate-default-applications-properties.desktop
 
-cp /usr/share/shock/mate-default-applications-properties.desktop /usr/share/applications
+cp /usr/share/shock/install-temp/mate-default-applications-properties.desktop /usr/share/applications
 
 #the above command sets a star as the logo for the preferred applications
 
@@ -62,9 +62,9 @@ rm /usr/share/applications/screensavers/gnomelogo-floaters.desktop
 
 rm /usr/share/applications/screensavers/footlogo-floaters.desktop
 
-cp /usr/share/shock/gnomelogo-floaters.desktop /usr/share/applications/screensavers
+cp /usr/share/shock/install-temp/gnomelogo-floaters.desktop /usr/share/applications/screensavers
 
-cp -r /usr/share/shock/gnome-logo-white.svg /usr/share/pixmaps
+cp -r /usr/share/shock/install-temp/gnome-logo-white.svg /usr/share/pixmaps
 
 #the above commands set the Lightning Bolt and Raspberry screensavers
 
@@ -102,15 +102,15 @@ rm /usr/share/applications/picom.desktop
 
 #the home directory building begins
 
-cp /usr/share/shock/mate_dock_applet.conf /etc/skel/.config
+cp /usr/share/shock/install-temp/mate_dock_applet.conf /etc/skel/.config
 
-cp /usr/share/shock/face /etc/skel/.face
+cp /usr/share/shock/install-temp/face /etc/skel/.face
 
 #the home directory building ends
 
-cp -r /usr/share/shock/applications/* /etc/skel/.local/share/applications
+cp -r /usr/share/shock/install-temp/applications/* /etc/skel/.local/share/applications
 
-cp -r /usr/share/shock/applications/* /usr/share/applications
+cp -r /usr/share/shock/install-temp/applications/* /usr/share/applications
 
 #the above command renames the apps to Shock OS friendly names
 
@@ -145,6 +145,10 @@ echo 'marco & shock-startup' | tee -a /home/shock/.xinitrc
 sudo chown -R shock /home/shock
 
 #the 'shock' temporary autologin patch ends
+
+cp -r /usr/share/shock/icons/Yaru /usr/share/icons
+
+rm -r /usr/share/shock/install-temp
 
 
 

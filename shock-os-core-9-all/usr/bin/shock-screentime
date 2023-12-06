@@ -86,11 +86,11 @@ do
         if ((${#tabs[@]}==0))
         then
 
-            yad --window-icon=/usr/share/shock/icons/shock-screentime.svg --image=info --title="Screen Time" --text="Screen time tracking is currently disabled for all users." --button="Dismiss"\!gtk-cancel:3
+            yad --window-icon=shock-screentime --image=info --title="Screen Time" --text="Screen time tracking is currently disabled for all users." --button="Dismiss"\!gtk-cancel:3
 
         else
 
-            yad --window-icon=/usr/share/shock/icons/shock-screentime.svg --width=600 --height=400 --title="Screen Time" --notebook --key=$key "${tabs[@]}" --button="Refresh"\!gtk-refresh
+            yad --window-icon=shock-screentime --width=600 --height=400 --title="Screen Time" --notebook --key=$key "${tabs[@]}" --button="Refresh"\!gtk-refresh
 
         fi
 
@@ -99,7 +99,7 @@ do
         if ((${#tabs[@]}==0))
         then
 
-            yad --window-icon=/usr/share/shock/icons/shock-screentime.svg --image=info --title="Screen Time" --text="Screen time tracking is currently disabled for all users. Would you like to begin tracking your screen time?
+            yad --window-icon=shock-screentime --image=info --title="Screen Time" --text="Screen time tracking is currently disabled for all users. Would you like to begin tracking your screen time?
 
 NOTE: To manage the screen time tracking settings of child profiles, use the Parental Controls app." --button="Enable screen time tracking for my account"\!gtk-ok --button="Dismiss"\!gtk-cancel
 
@@ -120,7 +120,7 @@ NOTE: To manage the screen time tracking settings of child profiles, use the Par
 
         else
 
-            yad --window-icon=/usr/share/shock/icons/shock-screentime.svg --width=600 --height=400 --title="Screen Time" --text="Click 'Settings' to manage your screen time settings. Change screen time settings for child profiles in the Parental Controls app." --notebook --key=$key "${tabs[@]}" --buttons-layout=edge --button="Settings"\!tweaks-app:1 --button="Refresh"\!gtk-refresh:0
+            yad --window-icon=shock-screentime --width=600 --height=400 --title="Screen Time" --text="Click 'Settings' to manage your screen time settings. Change screen time settings for child profiles in the Parental Controls app." --notebook --key=$key "${tabs[@]}" --buttons-layout=edge --button="Settings"\!tweaks-app:1 --button="Refresh"\!gtk-refresh:0
 
         fi
 
@@ -151,7 +151,7 @@ NOTE: To manage the screen time tracking settings of child profiles, use the Par
 
         fi
 
-        output="$(yad --window-icon=/usr/share/shock/icons/shock-screentime.svg --width=200 --title="Screen Time" --form --field="Track my screen time":CHK "$track_screentime" --field="Days to track screen time":NUM "${screentime_track_days}\!1..65525" --field="Manage the screen time track days of child profiles in the Parental Controls app.":LBL '' --button="Apply"\!gtk-ok)"
+        output="$(yad --window-icon=shock-screentime --width=200 --title="Screen Time" --form --field="Track my screen time":CHK "$track_screentime" --field="Days to track screen time":NUM "${screentime_track_days}\!1..65525" --field="Manage the screen time track days of child profiles in the Parental Controls app.":LBL '' --button="Apply"\!gtk-ok)"
 
         ex=$?
 

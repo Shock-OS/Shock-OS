@@ -1,0 +1,23 @@
+#!/bin/bash
+
+name="${1%.*}"
+
+inkscape --export-type=png --export-filename=Yaru/16x16/apps/"$name".png --export-width=16 --export-height=16 "$1"
+
+inkscape --export-type=png --export-filename=Yaru/16x16@2x/apps/"$name".png --export-width=32 --export-height=32 "$1"
+
+inkscape --export-type=png --export-filename=Yaru/24x24/apps/"$name".png --export-width=24 --export-height=24 "$1"
+
+inkscape --export-type=png --export-filename=Yaru/24x24@2x/apps/"$name".png --export-width=48 --export-height=48 "$1"
+
+inkscape --export-type=png --export-filename=Yaru/32x32/apps/"$name".png --export-width=32 --export-height=32 "$1"
+
+inkscape --export-type=png --export-filename=Yaru/32x32@2x/apps/"$name".png --export-width=64 --export-height=64 "$1"
+
+inkscape --export-type=png --export-filename=Yaru/48x48/apps/"$name".png --export-width=48 --export-height=48 "$1"
+
+inkscape --export-type=png --export-filename=Yaru/48x48@2x/apps/"$name".png --export-width=96 --export-height=96 "$1"
+
+inkscape --export-type=png --export-filename=Yaru/256x256/apps/"$name".png --export-width=256 --export-height=256 "$1"
+
+inkscape --export-type=png --export-filename=Yaru/256x256@2x/apps/"$name".png --export-width=512 --export-height=512 "$1"

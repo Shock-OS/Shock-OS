@@ -1,6 +1,6 @@
 #!/bin/bash
 
-output="$(yad --title="Desktop Icons" --window-icon=/usr/share/shock/icons/shock-desktop-icons.svg --form --field="Show Desktop Icons":CHK "$(gsettings get org.mate.background show-desktop-icons)" --field="The following options will only apply if desktop icons are enabled:":LBL '' --field="Computer":CHK "$(gsettings get org.mate.caja.desktop computer-icon-visible)" --field="Home":CHK "$(gsettings get org.mate.caja.desktop home-icon-visible)" --field="Trash":CHK "$(gsettings get org.mate.caja.desktop trash-icon-visible)" --field="Network":CHK "$(gsettings get org.mate.caja.desktop network-icon-visible)" --field="Mounted Volumes":CHK "$(gsettings get org.mate.caja.desktop volumes-visible)" --button="Apply"\!gtk-ok)"
+output="$(yad --title="Desktop Icons" --window-icon=shock-desktop-icons --form --field="Show Desktop Icons":CHK "$(gsettings get org.mate.background show-desktop-icons)" --field="The following options will only apply if desktop icons are enabled:":LBL '' --field="Computer":CHK "$(gsettings get org.mate.caja.desktop computer-icon-visible)" --field="Home":CHK "$(gsettings get org.mate.caja.desktop home-icon-visible)" --field="Trash":CHK "$(gsettings get org.mate.caja.desktop trash-icon-visible)" --field="Network":CHK "$(gsettings get org.mate.caja.desktop network-icon-visible)" --field="Mounted Volumes":CHK "$(gsettings get org.mate.caja.desktop volumes-visible)" --button="Apply"\!gtk-ok)"
 
 ex=$?
 

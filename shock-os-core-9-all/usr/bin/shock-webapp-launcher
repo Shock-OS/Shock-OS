@@ -80,7 +80,7 @@ fi
 if [[ "${#installed_browsers[@]}" == "0" ]] #if no compatible browsers are installed
 then
 
-    yad --window-icon=/usr/share/shock/icons/shock-webapps.svg --image=emblem-important --title="No Compatible Browser Found" --text="No compatible browsers were found to launch your web app. 
+    yad --window-icon=shock-webapps --image=emblem-important --title="No Compatible Browser Found" --text="No compatible browsers were found to launch your web app. 
 Please install one of the following supported browsers:
 
 Chromium (APT or Flatpak)

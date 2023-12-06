@@ -49,11 +49,11 @@ do
 
                 upgrto_version_codename="$(sed -n "$upgrto_version"p ~/.cache/shock-tmp/shock-release-scanner/codenames)"
 
-                notify-send --app-name="Release Upgrader" --urgency=critical --icon=/usr/share/shock/icons/shock-release-upgrader.svg "System Upgrade Available" "The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available."
+                notify-send --app-name="Release Upgrader" --urgency=critical --icon=shock-release-upgrader "System Upgrade Available" "The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available."
 
-                yad --notification --image=/usr/share/shock/icons/shock-release-upgrader.svg --icon-size=48 --text="The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available. Click to upgrade."
+                yad --notification --image=shock-release-upgrader --icon-size=48 --text="The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available. Click to upgrade."
 
-                yad --window-icon=/usr/share/shock/icons/shock-release-upgrader.svg --width=100 --title="Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Are you sure you would like to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename at this time? If not, you can always choose to upgrade at a later time." --button="Yes, proceed to upgrade"\!gtk-ok --button="No, abort upgrade"\!gtk-cancel
+                yad --window-icon=shock-release-upgrader --width=100 --title="Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Are you sure you would like to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename at this time? If not, you can always choose to upgrade at a later time." --button="Yes, proceed to upgrade"\!gtk-ok --button="No, abort upgrade"\!gtk-cancel
 
                 ex=$?
 
