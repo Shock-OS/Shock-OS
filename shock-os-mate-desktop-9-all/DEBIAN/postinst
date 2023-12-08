@@ -148,6 +148,8 @@ sudo chown -R shock /home/shock
 
 cp -r /usr/share/shock/icons/Yaru /usr/share/icons
 
+gtk-update-icon-cache -f /usr/share/icons/Yaru/
+
 rm -r /usr/share/shock/install-temp
 
 
