@@ -208,7 +208,7 @@ then
 
         username="$(echo "$username" | tr -cd '[:alnum:]._-')" #this command removes all numbers
 
-        adduser --disabled-password --gecos "$full_name" "$username" || { zenity --error --text="Failed to create a new user. The program will now exit." --ok-label="Exit"; kill $$; } #the user has been created
+        adduser --disabled-password --gecos "$full_name" "$username" || { yad --window-icon=system-users --image=emblem-important --text="Failed to create a new user. The program will now exit." --button="Exit"\!gtk-cancel; kill $$; } #the user has been created
 
         echo "$username:$pa1" | chpasswd
 
@@ -226,17 +226,17 @@ then
             if ((ex!=0)) && ((ex!=9))
             then
 
-                zenity --error --text="Failed to create the 'shock-child' group. The program will now exit." --ok-label="Exit"
+                yad --window-icon=system-users --image=emblem-important --text="Failed to create the 'shock-child' group. The program will now exit." --button="Exit"\!gtk-cancel
 
                 exit 1
 
             fi
 
-            usermod -a -G adm,dialout,cdrom,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio,shock-child $username || { zenity --error --text="Failed to add the user to the required groups. The program will now exit." --ok-label="Exit"; kill $$; } #the user has been added to the required groups (excluding sudo)
+            usermod -a -G adm,dialout,cdrom,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio,shock-child $username || { yad --window-icon=system-users --image=emblem-important --text="Failed to add the user to the required groups. The program will now exit." --button="Exit"\!gtk-cancel; kill $$; } #the user has been added to the required groups (excluding sudo)
 
         else
 
-            usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $username || { zenity --error --text="Failed to add the user to the required groups. The program will now exit." --ok-label="Exit"; kill $$; } #the user has been added to the required groups
+            usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $username || { yad --window-icon=system-users --image=emblem-important --text="Failed to add the user to the required groups. The program will now exit." --button="Exit"\!gtk-cancel; kill $$; } #the user has been added to the required groups
 
         fi
 
@@ -348,7 +348,7 @@ then
 
     #child profile files removed
 
-    deluser --remove-home $user_to_remove || (zenity --error --text="Failed to remove $user_to_remove. The program will now exit." --ok-label="Exit" ; kill $$)
+    deluser --remove-home $user_to_remove || (yad --window-icon=system-users --image=emblem-important --text="Failed to remove $user_to_remove. The program will now exit." --button="Exit"\!gtk-cancel; kill $$)
 
     yad --window-icon=system-users --title="User Successfully Removed" --text="Congratulations! The user '$user_to_remove_display_name' has successfully been removed." --button="Dismiss"\!gtk-cancel
 

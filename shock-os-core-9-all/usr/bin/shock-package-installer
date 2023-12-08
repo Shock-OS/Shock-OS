@@ -12,14 +12,14 @@ fi
 if [[ -d "$file" ]] #if a directory was selected instead of a file
 then
 
-    zenity --error --text="$(basename "$file") is a folder, not a .deb package." --ok-label="Exit"
+    yad --window-icon=package --image=emblem-important --text="$(basename "$file") is a folder, not a .deb package." --button="Exit"\!gtk-cancel
 
     exit 1
 
 elif [[ "$file" != *".deb" ]] #if not a .deb package
 then
 
-    zenity --error --text="$(basename "$file") is not a .deb package." --ok-label="Exit"
+    yad --window-icon=package --image=emblem-important --text="$(basename "$file") is not a .deb package." --button="Exit"\!gtk-cancel
 
     exit 1
 
@@ -34,14 +34,14 @@ arch="$(dpkg -I "$file" | grep Architecture: | awk '{print $2}')"
 if ! [[ "$arch" == "all" || "$arch" == *"arm"* ]] #if not an ARM package
 then
 
-    zenity --error --text="$(basename "$file") is in an architecture that is incompatible with your system. Please use an ARM (armhf or arm64) version of the package if possible. i386 and amd64 packages will NOT work." --ok-label="Exit"
+    yad --window-icon=package --image=emblem-important --text="$(basename "$file") is in an architecture that is incompatible with your system. Please use an ARM (armhf or arm64) version of the package if possible. i386 and amd64 packages will NOT work." --button="Exit"\!gtk-cancel
 
     exit 1
 
 elif [[ "$(getconf LONG_BIT)" == "32" ]] && ! [[ "$arch" == "all" || "$arch" == *"armhf"* ]] #if it is an ARM package, check for compatibility on 32-bit systems (32-bit)
 then
 
-    zenity --error --text="$(basename "$file") is a 64-bit package (arm64), but your system is only 32-bit (armhf). Please use a 32-bit (armhf) version of the package if possible." --ok-label="Exit"
+    yad --window-icon=package --image=emblem-important --text="$(basename "$file") is a 64-bit package (arm64), but your system is only 32-bit (armhf). Please use a 32-bit (armhf) version of the package if possible." --button="Exit"\!gtk-cancel
 
     exit 1
 

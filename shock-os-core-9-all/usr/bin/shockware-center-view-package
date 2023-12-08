@@ -252,7 +252,7 @@ update_apt_queue
 if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed successfully
 then
 
-    notify-send --app-name="Shockware Center" --icon="$icon" "App Installed Successfully" "$full_name$both was successfully installed."
+    notify-send --app-name="Shockware Center" --icon=shockware-center "App Installed Successfully" "$full_name$both was successfully installed."
 
 else
 
@@ -379,7 +379,7 @@ hide_indicator
 if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed successfully
 then
 
-    notify-send --app-name="Shockware Center" --icon="$icon" "App Installed Successfully" "$full_name$both was successfully installed."
+    notify-send --app-name="Shockware Center" --icon=shockware-center "App Installed Successfully" "$full_name$both was successfully installed."
 
 else
 

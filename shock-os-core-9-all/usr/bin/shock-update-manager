@@ -280,7 +280,7 @@ do
         if ((all_updates_num>0)) #if there are STILL updates available (updates likely failed or were interrupted)
         then
 
-	        zenity --error --text="Failed to install the updates. Please double check your internet connection and try again later." --ok-label="Exit"
+	        yad --window-icon=software-update-available --image=emblem-important --text="Failed to install the updates. Please double check your internet connection and try again later." --button="Dismiss"\!gtk-close
 
         else
 

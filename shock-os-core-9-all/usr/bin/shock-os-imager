@@ -162,20 +162,19 @@ do
 
 	elif [[ "$target_drive" == "(null)" ]] && ((ex==20))
 	then
-
-		zenity --window-icon=shock-os-imager --error --title="Shock OS Imager" --text="You have not selected a drive to flash. Please plug in a storage device to install Shock OS on, and then click 'Retry'" --ok-label="Retry" --width=300
+        yad --width=600 --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="You have not selected a drive to flash. Please plug in a storage device to install Shock OS on, and then click 'Retry'" --button="Retry"\!edit-undo
 
     elif [[ -z "$(lsblk -o PATH | grep -w $target_drive)" ]] && ((ex==20)) #if error reading the device (perhaps it was unplugged)
     then
 
-        zenity --window-icon=shock-os-imager --error --title="Shock OS Imager" --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --ok-label="Retry" --width=300
+        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --button="Retry"\!edit-undo
 
 	elif (($(lsblk -o PATH,SIZE -b | grep -w $target_drive | awk '{print $2}')<15000000000)) && ((ex==20)) #if drive is less than 16GB
     then
 
 		target_drive="(null)"
 
-        zenity --window-icon=shock-os-imager --error --title="Shock OS Imager" --text="The SD card/USB drive you selected is too small. Shock OS requires a storage device of at least 16GB. Please insert a storage device that is at least 16GB in size, then press 'Retry' when you are ready to continue." --ok-label="Retry" --width=300
+        yad --width=600 --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="The SD card/USB drive you selected is too small. Shock OS requires a storage device of at least 16GB. Please insert a storage device that is at least 16GB in size, then press 'Retry' when you are ready to continue." --button="Retry"\!edit-undo
 
     elif ((ex!=10)) && ((ex!=20))
 	then
@@ -232,7 +231,7 @@ then
 
         wget "$url" -P /usr/share/shock-os-imager/cached-images 2>&1 || {
 
-            zenity --error --text="Failed to download $image_to_flash_display. The program will now exit." --ok-label="Exit" ; kill $$
+            yad --window-icon=shock-os-imager --image=emblem-important --text="Failed to download $image_to_flash_display. The program will now exit." --button="Exit"\!gtk-cancel ; kill $$
 
             }
 
@@ -247,22 +246,22 @@ then
     # Launch the command in the background and capture its PID
     {
 
-    mkdir -p /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=shock-os-imager --title="Could Not Refresh Cache" --text="The directory /usr/share/shock-os-imager/sha256sums does not exist and could not be created." --ok-label="Exit"; exit 1; }
+    mkdir -p /usr/share/shock-os-imager/sha256sums || { yad --window-icon=shock-os-imager --image=emblem-important --title="Could Not Refresh Cache" --text="The directory /usr/share/shock-os-imager/sha256sums does not exist and could not be created." --button="Exit"\!gtk-cancel; exit 1; }
 
-    rm -rf /usr/share/shock-os-imager/sha256sums/* || { zenity --error --window-icon=shock-os-imager --title="Could Not Refresh Cache" --text="Failed to remove files from /usr/share/shock-os-imager/sha256sums." --ok-label="Exit"; exit 1; }
+    rm -rf /usr/share/shock-os-imager/sha256sums/* || { yad --window-icon=shock-os-imager --image=emblem-important --title="Could Not Refresh Cache" --text="Failed to remove files from /usr/share/shock-os-imager/sha256sums." --button="Exit"\!gtk-cancel; exit 1; }
 
-    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/shockos.asc -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=shock-os-imager --title="Failed to Verify Image" --text="Failed to download the GPG key to verify the image." --ok-label="Exit"; exit 1; }
+    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/shockos.asc -P /usr/share/shock-os-imager/sha256sums || { yad --window-icon=shock-os-imager --image=emblem-important --title="Failed to Verify Image" --text="Failed to download the GPG key to verify the image." --button="Exit"\!gtk-cancel; exit 1; }
 
-    gpg --import /usr/share/shock-os-imager/sha256sums/shockos.asc || { zenity --error --window-icon=shock-os-imager --title="Failed to Import Key" --text="Failed to import the GPG key to verify the image." --ok-label="Exit"; exit 1; }
+    gpg --import /usr/share/shock-os-imager/sha256sums/shockos.asc || { yad --window-icon=shock-os-imager --image=emblem-important --title="Failed to Import Key" --text="Failed to import the GPG key to verify the image." --button="Exit"\!gtk-cancel; exit 1; }
 
-    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/sha256sums -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=shock-os-imager --title="Failed to Fetch sha256sums" --text="Failed to fetch the sha256sums to verify the image." --ok-label="Exit"; exit 1; }
+    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/sha256sums -P /usr/share/shock-os-imager/sha256sums || { yad --window-icon=shock-os-imager --image=emblem-important --title="Failed to Fetch sha256sums" --text="Failed to fetch the sha256sums to verify the image." --button="Exit"\!gtk-cancel; exit 1; }
 
-    wget https://github.com/Shock-OS/shock-os-imager/raw/main/sha256sums.sig -P /usr/share/shock-os-imager/sha256sums || { zenity --error --window-icon=shock-os-imager --title="Failed to Fetch sha256sums.sig" --text="Failed to fetch the sha256sums.sig to verify the image." --ok-label="Exit"; exit 1; }
+    wget https://github.com/Shock-OS/shock-os-imager/raw/main/sha256sums.sig -P /usr/share/shock-os-imager/sha256sums || { yad --window-icon=shock-os-imager --image=emblem-important --title="Failed to Fetch sha256sums.sig" --text="Failed to fetch the sha256sums.sig to verify the image." --button="Exit"\!gtk-cancel; exit 1; }
 
     if [[ "$(gpg --verify /usr/share/shock-os-imager/sha256sums/sha256sums.sig /usr/share/shock-os-imager/sha256sums/sha256sums 2>&1 | grep 'Primary key fingerprint:')" != "Primary key fingerprint: 9515 D970 4C1B 1B3B 58CB  606D D2EA 4E12 F633 2179" ]]
     then
 
-        zenity --error --window-icon=shock-os-imager --title="Invalid sha256sums" --text="sha256sums has been tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --ok-label="Exit"
+        yad --window-icon=shock-os-imager --image=emblem-important --title="Invalid sha256sums" --text="sha256sums has been tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --button="Exit"\!gtk-cancel
 
         exit 1
 
@@ -275,7 +274,7 @@ then
     if [[ "$(sha256sum -b /usr/share/shock-os-imager/cached-images/$filename | cut -d' ' -f1)" != "$sha256sum" ]]
     then
 
-        zenity --error --window-icon=shock-os-imager --title="Invalid Image" --text="$filename was tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --ok-label="Exit"
+        yad --window-icon=shock-os-imager --image=emblem-important --title="Invalid Image" --text="$filename was tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --button="Exit"\!gtk-cancel
 
         exit 1
 
@@ -309,7 +308,7 @@ then
     if ((ex!=0))
     then
 
-        zenity --error --window-icon=shock-os-imager --title="Shock OS Imager" --text="The verification has been cancelled. The program will now exit." --ok-label="Exit"
+        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="The verification has been cancelled. The program will now exit." --button="Exit"\!gtk-cancel
 
         kill $$
 
@@ -320,7 +319,7 @@ then
     if [[ -z "$(lsblk -o PATH | grep -w $target_drive)" ]] #if error reading the device (perhaps it was unplugged)
     then
 
-        zenity --error --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --ok-label="Exit"
+        yad --window-icon=shock-os-imager --image=emblem-important --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --button="Exit"\!gtk-cancel
 
         exit 1
 
@@ -368,7 +367,7 @@ then
     if ((ex!=0))
     then
 
-        zenity --error --window-icon=shock-os-imager --title="Shock OS Imager" --text="An error occurred when writing the image. The program will now exit." --ok-label="Exit"
+        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="An error occurred when writing the image. The program will now exit." --button="Exit"\!gtk-cancel
 
         kill $$
 
