@@ -160,5 +160,8 @@ update-initramfs -u
 
 cp -r /usr/share/shock/install-temp/icons/Yaru /usr/share/icons
 
+gtk-update-icon-cache -f /usr/share/icons/Yaru/
+
 rm -rf /usr/share/shock/install-temp
+
 
