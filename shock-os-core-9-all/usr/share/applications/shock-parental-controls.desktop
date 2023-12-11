@@ -3,7 +3,7 @@ Version=1
 Name=Parental Controls
 GenericName=Parental Controls
 Comment=Manage the privilages of child profiles
-Exec=bash -c "pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shock-parental-controls"
+Exec=bash -c "pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shock-parental-controls $(whoami)"
 Icon=shock-parental-controls
 Terminal=false
 Type=Application

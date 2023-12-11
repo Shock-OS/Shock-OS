@@ -3,7 +3,7 @@ Version=1
 Name=Shock OS Imager
 GenericName=Shock OS Imager
 Comment=Install Shock OS onto an external SD card or USB drive.
-Exec=bash -c "pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shock-os-imager"
+Exec=bash -c "pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY shock-os-imager $(whoami)"
 Icon=shock-os-imager
 Terminal=false
 Type=Application

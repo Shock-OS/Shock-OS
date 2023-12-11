@@ -1,5 +1,7 @@
 #!/bin/bash
 
+runuser="$1"
+
 #the root check element begins
 
 if (($(id -u)!=0))
@@ -68,7 +70,7 @@ then
         if ((ex!=0)) && ((ex!=1))
         then
 
-            notify-send --icon=shock-parental-controls --app-name="Parental Controls" "Parental Controls" "Operation aborted. No changes were made to your system."
+            sudo -u "$runuser" -EH notify-send --icon=shock-parental-controls --app-name="Parental Controls" "Parental Controls" "Operation aborted. No changes were made to your system."
 
             exit
 
@@ -79,7 +81,7 @@ then
 
             rm -r /usr/share/shock-screentime/"$user"/dailylimit
 
-            notify-send --icon=shock-parental-controls --app-name="Parental Controls" "Parental Controls" "The screen time limit for the user '$user_display_name' was removed successfully."
+            sudo -u "$runuser" -EH notify-send --icon=shock-parental-controls --app-name="Parental Controls" "Parental Controls" "The screen time limit for the user '$user_display_name' was removed successfully."
 
             exit
 
@@ -99,7 +101,7 @@ then
         if ((ex!=0))
         then
 
-            notify-send --icon=shock-parental-controls --app-name="Parental Controls" "Parental Controls" "Operation aborted. No changes were made to your system."
+            sudo -u "$runuser" -EH notify-send --icon=shock-parental-controls --app-name="Parental Controls" "Parental Controls" "Operation aborted. No changes were made to your system."
 
             exit
 
@@ -137,11 +139,11 @@ then
     if ((ex==0)) #if overwriting
     then
 
-        notify-send --icon=shock-parental-controls --app-name="Parental Controls" "Parental Controls" "The daily screen time limit for the user $user_display_name has been changed to $total_display. If they have been logged in today, their timer will be restarted."
+        sudo -u "$runuser" -EH notify-send --icon=shock-parental-controls --app-name="Parental Controls" "Parental Controls" "The daily screen time limit for the user $user_display_name has been changed to $total_display. If they have been logged in today, their timer will be restarted."
 
     else
 
-        notify-send --icon=shock-parental-controls --app-name="Parental Controls" "Parental Controls" "A daily screen time limit of $total_display has been set for $user_display_name."
+        sudo -u "$runuser" -EH notify-send --icon=shock-parental-controls --app-name="Parental Controls" "Parental Controls" "A daily screen time limit of $total_display has been set for $user_display_name."
 
     fi
 
@@ -203,7 +205,7 @@ then
 
         done
 
-        notify-send --icon=shock-parental-controls --app-name="Parental Controls" "Parental Controls" "The screen time tracking settings for '$user' have been set."
+        sudo -u "$runuser" -EH notify-send --icon=shock-parental-controls --app-name="Parental Controls" "Parental Controls" "The screen time tracking settings for '$user' have been set."
 
     fi
 

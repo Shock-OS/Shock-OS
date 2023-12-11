@@ -1,5 +1,7 @@
 #!/bin/bash
 
+runuser="$1"
+
 #the root check element begins
 
 if (($(id -u)!=0))
@@ -375,7 +377,7 @@ then
 
 #THE WRITE SEGMENT ENDS
 
-	notify-send --app-name="Shock OS Imager" --icon=shock-os-imager "Flashing Complete" "$image_to_flash_display has successfully been flashed to $target_drive_display_name."
+	sudo -u "$runuser" -EH notify-send --app-name="Shock OS Imager" --icon=shock-os-imager "Flashing Complete" "$image_to_flash_display has successfully been flashed to $target_drive_display_name."
 
 	yad --window-icon=shock-os-imager --title="Shock OS Imager" --text="Congratulations! $image_to_flash_display has successfully been flashed to $target_drive_display_name. Thank you and enjoy!" --button="Dismiss"\!gtk-cancel
 
