@@ -238,7 +238,7 @@ systemctl --user start shock-updates-scanner.service
 
 systemctl --user start shock-release-scanner.service
 
-yad --notification --image=preferences-system-notifications-symbolic --command=shock-notifications --text="Notifications"
+yad --notification --image=preferences-system-notifications-symbolic --command=shock-notifications --text="Notifications" &
 
 if [[ -f ~/.config/shock/welcome-indicator ]]
 then
@@ -250,7 +250,7 @@ fi
 if [[ " $(groups "$(whoami)") " == *" shock-child "* ]] && [[ -f /usr/share/shock-screentime/"$(whoami)"/dailylimit ]] #if account is a child profile with a screen time limit set
 then
 
-    yad --notification --image=shock-parental-controls --text='Screen time limit is enabled for this user.' --icon-size=48 --command='' --menu='Remaining Time!shock-screentime-timeleft!timer-sand-symbolic' & killpid=$!
+    yad --notification --image=preferences-system-parental-controls --text='Screen time limit is enabled for this user.' --icon-size=48 --command='' --menu='Remaining Time!shock-screentime-timeleft!timer-sand-symbolic' & killpid=$!
 
     echo "$killpid" | tee ~/.cache/shock-tmp/screentime-limit-notification
 

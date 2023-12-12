@@ -2,14 +2,14 @@
 
 runuser="$(whoami)"
 
+total_minutes=$(cat /usr/share/shock-screentime/"$runuser"/dailylimit)
+
+total_minutes_display="$(shock-ss-pretty-time $total_minutes)"
+
 while true
 do
 
     current_date="$(date +%F)"
-
-    total_minutes=$(cat /usr/share/shock-screentime/"$runuser"/dailylimit)
-
-    total_minutes_display="$(shock-ss-pretty-time $total_minutes)"
 
     if [[ -f /usr/share/shock-screentime/"$runuser"/today-limit/"$current_date" ]] #if user logged in less than a minute ago for the first time today
     then
