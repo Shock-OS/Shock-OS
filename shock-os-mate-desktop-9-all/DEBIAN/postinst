@@ -54,17 +54,11 @@ cp /usr/share/shock/install-temp/mate-default-applications-properties.desktop /u
 
 #the above command sets a star as the logo for the preferred applications
 
-rm /usr/share/pixmaps/gnome-logo-white.svg
-
-rm /usr/share/pixmaps/mate-logo-white.svg
-
 rm /usr/share/applications/screensavers/gnomelogo-floaters.desktop
 
 rm /usr/share/applications/screensavers/footlogo-floaters.desktop
 
 cp /usr/share/shock/install-temp/gnomelogo-floaters.desktop /usr/share/applications/screensavers
-
-cp -r /usr/share/shock/install-temp/gnome-logo-white.svg /usr/share/pixmaps
 
 #the above commands set the Lightning Bolt and Raspberry screensavers
 
@@ -146,7 +140,7 @@ sudo chown -R shock /home/shock
 
 #the 'shock' temporary autologin patch ends
 
-cp -r /usr/share/shock/icons/Yaru /usr/share/icons
+cp -r /usr/share/shock/install-temp/icons/Yaru /usr/share/icons
 
 gtk-update-icon-cache -f /usr/share/icons/Yaru/
 
