@@ -219,6 +219,14 @@ mkdir -p ~/.cache/shock-tmp
 
 rm -r ~/.cache/shock-tmp/* &
 
+systemctl --user restart shock-slideshow-background-daemon.service
+
+systemctl --user restart shock-notifications-log-daemon.service
+
+systemctl --user restart shock-updates-scanner.service
+
+systemctl --user restart shock-release-scanner.service
+
 if [[ -f ~/.shock/startup-sound ]] #this command plays the startup sound
 then
 
@@ -229,14 +237,6 @@ else
     mpg123 /usr/share/shock/startup-sound.mp3
 
 fi
-
-systemctl --user start shock-slideshow-background-daemon.service
-
-systemctl --user start shock-notifications-log-daemon.service
-
-systemctl --user start shock-updates-scanner.service
-
-systemctl --user start shock-release-scanner.service
 
 yad --notification --image=preferences-system-notifications-symbolic --command=shock-notifications --text="Notifications" &
 
