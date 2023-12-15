@@ -154,10 +154,10 @@ mkdir -p ~/.cache/shock-tmp/shock-update-manager
 
 echo "$notification_killpid" | tee ~/.cache/shock-tmp/shock-update-manager/updates_in_progress_indicator_pid
 
+apt_ex_tmpfile="$(mktemp)"
+
 if [[ " ${all_updates[@]} " == *" /usr/share/shock-update-manager/apt.svg "* ]] #if APT updates are available
 then
-
-    apt_ex_tmpfile="$(mktemp)"
 
     { wait_apt_lock; { pkexec env DEBIAN_FRONTEND=gnome apt-get upgrade --show-progress -y; echo "$?" | tee "$apt_ex_tmpfile"; } | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Downloading updates, please wait..."; stdbuf -o0 sed 's/.*/&\n#&%/g'); } | yad --window-icon=software-update-available --image=software-update-available --width=400 --title="Update Manager" --text="Installing APT Updates...
 <small>Updates will continue in the background if this window is closed.</small>" --text-align=center --fixed --progress --auto-close --no-cancel  --no-buttons --no-esape
@@ -168,10 +168,10 @@ else
 
 fi
 
+flatpak_ex_tmpfile="$(mktemp)"
+
 if [[ " ${all_updates[@]} " == *" /usr/share/shock-update-manager/flatpak.svg "* ]] #if Flatpak updates are available
 then
-
-    flatpak_ex_tmpfile="$(mktemp)"
 
     { flatpak update -y; echo "$?" | tee "$flatpak_ex_tmpfile"; } | stdbuf -o0 grep 'Installing' | while read progress
     do
@@ -289,9 +289,9 @@ do
 
         flatpak_ex="$(cat "$flatpak_ex_tmpfile")"
 
-        rm "$apt_ex"
+        rm "$apt_ex_tmpfile"
 
-        rm "$flatpak_ex"
+        rm "$flatpak_ex_tmpfile"
 
         kill -9 $refresh_killpid
 

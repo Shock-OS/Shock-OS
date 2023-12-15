@@ -136,7 +136,7 @@ else #if normal package
     if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed
     then
 
-	    irbuttons_apt='--button=Launch!mate-panel-launcher:3 --button=Remove!remove:4'
+	    irbuttons_apt='--button=Launch!system-run:3 --button=Remove!remove:4'
 
     else
 
@@ -269,7 +269,7 @@ installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
 if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed
 then
 
-	irbuttons_flatpak='--button=Launch!mate-panel-launcher:6 --button=Remove!remove:7'
+	irbuttons_flatpak='--button=Launch!system-run:6 --button=Remove!remove:7'
 
 else
 
@@ -486,7 +486,7 @@ else #if both
     if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed
     then
 
-	    irbuttons_apt='--button=Launch APT!mate-panel-launcher:3'
+	    irbuttons_apt='--button=Launch APT!system-run:3'
 
         irbuttons_apt_2='--button=Remove APT!remove:4'
 
@@ -499,7 +499,7 @@ else #if both
     if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed
     then
 
-	    irbuttons_flatpak='--button=Launch Flatpak!mate-panel-launcher:6'
+	    irbuttons_flatpak='--button=Launch Flatpak!system-run:6'
 
         irbuttons_flatpak_2='--button=Remove Flatpak!remove:7'
 
