@@ -157,15 +157,23 @@ echo "$notification_killpid" | tee ~/.cache/shock-tmp/shock-update-manager/updat
 if [[ " ${all_updates[@]} " == *" /usr/share/shock-update-manager/apt.svg "* ]] #if APT updates are available
 then
 
-    { wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt-get upgrade --show-progress -y | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Downloading updates, please wait..."; stdbuf -o0 sed 's/.*/&\n#&%/g') ;} | yad --window-icon=software-update-available --image=software-update-available --width=400 --title="Update Manager" --text="Installing APT Updates...
+    apt_ex_tmpfile="$(mktemp)"
+
+    { wait_apt_lock; { pkexec env DEBIAN_FRONTEND=gnome apt-get upgrade --show-progress -y; echo "$?" | tee "$apt_ex_tmpfile"; } | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Downloading updates, please wait..."; stdbuf -o0 sed 's/.*/&\n#&%/g'); } | yad --window-icon=software-update-available --image=software-update-available --width=400 --title="Update Manager" --text="Installing APT Updates...
 <small>Updates will continue in the background if this window is closed.</small>" --text-align=center --fixed --progress --auto-close --no-cancel  --no-buttons --no-esape
+
+else
+
+    echo "SKIP" | tee "$apt_ex_tmpfile"
 
 fi
 
 if [[ " ${all_updates[@]} " == *" /usr/share/shock-update-manager/flatpak.svg "* ]] #if Flatpak updates are available
 then
 
-    flatpak update -y | stdbuf -o0 grep 'Installing' | while read progress
+    flatpak_ex_tmpfile="$(mktemp)"
+
+    { flatpak update -y; echo "$?" | tee "$flatpak_ex_tmpfile"; } | stdbuf -o0 grep 'Installing' | while read progress
     do
 
         current_progress="$(echo "$progress" | grep -oP '\d+(?=%)')"
@@ -198,6 +206,10 @@ then
 
     done | yad --window-icon=software-update-available --image=software-update-available --width=400 --title="Update Manager" --text="Installing Flatpak Updates...
 <small>Updates will continue in the background if this window is closed.</small>" --text-align=center --fixed --progress --auto-close --no-cancel  --no-buttons --no-esape
+
+else
+
+    echo "SKIP" | tee "$flatpak_ex_tmpfile"
 
 fi
 
@@ -273,22 +285,28 @@ do
 
         sudo shock-update-manager-refresh
 
-        fetch_cache
+        apt_ex="$(cat "$apt_ex_tmpfile")"
+
+        flatpak_ex="$(cat "$flatpak_ex_tmpfile")"
+
+        rm "$apt_ex"
+
+        rm "$flatpak_ex"
 
         kill -9 $refresh_killpid
 
-        if ((all_updates_num>0)) #if there are STILL updates available (updates likely failed or were interrupted)
+        if [[ "$apt_ex" == "SKIP" || "$apt_ex" == "0" || "$apt_ex" == "126" || "$apt_ex" == "127" ]] && [[ "$flatpak_ex" == "SKIP" || "$flatpak_ex" == "0" ]]
         then
-
-	        yad --window-icon=software-update-available --image=emblem-important --text="Failed to install the updates. Please double check your internet connection and try again later." --button="Dismiss"\!gtk-close
-
-        else
 
             kill "$(cat ~/.cache/shock-tmp/shock-update-manager/indicator_pid)"
 
             rm ~/.cache/shock-tmp/shock-update-manager/indicator_pid
 
 	        notify-send --icon=software-update-available --app-name="Update Manager" "Update Manager" "Your system is up to date."
+
+        else
+
+            yad --window-icon=software-update-available --image=emblem-important --title="Update Manager" --text="Failed to install the updates. Please double check your internet connection and try again later." --button="Dismiss"\!gtk-close
 
         fi
 

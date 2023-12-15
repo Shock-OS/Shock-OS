@@ -22,6 +22,28 @@ do
 
 done
 
+if (($(getconf LONG_BIT)==32))
+then
+
+    arch="armhf"
+
+else
+
+    arch="arm64"
+
+fi
+
+until [[ " ${installed_packages[@]} " == *" appimagelauncher "* ]]
+do
+
+    sudo apt install -y /usr/share/shock/appimagelauncher/*_"$arch".deb
+
+    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+done
+
+rm -r /usr/share/shock/appimagelauncher
+
 until [[ " ${installed_packages[@]} " == *" shock-os-mate-desktop "* ]] || [[ " ${installed_packages[@]} " == *" shock-os-gnome-desktop "* ]]
 do
 
