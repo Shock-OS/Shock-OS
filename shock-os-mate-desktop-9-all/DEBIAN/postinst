@@ -39,8 +39,8 @@ touch /etc/lightdm/slick-greeter.conf
 chmod a+w /etc/lightdm/slick-greeter.conf
 
 echo "[Greeter]
-theme-name=Yaru-blue-dark
-icon-theme-name=Yaru-blue-dark
+theme-name=Yaru-purple-dark
+icon-theme-name=Yaru-purple-dark
 show-hostname=false
 show-power=false
 show-keyboard=false
@@ -129,8 +129,8 @@ systemctl set-default multi-user #ensures the target is set to multi-user
 mkdir -p /home/shock/.config/gtk-3.0
 
 echo "[Settings]
-gtk-theme-name=Yaru-blue
-gtk-icon-theme-name=Yaru-blue" | tee /home/shock/.config/gtk-3.0/settings.ini
+gtk-theme-name=Yaru-purple
+gtk-icon-theme-name=Yaru-purple" | tee /home/shock/.config/gtk-3.0/settings.ini
 
 echo 'xinit' | tee -a /home/shock/.bashrc
 

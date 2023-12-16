@@ -28,8 +28,8 @@ style=\"$style\"" | tee "$user_home_dir"/.config/shock/slideshow-background
 
     source "$user_home_dir"/.config/shock_themes
 
-    echo 'shock_gtk_theme=Yaru-blue
-shock_icon_theme=Yaru-blue
+    echo 'shock_gtk_theme=Yaru-purple
+shock_icon_theme=Yaru-purple
 use_libadwaita_theme=FALSE
 start_icon_type=symbolic' | tee "$user_home_dir"/.config/shock/themes
 
@@ -76,23 +76,23 @@ start_icon_type=symbolic' | tee "$user_home_dir"/.config/shock/themes
     if [[ "$(sudo -u "$user_home_dir" dconf read /org/mate/desktop/interface/gtk-theme)" == "shock-"* ]]
     then
 
-        dconf write /org/mate/desktop/interface/gtk-theme "'Yaru-blue'"
+        dconf write /org/mate/desktop/interface/gtk-theme "'Yaru-purple'"
 
-        flatpak override --user --env=GTK_THEME="Yaru-blue"
+        flatpak override --user --env=GTK_THEME="Yaru-purple"
 
     fi
 
     if [[ "$(sudo -u "$user_home_dir" dconf read /org/mate/marco/general/theme)" == "shock-"* ]]
     then
 
-        dconf write /org/mate/marco/general/theme "'Yaru-blue'"
+        dconf write /org/mate/marco/general/theme "'Yaru-purple'"
 
     fi
 
     if [[ "$(sudo -u "$user_home_dir" dconf read /org/mate/desktop/interface/icon-theme)" == "shock-"* ]]
     then
 
-        dconf write /org/mate/desktop/interface/icon-theme "'Yaru-blue'"
+        dconf write /org/mate/desktop/interface/icon-theme "'Yaru-purple'"
 
     fi
 
@@ -139,14 +139,14 @@ cp -r /usr/share/themes/shock-* /etc/skel/.themes
 
 cp -r /usr/share/shock/install-temp/"Sample Videos" /etc/skel/Videos
 
-echo 'shock_gtk_theme=Yaru-blue
-shock_icon_theme=Yaru-blue
+echo 'shock_gtk_theme=Yaru-purple
+shock_icon_theme=Yaru-purple
 use_libadwaita_theme=FALSE
 start_icon_type=symbolic' | tee /etc/skel/.config/shock/themes
 
 echo "[Greeter]
-theme-name=Yaru-blue-dark
-icon-theme-name=Yaru-blue-dark
+theme-name=Yaru-purple-dark
+icon-theme-name=Yaru-purple-dark
 show-hostname=false
 show-power=false
 show-keyboard=false

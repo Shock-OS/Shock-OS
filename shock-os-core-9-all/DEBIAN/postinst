@@ -61,7 +61,7 @@ touch /etc/skel/.config/shock/userlogstat
 
 mkdir -p /etc/skel/.config/gtk-4.0
 
-cp -r /usr/share/themes/Yaru-blue/gtk-4.0/* /etc/skel/.config/gtk-4.0
+cp -r /usr/share/themes/Yaru-purple/gtk-4.0/* /etc/skel/.config/gtk-4.0
 
 echo 'XDG_DESKTOP_DIR="$HOME/Desktop"
 XDG_DOWNLOAD_DIR="$HOME/Downloads"
@@ -80,8 +80,8 @@ mkdir -p /etc/skel/.local/share/applications
 
 cp -r /usr/share/shock/install-temp/"Sample Videos" /etc/skel/Videos
 
-echo 'shock_gtk_theme=Yaru-blue
-shock_icon_theme=Yaru-blue
+echo 'shock_gtk_theme=Yaru-purple
+shock_icon_theme=Yaru-purple
 use_libadwaita_theme=FALSE
 start_icon_type=symbolic' | tee /etc/skel/.config/shock/themes
 

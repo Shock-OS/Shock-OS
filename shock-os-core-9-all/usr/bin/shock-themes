@@ -15,8 +15,8 @@ then
 
     mkdir -p ~/.config/shock
 
-    echo 'shock_gtk_theme=Yaru-blue
-shock_icon_theme=Yaru-blue
+    echo 'shock_gtk_theme=Yaru-purple
+shock_icon_theme=Yaru-purple
 use_libadwaita_theme=FALSE
 start_icon_type=symbolic' | tee ~/.config/shock/themes
 

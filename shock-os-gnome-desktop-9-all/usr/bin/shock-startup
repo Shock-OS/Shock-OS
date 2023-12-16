@@ -26,11 +26,11 @@ then
 
     gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
 
-    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-blue"
+    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple"
 
-    gsettings set org.gnome.desktop.interface icon-theme "Yaru-blue"
+    gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
 
-    flatpak override --user --env=GTK_THEME="Yaru-blue"
+    flatpak override --user --env=GTK_THEME="Yaru-purple"
 
     #THE DEFAULT FONT PATCH BEGINS
 
@@ -69,9 +69,9 @@ then
 
     gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
 
-    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-blue"
+    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple"
 
-    gsettings set org.gnome.desktop.interface icon-theme "Yaru-blue"
+    gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
 
     #PUT BG FILLER LINE HERE
 
@@ -90,7 +90,7 @@ then
     until [[ "$ex" == "0" ]]
     do
 
-        sudo -EH env GTK_THEME=Yaru-blue DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata locales keyboard-configuration
+        sudo -EH env GTK_THEME=Yaru-purple DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata locales keyboard-configuration
 
         ex=$?
 
