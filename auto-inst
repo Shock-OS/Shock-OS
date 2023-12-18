@@ -44,6 +44,8 @@ done
 
 rm -r /usr/share/shock/appimagelauncher
 
+rm /usr/share/applications/appimagelaunchersettings.desktop
+
 until [[ " ${installed_packages[@]} " == *" shock-os-mate-desktop "* ]] || [[ " ${installed_packages[@]} " == *" shock-os-gnome-desktop "* ]]
 do
 
