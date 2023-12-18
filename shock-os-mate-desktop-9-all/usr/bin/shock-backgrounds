@@ -67,7 +67,7 @@ then
 
         fi
     
-        output="$(yad --width=300 --title="Single Image Background" --window-icon=preferences-desktop-wallpaper --form --field="Image:":FL "$background" --field="Style:":CB "$yad_style_selection" --field="Change Background Colors"\!preferences-color:FBTN 'shock-background-color-chooser' --field="Download Backgrounds Online"\!applications-internet:FBTN 'xdg-open https://www.wallpaperflare.com/search?wallpaper=desktop' --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
+        output="$(yad --width=300 --title="Single Image Background" --window-icon=preferences-desktop-wallpaper --form --field="Image:":FL "$background" --field="Style:":CB "$yad_style_selection" --field="Change Background Colors"\!preferences-color:FBTN 'shock-background-color-chooser' --field="Download Backgrounds Online"\!applications-internet:FBTN 'xdg-open https://www.wallpaperflare.com' --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
         ex=$?
 
@@ -152,7 +152,7 @@ then
 
         set_yad_style_selection
 
-        output="$(yad --form --width=400 --height=200 --window-icon=preferences-desktop-wallpaper --title="Slideshow Background" --field="Folder containing images:":DIR "$directory" --field="Delay (minutes):":NUM "$delay"'!1..100!1' --field="Style:":CB "$yad_style_selection" --field="Play images in random order":CHK "$random_boolean" --field="Change Background Colors"\!preferences-color:FBTN 'shock-background-color-chooser' --field="Download Backgrounds Online"\!applications-internet:FBTN 'xdg-open https://www.wallpaperflare.com/search?wallpaper=desktop' --button="Apply"\!gtk-ok)"
+        output="$(yad --form --width=400 --height=200 --window-icon=preferences-desktop-wallpaper --title="Slideshow Background" --field="Folder containing images:":DIR "$directory" --field="Delay (minutes):":NUM "$delay"'!1..100!1' --field="Style:":CB "$yad_style_selection" --field="Play images in random order":CHK "$random_boolean" --field="Change Background Colors"\!preferences-color:FBTN 'shock-background-color-chooser' --field="Download Backgrounds Online"\!applications-internet:FBTN 'xdg-open https://www.wallpaperflare.com' --button="Apply"\!gtk-ok)"
 
         ex=$?
 
