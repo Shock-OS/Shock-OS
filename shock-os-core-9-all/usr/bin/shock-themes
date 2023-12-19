@@ -208,7 +208,7 @@ do
 
             current_theme="$(basename "$i")"
 
-            if [[ "$(ls -d "$i"/*/)" == "${i}/metacity-1/" ]]
+            if [[ "$(ls -d "$i"/*/)" == "${i}/metacity-1/" ]] || [[ "$(ls -d "$i"/*/)" == *"${i}/metacity-1"* && "$(ls -d "$i"/*/)" != *"${i}/gtk-3"* && "$(ls -d "$i"/*/)" != *"${i}/gtk-4"* ]]
             then
 
 		        yadlist+=("preferences-desktop-theme" "Metacity theme" "${current_theme:$nl}" "dialog-no" "dialog-yes" "dialog-no")
