@@ -65,6 +65,13 @@ then
 
             background="$(gsettings get org.mate.background picture-filename | sed "s/'//g")"
 
+            if [[ "$background" == "/usr/share/images/desktop-base/desktop-background" ]]
+            then
+
+                background="/home/$(whoami)/Pictures"
+
+            fi
+
         fi
     
         output="$(yad --width=300 --title="Single Image Background" --window-icon=preferences-desktop-wallpaper --form --field="Image:":FL "$background" --field="Style:":CB "$yad_style_selection" --field="Change Background Colors"\!preferences-color:FBTN 'shock-background-color-chooser' --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
@@ -147,6 +154,14 @@ then
         then
 
             source ~/.config/shock/slideshow-background
+
+        else
+
+            directory="/home/$(whoami)/Pictures"
+
+            delay=15
+
+            random_boolean="TRUE"
 
         fi
 
