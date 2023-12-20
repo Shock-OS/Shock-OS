@@ -116,6 +116,8 @@ then
 
     flatpak override --user --filesystem=$HOME/.shock-icons
 
+    flatpak override --user --filesystem=$HOME/.config/gtk-4.0
+
     #THE FLATPAK GTK THEMING PATCH ENDS
 
     pulseaudio_autoconfig
