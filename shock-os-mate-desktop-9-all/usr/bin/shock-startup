@@ -112,9 +112,9 @@ then
 
     flatpak override --user --filesystem=$HOME/.icons
 
-    flatpak override --user --filesystem=$HOME/.shock-themes
+    flatpak override --user --filesystem=$HOME/.shock/themes
 
-    flatpak override --user --filesystem=$HOME/.shock-icons
+    flatpak override --user --filesystem=$HOME/.shock/icons
 
     flatpak override --user --filesystem=$HOME/.config/gtk-4.0
 
