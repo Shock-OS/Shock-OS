@@ -41,7 +41,7 @@ function apply_libadwaita_theme() {
 
 read_settings
 
-if [[ "$1" == "--override" ]]
+if [[ "$1" == "--force" ]]
 then
 
     local theme="$2"
@@ -52,7 +52,7 @@ else
 
 fi
 
-if [[ "$use_libadwaita_theme" == "TRUE" ]] && [[ "$theme" == "${runuser}_"* ]] && [[ -d ~/.themes/"$theme"/gtk-4.0 || "$type" == "LibAdwaita theme" ]]
+if [[ "$use_libadwaita_theme" == "TRUE" || "$1" == "--force" ]] && [[ "$theme" == "${runuser}_"* ]] && [[ -d ~/.themes/"$theme"/gtk-4.0 || "$type" == "LibAdwaita theme" ]]
 then
 
     if [[ "$type" == "LibAdwaita theme" ]]
@@ -1122,7 +1122,7 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
         elif [[ "$type" == "LibAdwaita theme" ]]
         then
 
-            apply_libadwaita_theme --override "${runuser}_${name}"
+            apply_libadwaita_theme --force "${runuser}_${name}"
 
             notify-send --app-name="Themes" --icon=preferences-desktop-theme "LibAdwaita Theme Set" "'${name}' has been set as the theme for LibAdwaita apps. Currently running LibAdwaita apps will need to be restarted for the change to take affect."
 
