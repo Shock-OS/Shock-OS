@@ -108,15 +108,15 @@ then
 
     #THE FLATPAK GTK THEMING PATCH BEGINS
 
-    flatpak override --user --filesystem=$HOME/.themes
+    flatpak override --user --filesystem="~/.themes"
 
-    flatpak override --user --filesystem=$HOME/.icons
+    flatpak override --user --filesystem="~/.icons"
 
-    flatpak override --user --filesystem=$HOME/.shock/themes
+    flatpak override --user --filesystem="~/.shock/themes"
 
-    flatpak override --user --filesystem=$HOME/.shock/icons
+    flatpak override --user --filesystem="~/.shock/icons"
 
-    flatpak override --user --filesystem=$HOME/.config/gtk-4.0
+    flatpak override --user --filesystem="~/.config/gtk-4.0"
 
     #THE FLATPAK GTK THEMING PATCH ENDS
 

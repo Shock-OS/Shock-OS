@@ -85,6 +85,24 @@ shock_icon_theme=Yaru-purple
 use_libadwaita_theme=FALSE
 start_icon_type=symbolic' | tee /etc/skel/.config/shock/themes
 
+    #[BANDAID PATCH] the Yaru GTK Theme Flatpak bandaid patch begins
+
+    cp -r /usr/share/themes/Yaru* /etc/skel/.local/share/themes
+
+    rm -r /etc/skel/.local/share/themes/Yaru-dark-hdpi
+
+    rm -r /etc/skel/.local/share/themes/Yaru-dark-xhdpi
+
+    rm -r /etc/skel/.local/share/themes/YaruGreen
+
+    rm -r /etc/skel/.local/share/themes/Yaru-hdpi
+    
+    rm -r /etc/skel/.local/share/themes/YaruOK
+
+    rm -r /etc/skel/.local/share/themes/Yaru-xhdpi
+
+    #[BANDAID PATCH] the Yaru GTK Theme Flatpak bandaid patch begins
+
 #the home directory building ends
 
 cp -r /usr/share/shock/applications/* /etc/skel/.local/share/applications
@@ -128,8 +146,6 @@ sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/firmware/config.txt #this command 
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo #adds the FlatHub repository
 
 flatpak update #refreshes the flatpak cache and downloads the icons for the Shockware Center
-
-flatpak install --assumeyes org.gtk.Gtk3theme.Yaru org.gtk.Gtk3theme.Yaru-dark org.gtk.Gtk3theme.Yaru-Blue org.gtk.Gtk3theme.Yaru-Blue-dark org.gtk.Gtk3theme.Yaru-magenta org.gtk.Gtk3theme.Yaru-magenta-dark org.gtk.Gtk3theme.Yaru-olive org.gtk.Gtk3theme.Yaru-olive-dark org.gtk.Gtk3theme.Yaru-prussiangreen org.gtk.Gtk3theme.Yaru-prussiangreen-dark org.gtk.Gtk3theme.Yaru-Purple org.gtk.Gtk3theme.Yaru-Purple-dark org.gtk.Gtk3theme.Yaru-Red org.gtk.Gtk3theme.Yaru-Red-dark org.gtk.Gtk3theme.Yaru-sage org.gtk.Gtk3theme.Yaru-sage-dark
 
 #the systemd services patch begins
 
