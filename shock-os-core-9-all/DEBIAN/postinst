@@ -87,6 +87,8 @@ start_icon_type=symbolic' | tee /etc/skel/.config/shock/themes
 
     #[BANDAID PATCH] the Yaru GTK Theme Flatpak bandaid patch begins
 
+    mkdir -p /etc/skel/.local/share/themes
+
     cp -r /usr/share/themes/Yaru* /etc/skel/.local/share/themes
 
     rm -r /etc/skel/.local/share/themes/Yaru-dark-hdpi
