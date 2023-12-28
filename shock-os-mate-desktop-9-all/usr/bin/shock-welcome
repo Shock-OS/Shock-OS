@@ -9,6 +9,6 @@ Isaiah 40:31":LBL "" --field="":LBL "" --field="Launch this window at startup":C
 if [[ "$output" == *"FALSE"* ]]
 then
 
-    rm ~/.config/shock-welcome-indicator
+    rm ~/.config/shock/welcome-indicator
 
 fi
