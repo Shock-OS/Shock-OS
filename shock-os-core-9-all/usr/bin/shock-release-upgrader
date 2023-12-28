@@ -66,55 +66,7 @@ fi
 
 }
 
-function create_deb() {
-
-    #THE DEB PACKAGING SEGMENT BEGINS
-
-    command_failed="FALSE"
-
-    # Launch the command in the background and capture its PID
-    { dpkg-deb --build "$1" || command_failed="TRUE" ; } > /dev/null 2>&1 & command_pid=$!
-
-    # Show the progress window using YAD
-
-    yad --window-icon=shock-release-upgrader --image=shock-release-upgrader --title="Packaging..." --text="Packaging $(basename "$1")... This may take a while..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
-
-    # Wait for either the command to finish or the YAD window to close
-    wait -n "$command_pid" "$yad_pid"
-
-    # Get the command's exit code
-    ex=$?
-
-    # Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
-    if ps -p "$command_pid"
-    then
-
-        kill "$command_pid"
-
-    else
-
-        kill "$yad_pid"
-
-    fi
-
-    # Check if the command exited with a non-zero code and show an error message if needed
-    if [[ "$ex" != "0" ]]
-    then
-
-        yad --window-icon=shock-release-upgrader --image=emblem-important --title="Upgrade Cancelled" --text="The upgrade has been cancelled." --button="Exit"\!gtk-cancel ; kill $$
-
-    elif [[ "$command_failed" == "TRUE" ]]
-    then
-
-        yad --window-icon=shock-release-upgrader --image=emblem-important --title="Upgrade Failed" --text="Failed to package the upgrade. The upgrade has been cancelled." --button="Exit"\!gtk-cancel ; kill $$
-
-    fi
-
-    #THE DEB PACKAGING SEGMENT ENDS
-
-}
-
-function wait_apt_lock() {
+function wait-apt-lock() {
 
 mkdir -p ~/.cache/shock-tmp/shockware-center
 
@@ -128,6 +80,49 @@ do
 done
 
 echo "#"
+
+}
+
+function wget-internet-check() {
+
+#USAGE: wget-internet-check <WGET COMMAND> <PATH TO DOWNLOADED FILE>
+
+until [[ -f "$2" ]]
+do
+
+    "$1"
+
+    if  [[ ! -f "$2" ]]
+    then
+
+        echo "ERROR: An internet connection is required."
+
+        yad --window-icon=shock-release-upgrader --image=emblem-important --title="No Internet" --text="An internet connection is required to upgrade. Please verify that your internet connection is stable and reliable before retrying." --button="Retry"\!edit-undo --button="Cancel"\!gtk-cancel
+
+        ex=$?
+
+        if [[ "$ex" != "0" ]]
+        then
+
+            exit 1
+
+        fi
+
+    fi
+
+done
+
+}
+
+function install-and-verify-edition() {
+
+#USAGE: install-and-verify-edition <package name (ex: mate)> <display name (ex: MATE Edition)>
+
+wget-internet-check "{ wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/${upgrto_version}-${1}.zip -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { yad --window-icon=shock-release-upgrader --image=emblem-important --title=\"Download Failed\" --text=\"Failed to download the upgrade pack. The upgrade has been cancelled.\" --button=\"Exit\"\!gtk-cancel; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --image=shock-release-upgrader --progress --title=\"Downloading the Upgrade Pack\" --width=310 --text=\"Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename ${2} upgrade pack. This may take a while...\" --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button=\"Cancel Upgrade\"\!gtk-cancel:1" "/usr/share/shock-release-upgrader/upgrades/${upgrto_version}-${1}.zip"
+
+wget-internet-check "wget --timeout 5 https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/${upgrto_version}-${1}.zip.sig -P /usr/share/shock-release-upgrader/upgrades" "/usr/share/shock-release-upgrader/upgrades/${upgrto_version}-${1}.zip.sig"
+
+verify /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-${1}.zip.sig" /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-${1}.zip" "Verifying the ${2} update package..."
 
 }
 
@@ -145,7 +140,7 @@ do
     if  [[ ! -f /usr/share/shock-release-upgrader/codenames ]]
     then
 
-        echo "An internet connection is required. Exiting..."
+        echo "ERROR: An internet connection is required."
 
         yad --window-icon=shock-release-upgrader --image=emblem-important --title="No Internet" --text="An internet connection is required to upgrade. Please verify that your internet connection is stable and reliable before upgrading." --button="Retry"\!edit-undo --button="Cancel"\!gtk-cancel
 
@@ -207,30 +202,18 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
 
     rm -rf /usr/share/shock-release-upgrader/upgrades/*
 
-    { wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-core.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { yad --window-icon=shock-release-upgrader --image=emblem-important --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --button="Exit"\!gtk-cancel; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --image=shock-release-upgrader --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename core upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
-
-    wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-core.zip.sig" -P /usr/share/shock-release-upgrader/upgrades
-
-    verify /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-core.zip.sig" /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-core.zip" "Verifying the core update package..."
+    install-and-verify-edition "core" "core"
 
     installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq))
 
     if [[ " ${installed_packages[@]} " == *" shock-os-mate-desktop "* ]] #GET MATE EDITION UPGRADES
     then
 
-        { wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-mate.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { yad --window-icon=shock-release-upgrader --image=emblem-important --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --button="Exit"\!gtk-cancel; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --image=shock-release-upgrader --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename MATE Edition upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
-
-        wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-mate.zip.sig" -P /usr/share/shock-release-upgrader/upgrades
-
-        verify /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-mate.zip.sig" /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-mate.zip" "Verifying the MATE Edition update package..."
+        install-and-verify-edition "mate" "MATE Edition"
 
     else #GET GNOME EDITION UPGRADES
 
-        { wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-gnome.zip" -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { yad --window-icon=shock-release-upgrader --image=emblem-important --title="Download Failed" --text="Failed to download the upgrade pack. The upgrade has been cancelled." --button="Exit"\!gtk-cancel; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --image=shock-release-upgrader --progress --title="Downloading the Upgrade Pack" --width=310 --text="Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename GNOME Edition upgrade pack. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel Upgrade"\!gtk-cancel:1
-
-        wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/"${upgrto_version}-gnome.zip.sig" -P /usr/share/shock-release-upgrader/upgrades
-
-        verify /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-gnome.zip.sig" /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-gnome.zip" "Verifying the GNOME Edition update package..."
+        install-and-verify-edition "gnome" "GNOME Edition"
 
     fi
 
@@ -282,13 +265,6 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
 
     rm /usr/share/shock-release-upgrader/upgrades/*.zip
 
-    for deb in /usr/share/shock-release-upgrader/upgrades/*
-    do
-
-        create_deb "$deb"
-
-    done
-
     for dir in /usr/share/shock-release-upgrader/upgrades/*
     do
 
@@ -309,7 +285,7 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
 
                 fi
 
-                { wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt-get install --show-progress -y "$dir".deb | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Pending..."; stdbuf -o0 sed 's/.*/&\n#&%/g'); } | yad --no-buttons --no-escape --fixed --width=400 --window-icon=shock-release-upgrader --title="Installing Upgrades..." --image=shock-release-upgrader --text="Installing the $(basename "$dir") upgrade pack...
+                { wait-apt-lock; pkexec env DEBIAN_FRONTEND=gnome apt-get install --show-progress -y "$dir"/"$(basename "$dir")".deb | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Pending..."; stdbuf -o0 sed 's/.*/&\n#&%/g'); } | yad --no-buttons --no-escape --fixed --width=400 --window-icon=shock-release-upgrader --title="Installing Upgrades..." --image=shock-release-upgrader --text="Installing the $(basename "$dir") upgrade pack...
 <small>The upgrade will continue in the background if this window is closed.</small>" --text-align=center --auto-close --progress
 
                 if [[ -f "$dir"/postupgr ]]
