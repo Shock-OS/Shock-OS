@@ -90,7 +90,7 @@ function wget-internet-check() {
 until [[ -f "$2" ]]
 do
 
-    "$1"
+    eval "$1"
 
     if  [[ ! -f "$2" ]]
     then
