@@ -20,6 +20,14 @@ fi
 
 #the root check element ends
 
+function cancel() {
+
+rm -r /usr/share/shock-release-upgrader/upgrades/* &
+
+kill $$
+
+}
+
 verified="TRUE"
 
 function verify() {
@@ -55,12 +63,12 @@ fi
 if [[ "$ex" != "0" ]]
 then
 
-    yad --window-icon=shock-release-upgrader --image=emblem-important --title="Upgrade Canceled" --text="The upgrade has been cancelled." --button="Exit"\!gtk-cancel ; kill $$
+    yad --window-icon=shock-release-upgrader --image=emblem-important --title="Upgrade Canceled" --text="The upgrade has been cancelled." --button="Exit"\!gtk-cancel ; cancel
 
 elif [[ "$verified" == "FALSE" ]]
 then
 
-    yad --window-icon=shock-release-upgrader --image=emblem-important --title="Upgrade Failed" --text="Failed to verify $2. The upgrade has failed. Please double-check that your internet connection is stable and reliable and try again later." --button="Exit"\!gtk-cancel ; kill $$
+    yad --window-icon=shock-release-upgrader --image=emblem-important --title="Upgrade Failed" --text="Failed to verify $2. The upgrade has failed. Please double-check that your internet connection is stable and reliable and try again later." --button="Exit"\!gtk-cancel ; cancel
 
 fi
 
@@ -118,7 +126,7 @@ function install-and-verify-edition() {
 
 #USAGE: install-and-verify-edition <package name (ex: mate)> <display name (ex: MATE Edition)>
 
-wget-internet-check "{ wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/${upgrto_version}-${1}.zip -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { yad --window-icon=shock-release-upgrader --image=emblem-important --title=\"Download Failed\" --text=\"Failed to download the upgrade pack. The upgrade has been cancelled.\" --button=\"Exit\"\!gtk-cancel; kill $$; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --image=shock-release-upgrader --progress --title=\"Downloading the Upgrade Pack\" --width=310 --text=\"Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename ${2} upgrade pack. This may take a while...\" --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button=\"Cancel Upgrade\"\!gtk-cancel:1" "/usr/share/shock-release-upgrader/upgrades/${upgrto_version}-${1}.zip"
+wget-internet-check "{ wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/${upgrto_version}-${1}.zip -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { yad --window-icon=shock-release-upgrader --image=emblem-important --title=\"Download Failed\" --text=\"Failed to download the upgrade pack. The upgrade has been cancelled.\" --button=\"Exit\"\!gtk-cancel; cancel; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --image=shock-release-upgrader --progress --title=\"Downloading the Upgrade Pack\" --width=310 --text=\"Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename ${2} upgrade pack. This may take a while...\" --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button=\"Cancel Upgrade\"\!gtk-cancel:1" "/usr/share/shock-release-upgrader/upgrades/${upgrto_version}-${1}.zip"
 
 wget-internet-check "wget --timeout 5 https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/${upgrto_version}-${1}.zip.sig -P /usr/share/shock-release-upgrader/upgrades" "/usr/share/shock-release-upgrader/upgrades/${upgrto_version}-${1}.zip.sig"
 
@@ -200,7 +208,7 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
 
     mkdir -p /usr/share/shock-release-upgrader/upgrades
 
-    rm -rf /usr/share/shock-release-upgrader/upgrades/*
+    rm -r /usr/share/shock-release-upgrader/upgrades/*
 
     install-and-verify-edition "core" "core"
 
@@ -252,12 +260,12 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
     if [[ "$ex" != "0" ]]
     then
 
-        yad --window-icon=shock-release-upgrader --image=emblem-important --title="Upgrade Canceled" --text="The upgrade has been cancelled." --button="Exit"\!gtk-cancel ; kill $$
+        yad --window-icon=shock-release-upgrader --image=emblem-important --title="Upgrade Canceled" --text="The upgrade has been cancelled." --button="Exit"\!gtk-cancel ; cancel
 
     elif [[ "$command_failed" == "TRUE" ]]
     then
 
-        yad --window-icon=shock-release-upgrader --image=emblem-important --title="Upgrade Failed" --text="Failed to extract the upgrade packages. The upgrade has been cancelled." --button="Exit"\!gtk-cancel ; kill $$
+        yad --window-icon=shock-release-upgrader --image=emblem-important --title="Upgrade Failed" --text="Failed to extract the upgrade packages. The upgrade has been cancelled." --button="Exit"\!gtk-cancel ; cancel
 
     fi
 
@@ -350,6 +358,9 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
     fi
 
 fi
+
+rm -r /usr/share/shock-release-upgrader/upgrades/*
+
 
 
 
