@@ -16,7 +16,7 @@ do
 
         mkdir -p ~/.cache/shock-tmp/shock-release-scanner
 
-        rm ~/.cache/shock-tmp/shock-release-scanner/codenames
+        rm -r ~/.cache/shock-tmp/shock-release-scanner/*
 
         wget --timeout 5 https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/codenames -P ~/.cache/shock-tmp/shock-release-scanner
 
