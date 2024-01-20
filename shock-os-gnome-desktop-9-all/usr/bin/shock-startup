@@ -142,11 +142,11 @@ rm -r ~/.cache/shock-tmp/* &
 if [[ -f ~/.shock/startup-sound ]] #this command plays the startup sound
 then
 
-    mpg123 ~/.shock/startup-sound
+    mpv --no-video ~/.shock/startup-sound
 
 else
 
-    mpg123 /usr/share/shock/startup-sound.mp3
+    mpv --no-video /usr/share/shock/startup-sound.mp3
 
 fi
 
