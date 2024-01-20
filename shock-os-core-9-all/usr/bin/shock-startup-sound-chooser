@@ -16,7 +16,7 @@ do
 
         directory="$(dirname "$file")"
 
-        if [[ "$(file "$file")" == *"Audio file"* ]]
+        if [[ " $(file "$file" | awk '{print tolower($0)}')" == *" audio"* ]]
         then
 
             mkdir -p ~/.shock
