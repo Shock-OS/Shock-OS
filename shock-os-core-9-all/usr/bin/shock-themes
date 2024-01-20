@@ -992,14 +992,6 @@ icon_color=${icon_color}" | tee ~/.config/shock-themes-mixed-colors
 
                     fi
 
-				    echo "[Greeter]
-theme-name=Yaru${color}-dark
-icon-theme-name=Yaru${color}-dark
-show-hostname=false
-show-power=false
-show-keyboard=false
-show-clock=false" | tee /etc/lightdm/slick-greeter.conf
-
 			        write_settings
 
                     apply_libadwaita_theme
