@@ -15,6 +15,16 @@ fi
 
 #the root check element ends
 
+function cancel() {
+
+rm /usr/share/shock-os-imager/images
+
+rm /usr/share/shock-os-imager/cached-images/download*
+
+exit 1
+
+}
+
 mkdir -p /usr/share/shock-os-imager
 
 rm /usr/share/shock-os-imager/images
@@ -233,11 +243,11 @@ then
 
         wget "$url" -P /usr/share/shock-os-imager/cached-images 2>&1 || {
 
-            yad --window-icon=shock-os-imager --image=emblem-important --text="Failed to download $image_to_flash_display. The program will now exit." --button="Exit"\!gtk-cancel ; kill $$
+            yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Failed to download $image_to_flash_display. The program will now exit." --button="Exit"\!gtk-cancel ; kill $$
 
             }
 
-        } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=shock-os-imager --progress --title="Downloading $image_to_flash_display" --width=310 --text="Downloading $image_to_flash_display. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel"\!gtk-cancel:1
+        } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=shock-os-imager --progress --title="Shock OS Imager" --width=310 --text="Downloading $image_to_flash_display. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel"\!gtk-cancel:1
 
 		mv /usr/share/shock-os-imager/cached-images/download /usr/share/shock-os-imager/cached-images/$filename
 
@@ -248,24 +258,24 @@ then
     # Launch the command in the background and capture its PID
     {
 
-    mkdir -p /usr/share/shock-os-imager/sha256sums || { yad --window-icon=shock-os-imager --image=emblem-important --title="Could Not Refresh Cache" --text="The directory /usr/share/shock-os-imager/sha256sums does not exist and could not be created." --button="Exit"\!gtk-cancel; exit 1; }
+    mkdir -p /usr/share/shock-os-imager/sha256sums || { yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="The directory /usr/share/shock-os-imager/sha256sums does not exist and could not be created." --button="Exit"\!gtk-cancel; cancel; }
 
-    rm -rf /usr/share/shock-os-imager/sha256sums/* || { yad --window-icon=shock-os-imager --image=emblem-important --title="Could Not Refresh Cache" --text="Failed to remove files from /usr/share/shock-os-imager/sha256sums." --button="Exit"\!gtk-cancel; exit 1; }
+    rm -rf /usr/share/shock-os-imager/sha256sums/* || { yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Failed to remove files from /usr/share/shock-os-imager/sha256sums." --button="Exit"\!gtk-cancel; cancel; }
 
-    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/shockos.asc -P /usr/share/shock-os-imager/sha256sums || { yad --window-icon=shock-os-imager --image=emblem-important --title="Failed to Verify Image" --text="Failed to download the GPG key to verify the image." --button="Exit"\!gtk-cancel; exit 1; }
+    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/shockos.asc -P /usr/share/shock-os-imager/sha256sums || { yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Failed to download the GPG key to verify the image." --button="Exit"\!gtk-cancel; cancel; }
 
-    gpg --import /usr/share/shock-os-imager/sha256sums/shockos.asc || { yad --window-icon=shock-os-imager --image=emblem-important --title="Failed to Import Key" --text="Failed to import the GPG key to verify the image." --button="Exit"\!gtk-cancel; exit 1; }
+    gpg --import /usr/share/shock-os-imager/sha256sums/shockos.asc || { yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Failed to import the GPG key to verify the image." --button="Exit"\!gtk-cancel; cancel; }
 
-    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/sha256sums -P /usr/share/shock-os-imager/sha256sums || { yad --window-icon=shock-os-imager --image=emblem-important --title="Failed to Fetch sha256sums" --text="Failed to fetch the sha256sums to verify the image." --button="Exit"\!gtk-cancel; exit 1; }
+    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/sha256sums -P /usr/share/shock-os-imager/sha256sums || { yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Failed to fetch the sha256sums to verify the image." --button="Exit"\!gtk-cancel; cancel; }
 
-    wget https://github.com/Shock-OS/shock-os-imager/raw/main/sha256sums.sig -P /usr/share/shock-os-imager/sha256sums || { yad --window-icon=shock-os-imager --image=emblem-important --title="Failed to Fetch sha256sums.sig" --text="Failed to fetch the sha256sums.sig to verify the image." --button="Exit"\!gtk-cancel; exit 1; }
+    wget https://github.com/Shock-OS/shock-os-imager/raw/main/sha256sums.sig -P /usr/share/shock-os-imager/sha256sums || { yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Failed to fetch the sha256sums.sig to verify the image." --button="Exit"\!gtk-cancel; cancel; }
 
     if [[ "$(gpg --verify /usr/share/shock-os-imager/sha256sums/sha256sums.sig /usr/share/shock-os-imager/sha256sums/sha256sums 2>&1 | grep 'Primary key fingerprint:')" != "Primary key fingerprint: 9515 D970 4C1B 1B3B 58CB  606D D2EA 4E12 F633 2179" ]]
     then
 
-        yad --window-icon=shock-os-imager --image=emblem-important --title="Invalid sha256sums" --text="sha256sums has been tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --button="Exit"\!gtk-cancel
+        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="sha256sums has been tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --button="Exit"\!gtk-cancel
 
-        exit 1
+        cancel
 
     fi
 
@@ -276,9 +286,9 @@ then
     if [[ "$(sha256sum -b /usr/share/shock-os-imager/cached-images/$filename | cut -d' ' -f1)" != "$sha256sum" ]]
     then
 
-        yad --window-icon=shock-os-imager --image=emblem-important --title="Invalid Image" --text="$filename was tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --button="Exit"\!gtk-cancel
+        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="$filename was tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --button="Exit"\!gtk-cancel
 
-        exit 1
+        cancel
 
     fi
 
@@ -286,7 +296,7 @@ then
 
     # Show the progress window using YAD
 
-    yad --window-icon=shock-os-imager --title="Verifying the Image" --text="Verifying $filename..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
+    yad --window-icon=shock-os-imager --title="Shock OS Imager" --text="Verifying $filename..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
 
     # Wait for either the command to finish or the YAD window to close
     wait -n "$command_pid" "$yad_pid"
@@ -321,9 +331,9 @@ then
     if [[ -z "$(lsblk -o PATH | grep -w $target_drive)" ]] #if error reading the device (perhaps it was unplugged)
     then
 
-        yad --window-icon=shock-os-imager --image=emblem-important --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --button="Exit"\!gtk-cancel
+        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --button="Exit"\!gtk-cancel
 
-        exit 1
+        cancel
 
     fi
 
