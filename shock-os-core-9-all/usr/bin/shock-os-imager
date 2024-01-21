@@ -373,9 +373,13 @@ then
     if ps -p "$command_pid"
     then
 
+        yad --fixed --window-icon=shock-os-imager --title="Shock OS Imager" --progress-text="Cancelling..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
+
         kill "$command_pid"
 
         eject "$target_drive"
+
+        kill $killpid
 
     else
 
