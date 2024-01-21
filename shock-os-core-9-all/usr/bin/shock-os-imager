@@ -326,7 +326,7 @@ then
     if ((ex!=0))
     then
 
-        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="The verification has been cancelled. The program will now exit." --button="Exit"\!gtk-cancel
+        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="The verification has been cancelled, and the program will now exit." --button="Exit"\!gtk-cancel
 
         kill $$
 
@@ -356,6 +356,8 @@ then
 
 #THE WRITE SEGMENT BEGINS
 
+    cancelled="FALSE"
+
     # Launch the command in the background and capture its PID
     { sudo unxz -c /usr/share/shock-os-imager/cached-images/"$filename" | sudo dd of=$target_drive bs=4M status=progress; } > /dev/null 2>&1 & command_pid=$!
 
@@ -375,6 +377,8 @@ then
 
         yad --fixed --window-icon=shock-os-imager --title="Shock OS Imager" --progress-text="Cancelling..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
 
+        cancelled="TRUE"
+
         kill "$command_pid"
 
         eject "$target_drive"
@@ -393,7 +397,16 @@ then
 
         clean
 
-        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="An error occurred when writing the image. The program will now exit." --button="Exit"\!gtk-cancel
+        if [[ "$cancelled" == "TRUE" ]]
+        then
+
+            yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="The operation was cancelled, and the program will now exit." --button="Exit"\!gtk-cancel
+
+        else
+
+            yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="An error occurred while writing the image, and the program will now exit." --button="Exit"\!gtk-cancel
+
+        fi
 
         kill $$
 
