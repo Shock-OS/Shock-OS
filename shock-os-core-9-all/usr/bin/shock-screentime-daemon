@@ -207,14 +207,16 @@ do
 
         current_usage=$((current_usage+1))
 
-        chattr -i /usr/share/shock-screentime/"$current_user"/today-limit/"$current_date"
-
-        echo "$current_usage" | tee /usr/share/shock-screentime/"$current_user"/today-limit/"$current_date"
-
-        chattr +i /usr/share/shock-screentime/"$current_user"/today-limit/"$current_date"
-
-        if ((current_usage>=dailylimit))
+        if ((current_usage<=dailylimit))
         then
+
+            chattr -i /usr/share/shock-screentime/"$current_user"/today-limit/"$current_date"
+
+            echo "$current_usage" | tee /usr/share/shock-screentime/"$current_user"/today-limit/"$current_date"
+
+            chattr +i /usr/share/shock-screentime/"$current_user"/today-limit/"$current_date"
+
+        else
 
             killall -15 -u "$current_user"
 
