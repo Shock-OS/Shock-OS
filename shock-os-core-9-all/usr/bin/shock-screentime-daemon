@@ -44,43 +44,6 @@ done
 
 #THE VIEW CURRENT USER FUNCTION ENDS
 
-#THE REMOVE OLD TRACK DAYS FUNCTION BEGINS
-
-function remove-old-track-days() {
-
-for user in /usr/share/shock-screentime/*
-do
-
-    user="$(basename "$user")"
-
-    screentime_track_days=60
-
-    if [[ " $(groups "$user") " == *"shock-child"* ]]
-    then
-
-        source /usr/share/shock-screentime/"$user"/screentime-track-days
-
-    else
-
-        source /home/"$user"/.config/shock/screentime-track-days
-
-    fi
-
-    for date in $(ls -t /usr/share/shock-screentime/"$user"/dates | tail -n +"${screentime_track_days}") 
-    do
-
-        chattr -i "$date"
-
-        rm "$date"
-
-    done
-
-done
-
-}
-
-#THE REMOVE OLD TRACK DAYS FUNCTION ENDS
-
 sudo ntpdate -u pool.ntp.org
 
 while true
@@ -161,12 +124,12 @@ do
 
         fi
 
-        for date in $(ls -t /usr/share/shock-screentime/"$current_user"/dates | tail -n +"${screentime_track_days}") 
+        for date in $(ls /usr/share/shock-screentime/"$current_user"/dates | tail -n $screentime_track_days) 
         do
 
-            chattr -i "$date"
+            chattr -i /usr/share/shock-screentime/"$current_user"/dates/"$date"
 
-            rm "$date"
+            rm /usr/share/shock-screentime/"$current_user"/dates/"$date"
 
         done
 
