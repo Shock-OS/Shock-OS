@@ -124,7 +124,7 @@ do
 
         fi
 
-        for date in $(ls /usr/share/shock-screentime/"$current_user"/dates | tail -n $screentime_track_days) 
+        for date in $(ls /usr/share/shock-screentime/"$current_user"/dates | tail -n +$(($screentime_track_days+1))) 
         do
 
             chattr -i /usr/share/shock-screentime/"$current_user"/dates/"$date"
