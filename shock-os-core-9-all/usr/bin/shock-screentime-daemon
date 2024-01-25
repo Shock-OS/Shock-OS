@@ -102,7 +102,23 @@ do
 
         fi
 
-        echo "$current_usage" | tee /usr/share/shock-screentime/"$current_user"/dates/"$current_date" #the screen time usage for today has been updated
+        if [[ "$child_account" == "TRUE" ]] && [[ -f /usr/share/shock-screentime/"$current_user"/dailylimit ]]
+        then
+
+            dailylimit=$(cat /usr/share/shock-screentime/"$current_user"/dailylimit)
+
+            if ((current_usage<=dailylimit))
+            then
+
+                echo "$current_usage" | tee /usr/share/shock-screentime/"$current_user"/dates/"$current_date"
+
+            fi
+
+        else
+
+            echo "$current_usage" | tee /usr/share/shock-screentime/"$current_user"/dates/"$current_date"
+
+        fi #the screen time usage for today has been updated
 
         if [[ "$child_account" == "TRUE" ]]
         then
