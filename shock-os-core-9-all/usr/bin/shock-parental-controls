@@ -113,7 +113,7 @@ then
 
         total_minutes=$((hours*60+minutes))
 
-        if ((minutes<10))
+        if ((total_minutes<10))
         then
 
             yad --window-icon=shock-parental-controls --image=emblem-important --title="Parental Controls" --text="The screen time limit cannot be less than 10 minutes." --button="Retry"\!edit-undo
