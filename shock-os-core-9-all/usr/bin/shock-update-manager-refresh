@@ -136,11 +136,11 @@ then
         if [[ "$i" == *" [F]\"" ]] #if Flatpak application
         then
 
-            name="${i::-6}\""
-
-            name="${name#\"}"
+            name="${i#\"}"
 
             name="${name%\"}"
+
+            name="${name::-4}"
 
             icon="/usr/share/shock-update-manager/flatpak.svg"
             
@@ -148,11 +148,11 @@ then
 
         else #if APT package
 
-            name="${i::-6}\""
+            name="${i#\"}"
 
-            name="${i%%/*}"
+            name="${name%\"}"
 
-            name="${name#\"}"
+            name="${name%%/*}"
 
             icon="/usr/share/shock-update-manager/apt.svg"
 
