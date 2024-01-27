@@ -68,11 +68,15 @@ do
     if [[ " ${child_users[@]} " == *" $current_user "* ]] #detect if active user is a child profile
     then
 
-        child_account="TRUE"
+        child_user="TRUE"
+
+    else
+
+        child_user="FALSE"
 
     fi
 
-    if [[ "$child_account" == "TRUE" && -f /usr/share/shock-screentime/"$current_user"/track-screentime ]] || [[ -f /home/"$current_user"/.config/shock/track-screentime ]] #if screen time tracking is enabled for current user
+    if [[ "$child_user" == "TRUE" && -f /usr/share/shock-screentime/"$current_user"/track-screentime ]] || [[ -f /home/"$current_user"/.config/shock/track-screentime ]] #if screen time tracking is enabled for current user
     then
 
         mkdir -p /usr/share/shock-screentime/"$current_user"/dates
@@ -95,14 +99,14 @@ do
 
         current_usage=$((current_usage+1))
 
-        if [[ "$child_account" == "TRUE" ]]
+        if [[ "$child_user" == "TRUE" ]]
         then
 
             chattr -i /usr/share/shock-screentime/"$current_user"/dates/"$current_date"
 
         fi
 
-        if [[ "$child_account" == "TRUE" ]] && [[ -f /usr/share/shock-screentime/"$current_user"/dailylimit ]]
+        if [[ "$child_user" == "TRUE" ]] && [[ -f /usr/share/shock-screentime/"$current_user"/dailylimit ]]
         then
 
             dailylimit=$(cat /usr/share/shock-screentime/"$current_user"/dailylimit)
@@ -120,7 +124,7 @@ do
 
         fi #the screen time usage for today has been updated
 
-        if [[ "$child_account" == "TRUE" ]]
+        if [[ "$child_user" == "TRUE" ]]
         then
 
             chattr +i /usr/share/shock-screentime/"$current_user"/dates/"$current_date"
@@ -140,7 +144,7 @@ do
 
         fi
 
-        for date in $(ls /usr/share/shock-screentime/"$current_user"/dates | tail -n +$(($screentime_track_days+1))) 
+        for date in $(ls /usr/share/shock-screentime/"$current_user"/dates | head -n $(($(ls /usr/share/shock-screentime/"$current_user"/dates | wc -l)-$screentime_track_days))) 
         do
 
             chattr -i /usr/share/shock-screentime/"$current_user"/dates/"$date"
@@ -151,7 +155,7 @@ do
 
     else #if user has screen time disabled
 
-        if [[ "$child_account" == "TRUE" ]]
+        if [[ "$child_user" == "TRUE" ]]
         then
 
             chattr -R -i /usr/share/shock-screentime/"$current_user"/dates
@@ -162,7 +166,7 @@ do
 
     fi
 
-    if [[ "$child_account" == "TRUE" ]] && [[ -f /usr/share/shock-screentime/"$current_user"/dailylimit ]] #manages dailylimit if current user is a child profile and has a daily limit
+    if [[ "$child_user" == "TRUE" ]] && [[ -f /usr/share/shock-screentime/"$current_user"/dailylimit ]] #manages dailylimit if current user is a child profile and has a daily limit
     then
 
         dailylimit=$(cat /usr/share/shock-screentime/"$current_user"/dailylimit)
@@ -203,7 +207,7 @@ do
 
         fi
 
-    elif [[ "$child_account" == "TRUE" ]] && [[ ! -f /usr/share/shock-screentime/"$current_user"/dailylimit ]] && [[ -f /home/"$current_user"/.cache/shock-tmp/screentime-limit-notification ]] #if the screen time limit was removed recently
+    elif [[ "$child_user" == "TRUE" ]] && [[ ! -f /usr/share/shock-screentime/"$current_user"/dailylimit ]] && [[ -f /home/"$current_user"/.cache/shock-tmp/screentime-limit-notification ]] #if the screen time limit was removed recently
     then
 
         kill $(cat /home/"$current_user"/.cache/shock-tmp/screentime-limit-notification)
