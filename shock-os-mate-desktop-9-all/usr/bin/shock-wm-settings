@@ -7,36 +7,31 @@ current_wm="$(gsettings get org.mate.session.required-components windowmanager)"
 if [[ "$current_wm" == "'marco'" ]]
 then
 
-    wm_selector='^Marco!Picom: Xrender!Picom: GLX!Picom: Hybrid!Compton!Mutter (experimental)!No Compositor'
+    wm_selector='^Marco!Picom: Xrender!Picom: GLX!Picom: Hybrid!Mutter (experimental)!No Compositor'
 
 elif [[ "$current_wm" == "'marco-xrender'" ]]
 then
 
-    wm_selector='Marco!^Picom: Xrender!Picom: GLX!Picom: Hybrid!Compton!Mutter (experimental)!No Compositor'
+    wm_selector='Marco!^Picom: Xrender!Picom: GLX!Picom: Hybrid!Mutter (experimental)!No Compositor'
 
 elif [[ "$current_wm" == "'marco-glx'" ]]
 then
 
-    wm_selector='Marco!Picom: Xrender!^Picom: GLX!Picom: Hybrid!Compton!Mutter (experimental)!No Compositor'
+    wm_selector='Marco!Picom: Xrender!^Picom: GLX!Picom: Hybrid!Mutter (experimental)!No Compositor'
 
 elif [[ "$current_wm" == "'marco-xr_glx_hybrid'" ]]
 then
 
-    wm_selector='Marco!Picom: Xrender!Picom: GLX!^Picom: Hybrid!Compton!Mutter (experimental)!No Compositor'
-
-elif [[ "$current_wm" == "'marco-compton'" ]]
-then
-
-    wm_selector='Marco!Picom: Xrender!Picom: GLX!Picom: Hybrid!^Compton!Mutter (experimental)!No Compositor'
+    wm_selector='Marco!Picom: Xrender!Picom: GLX!^Picom: Hybrid!Mutter (experimental)!No Compositor'
 
 elif [[ "$current_wm" == "'mutter'" ]]
 then
 
-    wm_selector='Marco!Picom: Xrender!Picom: GLX!Picom: Hybrid!Compton!^Mutter (experimental)!No Compositor'
+    wm_selector='Marco!Picom: Xrender!Picom: GLX!Picom: Hybrid!^Mutter (experimental)!No Compositor'
 
 else
 
-    wm_selector='Marco!Picom: Xrender!Picom: GLX!Picom: Hybrid!Compton!Mutter (experimental)!^No Compositor'
+    wm_selector='Marco!Picom: Xrender!Picom: GLX!Picom: Hybrid!Mutter (experimental)!^No Compositor'
 
 fi
 
@@ -44,13 +39,6 @@ if [[ " ${installed_packages[@]} " != *" mutter "* ]] #if mutter is not installe
 then
 
     wm_selector="${wm_selector//'!Mutter (experimental)'/}"
-
-fi
-
-if [[ " ${installed_packages[@]} " != *" compton "* ]] #if mutter is not installed, then remove it from the list of options
-then
-
-    wm_selector="${wm_selector//'!Compton'/}"
 
 fi
 
@@ -114,11 +102,6 @@ then
     then
 
         gsettings set org.mate.session.required-components windowmanager "marco-xr_glx_hybrid"
-
-    elif [[ "$current_wm" == "Compton" ]]
-    then
-
-        gsettings set org.mate.session.required-components windowmanager "marco-compton"
 
     elif [[ "$current_wm" == "Mutter (experimental)" ]]
     then
