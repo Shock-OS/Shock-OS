@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#This script is run upon startup and on-command to automatically set the audio output to HDMI if HDMI output is being used (because if it is, it is most likely the desired audio output device)
+
+xrandr_output="$(xrandr)"
+
+if [[ "$xrandr_output" == *"HDMI-1 connected"* ]] || [[ "$xrandr_output" == *"HDMI-2 connected"* ]]
+then
+
+    pactl set-default-sink "$(pactl list short sinks | awk '{print $2}' | grep 'hdmi')"
+
+    echo "HDMI output detected. Audio output has been set to HDMI."
+
+    if [[ "$1" == "--gui" ]]
+    then
+
+        yad --window-icon=audio-speakers --image=audio-speakers --title="Automatic Audio Device Setup" --text="HDMI output detected. Audio output has been set to HDMI." --button="Dismiss"\!gtk-cancel
+
+    fi
+
+else
+
+    echo "No HDMI output was detected. The audio output settings were not changed."
+
+    if [[ "$1" == "--gui" ]]
+    then
+
+        yad --window-icon=audio-speakers --image=audio-speakers --title="Automatic Audio Device Setup" --text="No HDMI output was detected. The audio output settings were not changed." --button="Dismiss"\!gtk-cancel
+
+    fi
+
+fi

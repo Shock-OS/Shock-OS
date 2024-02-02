@@ -1,22 +1,5 @@
 #!/bin/bash
 
-#AUTO SOUND CONFIGURATION - PULSEAUDIO
-
-function pulseaudio_autoconfig() {
-
-local xrandr_output="$(xrandr)"
-
-if [[ "$xrandr_output" == *"HDMI-1 connected"* ]] || [[ "$xrandr_output" == *"HDMI-2 connected"* ]]
-then
-
-    pactl set-default-sink "$(pactl list short sinks | awk '{print $2}' | grep 'hdmi')"
-
-fi
-
-}
-
-#AUTO SOUND CONFIGURATION - PULSEAUDIO
-
 if [[ -f ~/.config/shock/userlogstat ]]
 then
 
@@ -122,10 +105,6 @@ then
 
     #THE FLATPAK GTK THEMING PATCH ENDS
 
-    sleep 5
-
-    pulseaudio_autoconfig
-
     rm ~/.config/shock/userlogstat
 
 fi
@@ -161,7 +140,7 @@ then
 
     feh --bg-fill /usr/share/shock/initsetup-background.png
 
-    pulseaudio_autoconfig
+    shock-pulseaudio-autoconfig
 
     while true
     do
