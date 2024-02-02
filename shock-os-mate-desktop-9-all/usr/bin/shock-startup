@@ -122,6 +122,8 @@ then
 
     #THE FLATPAK GTK THEMING PATCH ENDS
 
+    sleep 5
+
     pulseaudio_autoconfig
 
     rm ~/.config/shock/userlogstat
