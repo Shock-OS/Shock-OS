@@ -23,7 +23,7 @@ do
     if (($(ls ~/.fonts | wc -l)>0))
     then
 
-        remove_button='--button=Remove!remove:2'
+        remove_button='--button=Remove!remove:3'
 
     else
 
@@ -31,16 +31,16 @@ do
 
     fi
 
-    font_to_change="$(yad --height=230 --window-icon=preferences-desktop-font --title="Fonts" --list --text='Which system font would you like to change?' --column='' --no-headers "Application Font" "Desktop Font" "Document Font" "Monospace Font" "Window Title Font" "Reset All Fonts to Defaults" --buttons-layout=spread --button="Browse"\!applications-internet:0 --button="Install"\!add:1 "$remove_button" --button="Next"\!go-next:4)"
+    font_to_change="$(yad --height=230 --window-icon=preferences-desktop-font --title="Fonts" --list --text='Which system font would you like to change?' --column='' --no-headers "Application Font" "Desktop Font" "Document Font" "Monospace Font" "Window Title Font" "Reset All Fonts to Defaults" --buttons-layout=spread --button="Browse"\!applications-internet:1 --button="Install"\!add:2 "$remove_button" --button="Next"\!go-next:0)"
 
     ex=$?
 
-    if ((ex==0))
+    if ((ex==1))
     then
 
         xdg-open https://fonts.google.com/
 
-    elif ((ex==1))
+    elif ((ex==2))
     then
 
         file="$(yad --window-icon=preferences-desktop-font --title="Install Fonts" --file --button="Install"\!gtk-open)"
@@ -109,7 +109,7 @@ do
 
         fi
 
-    elif ((ex==2)) #remove
+    elif ((ex==3)) #remove
     then
 
         fonts=($(ls ~/.fonts))
@@ -122,7 +122,7 @@ do
 
         rm ~/.fonts/"$font_to_remove"
 
-    elif ((ex==4)) #next
+    elif ((ex==0)) #next
     then
 
         if [[ "$font_to_change" == "Application Font|" ]]
