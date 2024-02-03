@@ -45,7 +45,7 @@ then
 
         images_in_directory=$(ls "$directory" | wc -l)
 
-        until [[ "$(file "$background")" == *"image"* ]] && [[ "$background" != "$current_background" ]]
+        until [[ "$(file -b --mime-type "$background")" == "image/"* ]] && [[ "$background" != "$current_background" ]]
         do
 
             if [[ "$random_boolean" == "TRUE" ]] #shuffle randomly

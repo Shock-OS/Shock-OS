@@ -239,7 +239,7 @@ do
 
                     focus_field=3
 
-                elif [[ "$(file "$shock_webapp_icon")" != *"image"* ]]
+                elif [[ "$(file -b --mime-type "$shock_webapp_icon")" != "image/"* ]]
                 then
 
                     yad --window-icon=shock-webapps --image=emblem-important --title="Web Apps" --text="'$shock_webapp_icon' is not a vaild image file. Please select an image to use for the icon." --button="Retry"\!edit-undo

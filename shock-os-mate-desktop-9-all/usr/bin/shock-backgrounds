@@ -113,9 +113,9 @@ then
 
             background="$(echo "$output" | cut -d '|' -f1)"
 
-            file_is_image="$(file "$background")"
+            file_is_image="$(file --b --mime-type "$background")"
 
-            if [[ "$file_is_image" == *"image"* ]]
+            if [[ "$file_is_image" == "image/"* ]]
             then
 
                 file_is_image="yes"
@@ -199,11 +199,11 @@ then
 
         cd "$directory"
 
-        directory_contains_images="$(file *)"
+        directory_contains_images="$(file -b --mime-type *)"
 
         cd /
 
-        if [[ "$directory_contains_images" != *"image"* ]]
+        if [[ " $directory_contains_images" != *" image/"* ]]
         then
 
             yad --window-icon=preferences-desktop-wallpaper --image=emblem-important --title="No Images Found" --text="The directory you selected does not appear to contain images. The directory must contain at least two images for a slideshow background." --button="Retry"\!edit-undo
@@ -228,12 +228,12 @@ style=\"$style\"" | tee ~/.config/shock/slideshow-background
     if [[ "$random_boolean" == 'TRUE' ]] #random
     then
 
-        until [[ "$fii" == *"image"* ]]
+        until [[ "$fii" == "image/"* ]]
         do
 
             ws="$directory/$(ls "$directory" | shuf -n 1)"
 
-            fii=$(file "$ws")
+            fii=$(file -b --mime-type "$ws")
 
         done
 
@@ -243,7 +243,7 @@ style=\"$style\"" | tee ~/.config/shock/slideshow-background
         for ws in "$directory"/*
         do
 
-            fii=$(file "$ws")
+            fii=$(file -b --mime-type "$ws")
 
             if [[ "$fii" == *"image"* ]]
             then

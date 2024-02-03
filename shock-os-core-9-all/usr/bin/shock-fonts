@@ -45,12 +45,12 @@ do
 
         file="$(yad --window-icon=preferences-desktop-font --title="Install Fonts" --file --button="Install"\!gtk-open)"
 
-        info="$(file "$file")"
+        info="$(file -b --mime-type "$file")"
 
-        if [[ -f "$file" ]] && ! [[ "$info" == *"archive data"* || "$info" == *"compressed data"* ]] #if file selected
+        if [[ -f "$file" ]] && [[ "$info" != "application/"* ]] #if file selected
         then
 
-            if [[ "$info" == *"OpenType font data"* || "$info" == *"TrueType Font data"* ]]
+            if [[ "$info" == "font/"* ]]
             then
 
                 mkdir -p ~/.fonts
@@ -61,7 +61,7 @@ do
 
         else
 
-            if [[ -f "$file" ]] && [[ "$info" == *"archive data"* || "$info" == *"compressed data"* ]] #if archive selected
+            if [[ -f "$file" ]] && [[ "$info" == "application/"* ]] #if archive selected
             then
 
                 dir="$(mktemp -d)"
@@ -82,7 +82,7 @@ do
             for i in $(find "$dir" -iname *.otf)
             do
 
-                if [[ "$(file "$i")" == *"OpenType font data"* ]]
+                if [[ "$(file -b --mime-type "$i")" == "font/"* ]]
                 then
 
                     mkdir -p ~/.fonts
@@ -96,7 +96,7 @@ do
             for i in $(find "$dir" -iname *.ttf)
             do
 
-                if [[ "$(file "$i")" == *"TrueType Font data"* ]]
+                if [[ "$(file -b --mime-type "$i")" == "font/"* ]]
                 then
 
                     mkdir -p ~/.fonts

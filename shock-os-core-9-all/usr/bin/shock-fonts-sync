@@ -25,9 +25,9 @@ do
 
         font="$(basename "$font")"
 
-        info="$(file /home/"$user"/.fonts/"$font")"
+        info="$(file -b --mime-type /home/"$user"/.fonts/"$font")"
 
-        if [[ ! -f /usr/share/fonts/"$font" ]] && [[ "$info" == *"OpenType font data"* || "$info" == *"TrueType Font data"* ]]
+        if [[ ! -f /usr/share/fonts/"$font" ]] && [[ "$info" == "font/"* ]]
         then
 
             ln -s /home/"$user"/.fonts/"$font" /usr/share/fonts/"$font"
