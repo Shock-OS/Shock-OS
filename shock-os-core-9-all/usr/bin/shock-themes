@@ -366,7 +366,7 @@ do
                         if [[ -z "$inherit_line" ]] #if no 'Inherits=' line is found in the index.theme file
                         then
 
-                            sed -i "/\[Icon Theme\]/a\Inherits=${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor" "$i"
+                            sed -i "/\[Icon Theme\]/a\Inherits=Yaru,Adwaita,hicolor" "$i"
 
                         else
 
@@ -395,11 +395,11 @@ do
                             if ((${#inherit_line}==9)) #if no fallback themes
                             then
 
-                                inherit_line="Inherits=${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor"
+                                inherit_line="Inherits=Yaru,Adwaita,hicolor"
 
                             else
 
-                                inherit_line+="${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor"
+                                inherit_line+="Yaru,Adwaita,hicolor"
 
                             fi
 
