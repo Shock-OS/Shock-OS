@@ -363,40 +363,49 @@ do
 
                         inherit_line="$(grep -m 1 -e '^Inherits=' "$i")"
 
-                        inherit_line="${inherit_line:9}"
-
-                        IFS=','
-
-                        read -a inherits <<< "$inherit_line"
-
-                        IFS=$'\n'
-
-                        inherit_line="Inherits="
-
-                        for theme in "${inherits[@]}"
-                        do
-
-                            if [[ "$theme" != "Adwaita" ]] && [[ "$theme" != "hicolor" ]]
-                            then
-
-                                inherit_line+="${runuser}_${theme},"
-
-                            fi
-
-                        done
-
-                        if ((${#inherit_line}==9)) #if no fallback themes
+                        if [[ -z "$inherit_line" ]] #if no 'Inherits=' line is found in the index.theme file
                         then
 
-                            inherit_line="Inherits=${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor"
+                            sed -i "/\[Icon Theme\]/a\Inherits=${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor" "$i"
 
                         else
 
-                            inherit_line+="${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor"
+                            inherit_line="${inherit_line:9}"
+
+                            IFS=','
+
+                            read -a inherits <<< "$inherit_line"
+
+                            IFS=$'\n'
+
+                            inherit_line="Inherits="
+
+                            for theme in "${inherits[@]}"
+                            do
+
+                                if [[ "$theme" != "Adwaita" ]] && [[ "$theme" != "hicolor" ]]
+                                then
+
+                                    inherit_line+="${runuser}_${theme},"
+
+                                fi
+
+                            done
+
+                            if ((${#inherit_line}==9)) #if no fallback themes
+                            then
+
+                                inherit_line="Inherits=${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor"
+
+                            else
+
+                                inherit_line+="${runuser}_shock_fallback_icon_theme,Yaru,Adwaita,hicolor"
+
+                            fi
+
+                            sed -i "s|^Inherits=.*|${inherit_line}|" "$i"
 
                         fi
-
-                        sed -i "s|^Inherits=.*|${inherit_line}|" "$i"
 
                     done
 
