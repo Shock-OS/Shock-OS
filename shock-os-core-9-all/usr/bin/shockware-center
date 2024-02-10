@@ -4,20 +4,7 @@ IFS=$'\n'
 
 yad --fixed --picture --window-icon=shockware-center --filename=/usr/share/shockware-center/shockware-loader.png --size=fit --width=1000 --height=397 --undecorated --no-buttons --skip-taskbar & splash_kilpid=$!
 
-if (($(getconf LONG_BIT)==32))
-then
-
-    arch="arm"
-
-else
-
-    arch="aarch64"
-
-fi
-
-apt_appstream_dir="/var/lib/app-info"
-
-flatpak_appstream_dir="/var/lib/flatpak/appstream/flathub/${arch}/active"
+source /usr/share/shockware-center/appstream-dirs
 
 currently_loading="FALSE"
 

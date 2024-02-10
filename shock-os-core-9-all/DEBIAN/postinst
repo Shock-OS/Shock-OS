@@ -149,6 +149,21 @@ flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flat
 
 flatpak update #refreshes the flatpak cache and downloads the icons for the Shockware Center
 
+if (($(getconf LONG_BIT)==32))
+then
+
+    arch="arm"
+
+else
+
+    arch="aarch64"
+
+fi
+
+echo "apt_appstream_dir=/var/lib/app-info
+
+flatpak_appstream_dir=/var/lib/flatpak/appstream/flathub/${arch}/active" | tee /usr/share/shockware-center/appstream-dirs
+
 #the systemd services patch begins
 
 sudo systemctl daemon-reload
