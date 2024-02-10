@@ -577,7 +577,7 @@ do
 
                     show_flatpaks="TRUE"
 
-                elif [[ "$show_packages_selection" == "Only show APT applications" ]]
+                elif [[ "$show_packages_selection" == "Only show APT applications" ]] || [[ "$show_packages_selection" == "Only show APT applications (Flatpak support is not installed)" ]]
                 then
 
                     show_apt_packages="TRUE"
