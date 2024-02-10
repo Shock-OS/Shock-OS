@@ -850,6 +850,11 @@ do
 
                         theme_color_selection='Bark!Blue!Magenta!Olive!Orange!^PrussianGreen!Purple!Red!Sage!Viridian'
 
+                    elif [[ "$theme_color" == "purple" ]]
+                    then
+
+                        theme_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!^Purple!Red!Sage!Viridian'
+
                     elif [[ "$theme_color" == "red" ]]
                     then
 
@@ -867,7 +872,7 @@ do
 
                     else #if theme is purple or mixed colors have not been used before
 
-                        theme_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!^Purple!Red!Sage!Viridian'
+                        theme_color_selection='Bark!Blue!Magenta!Olive!^Orange!PrussianGreen!Purple!Red!Sage!Viridian'
 
                     fi
 
@@ -896,6 +901,11 @@ do
 
                         icon_color_selection='Bark!Blue!Magenta!Olive!Orange!^PrussianGreen!Purple!Red!Sage!Viridian'
 
+                    elif [[ "$icon_color" == "purple" ]]
+                    then
+
+                        icon_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!^Purple!Red!Sage!Viridian'
+
                     elif [[ "$icon_color" == "red" ]]
                     then
 
@@ -913,7 +923,7 @@ do
 
                     else #if icons are purple or mixed colors have not been used before
 
-                        icon_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!^Purple!Red!Sage!Viridian'
+                        icon_color_selection='Bark!Blue!Magenta!Olive!^Orange!PrussianGreen!Purple!Red!Sage!Viridian'
 
                     fi
 
