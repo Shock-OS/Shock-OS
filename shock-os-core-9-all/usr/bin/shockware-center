@@ -59,6 +59,19 @@ show_flatpaks=TRUE" | tee ~/.config/shock/shockware-center
 
 fi
 
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+
+if [[ " ${installed_packages[@]} " != *" flatpak "* ]] #if flatpak has been removed
+then
+
+    echo "rows_per_page=100
+
+show_apt_packages=TRUE
+
+show_flatpaks=FALSE" | tee ~/.config/shock/shockware-center
+
+fi
+
 source ~/.config/shock/shockware-center
 
 #SETTINGS END
@@ -521,19 +534,28 @@ do
 
 	        fi
 
-            if [[ "$show_apt_packages" == "TRUE" ]] && [[ "$show_flatpaks" == "TRUE" ]]
+            if [[ " ${installed_packages[@]} " != *" flatpak "* ]] #if flatpak has been removed
             then
 
-                show_packages_selection='Show both APT and Flatpak applications!Only show APT applications!Only show Flatpak applications'
-
-            elif [[ "$show_apt_packages" == "TRUE" ]] && [[ "$show_flatpaks" == "FALSE" ]]
-            then
-
-                show_packages_selection='Show both APT and Flatpak applications!^Only show APT applications!Only show Flatpak applications'
+                show_packages_selection='Only show APT applications (Flatpak support is not installed)'
 
             else
 
-                show_packages_selection='Show both APT and Flatpak applications!Only show APT applications!^Only show Flatpak applications'
+                if [[ "$show_apt_packages" == "TRUE" ]] && [[ "$show_flatpaks" == "TRUE" ]]
+                then
+
+                    show_packages_selection='Show both APT and Flatpak applications!Only show APT applications!Only show Flatpak applications'
+
+                elif [[ "$show_apt_packages" == "TRUE" ]] && [[ "$show_flatpaks" == "FALSE" ]]
+                then
+
+                    show_packages_selection='Show both APT and Flatpak applications!^Only show APT applications!Only show Flatpak applications'
+
+                else
+
+                    show_packages_selection='Show both APT and Flatpak applications!Only show APT applications!^Only show Flatpak applications'
+
+                fi
 
             fi
 
