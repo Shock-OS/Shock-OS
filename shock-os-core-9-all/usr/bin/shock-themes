@@ -828,92 +828,92 @@ do
                     if [[ "$theme_color" == "bark" ]]
                     then
 
-                        theme_color_selection='^Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian!Mixed'
+                        theme_color_selection='^Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian'
 
                     elif [[ "$theme_color" == "blue" ]]
                     then
 
-                        theme_color_selection='Bark!^Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian!Mixed'
+                        theme_color_selection='Bark!^Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian'
 
                     elif [[ "$theme_color" == "magenta" ]]
                     then
 
-                        theme_color_selection='Bark!Blue!^Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian!Mixed'
+                        theme_color_selection='Bark!Blue!^Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian'
 
                     elif [[ "$theme_color" == "olive" ]]
                     then
 
-                        theme_color_selection='Bark!Blue!Magenta!^Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian!Mixed'
+                        theme_color_selection='Bark!Blue!Magenta!^Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian'
 
                     elif [[ "$theme_color" == "prussiangreen" ]]
                     then
 
-                        theme_color_selection='Bark!Blue!Magenta!Olive!Orange!^PrussianGreen!Purple!Red!Sage!Viridian!Mixed'
+                        theme_color_selection='Bark!Blue!Magenta!Olive!Orange!^PrussianGreen!Purple!Red!Sage!Viridian'
 
                     elif [[ "$theme_color" == "red" ]]
                     then
 
-                        theme_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!^Red!Sage!Viridian!Mixed'
+                        theme_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!^Red!Sage!Viridian'
 
                     elif [[ "$theme_color" == "sage" ]]
                     then
 
-                        theme_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!^Sage!Viridian!Mixed'
+                        theme_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!^Sage!Viridian'
 
                     elif [[ "$theme_color" == "viridian" ]]
                     then
 
-                        theme_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!^Viridian!Mixed'
+                        theme_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!^Viridian'
 
                     else #if theme is purple or mixed colors have not been used before
 
-                        theme_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!^Purple!Red!Sage!Viridian!Mixed'
+                        theme_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!^Purple!Red!Sage!Viridian'
 
                     fi
 
                     if [[ "$icon_color" == "bark" ]]
                     then
 
-                        icon_color_selection='^Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian!Mixed'
+                        icon_color_selection='^Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian'
 
                     elif [[ "$icon_color" == "blue" ]]
                     then
 
-                        icon_color_selection='Bark!^Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian!Mixed'
+                        icon_color_selection='Bark!^Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian'
 
                     elif [[ "$icon_color" == "magenta" ]]
                     then
 
-                        icon_color_selection='Bark!Blue!^Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian!Mixed'
+                        icon_color_selection='Bark!Blue!^Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian'
 
                     elif [[ "$icon_color" == "olive" ]]
                     then
 
-                        icon_color_selection='Bark!Blue!Magenta!^Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian!Mixed'
+                        icon_color_selection='Bark!Blue!Magenta!^Olive!Orange!PrussianGreen!Purple!Red!Sage!Viridian'
 
                     elif [[ "$icon_color" == "prussiangreen" ]]
                     then
 
-                        icon_color_selection='Bark!Blue!Magenta!Olive!Orange!^PrussianGreen!Purple!Red!Sage!Viridian!Mixed'
+                        icon_color_selection='Bark!Blue!Magenta!Olive!Orange!^PrussianGreen!Purple!Red!Sage!Viridian'
 
                     elif [[ "$icon_color" == "red" ]]
                     then
 
-                        icon_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!^Red!Sage!Viridian!Mixed'
+                        icon_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!^Red!Sage!Viridian'
 
                     elif [[ "$icon_color" == "sage" ]]
                     then
 
-                        icon_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!^Sage!Viridian!Mixed'
+                        icon_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!^Sage!Viridian'
 
                     elif [[ "$icon_color" == "viridian" ]]
                     then
 
-                        icon_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!^Viridian!Mixed'
+                        icon_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!Purple!Red!Sage!^Viridian'
 
                     else #if icons are purple or mixed colors have not been used before
 
-                        icon_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!^Purple!Red!Sage!Viridian!Mixed'
+                        icon_color_selection='Bark!Blue!Magenta!Olive!Orange!PrussianGreen!^Purple!Red!Sage!Viridian'
 
                     fi
 
