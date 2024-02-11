@@ -604,7 +604,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
             if ((ex==0))
             then
 
-                page=0
+                page=1
 
                 keyword=""
 
@@ -692,7 +692,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
 
             done
 
-            page=0
+            page=1
 
             if ((ex==1)) #show all
             then

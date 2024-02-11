@@ -1,9 +1,0 @@
-Package: shock-os-gnome-desktop
-Version: 9
-Architecture: all
-Essential: no
-Priority: optional
-Depends: shock-os-core,gnome-shell,mutter,gnome-terminal,yaru-theme-gnome-shell,gnome-shell-extensions,gnome-shell-extensions-extra,gnome-shell-extension-dash-to-panel,gnome-shell-extension-dashtodock
-Recommends: gnome-contacts,gnome-weather,gnome-clocks,gnome-maps,totem,gnome-calculator,libreoffice,gnome-calendar,gnome-system-monitor,shotwell,gnome-text-editor,transmission-gtk,gnome-characters,gnome-disk-utility,eog,evince,file-roller,gnome-music,nautilus,nautilus-extension-gnome-terminal,gnome-tweaks,shotwell,system-config-printer
-Maintainer: Carson Grover
-Description: A modified version of the GNOME Desktop Environment for Shock OS. This package contains critical Shock OS software. Removing or tampering with this package will break your system.
