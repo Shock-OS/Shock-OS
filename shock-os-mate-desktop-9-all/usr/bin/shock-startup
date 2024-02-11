@@ -152,14 +152,40 @@ then
     yad --window-icon=/usr/share/shock/shock-logo.svg --width=400 --title="Welcome" --picture --size=fit --filename=/usr/share/shock/initsetup-welcome-logo.png --text="
 <span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --buttons-layout=center --button="Next"\!go-next
 
+    ex=1
+
     until [[ "$ex" == "0" ]]
     do
 
-        sudo env GTK_THEME=Yaru-purple DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata locales keyboard-configuration
+        sudo env GTK_THEME=Yaru-purple DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata
 
         ex=$?
 
     done
+
+    ex=1
+
+    until [[ "$ex" == "0" ]]
+    do
+
+        sudo env GTK_THEME=Yaru-purple DEBIAN_FRONTEND=gnome dpkg-reconfigure locales
+
+        ex=$?
+
+    done
+
+    ex=1
+
+    until [[ "$ex" == "0" ]]
+    do
+
+        sudo env GTK_THEME=Yaru-purple DEBIAN_FRONTEND=gnome dpkg-reconfigure keyboard-configuration
+
+        ex=$?
+
+    done
+
+    sudo udevadm trigger --subsystem-match=input --action=change
 
     sudo shock-users --setup #create a user
 
