@@ -163,6 +163,8 @@ then
 
     done
 
+    . /etc/default/locale
+
     ex=1
 
     until [[ "$ex" == "0" ]]
@@ -173,6 +175,8 @@ then
         ex=$?
 
     done
+
+    . /etc/default/locale
 
     ex=1
 
