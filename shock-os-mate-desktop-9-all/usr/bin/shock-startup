@@ -157,7 +157,7 @@ then
     until [[ "$ex" == "0" ]]
     do
 
-        sudo env GTK_THEME=Yaru-purple DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata
+        sudo env GTK_THEME=Yaru-purple DEBIAN_FRONTEND=gnome dpkg-reconfigure locales
 
         ex=$?
 
@@ -170,7 +170,7 @@ then
     until [[ "$ex" == "0" ]]
     do
 
-        sudo env GTK_THEME=Yaru-purple DEBIAN_FRONTEND=gnome dpkg-reconfigure locales
+        sudo env GTK_THEME=Yaru-purple DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata
 
         ex=$?
 
