@@ -588,7 +588,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
 	        elif ((ex==1)) #refresh catalog
             then
 
-                sudo shock-update-manager-refresh | yad --no-buttons --no-escape --fixed --width=400 --window-icon=shockware-center --title="Shockware Center" --text="Refreshing application catalog..." --hide-text --text-align=center --auto-close --progress --pulsate
+                sudo shock-update-manager-refresh | yad --no-buttons --no-escape --fixed --width=400 --window-icon=shockware-center --title="Shockware Center" --text="Refreshing application catalog..." --text-align=center --auto-close --progress --pulsate --hide-text
 
             fi
 
