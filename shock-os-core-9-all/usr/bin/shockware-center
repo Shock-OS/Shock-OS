@@ -671,7 +671,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
 
                 fi
 
-                output="$(yad --fixed --window-icon=shockware-center --title="Shockware Center" --text="Please enter a search term." --form --field="Keyword:" "$keyword" --field="Category:":CB "$category_selection" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
+                output="$(yad --fixed --window-icon=shockware-center --title="Shockware Center" --text="Please enter a search term." --form --always-print-result --field="Keyword:" "$keyword" --field="Category:":CB "$category_selection" --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0 --buttons-layout=edge)"
 
                 ex=$?
 
