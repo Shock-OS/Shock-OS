@@ -76,7 +76,16 @@ current_buttons_layout="$(echo "$output" | awk -F'|' '{print $2}')"
 if ((ex==1)) #reset to default
 then
 
-    gsettings set org.mate.session.required-components windowmanager "marco-glx"
+    if [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
+    then
+
+        gsettings set org.mate.session.required-components windowmanager "marco-glx"
+
+    else
+
+        gsettings set org.mate.session.required-components windowmanager "marco"
+
+    fi
 
     gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
 

@@ -1,9 +1,20 @@
 #!/bin/bash
 
-if [[ -f ~/.config/shock/userlogstat ]]
+function set_compositor() {
+
+if [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
 then
 
     gsettings set org.mate.session.required-components windowmanager "marco-glx"
+
+fi
+
+}
+
+if [[ -f ~/.config/shock/userlogstat ]]
+then
+
+    set_compositor
 
     gsettings set org.mate.interface enable-animations "false"
 
@@ -112,7 +123,7 @@ fi
 if (($(cat /usr/share/shock/setupvalue)==0)) #INITIAL SETUP (run as 'shock' user)
 then
 
-    gsettings set org.mate.session.required-components windowmanager "marco-glx"
+    set_compositor
 
     gsettings set org.mate.interface enable-animations "false"
 
