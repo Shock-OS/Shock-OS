@@ -2,7 +2,7 @@
 
 cd /
 
-sed -i '1s/.*/PRETTY_NAME="Shock OS 9.0 Issac"/' /usr/lib/os-release
+sed -i '1s/.*/PRETTY_NAME="Shock OS X Jasmine"/' /usr/lib/os-release
 
 #the above set of commands copies the os release file to /usr/lib
 
