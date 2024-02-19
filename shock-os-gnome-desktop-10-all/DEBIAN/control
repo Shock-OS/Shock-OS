@@ -1,0 +1,9 @@
+Package: shock-os-gnome-desktop
+Version: 10
+Architecture: all
+Essential: no
+Priority: optional
+Depends: shock-os-core, gnome-shell, gnome-terminal, feh
+Recommends: baobab, eog, file-roller, gnome-calculator, gnome-calendar, gnome-characters, gnome-contacts, gnome-clocks, gnome-disk-utility, gnome-font-viewer, gnome-logs, gnome-maps, gnome-music, gnome-shell-extensions, gnome-shell-extension-dashtodock, gnome-shell-extension-dash-to-panel, gnome-shell-extension-desktop-icons-ng, gnome-sound-recorder, gnome-system-monitor, gnome-text-editor, gnome-tweaks, gnome-weather, evince, seahorse, shotwell, totem
+Maintainer: Carson Grover
+Description: A modified version of the GNOME Desktop Environment for Shock OS. This package contains critical Shock OS software. Removing or tampering with this package will break your system.

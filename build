@@ -26,7 +26,7 @@ then
 
     fi
 
-    echo "$(date "+%A, %B %e$suffix, %Y")" | tee shock-os-core-9-all/usr/share/shock/build-date
+    echo "$(date "+%A, %B %e$suffix, %Y")" | tee shock-os-core-10-all/usr/share/shock/build-date
 
     rm -r BUILD-OUT
 
@@ -34,9 +34,9 @@ then
 
     cp auto-inst BUILD-OUT
 
-    dpkg-deb --build shock-os-core-9-all BUILD-OUT
+    dpkg-deb --build shock-os-core-10-all BUILD-OUT
 
-    dpkg-deb --build shock-os-"$1"-desktop-9-all BUILD-OUT
+    dpkg-deb --build shock-os-"$1"-desktop-10-all BUILD-OUT
 
 else
 

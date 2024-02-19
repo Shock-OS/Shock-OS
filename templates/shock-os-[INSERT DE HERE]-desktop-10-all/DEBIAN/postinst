@@ -1,0 +1,55 @@
+#!/bin/bash
+
+cp -r /usr/share/shock/install-temp/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
+
+cp -r /usr/share/shock/install-temp/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
+
+rm /usr/share/images/desktop-base/login-background.svg
+
+cp /usr/share/shock/install-temp/login-background.svg /usr/share/images/desktop-base
+
+#the above command will replace the default Debian wallpapers with the Shock OS wallpapers
+
+cp -r /usr/share/shock/install-temp/logos/* /usr/share/desktop-base/debian-logos
+
+#the home directory building begins
+
+cp /usr/share/shock/install-temp/face /etc/skel/.face
+
+#the home directory building ends
+
+cp -r /usr/share/shock/install-temp/applications/* /etc/skel/.local/share/applications
+
+cp -r /usr/share/shock/install-temp/applications/* /usr/share/applications
+
+#the above command renames the apps to Shock OS friendly names
+
+systemctl set-default multi-user #ensures the target is set to multi-user
+
+#the 'shock' temporary autologin patch begins
+
+mkdir -p /home/shock/.config/gtk-3.0
+
+echo "[Settings]
+gtk-theme-name=Yaru-purple
+gtk-icon-theme-name=Yaru-purple" | tee /home/shock/.config/gtk-3.0/settings.ini
+
+echo $'\n''if (($(ps aux | awk '\''{print $1,$11,$12}'\'' | grep -c "$(whoami) /bin/bash /usr/bin/shock-startup")<2)) #starts initial setup when run automatically upon boot, but not if the user opened the terminal with CRTL+ALT+T during the setup
+then
+
+xinit
+
+fi' | tee -a /home/shock/.bashrc
+
+echo 'marco & shock-startup' | tee -a /home/shock/.xinitrc
+
+sudo chown -R shock /home/shock
+
+#the 'shock' temporary autologin patch ends
+
+gtk-update-icon-cache -f /usr/share/icons/Yaru/
+
+rm -r /usr/share/shock/install-temp
+
+
+

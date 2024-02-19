@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#welcome screen for Shock OS. Run on first-boot
+
+shock-pulseaudio-autoconfig
+
+output="$(yad --form --width=500 --window-icon=/usr/share/shock/gnome-logo-white.svg --title="Welcome to Shock OS" --field="Welcome to Shock OS! Here are a few things you can do to personalize your system:":LBL "" --field="Set Desktop Background"\!preferences-desktop-wallpaper:FBTN "shock-backgrounds" --field="Choose Themes and Accent Colors"\!preferences-desktop-theme:FBTN "shock-themes" --field="Choose Panel Layout"\!mate-panel:FBTN "shock-panel-layouts" --field="":LBL "" --field="Search for, install, and remove apps and games with the Shockware Center.":LBL "" --field="Browse the Shockware Center"\!shockware-center:FBTN "shockware-center" --field="":LBL "" --field="By default, Shock OS outputs audio through the 3.5mm headphone jack, but you may want to switch to HDMI or another source.":LBL "" --field="Automatically Setup Audio Output Device"\!audio-speakers:FBTN "shock-pulseaudio-autoconfig --gui" --field="Manually Select Audio Output Device"\!audio-speakers:FBTN "mate-volume-control --page=output" --field="":LBL "" --field="Thank you for choosing Shock OS! We hope you love it!
+
+Genesis 1:1":LBL "" --field="":LBL "" --field="Launch this window at startup":CHK "TRUE" --button="Dismiss"\!gtk-cancel)"
+
+if [[ "$output" == *"FALSE"* ]]
+then
+
+    rm ~/.config/shock/welcome-indicator
+
+fi
