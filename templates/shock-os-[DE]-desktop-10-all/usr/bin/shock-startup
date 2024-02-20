@@ -3,6 +3,11 @@
 if [[ -f ~/.config/shock/userlogstat ]]
 then
 
+    gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
+
+
+
+
     gsettings set org.mate.interface gtk-theme "Yaru-purple"
 
     gsettings set org.mate.Marco.general theme "Yaru"
