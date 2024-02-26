@@ -1,0 +1,571 @@
+#!/bin/bash
+
+IFS=$'\n'
+
+#LOCALE CONFIGURATION
+
+function convert_unicode() {
+
+    local input="$1"
+
+    local output=""
+
+    while [[ $input =~ (<U[0-9A-F]+>) ]]
+    do
+
+        local unicode="${BASH_REMATCH[1]}"
+
+        local unicode_hex="${unicode:2:-1}" # Remove <U...> tags
+
+        local unicode_char=$(printf "\\U$unicode_hex")
+
+        output+="${input%%$unicode*}$unicode_char" # Append converted character
+
+        input="${input#*$unicode}" # Remove processed part from input
+
+    done
+
+    output+="$input" # Append remaining input after processing all Unicode escape sequences
+
+    echo "$output"
+
+}
+
+function choose_language() {
+
+lang_abs=()
+
+for locale in /usr/share/i18n/locales/*
+do
+
+    lang_name="$(grep '^lang_name' "$locale" | sed 's/^lang_name\s*"\(.*\)"/\1/')"
+
+    if [[ "$lang_name" =~ "<" ]]
+    then
+
+        lang_name_unicode="$(convert_unicode "$lang_name")"
+
+    else
+
+        lang_name_unicode="$lang_name"
+
+    fi
+
+    lang_ab="$(grep '^lang_ab' "$locale" | sed 's/^lang_ab\s*"\(.*\)"/\1/')"
+
+    if [[ ! " ${lang_abs[@]} " =~ " $lang_ab " ]] && [[ "$yad_cb_languages" != "$lang_name!"* ]] && [[ ! "$yad_cb_languages" =~ "!$lang_name!" ]] && [[ -n "$lang_ab" ]] && [[ -n "$lang_name" ]]
+    then
+
+        lang_abs+=("$lang_ab")
+
+        lang_names+=("$lang_name")
+
+        lang_names_unicode+=("$lang_name_unicode")
+
+    fi
+
+done
+
+echo "LANG_ABS: ${lang_abs[@]}" #DEBUG
+
+current_lang_ab="$(echo "$LANG" | awk -F'_' '{print $1}')"
+
+counter=0
+
+yad_cb_languages=""
+
+for lang_name_unicode in "${lang_names_unicode[@]}"
+do
+
+    if [[ "${lang_abs[counter]}" == "$current_lang_ab" ]]
+    then
+
+        yad_cb_languages+="^${lang_name_unicode}!"
+
+    else
+
+        yad_cb_languages+="${lang_name_unicode}!"
+
+    fi
+
+    counter=$((counter+1))
+
+done
+
+yad_cb_languages="${yad_cb_languages::-1}"
+
+output="$(yad --undecorated --center --fixed --form --field="Language:":CB "$yad_cb_languages" --button="Next")"
+
+ex=$?
+
+selected_lang_name_unicode=$(echo "$output" | awk -F'|' '{print $1}')
+
+counter=0
+
+until [[ "${lang_names_unicode[counter]}" == "$selected_lang_name_unicode" ]]
+do
+
+    counter=$((counter+1))
+
+done
+
+selected_lang_ab="${lang_abs[counter]}"
+
+selected_lang_name="${lang_names[counter]}"
+
+echo "SELECTED_LANG_NAME_UNICODE: $selected_lang_name_unicode" #DEBUG
+
+echo "SELECTED_LANG_NAME: $selected_lang_name" #DEBUG
+
+echo "SELECTED_LANG_AB: $selected_lang_ab" #DEBUG
+
+}
+
+#LANGUAGE DIALECT CONFIGURATION
+
+function choose_dialect() {
+
+country_names=()
+
+country_names_unicode=()
+
+locales=()
+
+for locale in /usr/share/i18n/locales/*
+do
+
+    lang_ab="$(grep '^lang_ab' "$locale" | sed 's/^lang_ab\s*"\(.*\)"/\1/')"
+
+    if [[ "$lang_ab" == "$selected_lang_ab" ]]
+    then
+
+        country_name="$(grep '^country_name' "$locale" | sed 's/^country_name\s*"\(.*\)"/\1/')"
+
+        country_names+=("$country_name")
+
+        country_names_unicode+=("${selected_lang_name_unicode} ($(convert_unicode "$country_name"))")
+
+        locales+=("$(basename "$locale")")
+
+    fi
+
+done
+
+yad_cb_languages=""
+
+counter=0
+
+for country_name_unicode in "${country_names_unicode[@]}"
+do
+
+    if [[ "${locales[counter]}" == "$(echo "$LANG" | awk -F'.' '{print $1}')" ]]
+    then
+
+        yad_cb_languages+="^${country_name_unicode}!"
+
+    else
+
+        yad_cb_languages+="${country_name_unicode}!"
+
+    fi
+
+    counter=$((counter+1))
+
+done
+
+yad_cb_languages="${yad_cb_languages::-1}"
+
+output="$(yad --undecorated --center --fixed --form --field="Dialect:":CB "$yad_cb_languages" --buttons-layout=edge --button="Back":1 --button="Next":0)"
+
+ex2=$?
+
+selected_country_name_unicode=$(echo "$output" | awk -F'|' '{print $1}')
+
+echo "SELECTED_COUNTRY_NAME_UNICODE: $selected_country_name_unicode"
+
+counter=0
+
+until [[ "${country_names_unicode[counter]}" == "$selected_country_name_unicode" ]]
+do
+
+    counter=$((counter+1))
+
+done
+
+selected_country_name="${country_names[counter]}"
+
+echo "SELECTED_COUNTRY_NAME: $selected_country_name" #DEBUG
+
+for locale in /usr/share/i18n/locales/*
+do
+
+    lang_ab="$(grep '^lang_ab' "$locale" | sed 's/^lang_ab\s*"\(.*\)"/\1/')"
+
+    lang_name="$(grep '^lang_name' "$locale" | sed 's/^lang_name\s*"\(.*\)"/\1/')"
+
+    country_name="$(grep '^country_name' "$locale" | sed 's/^country_name\s*"\(.*\)"/\1/')"
+
+    if [[ "$lang_ab" == "$selected_lang_ab" ]] && [[ "$lang_name" == "$selected_lang_name" ]] && [[ "$country_name" == "$selected_country_name" ]]
+    then
+        
+        echo "$locale" #DEBUG
+
+        selected_locale="$(basename "$locale")"
+
+        break
+
+    fi
+
+done
+
+echo "SELECTED_LOCALE: $selected_locale" #DEBUG
+
+}
+
+ex=""
+
+ex2=""
+
+until [[ "$ex" == "0" ]] && [[ "$ex2" == "0" ]]
+do
+
+    until [[ "$ex" == "0" ]]
+    do
+
+        choose_language
+
+    done
+
+    choose_dialect
+
+    if [[ "$ex2" == "1" ]]
+    then
+
+        ex=""
+
+    fi
+
+done
+
+#APPLY LOCALE SETTINGS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#KEYBOARD CONFIGURATION
+
+function choose_model_and_layout() {
+
+kb_model_ids=($(awk '/^! model/ {p=1; next} p && NF==0 {exit} p' /usr/share/X11/xkb/rules/evdev.lst | awk '{print $1}'))
+
+kb_model_names=($(awk '/^! model/ {p=1; next} p && NF==0 {exit} p' /usr/share/X11/xkb/rules/evdev.lst | awk '{print substr($0, index($0,$2))}'))
+
+kb_layout_ids=($(awk '/^! layout/ {p=1; next} p && NF==0 {exit} p' /usr/share/X11/xkb/rules/evdev.lst | awk '{print $1}'))
+
+kb_layout_names=($(awk '/^! layout/ {p=1; next} p && NF==0 {exit} p' /usr/share/X11/xkb/rules/evdev.lst | awk '{print substr($0, index($0,$2))}'))
+
+current_model_id=$(setxkbmap -print | awk -F"[()]" '/xkb_geometry/ {print $2}')
+
+current_layout_id=$(setxkbmap -print | awk -F"+" '/xkb_symbols/ {print $2}')
+
+counter=0
+
+yad_cb_kb_model=""
+
+for name in "${kb_model_names[@]}"
+do
+
+    if [[ "${kb_model_ids[counter]}" == "$current_model_id" ]]
+    then
+
+        yad_cb_kb_model+="^${name}!"
+
+    else
+
+        yad_cb_kb_model+="${name}!"
+
+    fi
+
+    counter=$((counter+1))
+
+done
+
+yad_cb_kb_model="${yad_cb_kb_model::-1}"
+
+counter=0
+
+yad_cb_kb_layout=""
+
+for name in "${kb_layout_names[@]}"
+do
+
+    if [[ "${kb_layout_ids[counter]}" == "$current_layout_id" ]]
+    then
+
+        yad_cb_kb_layout+="^${name}!"
+
+    else
+
+        yad_cb_kb_layout+="${name}!"
+
+    fi
+
+    counter=$((counter+1))
+
+done
+
+yad_cb_kb_layout="${yad_cb_kb_layout::-1}"
+
+output="$(yad --undecorated --center --fixed --form --always-print-result --field="Model:":CB "$yad_cb_kb_model" --field="Layout:":CB "$yad_cb_kb_layout" --buttons-layout=edge --button="Choose Model Variant":1 --button="Next":0)"
+
+ex=$?
+
+selected_model_name=$(echo "$output" | awk -F'|' '{print $1}')
+
+selected_layout_name=$(echo "$output" | awk -F'|' '{print $2}')
+
+counter=0
+
+until [[ "${kb_model_names[counter]}" == "$selected_model_name" ]]
+do
+
+    counter=$((counter+1))
+
+done
+
+selected_model_id="${kb_model_ids[counter]}"
+
+counter=0
+
+until [[ "${kb_layout_names[counter]}" == "$selected_layout_name" ]]
+do
+
+    counter=$((counter+1))
+
+done
+
+selected_layout_id="${kb_layout_ids[counter]}"
+
+}
+
+
+
+function choose_variant() {
+
+kb_variant_ids=($(awk -v selected_layout_id="$selected_layout_id" '/^! variant/ {p=1; next} p && NF==0 {exit} p' /usr/share/X11/xkb/rules/evdev.lst | awk -v selected_layout_id="$selected_layout_id" '$2 == selected_layout_id ":" {print $1}'))
+
+kb_variant_names=($(awk -v selected_layout_id="$selected_layout_id" '/^! variant/ {p=1; next} p && NF==0 {exit} p' /usr/share/X11/xkb/rules/evdev.lst | awk -v selected_layout_id="$selected_layout_id" '$2 == selected_layout_id ":" { for (i=3; i<=NF; i++) printf "%s%s", $i, (i==NF ? "\n" : OFS) }'))
+
+yad_cb_kb_variant=""
+
+for name in "${kb_variant_names[@]}"
+do
+
+    yad_cb_kb_variant+="${name}!"
+
+done
+
+yad_cb_kb_variant="${yad_cb_kb_variant::-1}"
+
+output=$(yad --undecorated --center --fixed --form --always-print-result --field="Variant:":CB "$yad_cb_kb_variant" --buttons-layout=edge --button="Cancel":1 --button="Next":0)
+
+ex=$?
+
+selected_variant_name=$(echo "$output" | awk -F'|' '{print $1}')
+
+counter=0
+
+until [[ "${kb_variant_names[counter]}" == "$selected_variant_name" ]]
+do
+
+    counter=$((counter+1))
+
+done
+
+selected_variant_id="${kb_variant_ids[counter]}"
+
+}
+
+
+
+ex=""
+
+until [[ "$ex" == "0" ]]
+do
+
+    choose_model_and_layout
+
+    if [[ "$ex" == "1" ]]
+    then
+
+        choose_variant
+
+        if [[ "$ex" != "0" ]]
+        then
+
+            selected_variant_id=""
+
+        fi
+
+    fi
+
+done
+
+
+
+#APPLY KEYBOARD SETTINGS
+
+echo "SELECTED KEYBOARD VARIANT ID: $selected_variant_id" #DEBUG
+
+echo "SELECTED KEYBOARD MODEL ID: $selected_model_id" #DEBUG
+
+echo "SELECTED KEYBOARD LAYOUT ID: $selected_layout_id" #DEBUG
+
+
+
+
+
+#TIMEZONE CONFIGURATION (WHILE THE OTHER TWO SECTIONS ARE PRETTY MUCH COMPLETE, EVERYTHING BELOW IS A HOT MESS AND MAY NEED TO BE COMPLETELY REDONE)
+
+timezone_folders=("Africa" "America" "Antarctica" "Arctic Ocean" "Asia" "Atlantic Ocean" "Australia" "Brazil" "Canada" "Chile" "Cuba" "Egypt" "Eire" "Europe" "GB" "GB-Eire" "Greenwich" "Hongkong" "Iceland" "Indian Ocean" "Iran" "Israel" "Jamaica" "Japan" "Kwajalein" "Libya" "Mexico" "Navajo" "NZ" "NZ-CHAT" "Pacific Ocean" "Poland" "Portugal" "Singapore" "Turkey" "US" "W-SU" "Zulu" "None of the above")
+
+cd /usr/share/zoneinfo
+
+current_timezone_folder="$(readlink /etc/localtime | awk -F'/' '{print $5}')"
+
+yad_cb_timezone_folders=""
+
+for timezone_folder in "${timezone_folders[@]}"
+do
+
+    if [[ "$timezone_folder" == "$current_timezone_folder" ]]
+    then
+
+        yad_cb_timezone_folders+="^${timezone_folder}!"
+
+    else
+
+        yad_cb_timezone_folders+="${timezone_folder}!"
+
+    fi
+
+done
+
+yad_cb_timezone_folders="${yad_cb_timezone_folders::-1}"
+
+output="$(yad --undecorated --center --fixed --form --field="Timezone:":CB "$yad_cb_timezone_folders" --buttons-layout=edge --button="Back":1 --button="Next":0)"
+
+ex=$?
+
+selected_timezone_folder=$(echo "$output" | awk -F'|' '{print $1}')
+
+echo "SELECTED_TIMEZONE_FOLDER: $selected_timezone_folder"
+
+
+
+
+
+#RECURSIVE TIMEZONE SELECTOR (KEEPS GOING UNTIL SELECTED TIMEZONE IS A FILE INSTEAD OF A FOLDER), MAY BE USEFUL
+
+until [[ -f "$selected_timezone_folder" ]]
+do
+
+    cd "$selected_timezone"
+
+    yad_cb_timezones=""
+
+    for timezone in ./*
+    do
+
+        yad_cb_timezones+="${timezone}!"
+
+    done
+
+    output="$(yad --undecorated --center --fixed --form --field="Timezone:":CB "$yad_cb_timezones" --buttons-layout=edge --button="Back":1 --button="Next":0)"
+
+    selected_timezone=$(echo "$output" | awk -F'|' '{print $1}')
+
+done
+
+    
+
+
+
+
+
+
+
+
+
+
+
+#NONE OF THE ABOVE (NOT SURE WHERE TO PUT THIS YET)
+
+if [[ "$selected_timezone_folder" == "None of the above" ]]
+then
+
+    timezone_folders=()
+
+    for timezone_folder in /usr/share/zoneinfo/*
+    do
+
+        timezone_folder="$(basename "$timezone_folder")"
+
+        if [[ ! "$timezone_folder" =~ "." ]]
+        then
+
+            timezone_folders+=("$timezone_folder")
+
+        fi
+
+    done
+
+fi
+
+#NONE OF THE ABOVE (NOT SURE WHERE TO PUT THIS YET)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
