@@ -139,7 +139,7 @@ xinit
 
 fi' | tee -a /home/shock/.bashrc
 
-echo 'marco & shock-startup' | tee -a /home/shock/.xinitrc
+echo 'marco & shock-initial-setup' | tee -a /home/shock/.xinitrc
 
 sudo chown -R shock /home/shock
 
