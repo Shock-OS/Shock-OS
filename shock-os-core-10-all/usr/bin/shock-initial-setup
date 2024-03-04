@@ -54,7 +54,7 @@ do
 
 done &
 
-yad --undecorated --center --window-icon=/usr/share/shock/shock-logo.svg --width=400 --title="Welcome" --picture --size=fit --filename=/usr/share/shock/initsetup-welcome-logo.png --text="<span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --buttons-layout=center --button="Next"\!go-next
+yad --undecorated --center --window-icon=/usr/share/shock/shock-logo.svg --width=400 --title="Welcome" --picture --size=fit --filename=/usr/share/shock/initsetup-welcome-logo.png --text="<span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --buttons-layout=center --button="Next"\!go-next-symbolic
 
 #LOCALE CONFIGURATION
 
@@ -473,14 +473,20 @@ timezone_folders=("Africa" "America" "Antarctica" "Arctic Ocean" "Asia" "Atlanti
 
 cd /usr/share/zoneinfo
 
-current_timezone_folder="$(readlink /etc/localtime | awk -F'/' '{print $5}')"
-
 selected_timezone_folder=""
 
 until [[ -f "$selected_timezone_folder" ]] #go until chosen locale is a FILE, not a directory containing more locales
 do
 
     echo "CWD: $(pwd)" #DEBUG
+
+    current_timezone_folder="$(readlink /etc/localtime)"
+
+    current_timezone_folder="${current_timezone_folder#$(pwd)}"
+
+    current_timezone_folder="$(echo "$current_timezone_folder" | cut -d'/' -f1)"
+
+    echo "CURRENT_TIMEZONE_FOLDER: $current_timezone_folder" #DEBUG
 
     yad_cb_timezone_folders=""
 
@@ -790,13 +796,13 @@ sed -i 's/#NAutoVTs=6/NAutoVTs=1/g' /etc/systemd/logind.conf
 
 echo "[Service]
 ExecStart=
-ExecStart=-/usr/sbin/agetty --autologin $username --noclear %I $TERM" | tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
+ExecStart=-/usr/sbin/agetty --autologin $username --noclear %I $TERM" | sudo tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
 
-systemctl is-enabled getty@tty1.service
+sudo systemctl is-enabled getty@tty1.service
 
-systemctl enable getty@tty1.service
+sudo systemctl enable getty@tty1.service
 
-systemctl daemon-reload
+sudo systemctl daemon-reload
 
 echo 'shock-startup' | tee -a "/home/$username/.bashrc"
 
@@ -843,7 +849,7 @@ do
 
 done
 
-echo "1" | tee /usr/share/shock/setupvalue
+echo "1" | sudo tee /usr/share/shock/setupvalue
 
 yad --undecorated --center --fixed --text-align=center --text="<span font_weight='bold' font_size='larger'>All Done\!</span>\n\nYour Raspberry Pi is set up and ready to go. Please reboot to begin using your system." --buttons-layout=center --button="Reboot Now"\!gtk-refresh-symbolic
 
