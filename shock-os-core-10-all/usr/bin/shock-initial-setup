@@ -1,5 +1,14 @@
 #!/bin/bash
 
+if [[ "$(cat /usr/share/shock/setupvalue)" != "0" ]]
+then
+
+    echo "Your system has already been set up."
+
+    exit
+
+fi
+
 IFS=$'\n'
 
 setup_todo_list=(choose_language choose_dialect apply_locale_settings choose_kb_model_and_layout apply_keyboard_settings choose_timezone apply_timezone_settings choose_username create_password verify_password apply_user_settings)
@@ -278,7 +287,7 @@ echo "SELECTED_LOCALE: $selected_locale" #DEBUG
 
 function apply_locale_settings() {
 
-sudo sed -i '/^en_US.UTF-8/s/^/# /' /etc/locale.gen #de-selects the en_US.UTF-8 locale that comes by default (can be re-selected if it is chosen as the locale)
+sudo sed -i '/^en_GB.UTF-8/s/^/# /' /etc/locale.gen #de-selects the en_US.UTF-8 locale that comes by default (can be re-selected if it is chosen as the locale)
 
 sudo sed -i "/^# *${selected_locale}.UTF-8/s/^# *//" /etc/locale.gen
 
@@ -305,6 +314,8 @@ kb_layout_names=($(awk '/^! layout/ {p=1; next} p && NF==0 {exit} p' /usr/share/
 current_model_id=$(setxkbmap -print | awk -F"[()]" '/xkb_geometry/ {print $2}')
 
 current_layout_id=$(setxkbmap -print | awk -F"+" '/xkb_symbols/ {print $2}')
+
+selected_variant_id=""
 
 counter=0
 
@@ -482,9 +493,9 @@ do
 
     current_timezone_folder="$(readlink /etc/localtime)"
 
-    current_timezone_folder="${current_timezone_folder#$(pwd)}"
+    current_timezone_folder="${current_timezone_folder//$(pwd)}"
 
-    current_timezone_folder="$(echo "$current_timezone_folder" | cut -d'/' -f1)"
+    current_timezone_folder="$(echo "$current_timezone_folder" | cut -d'/' -f2)"
 
     echo "CURRENT_TIMEZONE_FOLDER: $current_timezone_folder" #DEBUG
 
@@ -524,6 +535,8 @@ do
         for timezone_folder in "${timezone_folders[@]}"
         do
 
+            timezone_folder="${timezone_folder//_/ }" #replaces underscores with spaces to make locale names look nicer
+
             if [[ "$timezone_folder" == "$current_timezone_folder" ]]
             then
 
@@ -541,6 +554,8 @@ do
 
         for timezone_folder in *
         do
+
+            timezone_folder="${timezone_folder//_/ }" #replaces underscores with spaces to make locale names look nicer
 
             if [[ "$timezone_folder" == "$current_timezone_folder" ]]
             then
@@ -836,6 +851,8 @@ do
         elif [[ "$ex" == "1" ]]
         then
 
+            setup_todo_item=$((setup_todo_item-1))
+
             until [[ "${setup_todo_list[setup_todo_item]}" != *"apply" ]]
             do
 
@@ -851,7 +868,7 @@ done
 
 echo "1" | sudo tee /usr/share/shock/setupvalue
 
-yad --undecorated --center --fixed --text-align=center --text="<span font_weight='bold' font_size='larger'>All Done\!</span>\n\nYour Raspberry Pi is set up and ready to go. Please reboot to begin using your system." --buttons-layout=center --button="Reboot Now"\!gtk-refresh-symbolic
+yad --undecorated --center --fixed --text-align=center --text="<span font_weight='bold' font_size='larger'>All Done\!</span>\n\nYour Raspberry Pi is set up and ready to go. Please reboot to begin using your system.\n" --buttons-layout=center --button="Reboot Now"\!gtk-refresh-symbolic
 
 sudo reboot
 
