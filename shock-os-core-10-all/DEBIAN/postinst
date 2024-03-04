@@ -4,6 +4,8 @@ cd /
 
 sed -i '1s/.*/PRETTY_NAME="Shock OS X Jasmine"/' /usr/lib/os-release
 
+echo 'FULL_NAME="Shock OS X Jasmine"' | tee -a /usr/share/shock/shock-dist-info
+
 #the above set of commands copies the os release file to /usr/lib
 
 for a in /usr/share/shock-themes/icons/symbolic/16x16/*

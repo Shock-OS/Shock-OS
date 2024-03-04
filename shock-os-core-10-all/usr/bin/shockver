@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /usr/lib/os-release
+source /usr/share/shock/shock-dist-info
 
 if (($(getconf LONG_BIT)==32))
 then
@@ -14,9 +14,13 @@ else
 fi
 
 yad --window-icon=/usr/share/shock/gnome-logo-white.svg --width=400 --height=400 --title="About Shock OS" --picture --size=fit --filename=/usr/share/shock/gnome-logo-white.svg --text="
-<b>${PRETTY_NAME}</b>
+<b>${FULL_NAME}</b>
+
+$(cat /proc/device-tree/model)
+
+$DE_EDITION Edition
 
 $arch
 
-<small>Built on $(cat /usr/share/shock/build-date)</small>
+<small>Built on ${BUILD_DATE}</small>
 " --text-align=center --buttons-layout=center --button="Close"\!gtk-close

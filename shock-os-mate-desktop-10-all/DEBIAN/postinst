@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "DE_EDITION=MATE" | tee -a /usr/share/shock/shock-dist-info
+
 cp -r /usr/share/shock/install-temp/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
 
 cp -r /usr/share/shock/install-temp/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
