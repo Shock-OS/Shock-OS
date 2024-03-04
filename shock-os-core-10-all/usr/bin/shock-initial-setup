@@ -492,6 +492,8 @@ do
 
             timezone_folder="$(basename "$timezone_folder")"
 
+            timezone_folder="${timezone_folder//_/ }" #replaces underscores with spaces to make locale names look nicer
+
             if [[ ! " ${timezone_folders[@]} " =~ " $timezone_folder " ]]
             then
 
@@ -577,6 +579,8 @@ do
     else
 
         selected_timezone_folder=$(echo "$output" | awk -F'|' '{print $1}')
+
+        selected_timezone_folder="${selected_timezone_folder// /_}" #puts the underscores back
 
         if [[ -d "$selected_timezone_folder" ]]
         then
