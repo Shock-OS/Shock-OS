@@ -52,11 +52,11 @@ then
 
     gsettings set org.mate.caja.desktop font "Ubuntu 11"
 
-    gsettings set org.mate.desktop.interface document-font-name "Ubuntu 11"
+    gsettings set org.mate.interface document-font-name "Ubuntu 11"
 
     gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11" #MUTTER COMPATIBILITY
 
-    gsettings set org.mate.desktop.interface monospace-font-name "Monospace 13"
+    gsettings set org.mate.interface monospace-font-name "Monospace 13"
 
     gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13" #MUTTER COMPATIBILITY
 

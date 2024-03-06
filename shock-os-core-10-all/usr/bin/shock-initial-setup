@@ -42,9 +42,9 @@ gsettings set org.mate.interface font-name "Ubuntu 11"
 
 gsettings set org.mate.caja.desktop font "Ubuntu 11"
 
-gsettings set org.mate.desktop.interface document-font-name "Ubuntu 11"
+gsettings set org.mate.interface document-font-name "Ubuntu 11"
 
-gsettings set org.mate.desktop.interface monospace-font-name "Monospace 13"
+gsettings set org.mate.interface monospace-font-name "Monospace 13"
 
 gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
 
@@ -628,6 +628,8 @@ function apply_timezone_settings() {
 
 sudo timedatectl set-timezone "$selected_timezone_folder"
 
+echo "$selected_timezone_folder" | sudo tee /etc/timezone
+
 }
 
 #USER CREATION
@@ -803,7 +805,7 @@ pa2=""
 
 sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio "$username" || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Failed to add the user to the required groups." --button="Dismiss"\!gtk-cancel
 
-echo "%$username ALL=(ALL:ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/initsetup-rootpriv #enables the user to run all commands without a password (temporarily)
+echo "%$username ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/initsetup-rootpriv #enables the user to run all commands without a password (temporarily)
 
 #the setup finalizer temporary autologin patch begins
 
@@ -819,7 +821,7 @@ sudo systemctl enable getty@tty1.service
 
 sudo systemctl daemon-reload
 
-echo 'shock-startup' | tee -a "/home/$username/.bashrc"
+echo 'shock-startup' | sudo tee -a "/home/$username/.bashrc"
 
 #the setup finalizer temporary autologin patch ends
 
