@@ -56,6 +56,8 @@ feh --bg-fill /usr/share/shock/initsetup-background.png
 
 shock-pulseaudio-autoconfig
 
+amixer -D pulse sset Master 100% #sets volume to 100% so the setup music can be heard
+
 while true
 do
 
@@ -92,7 +94,7 @@ function convert_unicode() {
 
 }
 
-#PRELOAD THE LANG_ABS, LANG_NAMES, LANG_NAMES_UNICODE, COUNTRY_NAMES, COUNTRY_NAMES_UNICODE, AND LOCALES ARRAYS
+#PRELOADING THE LANG_ABS, LANG_NAMES, AND LANG_NAMES_UNICODE ARRAYS
 
 lang_abs=()
 
@@ -128,32 +130,6 @@ do
 done
 
 echo "LANG_ABS: ${lang_abs[@]}" #DEBUG
-
-country_names=()
-
-country_names_unicode=()
-
-locales=()
-
-for locale in /usr/share/i18n/locales/*
-do
-
-    lang_ab="$(grep '^lang_ab' "$locale" | sed 's/^lang_ab\s*"\(.*\)"/\1/')"
-
-    if [[ "$lang_ab" == "$selected_lang_ab" ]]
-    then
-
-        country_name="$(grep '^country_name' "$locale" | sed 's/^country_name\s*"\(.*\)"/\1/')"
-
-        country_names+=("$country_name")
-
-        country_names_unicode+=("${selected_lang_name_unicode} ($(convert_unicode "$country_name"))")
-
-        locales+=("$(basename "$locale")")
-
-    fi
-
-done
 
 #PRELOADING ENDS
 
@@ -221,6 +197,32 @@ function choose_dialect() {
 yad_cb_languages=""
 
 counter=0
+
+country_names=()
+
+country_names_unicode=()
+
+locales=()
+
+for locale in /usr/share/i18n/locales/*
+do
+
+    lang_ab="$(grep '^lang_ab' "$locale" | sed 's/^lang_ab\s*"\(.*\)"/\1/')"
+
+    if [[ "$lang_ab" == "$selected_lang_ab" ]]
+    then
+
+        country_name="$(grep '^country_name' "$locale" | sed 's/^country_name\s*"\(.*\)"/\1/')"
+
+        country_names+=("$country_name")
+
+        country_names_unicode+=("${selected_lang_name_unicode} ($(convert_unicode "$country_name"))")
+
+        locales+=("$(basename "$locale")")
+
+    fi
+
+done
 
 current_locale="$(echo "$LANG" | awk -F'.' '{print $1}')"
 
