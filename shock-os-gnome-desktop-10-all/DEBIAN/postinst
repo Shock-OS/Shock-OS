@@ -29,7 +29,7 @@ gtk-icon-theme-name=Yaru-purple" | tee /home/shock/.config/gtk-3.0/settings.ini
 echo $'\n''if (($(ps aux | awk '\''{print $1,$11,$12}'\'' | grep -c "$(whoami) /bin/bash /usr/bin/shock-startup")<2)) #starts initial setup when run automatically upon boot, but not if the user opened the terminal with CRTL+ALT+T during the setup
 then
 
-mutter & shock-startup
+weston
 
 fi' | tee -a /home/shock/.bashrc
 
@@ -38,6 +38,8 @@ sudo chown -R shock /home/shock
 #the 'shock' temporary autologin patch ends
 
 gtk-update-icon-cache -f /usr/share/icons/Yaru/
+
+cp /usr/share/shock/install-temp/weston.ini /home/shock/.config
 
 rm -r /usr/share/shock/install-temp
 

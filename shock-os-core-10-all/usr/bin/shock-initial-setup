@@ -11,48 +11,67 @@ fi
 
 IFS=$'\n'
 
+source /usr/share/shock/shock-dist-info
+
 setup_todo_list=(choose_language choose_dialect apply_locale_settings choose_kb_model_and_layout apply_keyboard_settings choose_timezone apply_timezone_settings choose_username create_password verify_password apply_user_settings)
 
 username=""
 
 full_name=""
 
-#MATE STUFF BEGINS
-
-if [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
+if [[ "DE_EDITION" == "MATE" ]]
 then
 
-    gsettings set org.mate.session.required-components windowmanager "marco-glx"
+    if [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
+    then
+
+        gsettings set org.mate.session.required-components windowmanager "marco-glx"
+
+    fi
+
+    gsettings set org.mate.interface enable-animations "false"
+
+    gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
+
+    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
+
+    gsettings set org.mate.Marco.general theme "Yaru"
+
+    gsettings set org.mate.Marco.general center-new-windows "true"
+
+    #THE DEFAULT FONT PATCH BEGINS
+
+    gsettings set org.mate.interface font-name "Ubuntu 11"
+
+    gsettings set org.mate.caja.desktop font "Ubuntu 11"
+
+    gsettings set org.mate.interface document-font-name "Ubuntu 11"
+
+    gsettings set org.mate.interface monospace-font-name "Monospace 13"
+
+    gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
+
+    #THE DEFAULT FONT PATCH ENDS
+
+    feh --bg-fill /usr/share/shock/initsetup-background.png
+
+else #if GNOME Edition
+
+    gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close" #MUTTER COMPATIBILITY
+
+    #THE DEFAULT FONT PATCH BEGINS
+
+    gsettings set org.gnome.desktop.interface font-name "Ubuntu 11" #MUTTER COMPATIBILITY
+
+    gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11" #MUTTER COMPATIBILITY
+
+    gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13" #MUTTER COMPATIBILITY
+
+    gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11" #MUTTER COMPATIBILITY
+
+    #THE DEFAULT FONT PATCH ENDS
 
 fi
-
-gsettings set org.mate.interface enable-animations "false"
-
-gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
-
-gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
-
-gsettings set org.mate.Marco.general theme "Yaru"
-
-gsettings set org.mate.Marco.general center-new-windows "true"
-
-#THE DEFAULT FONT PATCH BEGINS
-
-gsettings set org.mate.interface font-name "Ubuntu 11"
-
-gsettings set org.mate.caja.desktop font "Ubuntu 11"
-
-gsettings set org.mate.interface document-font-name "Ubuntu 11"
-
-gsettings set org.mate.interface monospace-font-name "Monospace 13"
-
-gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
-
-#THE DEFAULT FONT PATCH ENDS
-
-feh --bg-fill /usr/share/shock/initsetup-background.png
-
-#MATE STUFF ENDS
 
 shock-pulseaudio-autoconfig
 
@@ -61,7 +80,7 @@ amixer -D pulse sset Master 100% #sets volume to 100% so the setup music can be 
 while true
 do
 
-    mpv --no-video /usr/share/shock/"Space Ambience.mp3"
+    mpv --no-video /usr/share/shock/initsetup-bgm.mp3
 
 done &
 
@@ -299,6 +318,8 @@ sudo sed -i '/^en_GB.UTF-8/s/^/# /' /etc/locale.gen #de-selects the en_US.UTF-8 
 
 sudo sed -i "/^# *${selected_locale}.UTF-8/s/^# *//" /etc/locale.gen
 
+export LANG="${selected_locale}.UTF-8"
+
 sudo locale-gen || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Locale setting failed." --button="Dismiss"\!gtk-cancel
 
 sudo update-locale LANG="${selected_locale}.UTF-8" || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Locale setting failed." --button="Dismiss"\!gtk-cancel
@@ -469,22 +490,24 @@ sudo sed -i "s/^XKBLAYOUT=.*/XKBLAYOUT=\"${selected_layout_id}\"/" /etc/default/
 
 sudo sed -i "s/^XKBVARIANT=.*/XKBVARIANT=\"${selected_variant_id}\"/" /etc/default/keyboard
 
-gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'pc105')]" #GNOME ON WAYLAND
-
-if [[ -n "$selected_variant_id" ]] #update keyboard settings for current shell (X11)
+if [[ -n "$selected_variant_id" ]]
 then
 
     setxkbmap -model "$selected_model_id" -layout "$selected_layout_id" -variant "$selected_variant_id"
+
+    gsettings set org.gnome.desktop.input-sources sources "[('xkb', '${selected_layout_id}'), ('xkb', '${selected_model_id}'), ('xkb', '${selected_variant_id}')]" #GNOME ON WAYLAND
 
 else
 
     setxkbmap -model "$selected_model_id" -layout "$selected_layout_id"
 
+    gsettings set org.gnome.desktop.input-sources sources "[('xkb', '${selected_layout_id}'), ('xkb', '${selected_model_id}')]" #GNOME ON WAYLAND
+
 fi
 
 }
 
-#TIMEZONE CONFIGURATION (WHILE THE OTHER TWO SECTIONS ARE PRETTY MUCH COMPLETE, EVERYTHING BELOW IS A HOT MESS AND MAY NEED TO BE COMPLETELY REDONE)
+#TIMEZONE CONFIGURATION
 
 function choose_timezone() {
 

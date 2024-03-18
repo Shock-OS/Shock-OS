@@ -1,12 +1,34 @@
 #!/bin/bash
 
+function set_compositor() {
+
+if [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
+then
+
+    gsettings set org.mate.session.required-components windowmanager "marco-glx"
+
+fi
+
+}
+
 if [[ -f ~/.config/shock/userlogstat ]]
 then
 
-    gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
+    set_compositor
 
+    gsettings set org.mate.interface enable-animations "false"
 
+    gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
 
+    #THE MUTTER SETTINGS PATCH BEGINS
+
+    gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
+
+    gsettings set org.gnome.desktop.wm.keybindings panel-main-menu "['Super']"
+
+    #THE MUTTER SETTINGS PATCH ENDS
+
+    marco --replace &
 
     gsettings set org.mate.interface gtk-theme "Yaru-purple"
 
@@ -19,6 +41,8 @@ then
     gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
 
     gsettings set org.gnome.desktop.interface cursor-theme "Yaru-dark"
+
+    gsettings set org.onboard theme "/usr/share/onboard/themes/Nightshade.theme"
 
     #THE DEFAULT FONT PATCH BEGINS
 
@@ -42,6 +66,40 @@ then
 
     #THE DEFAULT FONT PATCH ENDS
 
+    #the above command sets the onboard theme to Nightshade
+
+    dconf write /org/mate/panel/objects/dockapplet/prefs/win-from-cur-workspace-only "'true'"
+
+    dconf write /org/mate/panel/objects/dockapplet/prefs/pinned-apps "['chromium-browser.desktop', 'caja-browser.desktop', 'mate-terminal.desktop', 'shockware-center.desktop']"
+
+    #the above set of commands sets the mate-dock-applet defaults
+
+    gsettings set org.mate.screensaver themes "['screensavers-gnomelogo-floaters']"
+
+    #the above command sets Lightning Bolt as the default screensaver
+
+    gsettings set org.mate.Marco.general center-new-windows "true"
+
+    gsettings set org.gnome.mutter center-new-windows "true"
+        
+    #the above command sets the new window placement to the center
+
+    gsettings set org.mate.background show-desktop-icons "true"
+
+    gsettings set org.mate.caja.desktop computer-icon-visible "false"
+
+    gsettings set org.mate.caja.desktop home-icon-visible "true"
+
+    gsettings set org.mate.caja.desktop trash-icon-visible "true"
+
+    gsettings set org.mate.caja.desktop network-icon-visible "false"
+
+    gsettings set org.mate.caja.desktop volumes-visible "true"
+
+    #the above set of commands sets the default Shock OS desktop icons
+
+    gsettings set org.mate.session idle-delay 15 #sets the computer to regard the session as idle after 15 minutes (screensaver starts after 15 minutes)
+
     #THE FLATPAK GTK THEMING PATCH BEGINS
 
     flatpak override --user --filesystem="~/.themes:ro"
@@ -62,89 +120,7 @@ then
 
 fi
 
-if (($(cat /usr/share/shock/setupvalue)==0)) #INITIAL SETUP (run as 'shock' user)
-then
-
-    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
-
-    gsettings set org.mate.Marco.general theme "Yaru"
-
-    #THE DEFAULT FONT PATCH BEGINS
-
-    gsettings set org.mate.interface font-name "Ubuntu 11"
-
-    gsettings set org.mate.caja.desktop font "Ubuntu 11"
-
-    gsettings set org.mate.interface document-font-name "Ubuntu 11"
-
-    gsettings set org.mate.interface monospace-font-name "Monospace 13"
-
-    gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
-
-    #THE DEFAULT FONT PATCH ENDS
-
-    feh --bg-fill /usr/share/shock/initsetup-background.png
-
-    shock-pulseaudio-autoconfig
-
-    while true
-    do
-
-        mpv --no-video /usr/share/shock/"Space Ambience.mp3"
-
-    done &
-
-    yad --window-icon=/usr/share/shock/shock-logo.svg --width=400 --title="Welcome" --picture --size=fit --filename=/usr/share/shock/initsetup-welcome-logo.png --text="
-<span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --buttons-layout=center --button="Next"\!go-next
-
-    ex=1
-
-    until [[ "$ex" == "0" ]]
-    do
-
-        sudo env GTK_THEME=Yaru-purple DEBIAN_FRONTEND=gnome dpkg-reconfigure locales
-
-        ex=$?
-
-    done
-
-    . /etc/default/locale
-
-    ex=1
-
-    until [[ "$ex" == "0" ]]
-    do
-
-        sudo env GTK_THEME=Yaru-purple DEBIAN_FRONTEND=gnome dpkg-reconfigure tzdata
-
-        ex=$?
-
-    done
-
-    . /etc/default/locale
-
-    ex=1
-
-    until [[ "$ex" == "0" ]]
-    do
-
-        sudo env GTK_THEME=Yaru-purple DEBIAN_FRONTEND=gnome dpkg-reconfigure keyboard-configuration
-
-        ex=$?
-
-    done
-
-    sudo udevadm trigger --subsystem-match=input --action=change
-
-    sudo shock-users --setup #create a user
-
-    echo "1" | tee /usr/share/shock/setupvalue
-    
-    yad --window-icon=gtk-refresh --image=gtk-refresh --title="Rebooting..." --text="The system will now reboot to finish the setup..." --center --fixed --no-buttons --no-escape --undecorated & sleep 5
-
-    sudo reboot
-
-elif (($(cat /usr/share/shock/setupvalue)==1))
+if (($(cat /usr/share/shock/setupvalue)==1))
 then
 
     sudo deluser --remove-home shock #the 'shock' user has been removed
@@ -153,7 +129,7 @@ then
 
     sudo rm /usr/share/shock/setupvalue
 
-    sudo rm /usr/share/shock/"Space Ambience.mp3"
+    sudo rm /usr/share/shock/initsetup-bgm.mp3
 
     #the default .bashrc file restoration patch begins
 
@@ -173,9 +149,15 @@ then
 
 fi
 
+gsettings set org.mate.lockdown disable-log-out "false" #ensures that the user can logout and shutdown (fixes the shutdown menu being locked if the system crashed during automatic updates)
+
 mkdir -p ~/.cache/shock-tmp
 
 rm -r ~/.cache/shock-tmp/* &
+
+systemctl --user restart shock-slideshow-background-daemon.service
+
+systemctl --user restart shock-notifications-log-daemon.service
 
 systemctl --user restart shock-updates-scanner.service
 
@@ -191,6 +173,8 @@ else
     mpv --no-video /usr/share/shock/startup-sound.mp3
 
 fi
+
+yad --notification --image=preferences-system-notifications-symbolic --command=shock-notifications --text="Notifications" &
 
 if [[ -f ~/.config/shock/welcome-indicator ]]
 then

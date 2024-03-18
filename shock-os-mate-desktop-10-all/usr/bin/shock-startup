@@ -129,7 +129,7 @@ then
 
     sudo rm /usr/share/shock/setupvalue
 
-    sudo rm /usr/share/shock/"Space Ambience.mp3"
+    sudo rm /usr/share/shock/initsetup-bgm.mp3
 
     #the default .bashrc file restoration patch begins
 
