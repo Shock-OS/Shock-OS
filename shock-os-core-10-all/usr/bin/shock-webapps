@@ -326,6 +326,8 @@ do
 
         convert "$shock_webapp_icon" -resize 64x64 -gravity center -background none -extent 64x64 ~/.local/share/shock/webapps/icons/${shock_webapp_name}.png || echo "Failed to convert the icon."
 
+        shock_webapp_class="shock-webapp-${shock_webapp_name}-$(shuf -i 0-9 -n 10 | tr -d '\n')"
+
         echo "[Desktop Entry]
 Name=$shock_webapp_name
 Icon=/home/${runuser}/.local/share/shock/webapps/icons/${shock_webapp_name}.png
@@ -333,8 +335,11 @@ Exec=shock-webapp-launcher '/home/${runuser}/.local/share/applications/shock-web
 Terminal=false
 Type=Application
 Categories=$category
+StartupWMClass=$shock_webapp_class
+StartupNotify=true
 
 shock_webapp_name='$shock_webapp_name'
+shock_webapp_class='$shock_webapp_class'
 shock_webapp_address='$shock_webapp_address'
 shock_webapp_icon='$shock_webapp_icon'
 shock_webapp_category='$shock_webapp_category'

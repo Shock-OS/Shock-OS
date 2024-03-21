@@ -152,6 +152,6 @@ then
 
 fi
 
-eval "$browser --app=$shock_webapp_address $shock_webapp_parameters"
+eval "$browser --app=$shock_webapp_address --class=$shock_webapp_class $shock_webapp_parameters"
 
 

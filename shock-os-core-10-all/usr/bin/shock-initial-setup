@@ -322,9 +322,9 @@ sudo sed -i "/^# *${selected_locale}.UTF-8/s/^# *//" /etc/locale.gen
 
 export LANG="${selected_locale}.UTF-8"
 
-sudo locale-gen || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Locale setting failed." --button="Dismiss"\!gtk-cancel
+sudo locale-gen || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Locale setting failed." --button="Dismiss"\!gtk-cancel-symbolic
 
-sudo update-locale LANG="${selected_locale}.UTF-8" || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Locale setting failed." --button="Dismiss"\!gtk-cancel
+sudo update-locale LANG="${selected_locale}.UTF-8" || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Locale setting failed." --button="Dismiss"\!gtk-cancel-symbolic
 
 . /etc/default/locale
 
@@ -460,7 +460,7 @@ done
 
 yad_cb_kb_variant="${yad_cb_kb_variant::-1}"
 
-output=$(yad --undecorated --center --fixed --form --always-print-result --field="Variant:":CB "$yad_cb_kb_variant" --buttons-layout=edge --button="Cancel":2 --button="Next"\!go-next-symbolic:0)
+output=$(yad --undecorated --center --fixed --form --always-print-result --field="Variant:":CB "$yad_cb_kb_variant" --buttons-layout=edge --button="Cancel"\!gtk-cancel-symbolic:2 --button="Next"\!go-next-symbolic:0)
 
 ex=$?
 
@@ -837,15 +837,15 @@ fi
 
 function apply_user_settings() {
 
-sudo adduser --disabled-password --gecos "$full_name" "$username" || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Failed to create the user." --button="Dismiss"\!gtk-cancel
+sudo adduser --disabled-password --gecos "$full_name" "$username" || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Failed to create the user." --button="Dismiss"\!gtk-cancel-symbolic
 
-echo "$username:$pa1" | sudo chpasswd || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Failed to set the user password." --button="Dismiss"\!gtk-cancel
+echo "$username:$pa1" | sudo chpasswd || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Failed to set the user password." --button="Dismiss"\!gtk-cancel-symbolic
 
 pa1=""
 
 pa2=""
 
-sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio "$username" || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Failed to add the user to the required groups." --button="Dismiss"\!gtk-cancel
+sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio "$username" || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Failed to add the user to the required groups." --button="Dismiss"\!gtk-cancel-symbolic
 
 echo "%$username ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/initsetup-rootpriv #enables the user to run all commands without a password (temporarily)
 
