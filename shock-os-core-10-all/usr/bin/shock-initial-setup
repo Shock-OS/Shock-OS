@@ -57,6 +57,8 @@ then
 
 else #if GNOME Edition
 
+    gsettings set org.gnome.mutter center-new-windows "true"
+
     gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close" #MUTTER COMPATIBILITY
 
     #THE DEFAULT FONT PATCH BEGINS
@@ -340,9 +342,13 @@ kb_layout_ids=($(awk '/^! layout/ {p=1; next} p && NF==0 {exit} p' /usr/share/X1
 
 kb_layout_names=($(awk '/^! layout/ {p=1; next} p && NF==0 {exit} p' /usr/share/X11/xkb/rules/evdev.lst | awk '{print substr($0, index($0,$2))}'))
 
-current_model_id=$(setxkbmap -print | awk -F"[()]" '/xkb_geometry/ {print $2}')
+current_model_id=$(localectl status | awk -F': ' '/X11 Model/ {print $2}') #Works on X11 and Wayland
 
-current_layout_id=$(setxkbmap -print | awk -F"+" '/xkb_symbols/ {print $2}')
+current_layout_id=$(localectl status | awk -F': ' '/X11 Layout/ {print $2}') #Works on X11 and Wayland
+
+#current_model_id=$(setxkbmap -print | awk -F"[()]" '/xkb_geometry/ {print $2}') #OLD
+
+#current_layout_id=$(setxkbmap -print | awk -F"+" '/xkb_symbols/ {print $2}') #OLD
 
 selected_variant_id=""
 

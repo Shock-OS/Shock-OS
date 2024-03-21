@@ -1,104 +1,71 @@
 #!/bin/bash
 
-function set_compositor() {
-
-if [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
-then
-
-    gsettings set org.mate.session.required-components windowmanager "marco-glx"
-
-fi
-
-}
-
 if [[ -f ~/.config/shock/userlogstat ]]
 then
-
-    set_compositor
-
-    gsettings set org.mate.interface enable-animations "false"
-
-    gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
-
-    #THE MUTTER SETTINGS PATCH BEGINS
 
     gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
 
     gsettings set org.gnome.desktop.wm.keybindings panel-main-menu "['Super']"
 
-    #THE MUTTER SETTINGS PATCH ENDS
+    gsettings set org.gnome.shell.extensions.dash-to-panel panel-element-positions '{"0":[{"element":"showAppsButton","visible":false,"position":"stackedTL"},{"element":"leftBox","visible":true,"position":"stackedTL"},{"element":"activitiesButton","visible":false,"position":"stackedTL"},{"element":"taskbar","visible":true,"position":"stackedTL"},{"element":"centerBox","visible":true,"position":"stackedBR"},{"element":"rightBox","visible":true,"position":"stackedBR"},{"element":"dateMenu","visible":true,"position":"stackedBR"},{"element":"systemMenu","visible":true,"position":"stackedBR"},{"element":"desktopButton","visible":true,"position":"stackedBR"}]}'
 
-    marco --replace &
+    gsettings set org.gnome.shell.extensions.dash-to-panel dot-style-focused "CILIORA"
 
-    gsettings set org.mate.interface gtk-theme "Yaru-purple"
+    gsettings set org.gnome.shell.extensions.dash-to-panel dot-style-unfocused "DASHES"
 
-    gsettings set org.mate.Marco.general theme "Yaru"
+    gsettings set org.gnome.shell.extensions.dash-to-panel focus-highlight-dominant "true"
 
-    gsettings set org.mate.interface icon-theme "Yaru-purple"
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color "true"
+
+    gnome-extensions enable dash-to-panel@jderose9.github.com
+
+    dconf write /org/gnome/shell/extensions/arcmenu/custom-menu-button-icon-size "32" #USING DCONF BECAUSE ARCMENU DOESN'T SUPPORT GSETTINGS
+
+    dconf write /org/gnome/shell/extensions/arcmenu/custom-menu-button-text "' Menu'"
+
+    dconf write /org/gnome/shell/extensions/arcmenu/menu-button-appearance "'Icon_Text'"
+
+    dconf write /org/gnome/shell/extensions/arcmenu/menu-button-icon "'/usr/share/icons/Yaru/scalable/places/start-here-symbolic.svg'"
+
+    dconf write /org/gnome/shell/extensions/arcmenu/menu-layout "'Elementary'"
+
+    gsettings set org.gnome.shell favorite-apps "['chromium-browser.desktop', 'org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'org.gnome.Terminal.desktop']"
+
+    gnome-extensions enable arcmenu@arcmenu.com
+
+    gnome-extensions enable ding@rastersoft.com
+
+    gsettings set org.gnome.shell.extensions.panel-osd x-pos "100"
+
+    gnome-extensions enable panel-osd@berend.de.schouwer.gmail.com
+
+    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple"
+
+    gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
+
+    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+
+    gsettings set org.gnome.shell.extensions.user-theme name "Yaru-purple"
 
     flatpak override --user --env=GTK_THEME="Yaru-purple"
 
-    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
-
     gsettings set org.gnome.desktop.interface cursor-theme "Yaru-dark"
-
-    gsettings set org.onboard theme "/usr/share/onboard/themes/Nightshade.theme"
 
     #THE DEFAULT FONT PATCH BEGINS
 
-    gsettings set org.mate.interface font-name "Ubuntu 11"
+    gsettings set org.gnome.desktop.interface font-name "Ubuntu 11"
 
-    gsettings set org.gnome.desktop.interface font-name "Ubuntu 11" #MUTTER COMPATIBILITY
+    gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11"
 
-    gsettings set org.mate.caja.desktop font "Ubuntu 11"
+    gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13"
 
-    gsettings set org.mate.interface document-font-name "Ubuntu 11"
-
-    gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11" #MUTTER COMPATIBILITY
-
-    gsettings set org.mate.interface monospace-font-name "Monospace 13"
-
-    gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13" #MUTTER COMPATIBILITY
-
-    gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
-
-    gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11" #MUTTER COMPATIBILITY
+    gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11"
 
     #THE DEFAULT FONT PATCH ENDS
-
-    #the above command sets the onboard theme to Nightshade
-
-    dconf write /org/mate/panel/objects/dockapplet/prefs/win-from-cur-workspace-only "'true'"
-
-    dconf write /org/mate/panel/objects/dockapplet/prefs/pinned-apps "['chromium-browser.desktop', 'caja-browser.desktop', 'mate-terminal.desktop', 'shockware-center.desktop']"
-
-    #the above set of commands sets the mate-dock-applet defaults
-
-    gsettings set org.mate.screensaver themes "['screensavers-gnomelogo-floaters']"
-
-    #the above command sets Lightning Bolt as the default screensaver
-
-    gsettings set org.mate.Marco.general center-new-windows "true"
 
     gsettings set org.gnome.mutter center-new-windows "true"
         
     #the above command sets the new window placement to the center
-
-    gsettings set org.mate.background show-desktop-icons "true"
-
-    gsettings set org.mate.caja.desktop computer-icon-visible "false"
-
-    gsettings set org.mate.caja.desktop home-icon-visible "true"
-
-    gsettings set org.mate.caja.desktop trash-icon-visible "true"
-
-    gsettings set org.mate.caja.desktop network-icon-visible "false"
-
-    gsettings set org.mate.caja.desktop volumes-visible "true"
-
-    #the above set of commands sets the default Shock OS desktop icons
-
-    gsettings set org.mate.session idle-delay 15 #sets the computer to regard the session as idle after 15 minutes (screensaver starts after 15 minutes)
 
     #THE FLATPAK GTK THEMING PATCH BEGINS
 
@@ -149,15 +116,11 @@ then
 
 fi
 
-gsettings set org.mate.lockdown disable-log-out "false" #ensures that the user can logout and shutdown (fixes the shutdown menu being locked if the system crashed during automatic updates)
-
 mkdir -p ~/.cache/shock-tmp
 
 rm -r ~/.cache/shock-tmp/* &
 
-systemctl --user restart shock-slideshow-background-daemon.service
-
-systemctl --user restart shock-notifications-log-daemon.service
+systemctl --user restart shock-slideshow-background-daemon.service #Possibly MATE only
 
 systemctl --user restart shock-updates-scanner.service
 
@@ -173,8 +136,6 @@ else
     mpv --no-video /usr/share/shock/startup-sound.mp3
 
 fi
-
-yad --notification --image=preferences-system-notifications-symbolic --command=shock-notifications --text="Notifications" &
 
 if [[ -f ~/.config/shock/welcome-indicator ]]
 then
