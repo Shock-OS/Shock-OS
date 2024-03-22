@@ -1,0 +1,10 @@
+[Unit]
+Description=Background daemon to monitor when new app shortcuts are added to the desktop and mark them as trusted automatically, eliminating the need for the user to do it manually
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/shock-desktop-icons-daemon
+
+[Install]
+WantedBy=default.target
+

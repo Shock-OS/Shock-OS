@@ -87,31 +87,35 @@ shock_icon_theme=Yaru-purple
 use_libadwaita_theme=FALSE
 start_icon_type=symbolic' | tee /etc/skel/.config/shock/themes
 
-    #[BANDAID PATCH] the Yaru GTK Theme Flatpak bandaid patch begins
+#[BANDAID PATCH] the Yaru GTK Theme Flatpak bandaid patch begins
 
-    mkdir -p /etc/skel/.local/share/themes
+mkdir -p /etc/skel/.local/share/themes
 
-    cp -r /usr/share/themes/Yaru* /etc/skel/.local/share/themes
+cp -r /usr/share/themes/Yaru* /etc/skel/.local/share/themes
 
-    rm -r /etc/skel/.local/share/themes/Yaru-dark-hdpi
+rm -r /etc/skel/.local/share/themes/Yaru-dark-hdpi
 
-    rm -r /etc/skel/.local/share/themes/Yaru-dark-xhdpi
+rm -r /etc/skel/.local/share/themes/Yaru-dark-xhdpi
 
-    rm -r /etc/skel/.local/share/themes/YaruGreen
+rm -r /etc/skel/.local/share/themes/YaruGreen
 
-    rm -r /etc/skel/.local/share/themes/Yaru-hdpi
-    
-    rm -r /etc/skel/.local/share/themes/YaruOK
+rm -r /etc/skel/.local/share/themes/Yaru-hdpi
 
-    rm -r /etc/skel/.local/share/themes/Yaru-xhdpi
+rm -r /etc/skel/.local/share/themes/YaruOK
 
-    #[BANDAID PATCH] the Yaru GTK Theme Flatpak bandaid patch begins
+rm -r /etc/skel/.local/share/themes/Yaru-xhdpi
+
+#[BANDAID PATCH] the Yaru GTK Theme Flatpak bandaid patch begins
 
 #the home directory building ends
 
 cp -r /usr/share/shock/applications/* /etc/skel/.local/share/applications
 
 cp -r /usr/share/shock/applications/* /usr/share/applications
+
+echo "Hidden=true" | sudo tee -a /usr/share/applications/htop.desktop
+
+echo "Hidden=true" | sudo tee -a /usr/share/applications/yad-icon-browser.desktop
 
 #the above command renames the apps to Shock OS friendly names
 

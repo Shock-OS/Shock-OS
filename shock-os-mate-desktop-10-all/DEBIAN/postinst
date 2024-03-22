@@ -64,11 +64,7 @@ cp /usr/share/shock/install-temp/gnomelogo-floaters.desktop /usr/share/applicati
 
 #the above commands set the Lightning Bolt and Raspberry screensavers
 
-rm /usr/share/applications/yad-icon-browser.desktop
-
 rm /usr/share/applications/display-im6.q16.desktop
-
-rm /usr/share/applications/htop.desktop
 
 rm /usr/share/applications/libreoffice-startcenter.desktop
 

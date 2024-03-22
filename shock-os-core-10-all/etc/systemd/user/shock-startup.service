@@ -1,0 +1,10 @@
+[Unit]
+Description=Manages Shock OS startup procedures
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/shock-startup
+
+[Install]
+WantedBy=default.target
+

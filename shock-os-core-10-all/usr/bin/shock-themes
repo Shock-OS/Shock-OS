@@ -992,9 +992,9 @@ icon_color=${icon_color}" | tee ~/.config/shock-themes-mixed-colors
 
 				    gsettings set org.mate.interface icon-theme "$shock_icon_theme"
 
-				    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
+				    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru"
 
-                    gsettings set org.gnome.desktop.interface cursor-theme "Yaru-dark" #MUTTER COMPATIBILITY
+                    gsettings set org.gnome.desktop.interface cursor-theme "Yaru" #MUTTER COMPATIBILITY
 
                     flatpak override --user --env=GTK_THEME="$shock_gtk_theme"
 

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#this script automatically detects when new shortcuts have been added to the desktop and marks them as trusted
+
+inotifywait -m -e create --format '%w%f' ~/Desktop | while read -r file
+do  
+
+echo "FILE: $file" #DEBUG
+
+gio set "$file" "metadata::trusted" true
+
+done
