@@ -89,9 +89,7 @@ then
 
     #THE FLATPAK GTK THEMING PATCH ENDS
 
-    systemctl --user enable --now shock-theme-daemon
-
-    systemctl --user enable --now shock-desktop-icons-daemon
+    rm ~/.config/shock/first-run-indicator
 
 else #NON-FIRST-RUN-SETUP-COMMANDS GO HERE
 

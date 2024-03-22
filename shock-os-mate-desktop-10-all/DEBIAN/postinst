@@ -120,6 +120,10 @@ shock-wm-settings' | tee /usr/bin/mate-window-properties
 
 #the above set of commands replaces the mate-appearance-properties program with a link to shock-wallpapers (for the desktop context menu)
 
+systemctl enable --global shock-notifications-log-daemon
+
+systemctl enable --global shock-slideshow-background-daemon
+
 systemctl set-default multi-user #ensures the target is set to multi-user
 
 cp -r /usr/share/shock/install-temp/icons/Yaru /usr/share/icons

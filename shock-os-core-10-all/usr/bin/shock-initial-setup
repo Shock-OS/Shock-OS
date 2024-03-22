@@ -61,17 +61,21 @@ else #if GNOME Edition
 
     gsettings set org.gnome.mutter center-new-windows "true"
 
-    gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close" #MUTTER COMPATIBILITY
+    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple"
+
+    gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
+
+    gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
 
     #THE DEFAULT FONT PATCH BEGINS
 
-    gsettings set org.gnome.desktop.interface font-name "Ubuntu 11" #MUTTER COMPATIBILITY
+    gsettings set org.gnome.desktop.interface font-name "Ubuntu 11"
 
-    gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11" #MUTTER COMPATIBILITY
+    gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11"
 
-    gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13" #MUTTER COMPATIBILITY
+    gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13"
 
-    gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11" #MUTTER COMPATIBILITY
+    gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11"
 
     #THE DEFAULT FONT PATCH ENDS
 
@@ -855,9 +859,9 @@ fi
 
 function apply_user_settings() {
 
-sudo adduser --disabled-password --gecos "$full_name" "$username" || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Failed to create the user." --button="Dismiss"\!gtk-cancel-symbolic
+sudo adduser --disabled-password --gecos "$full_name" "$username" || { deluser --remove-home "$username"; yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Something went wrong while creating the user. Please try again." --button="Retry"\!edit-undo-symbolic; setup_todo_item=$((setup_todo_item-4)); return; }
 
-echo "$username:$pa1" | sudo chpasswd || yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Failed to set the user password." --button="Dismiss"\!gtk-cancel-symbolic
+echo "$username:$pa1" | sudo chpasswd || { yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Failed to set the user password." --button="Dismiss"\!gtk-cancel-symbolic; setup_todo_item=$((setup_todo_item-3)); return; }
 
 pa1=""
 

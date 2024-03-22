@@ -16,6 +16,10 @@ cp /usr/share/shock/install-temp/face /etc/skel/.face
 
 #the home directory building ends
 
+systemctl enable --global shock-desktop-icons-daemon
+
+systemctl enable --global shock-theme-daemon
+
 systemctl set-default multi-user #ensures the target is set to multi-user
 
 gtk-update-icon-cache -f /usr/share/icons/Yaru/

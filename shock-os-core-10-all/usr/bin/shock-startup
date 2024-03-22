@@ -1,20 +1,5 @@
 #!/bin/bash
 
-if [[ -f ~/.config/shock/first-run-indicator ]]
-then
-
-    shock-startup-desktop #run desktop-environment-specific first-run setup
-
-    systemctl --user enable --now shock-startup
-
-    systemctl --user enable --now shock-release-scanner
-
-    systemctl --user enable --now shock-updates-scanner
-
-    rm ~/.config/shock/first-run-indicator
-
-fi
-
 shock-startup-desktop #run desktop-environment-specific startup commands
 
 if (($(cat /usr/share/shock/setupvalue)==1))

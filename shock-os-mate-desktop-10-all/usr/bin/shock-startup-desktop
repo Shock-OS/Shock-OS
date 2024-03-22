@@ -102,7 +102,7 @@ then
 
     #THE FLATPAK GTK THEMING PATCH ENDS
 
-    systemctl --user enable --now shock-slideshow-background-daemon
+    rm ~/.config/shock/first-run-indicator
 
 else #NON-FIRST-RUN-SETUP COMMANDS GO HERE
 

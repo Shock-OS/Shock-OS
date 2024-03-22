@@ -113,9 +113,9 @@ cp -r /usr/share/shock/applications/* /etc/skel/.local/share/applications
 
 cp -r /usr/share/shock/applications/* /usr/share/applications
 
-echo "Hidden=true" | sudo tee -a /usr/share/applications/htop.desktop
+echo "Hidden=true" | tee -a /usr/share/applications/htop.desktop
 
-echo "Hidden=true" | sudo tee -a /usr/share/applications/yad-icon-browser.desktop
+echo "Hidden=true" | tee -a /usr/share/applications/yad-icon-browser.desktop
 
 #the above command renames the apps to Shock OS friendly names
 
@@ -172,9 +172,15 @@ flatpak_appstream_dir=/var/lib/flatpak/appstream/flathub/${arch}/active" | tee /
 
 #the systemd services patch begins
 
-sudo systemctl daemon-reload
+systemctl daemon-reload
 
-sudo systemctl enable shock-screentime-daemon.service
+systemctl enable shock-screentime-daemon
+
+systemctl enable --global shock-startup
+
+systemctl enable --global shock-release-scanner
+
+systemctl enable --global shock-updates-scanner
 
 #the systemd services patch ends
 
@@ -210,7 +216,7 @@ shock-initial-setup
 
 fi' | tee -a /home/shock/.bashrc
 
-sudo chown -R shock /home/shock
+chown -R shock /home/shock
 
 cp -r /usr/share/shock/install-temp/icons/Yaru /usr/share/icons
 
