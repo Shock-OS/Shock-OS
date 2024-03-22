@@ -38,9 +38,9 @@ then
 
     flatpak override --user --env=GTK_THEME="Yaru-purple"
 
-    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
+    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru"
 
-    gsettings set org.gnome.desktop.interface cursor-theme "Yaru-dark"
+    gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
 
     gsettings set org.onboard theme "/usr/share/onboard/themes/Nightshade.theme"
 

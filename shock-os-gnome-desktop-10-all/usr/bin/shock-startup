@@ -21,13 +21,15 @@ then
 
     gnome-extensions enable dash-to-panel@jderose9.github.com
 
-    dconf write /org/gnome/shell/extensions/arcmenu/custom-menu-button-icon-size "32" #USING DCONF BECAUSE ARCMENU DOESN'T SUPPORT GSETTINGS
+    dconf write /org/gnome/shell/extensions/arcmenu/custom-menu-button-icon-size "32.0" #USING DCONF BECAUSE ARCMENU DOESN'T SUPPORT GSETTINGS
 
     dconf write /org/gnome/shell/extensions/arcmenu/custom-menu-button-text "' Menu'"
 
     dconf write /org/gnome/shell/extensions/arcmenu/menu-button-appearance "'Icon_Text'"
 
-    dconf write /org/gnome/shell/extensions/arcmenu/menu-button-icon "'/usr/share/icons/Yaru/scalable/places/start-here-symbolic.svg'"
+    dconf write /org/gnome/shell/extensions/arcmenu/menu-button-icon "'Custom_Icon'"
+
+    dconf write /org/gnome/shell/extensions/arcmenu/custom-menu-button-icon "'/usr/share/icons/Yaru/scalable/places/start-here-symbolic.svg'"
 
     dconf write /org/gnome/shell/extensions/arcmenu/menu-layout "'Elementary'"
 
@@ -51,7 +53,7 @@ then
 
     flatpak override --user --env=GTK_THEME="Yaru-purple"
 
-    gsettings set org.gnome.desktop.interface cursor-theme "Yaru-dark"
+    gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
 
     #THE DEFAULT FONT PATCH BEGINS
 
@@ -67,7 +69,7 @@ then
 
     gsettings set org.gnome.mutter center-new-windows "true"
         
-    #the above command sets the new window placement to the center
+    gsettings set org.gnome.nautilus.preferences show-delete-permanently "true"
 
     dconf reset /org/gnome/shell/extensions/hidetopbar/enable-intellihide #Using DConf because extension does not support GSettings, resets the Hide Top Bar extension to defaults now that the initial setup has been completed
 
