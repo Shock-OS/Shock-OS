@@ -53,6 +53,8 @@ then
 
     #THE DEFAULT FONT PATCH ENDS
 
+    xinit & marco &
+
     feh --bg-fill /usr/share/shock/initsetup-background.png
 
 else #if GNOME Edition
@@ -73,6 +75,20 @@ else #if GNOME Edition
 
     #THE DEFAULT FONT PATCH ENDS
 
+    gnome-extensions enable no-overview@fthx
+
+    gsettings set org.gnome.desktop.notifications show-banners "false"
+
+    gsettings set org.gnome.mutter overlay-key ""
+
+    gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/shock/initsetup-background.png"
+
+    dconf write /org/gnome/shell/extensions/hidetopbar/enable-intellihide "false" #Using DConf because extension does not support GSettings
+
+    gnome-extensions enable hidetopbar@mathieu.bidon.ca
+
+    gnome-shell --wayland &
+
 fi
 
 shock-pulseaudio-autoconfig
@@ -85,6 +101,8 @@ do
     mpv --no-video /usr/share/shock/initsetup-bgm.mp3
 
 done &
+
+sleep 10
 
 #LOCALE CONFIGURATION
 
