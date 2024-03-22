@@ -59,7 +59,7 @@ mkdir -p /etc/skel/.cache/shock-tmp
 
 touch /etc/skel/.config/shock/welcome-indicator
 
-touch /etc/skel/.config/shock/userlogstat
+touch /etc/skel/.config/shock/first-run-indicator
 
 mkdir -p /etc/skel/.config/gtk-4.0
 

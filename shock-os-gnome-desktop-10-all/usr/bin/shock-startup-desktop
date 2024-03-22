@@ -1,11 +1,21 @@
 #!/bin/bash
 
-if [[ -f ~/.config/shock/userlogstat ]]
+if [[ -f ~/.config/shock/first-run-indicator ]]
 then
 
-    gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
+    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple"
 
-    gsettings set org.gnome.desktop.wm.keybindings panel-main-menu "['Super']"
+    gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
+
+    gsettings set org.gnome.shell.extensions.user-theme name "Yaru-purple"
+
+    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+
+    gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
+
+    gsettings set org.gnome.mutter center-new-windows "true"
+
+    gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
 
     gsettings set org.gnome.shell.extensions.dash-to-panel panel-element-positions '{"0":[{"element":"showAppsButton","visible":false,"position":"stackedTL"},{"element":"leftBox","visible":true,"position":"stackedTL"},{"element":"activitiesButton","visible":false,"position":"stackedTL"},{"element":"taskbar","visible":true,"position":"stackedTL"},{"element":"centerBox","visible":true,"position":"stackedBR"},{"element":"rightBox","visible":true,"position":"stackedBR"},{"element":"dateMenu","visible":true,"position":"stackedBR"},{"element":"systemMenu","visible":true,"position":"stackedBR"},{"element":"desktopButton","visible":true,"position":"stackedBR"}]}'
 
@@ -41,22 +51,6 @@ then
 
     gnome-extensions enable ding@rastersoft.com
 
-    gsettings set org.gnome.shell.extensions.panel-osd x-pos "100"
-
-    gnome-extensions enable panel-osd@berend.de.schouwer.gmail.com
-
-    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple"
-
-    gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
-
-    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
-
-    gsettings set org.gnome.shell.extensions.user-theme name "Yaru-purple"
-
-    flatpak override --user --env=GTK_THEME="Yaru-purple"
-
-    gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
-
     #THE DEFAULT FONT PATCH BEGINS
 
     gsettings set org.gnome.desktop.interface font-name "Ubuntu 11"
@@ -69,7 +63,9 @@ then
 
     #THE DEFAULT FONT PATCH ENDS
 
-    gsettings set org.gnome.mutter center-new-windows "true"
+    gsettings set org.gnome.shell.extensions.panel-osd x-pos "100"
+
+    gnome-extensions enable panel-osd@berend.de.schouwer.gmail.com
         
     gsettings set org.gnome.nautilus.preferences show-delete-permanently "true"
 
@@ -89,75 +85,17 @@ then
 
     flatpak override --user --filesystem="~/.config/gtk-4.0:ro"
 
+    flatpak override --user --env=GTK_THEME="Yaru-purple"
+
     #THE FLATPAK GTK THEMING PATCH ENDS
 
-    rm ~/.config/shock/userlogstat
+    systemctl --user enable --now shock-theme-daemon
 
-fi
+    systemctl --user enable --now shock-desktop-icons-daemon
 
-if (($(cat /usr/share/shock/setupvalue)==1))
-then
+else #NON-FIRST-RUN-SETUP-COMMANDS GO HERE
 
-    sudo deluser --remove-home shock #the 'shock' user has been removed
-
-    sudo systemctl set-default graphical
-
-    sudo rm /usr/share/shock/setupvalue
-
-    sudo rm /usr/share/shock/initsetup-bgm.mp3
-
-    #the default .bashrc file restoration patch begins
-
-    sudo rm ~/.bashrc
-
-    sudo cp /etc/skel/.bashrc ~/
-
-    sudo chown "$(whoami)" ~/.bashrc
-
-    #the default .bashrc file restoration patch ends
-
-    sudo rm /etc/sudoers.d/initsetup-rootpriv #this command removes elevated privilages as they are no longer required.
-
-    echo "Finalizing setup..."
-
-    reboot
-
-fi
-
-mkdir -p ~/.cache/shock-tmp
-
-rm -r ~/.cache/shock-tmp/* &
-
-systemctl --user restart shock-slideshow-background-daemon.service #Possibly MATE only
-
-systemctl --user restart shock-updates-scanner.service
-
-systemctl --user restart shock-release-scanner.service
-
-if [[ -f ~/.shock/startup-sound ]] #this command plays the startup sound
-then
-
-    mpv --no-video ~/.shock/startup-sound
-
-else
-
-    mpv --no-video /usr/share/shock/startup-sound.mp3
-
-fi
-
-if [[ -f ~/.config/shock/welcome-indicator ]]
-then
-
-    shock-welcome &
-
-fi
-
-if [[ " $(groups "$(whoami)") " == *" shock-child "* ]] && [[ -f /usr/share/shock-screentime/"$(whoami)"/dailylimit ]] #if account is a child profile with a screen time limit set
-then
-
-    yad --notification --image=preferences-system-parental-controls --text='Screen time limit is enabled for this user.' --icon-size=48 --command='' --menu='Remaining Time!shock-screentime-timeleft!timer-sand-symbolic' & killpid=$!
-
-    echo "$killpid" | tee ~/.cache/shock-tmp/screentime-limit-notification
+    OTHER NON-FIRST-RUN-SETUP COMMANDS GO HERE
 
 fi
 

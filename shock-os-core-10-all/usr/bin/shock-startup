@@ -1,0 +1,81 @@
+#!/bin/bash
+
+if [[ -f ~/.config/shock/first-run-indicator ]]
+then
+
+    shock-startup-desktop #run desktop-environment-specific first-run setup
+
+    systemctl --user enable --now shock-startup
+
+    systemctl --user enable --now shock-release-scanner
+
+    systemctl --user enable --now shock-updates-scanner
+
+    rm ~/.config/shock/first-run-indicator
+
+fi
+
+shock-startup-desktop #run desktop-environment-specific startup commands
+
+if (($(cat /usr/share/shock/setupvalue)==1))
+then
+
+    sudo deluser --remove-home shock #the 'shock' user has been removed
+
+    sudo systemctl set-default graphical
+
+    sudo rm /usr/share/shock/setupvalue
+
+    sudo rm /usr/share/shock/initsetup-bgm.mp3
+
+    #the default .bashrc file restoration patch begins
+
+    sudo rm ~/.bashrc
+
+    sudo cp /etc/skel/.bashrc ~/
+
+    sudo chown "$(whoami)" ~/.bashrc
+
+    #the default .bashrc file restoration patch ends
+
+    sudo rm /etc/sudoers.d/initsetup-rootpriv #this command removes elevated privilages as they are no longer required.
+
+    echo "Finalizing setup..."
+
+    reboot
+
+fi
+
+mkdir -p ~/.cache/shock-tmp
+
+rm -r ~/.cache/shock-tmp/* &
+
+if [[ -f ~/.shock/startup-sound ]] #this command plays the startup sound
+then
+
+    mpv --no-video ~/.shock/startup-sound
+
+else
+
+    mpv --no-video /usr/share/shock/startup-sound.mp3
+
+fi
+
+if [[ -f ~/.config/shock/welcome-indicator ]]
+then
+
+    shock-welcome &
+
+fi
+
+if [[ " $(groups "$(whoami)") " == *" shock-child "* ]] && [[ -f /usr/share/shock-screentime/"$(whoami)"/dailylimit ]] #if account is a child profile with a screen time limit set
+then
+
+    yad --notification --image=preferences-system-parental-controls --text='Screen time limit is enabled for this user.' --icon-size=48 --command='' --menu='Remaining Time!shock-screentime-timeleft!timer-sand-symbolic' & killpid=$!
+
+    echo "$killpid" | tee ~/.cache/shock-tmp/screentime-limit-notification
+
+fi
+
+
+
