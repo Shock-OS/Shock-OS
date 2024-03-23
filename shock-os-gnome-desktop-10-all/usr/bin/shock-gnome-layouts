@@ -49,6 +49,8 @@ then
 
     gnome-extensions enable arcmenu@arcmenu.com
 
+    gnome-extensions enable ding@rastersoft.com
+
     gsettings set org.gnome.shell.extensions.panel-osd x-pos "100"
 
     gnome-extensions enable panel-osd@berend.de.schouwer.gmail.com
@@ -71,6 +73,8 @@ then
         gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style "DOTS"
 
     fi
+
+    gnome-extensions disable ding@rastersoft.com
 
     gnome-extensions disable arcmenu@arcmenu.com
 

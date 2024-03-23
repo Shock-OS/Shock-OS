@@ -19,8 +19,6 @@ then
 
     shock-gnome-layouts --defaults panel
 
-    gnome-extensions enable ding@rastersoft.com
-
     #THE DEFAULT FONT PATCH BEGINS
 
     gsettings set org.gnome.desktop.interface font-name "Ubuntu 11"
@@ -32,6 +30,10 @@ then
     gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11"
 
     #THE DEFAULT FONT PATCH ENDS
+
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color "true"
+
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style "DOTS"
         
     gsettings set org.gnome.nautilus.preferences show-delete-permanently "true"
 
