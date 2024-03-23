@@ -5,8 +5,8 @@
 inotifywait -m -e create --format '%w%f' ~/Desktop | while read -r file
 do  
 
-echo "FILE: $file" #DEBUG
+    echo "FILE: $file" #DEBUG
 
-gio set "$file" "metadata::trusted" true
+    gio set "$file" "metadata::trusted" true
 
 done

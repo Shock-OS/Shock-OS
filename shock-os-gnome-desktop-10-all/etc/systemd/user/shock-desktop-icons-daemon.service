@@ -6,5 +6,5 @@ Type=simple
 ExecStart=/usr/bin/shock-desktop-icons-daemon
 
 [Install]
-WantedBy=default.target
+WantedBy=gnome-session.target
 

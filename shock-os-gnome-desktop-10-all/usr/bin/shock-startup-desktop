@@ -69,6 +69,8 @@ then
         
     gsettings set org.gnome.nautilus.preferences show-delete-permanently "true"
 
+    gsettings set org.gnoem.desktop.background picture-uri-dark "'file:///usr/share/images/desktop-base/desktop-background.xml'"
+
     dconf reset /org/gnome/shell/extensions/hidetopbar/enable-intellihide #Using DConf because extension does not support GSettings, resets the Hide Top Bar extension to defaults now that the initial setup has been completed
 
     #THE FLATPAK GTK THEMING PATCH BEGINS

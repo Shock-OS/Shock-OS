@@ -16,6 +16,8 @@ cp /usr/share/shock/install-temp/face /etc/skel/.face
 
 #the home directory building ends
 
+echo "Hidden=true" | tee -a /usr/share/applications/org.gnome.font-viewer.desktop
+
 systemctl enable --global shock-desktop-icons-daemon
 
 systemctl enable --global shock-theme-daemon
