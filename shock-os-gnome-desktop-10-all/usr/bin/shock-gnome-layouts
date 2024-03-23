@@ -1,0 +1,103 @@
+#!/bin/bash
+
+#Change the Shock OS GNOME layouts from the command line (also used as a backend for the graphical settings)
+
+if [[ " $* " =~ " panel " ]] && [[ ! " $* " =~ " dock " ]] #panel mode
+then
+
+    if [[ " $* " =~ " --defaults " ]] #reset to defaults
+    then
+
+        if [[ ! -f ~/.config/shock/first-run-indicator ]] #doesn't recursively reset on first run as it isn't needed and may cause unneccesary delays
+        then
+
+            gsettings reset-recursively org.gnome.shell.extensions.dash-to-panel
+
+        fi
+
+        gsettings set org.gnome.shell.extensions.dash-to-panel panel-element-positions '{"0":[{"element":"showAppsButton","visible":false,"position":"stackedTL"},{"element":"leftBox","visible":true,"position":"stackedTL"},{"element":"activitiesButton","visible":false,"position":"stackedTL"},{"element":"taskbar","visible":true,"position":"stackedTL"},{"element":"centerBox","visible":true,"position":"stackedBR"},{"element":"rightBox","visible":true,"position":"stackedBR"},{"element":"dateMenu","visible":true,"position":"stackedBR"},{"element":"systemMenu","visible":true,"position":"stackedBR"},{"element":"desktopButton","visible":true,"position":"stackedBR"}]}'
+
+        gsettings set org.gnome.shell.extensions.dash-to-panel dot-style-focused "CILIORA"
+
+        gsettings set org.gnome.shell.extensions.dash-to-panel dot-style-unfocused "DASHES"
+
+        gsettings set org.gnome.shell.extensions.dash-to-panel dot-color-dominant "true"
+
+        gsettings set org.gnome.shell.extensions.dash-to-panel focus-highlight-dominant "true"
+
+        gsettings set org.gnome.shell.extensions.dash-to-panel isolate-workspaces "true"
+
+        dconf write /org/gnome/shell/extensions/arcmenu/custom-menu-button-icon-size "32.0" #USING DCONF BECAUSE ARCMENU DOESN'T SUPPORT GSETTINGS
+
+        dconf write /org/gnome/shell/extensions/arcmenu/custom-menu-button-text "' Menu'"
+
+        dconf write /org/gnome/shell/extensions/arcmenu/menu-button-appearance "'Icon_Text'"
+
+        dconf write /org/gnome/shell/extensions/arcmenu/menu-button-icon "'Custom_Icon'"
+
+        dconf write /org/gnome/shell/extensions/arcmenu/custom-menu-button-icon "'/usr/share/icons/Yaru/scalable/places/start-here-symbolic.svg'"
+
+        dconf write /org/gnome/shell/extensions/arcmenu/menu-layout "'Elementary'"
+
+        gsettings set org.gnome.shell favorite-apps "['chromium-browser.desktop', 'org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'org.gnome.Terminal.desktop']"
+
+    fi
+
+    gnome-extensions disable dash-to-dock@micxgx.gmail.com
+
+    gnome-extensions enable dash-to-panel@jderose9.github.com
+
+    gnome-extensions enable arcmenu@arcmenu.com
+
+    gsettings set org.gnome.shell.extensions.panel-osd x-pos "100"
+
+    gnome-extensions enable panel-osd@berend.de.schouwer.gmail.com
+
+elif [[ ! " $* " =~ " panel " ]] && [[ " $* " =~ " dock " ]] #dock mode
+then
+
+    if [[ " $* " =~ " --defaults " ]] #reset to defaults
+    then
+
+        if [[ ! -f ~/.config/shock/first-run-indicator ]] #doesn't recursively reset on first run as it isn't needed and may cause unneccesary delays
+        then
+
+            gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
+
+        fi
+
+        gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color "true"
+
+        gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style "DOTS"
+
+    fi
+
+    gnome-extensions disable arcmenu@arcmenu.com
+
+    gnome-extensions disable dash-to-panel@jderose9.github.com
+
+    gnome-extensions disable panel-osd@berend.de.schouwer.gmail.com
+
+    gnome-extensions enable dash-to-dock@micxgx.gmail.com
+
+else
+
+    if [[ "$*" != "--help" ]] || [[ "$*" != "help" ]]
+    then
+
+        echo "SYNTAX ERROR"$'\n'
+
+    fi
+
+    echo "USAGE: shock-gnome-layouts [panel/dock] OPTIONS
+
+LAYOUTS:
+    panel:          the default layout featuring a full desktop panel, similar to Windows 7+ style
+    dock:           an application dock and top bar, similar to Mac OS style, better suited for touchscreen displays
+
+OPTIONS:
+    --defaults:     reset all layout-related settings to their defaults, overwriting any user-configured settings"
+
+fi
+
+    

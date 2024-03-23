@@ -50,12 +50,16 @@ do
 
                 gsettings set org.gnome.desktop.interface gtk-theme "${current_gtk_theme}-dark"
 
+                flatpak override --user --env=GTK_THEME="${current_gtk_theme}-dark"
+
             fi
 
         elif [[ "$current_gtk_theme" == "Yaru-"*"-dark" ]]
         then
 
             gsettings set org.gnome.desktop.interface gtk-theme "${current_gtk_theme::-5}"
+
+            flatpak override --user --env=GTK_THEME="${current_gtk_theme::-5}"
 
         fi
 

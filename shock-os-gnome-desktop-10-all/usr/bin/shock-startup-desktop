@@ -17,37 +17,7 @@ then
 
     gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
 
-    gsettings set org.gnome.shell.extensions.dash-to-panel panel-element-positions '{"0":[{"element":"showAppsButton","visible":false,"position":"stackedTL"},{"element":"leftBox","visible":true,"position":"stackedTL"},{"element":"activitiesButton","visible":false,"position":"stackedTL"},{"element":"taskbar","visible":true,"position":"stackedTL"},{"element":"centerBox","visible":true,"position":"stackedBR"},{"element":"rightBox","visible":true,"position":"stackedBR"},{"element":"dateMenu","visible":true,"position":"stackedBR"},{"element":"systemMenu","visible":true,"position":"stackedBR"},{"element":"desktopButton","visible":true,"position":"stackedBR"}]}'
-
-    gsettings set org.gnome.shell.extensions.dash-to-panel dot-style-focused "CILIORA"
-
-    gsettings set org.gnome.shell.extensions.dash-to-panel dot-style-unfocused "DASHES"
-
-    gsettings set org.gnome.shell.extensions.dash-to-panel dot-color-dominant "true"
-
-    gsettings set org.gnome.shell.extensions.dash-to-panel focus-highlight-dominant "true"
-
-    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color "true"
-
-    gsettings set org.gnome.shell.extensions.dash-to-panel isolate-workspaces "true"
-
-    gnome-extensions enable dash-to-panel@jderose9.github.com
-
-    dconf write /org/gnome/shell/extensions/arcmenu/custom-menu-button-icon-size "32.0" #USING DCONF BECAUSE ARCMENU DOESN'T SUPPORT GSETTINGS
-
-    dconf write /org/gnome/shell/extensions/arcmenu/custom-menu-button-text "' Menu'"
-
-    dconf write /org/gnome/shell/extensions/arcmenu/menu-button-appearance "'Icon_Text'"
-
-    dconf write /org/gnome/shell/extensions/arcmenu/menu-button-icon "'Custom_Icon'"
-
-    dconf write /org/gnome/shell/extensions/arcmenu/custom-menu-button-icon "'/usr/share/icons/Yaru/scalable/places/start-here-symbolic.svg'"
-
-    dconf write /org/gnome/shell/extensions/arcmenu/menu-layout "'Elementary'"
-
-    gsettings set org.gnome.shell favorite-apps "['chromium-browser.desktop', 'org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'org.gnome.Terminal.desktop']"
-
-    gnome-extensions enable arcmenu@arcmenu.com
+    shock-gnome-layouts --defaults panel
 
     gnome-extensions enable ding@rastersoft.com
 
@@ -62,14 +32,10 @@ then
     gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11"
 
     #THE DEFAULT FONT PATCH ENDS
-
-    gsettings set org.gnome.shell.extensions.panel-osd x-pos "100"
-
-    gnome-extensions enable panel-osd@berend.de.schouwer.gmail.com
         
     gsettings set org.gnome.nautilus.preferences show-delete-permanently "true"
 
-    gsettings set org.gnoem.desktop.background picture-uri-dark "'file:///usr/share/images/desktop-base/desktop-background.xml'"
+    gsettings set org.gnome.desktop.background picture-uri-dark "'file:///usr/share/images/desktop-base/desktop-background.xml'"
 
     dconf reset /org/gnome/shell/extensions/hidetopbar/enable-intellihide #Using DConf because extension does not support GSettings, resets the Hide Top Bar extension to defaults now that the initial setup has been completed
 
