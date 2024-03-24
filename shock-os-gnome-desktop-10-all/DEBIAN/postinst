@@ -2,20 +2,6 @@
 
 echo "DE_EDITION=GNOME" | tee -a /usr/share/shock/shock-dist-info
 
-cp -r /usr/share/shock/install-temp/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
-
-cp -r /usr/share/shock/install-temp/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
-
-#the above command will replace the default Debian wallpapers with the Shock OS wallpapers
-
-cp -r /usr/share/shock/install-temp/logos/* /usr/share/desktop-base/debian-logos
-
-#the home directory building begins
-
-cp /usr/share/shock/install-temp/face /etc/skel/.face
-
-#the home directory building ends
-
 echo "Hidden=true" | tee -a /usr/share/applications/org.gnome.font-viewer.desktop
 
 systemctl enable --global shock-desktop-icons-daemon
@@ -25,6 +11,8 @@ systemctl enable --global shock-theme-daemon
 systemctl set-default multi-user #ensures the target is set to multi-user
 
 gtk-update-icon-cache -f /usr/share/icons/Yaru/
+
+cp -rf /usr/share/shock/install-temp/* /
 
 rm -r /usr/share/shock/install-temp
 

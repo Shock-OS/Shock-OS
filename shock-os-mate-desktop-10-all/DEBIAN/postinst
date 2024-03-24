@@ -2,39 +2,7 @@
 
 echo "DE_EDITION=MATE" | tee -a /usr/share/shock/shock-dist-info
 
-cp -r /usr/share/shock/install-temp/wallpapers/* /usr/share/wallpapers/DebianTheme/contents/images
-
-cp -r /usr/share/shock/install-temp/wallpapers/* /usr/share/desktop-base/active-theme/lockscreen/contents/images
-
-rm /usr/share/images/desktop-base/login-background.svg
-
-cp /usr/share/shock/install-temp/login-background.svg /usr/share/images/desktop-base
-
 #the above command will replace the default Debian wallpapers with the Shock OS wallpapers
-
-cp -r /usr/share/shock/install-temp/logos/* /usr/share/desktop-base/debian-logos
-
-#the above command replaces the Debian branding with Shock OS branding
-
-cp -r /usr/share/shock/install-temp-themes/scalable/mate-logo.svg /usr/share/mate-menu/icons
-
-#the above command sets the start menu icon to the Shock OS logo
-
-cp -r /usr/share/shock/install-temp/panel/* /usr/share/mate-panel/layouts
-
-#the above command installs the Shock OS panel layout and sets it as the default
-
-rm /etc/lightdm/lightdm.conf
-
-rm /usr/share/icons/mate/cursor.theme
-
-cp /usr/share/shock/install-temp/lightdm.conf /etc/lightdm
-
-cp /usr/share/shock/install-temp/lightdm-gtk-greeter.conf /etc/lightdm
-
-cp /usr/share/shock/install-temp/cursor.theme /usr/share/icons/mate
-
-#the above set of commands sets the default Shock OS screen
 
 touch /etc/lightdm/slick-greeter.conf
 
@@ -50,17 +18,9 @@ show-clock=false" | tee /etc/lightdm/slick-greeter.conf
 
 #the above set of commands sets the slick-greeter settings
 
-rm /usr/share/applications/mate-default-applications-properties.desktop
-
-cp /usr/share/shock/install-temp/mate-default-applications-properties.desktop /usr/share/applications
-
-#the above command sets a star as the logo for the preferred applications
-
 rm /usr/share/applications/screensavers/gnomelogo-floaters.desktop
 
 rm /usr/share/applications/screensavers/footlogo-floaters.desktop
-
-cp /usr/share/shock/install-temp/gnomelogo-floaters.desktop /usr/share/applications/screensavers
 
 #the above commands set the Lightning Bolt and Raspberry screensavers
 
@@ -94,17 +54,7 @@ rm /usr/share/applications/picom.desktop
 
 #the home directory building begins
 
-cp /usr/share/shock/install-temp/mate_dock_applet.conf /etc/skel/.config
-
-cp /usr/share/shock/install-temp/face /etc/skel/.face
-
 #the home directory building ends
-
-cp -r /usr/share/shock/install-temp/applications/* /etc/skel/.local/share/applications
-
-cp -r /usr/share/shock/install-temp/applications/* /usr/share/applications
-
-#the above command renames the apps to Shock OS friendly names
 
 cp /usr/bin/mate-appearance-properties /usr/bin/mate-appearance-properties-old
 
@@ -126,9 +76,11 @@ systemctl enable --global shock-slideshow-background-daemon
 
 systemctl set-default multi-user #ensures the target is set to multi-user
 
-cp -r /usr/share/shock/install-temp/icons/Yaru /usr/share/icons
-
 gtk-update-icon-cache -f /usr/share/icons/Yaru/
+
+cp -rf /usr/share/shock/install-temp/* /
+
+cp -rf /usr/share/shock/install-temp/usr/share/applications/* /etc/skel/.local/share/applications #this command eliminates the need to duplicate the .desktop files
 
 rm -r /usr/share/shock/install-temp
 

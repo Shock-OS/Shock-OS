@@ -74,13 +74,9 @@ XDG_MUSIC_DIR="$HOME/Music"
 XDG_PICTURES_DIR="$HOME/Pictures"
 XDG_VIDEOS_DIR="$HOME/Videos"' | tee /etc/skel/.config/user-dirs.dirs
 
-cp -r /usr/share/shock/install-temp/chromium /etc/skel/.config
-
 mkdir -p /etc/skel/.cache
 
 mkdir -p /etc/skel/.local/share/applications
-
-cp -r /usr/share/shock/install-temp/"Sample Videos" /etc/skel/Videos
 
 echo 'shock_gtk_theme=Yaru-purple
 shock_icon_theme=Yaru-purple
@@ -218,10 +214,6 @@ fi' | tee -a /home/shock/.bashrc
 
 chown -R shock /home/shock
 
-cp -r /usr/share/shock/install-temp/icons/Yaru /usr/share/icons
-
 gtk-update-icon-cache -f /usr/share/icons/Yaru/
-
-rm -rf /usr/share/shock/install-temp
 
 
