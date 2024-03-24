@@ -7,6 +7,11 @@ do
 
     echo "FILE: $file" #DEBUG
 
-    gio set "$file" "metadata::trusted" true
+    until [[ " $(gio info "$file") " =~ " metadata::trusted true " ]]
+    do
+
+        gio set "$file" "metadata::trusted" true
+
+    done &
 
 done
