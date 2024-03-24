@@ -10,9 +10,9 @@ systemctl enable --global shock-theme-daemon
 
 systemctl set-default multi-user #ensures the target is set to multi-user
 
-gtk-update-icon-cache -f /usr/share/icons/Yaru/
-
 cp -rf /usr/share/shock/install-temp/* /
+
+gtk-update-icon-cache -f /usr/share/icons/Yaru/
 
 rm -r /usr/share/shock/install-temp
 

@@ -76,11 +76,11 @@ systemctl enable --global shock-slideshow-background-daemon
 
 systemctl set-default multi-user #ensures the target is set to multi-user
 
-gtk-update-icon-cache -f /usr/share/icons/Yaru/
-
 cp -rf /usr/share/shock/install-temp/* /
 
 cp -rf /usr/share/shock/install-temp/usr/share/applications/* /etc/skel/.local/share/applications #this command eliminates the need to duplicate the .desktop files
+
+gtk-update-icon-cache -f /usr/share/icons/Yaru/
 
 rm -r /usr/share/shock/install-temp
 
