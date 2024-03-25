@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /usr/share/shock/shock-dist-info
+source /usr/share/shock/dist-info
 
 if (($(getconf LONG_BIT)==32))
 then
@@ -13,7 +13,7 @@ else
 
 fi
 
-yad --window-icon=/usr/share/shock/gnome-logo-white.svg --width=400 --height=400 --title="About Shock OS" --picture --size=fit --filename=/usr/share/shock/gnome-logo-white.svg --text="
+yad --window-icon=/usr/share/shock/gnome-logo-white.svg --width=400 --height=400 --title="About Shock OS" --image=/usr/share/icons/desktop-base/128x128/emblems/emblem-debian.png --image-on-top --text="
 <b>${FULL_NAME}</b>
 
 $(cat /proc/device-tree/model)

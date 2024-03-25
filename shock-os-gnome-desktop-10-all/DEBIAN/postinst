@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "DE_EDITION=GNOME" | tee -a /usr/share/shock/shock-dist-info
+echo "DE_EDITION=GNOME" | tee -a /usr/share/shock/dist-info
 
 echo "Hidden=true" | tee -a /usr/share/applications/org.gnome.font-viewer.desktop
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "DE_EDITION=MATE" | tee -a /usr/share/shock/shock-dist-info
+echo "DE_EDITION=MATE" | tee -a /usr/share/shock/dist-info
 
 #the above command will replace the default Debian wallpapers with the Shock OS wallpapers
 

@@ -11,7 +11,7 @@ fi
 
 IFS=$'\n'
 
-source /usr/share/shock/shock-dist-info
+source /usr/share/shock/dist-info
 
 setup_todo_list=(choose_language choose_dialect apply_locale_settings choose_kb_model_and_layout apply_keyboard_settings choose_timezone apply_timezone_settings choose_username create_password verify_password apply_user_settings)
 

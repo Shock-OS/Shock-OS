@@ -1,0 +1,155 @@
+#!/bin/bash
+
+#CLI tool to set Shock OS slideshow backgrounds
+
+if [[ " $* " =~ " --help " ]]
+then
+
+    echo "USAGE: shock-slideshow-backgrounds <directory> <delay in minutes> [OPTIONS]
+
+    OPTIONS:
+        --random        Shuffle images in random order
+        --dynamic       Enable support for dynamic wallpapers (use -l or -light for light wallpapers and -d or -dark for dark wallpapers)
+
+    MATE EDITION ONLY:
+        --style=STYLE   Set wallpaper style, available styles are zoom, tile, centered, scaled, stretched, and spanned."
+
+    exit
+
+fi
+
+directory="$1"
+
+delay="$2"
+
+if [[ "$directory" == *"/" ]] #remove trailing slash from directory if there is one
+then
+
+    directory="${directory::-1}"
+
+fi
+
+if [[ "$directory" != "/"* ]]
+then
+
+    echo "ERROR: Directory must be full path."
+
+    exit 1
+
+elif [[ ! -d "$directory" ]]
+then
+
+    echo "ERROR: Directory does not exist."
+
+    exit 1
+
+elif (($(file --b --mime-type "$directory"/* | grep -c "image/")<2))
+then
+
+    echo "ERROR: Specified directory must contain at least two image files."
+
+    exit 1
+
+elif ! ((1<=delay<=1440))
+then
+
+    echo "ERROR: Delay must be a numerical value between (and including) the numbers 1 and 1440."
+
+    exit 1
+
+fi
+
+if [[ " $* " =~ " --random " ]]
+then
+
+    random_boolean="TRUE"
+
+else
+
+    random_boolean="FALSE"
+
+fi
+
+if [[ " $* " =~ " --dynamic " ]]
+then
+
+    dynamic="TRUE"
+
+else
+
+    dynamic="FALSE"
+
+fi
+
+source /usr/share/shock/dist-info
+
+if [[ "$DE_EDITION" == "MATE" ]] #APPLIES TO MATE EDITION ONLY
+then
+
+    if [[ " $* " =~ " --style=" ]]
+    then
+
+        for style in "$@"
+        do
+
+            if [[ "$style" == "--style="* ]]
+            then
+
+                break
+
+            fi
+
+        done
+
+        style="${style:8}"
+
+        if [[ ! " zoom tile centered scaled stretched spanned " =~ " $style " ]]
+        then
+
+            echo "ERROR: Invalid style, using 'zoom' instead."
+
+            style="zoom"
+
+        fi
+
+    else
+
+        style="zoom"
+
+    fi
+
+    echo "directory=\"$directory\"
+
+delay=\"$delay\"
+
+random_boolean=\"$random_boolean\"
+
+dynamic=\"$dynamic\"
+
+style=\"$style\"" | tee ~/.config/shock/slideshow-background
+
+else
+
+    echo "directory=\"$directory\"
+
+delay=\"$delay\"
+
+random_boolean=\"$random_boolean\"
+
+dynamic=\"$dynamic\"
+
+style=\"$style\"" | tee ~/.config/shock/slideshow-background
+
+fi
+
+
+
+
+
+
+
+
+
+
+
+
