@@ -476,7 +476,7 @@ fi
 
 end_loading
 
-yad --window-icon=shockware-center --title="Details of $full_name" --text="$types_text" --width=830 --height=300 --image="$icon" --text-info --filename="$tmpfile" ${irbuttons[@]}
+yad --window-icon=shockware-center --title="Details of $full_name" --text="$types_text" --width=830 --height=300 --image="$icon" --text-info --filename="$tmpfile" "${irbuttons[@]}"
 
 ex=$?
 
