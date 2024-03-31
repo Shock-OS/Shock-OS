@@ -178,20 +178,11 @@ systemctl enable --global shock-updates-scanner
 
 #the splash screen patch begins
 
-newcmdline="$(cat /boot/cmdline.txt) quiet splash plymouth.ignore-serial-consoles"
+newcmdline="$(cat /boot/firmware/cmdline.txt) quiet splash plymouth.ignore-serial-consoles"
 
-echo "$newcmdline" | tee /boot/cmdline.txt
+echo "$newcmdline" | tee /boot/firmware/cmdline.txt
 
-echo "[Daemon]
-Theme=shockspin
-ShowDelay=0
-Enable=1" | tee /etc/plymouth/plymouthd.conf
-
-rm /usr/share/plymouth/themes/debian-theme
-
-ln -s /usr/share/plymouth/themes/shockspin /usr/share/plymouth/themes/debian-theme
-
-update-initramfs -u
+plymouth-set-default-theme -R shockspin
 
 #the splash screen patch ends
 

@@ -76,7 +76,7 @@ systemctl enable --global shock-slideshow-background-daemon
 
 systemctl set-default multi-user #ensures the target is set to multi-user
 
-cp -rf /usr/share/shock/install-temp/* /
+rsync -rl --keep-dirlinks /usr/share/shock/install-temp/* /
 
 cp -rf /usr/share/shock/install-temp/usr/share/applications/* /etc/skel/.local/share/applications #this command eliminates the need to duplicate the .desktop files
 
