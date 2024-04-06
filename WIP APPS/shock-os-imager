@@ -1,0 +1,82 @@
+#!/bin/bash
+
+
+
+versions="X"
+
+edition="GNOME"
+
+
+
+
+
+
+
+drives=($(lsblk | grep /media | grep -oP "(sd[a-z]|mmcblk[0-9])" | awk '{print "/dev/"$1}' | sort -u))
+
+drives_selection=""
+
+for drive in "${drives[@]}"
+do
+
+    drive_label=""
+
+    for num in {1..1000}
+    do
+
+        LABEL=""
+
+        if [[ "$drive" == "/dev/mmcblk"* ]]
+        then
+
+            eval "$(sudo blkid "${drive}p${num}" | grep -o 'LABEL="[^"]*"')"
+
+        else
+
+            eval "$(sudo blkid "${drive}${num}" | grep -o 'LABEL="[^"]*"')"
+
+        fi
+
+        if [[ -z "$LABEL" ]]
+        then
+
+            break
+
+        elif [[ -z "$drive_label" ]]
+        then
+
+            drive_label="$LABEL"
+
+        else
+
+            drive_label+=",$LABEL"
+
+        fi
+
+    done
+
+    if [[ -z "$drive_label" ]]
+    then
+
+        drive_label="NO LABEL"
+
+    fi
+
+    if [[ -z "$drives_selection" ]]
+    then
+
+        drives_selection="$drive ($drive_label)"
+
+    else
+
+        drives_selection+='!'"$drive ($drive_label)"
+
+    fi
+
+done
+
+
+
+yad --window-icon=shock-os-imager --title="Shock OS Imager" --form --field="Version:":LBL '' --field="":CB "$versions" --field="Edition:":LBL '' --field="":CB 'GNOME!MATE' --field="Architecture:":LBL '' --field="":CB '64-bit!32-bit' --field="Storage Device:":LBL '' --field="":CB "$drives_selection" --buttons-layout=spread --button="Options"\!tweaks-app:2 --button="Refresh"\!gtk-refresh:1 --button="Start Flashing"\!gtk-ok:0
+
+
