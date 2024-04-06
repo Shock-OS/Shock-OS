@@ -2,13 +2,44 @@
 
 
 
-versions="X"
-
-edition="GNOME"
 
 
+rm ~/.cache/shock-tmp/shock-os-imager/*
 
+until [[ -f ~/.cache/shock-tmp/shock-os-imager/metainfo ]]
+do
 
+    wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P ~/.cache/shock-tmp/shock-os-imager/
+
+    if [[ ! -f ~/.cache/shock-tmp/shock-os-imager/metainfo ]]
+    then
+
+        yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="Shock OS Imager requires an internet connection to continue. Please ensure internet connectivity and try again." --buttons-layout=edge --button="Close"\!gtk-close:1 --button="Retry"\!edit-undo:0
+
+        ex=$?
+
+        if [[ "$ex" != "0" ]]
+        then
+
+            exit
+
+        fi
+
+done
+
+function refresh() {
+
+version=''
+
+edition=''
+
+arch=''
+
+device=''
+
+}
+
+refresh
 
 
 
@@ -24,20 +55,22 @@ do
     for num in {1..1000}
     do
 
-        LABEL=""
+        part_label=""
 
         if [[ "$drive" == "/dev/mmcblk"* ]]
         then
 
-            eval "$(sudo blkid "${drive}p${num}" | grep -o 'LABEL="[^"]*"')"
+            part_label="$(lsblk --output LABEL "${drive}p${num}")"
 
         else
 
-            eval "$(sudo blkid "${drive}${num}" | grep -o 'LABEL="[^"]*"')"
+            part_label="$(lsblk --output LABEL "${drive}${num}")"
 
         fi
 
-        if [[ -z "$LABEL" ]]
+        part_label="${part_label:6}" #Removes leading 'LABEL ' from part_label
+
+        if [[ -z "$part_label" ]]
         then
 
             break
@@ -45,11 +78,11 @@ do
         elif [[ -z "$drive_label" ]]
         then
 
-            drive_label="$LABEL"
+            drive_label="$part_label"
 
         else
 
-            drive_label+=",$LABEL"
+            drive_label+=",$part_label"
 
         fi
 
@@ -59,6 +92,13 @@ do
     then
 
         drive_label="NO LABEL"
+
+    fi
+
+    if [[ "$device" == "$drive" ]]
+    then
+
+        drive="^${drive}"
 
     fi
 
@@ -75,8 +115,50 @@ do
 
 done
 
+output="$(yad --width=500 --height=280 --window-icon=shock-os-imager --title="Shock OS Imager" --form --always-print-result --field="Version:":LBL '' --field="":CB "$versions" --field="Edition:":LBL '' --field="":CB 'GNOME!MATE' --field="Architecture:":LBL '' --field="":CB '64-bit!32-bit' --field="Storage Device:":LBL '' --field="":CB "$drives_selection" --buttons-layout=end --button="Refresh"\!gtk-refresh:1 "$clear_button" --button="Start Flashing"\!gtk-ok:0)"
+
+ex=$?
+
+version="$(echo "$output" | awk -F'|' '{print $2}')"
+
+edition="$(echo "$output" | awk -F'|' '{print $4}')"
+
+arch="$(echo "$output" | awk -F'|' '{print $6}')"
+
+device="$(echo "$output" | awk -F'|' '{print $8}')"
+
+device="${string%% *}"
 
 
-yad --window-icon=shock-os-imager --title="Shock OS Imager" --form --field="Version:":LBL '' --field="":CB "$versions" --field="Edition:":LBL '' --field="":CB 'GNOME!MATE' --field="Architecture:":LBL '' --field="":CB '64-bit!32-bit' --field="Storage Device:":LBL '' --field="":CB "$drives_selection" --buttons-layout=spread --button="Options"\!tweaks-app:2 --button="Refresh"\!gtk-refresh:1 --button="Start Flashing"\!gtk-ok:0
+if [[ "$ex" == "0" ]] #Flash
+then
+
+    pkexec shock-os-imager-flash "URL-${!version}-${!edition}-${!arch}" "$device"
+
+elif [[ "$ex" == "1" ]] #Refresh
+then
+
+    refresh
+
+elif [[ "$ex" == "2" ]] #Options
+then
+
+    
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
