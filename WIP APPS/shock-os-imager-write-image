@@ -19,4 +19,88 @@ edition="$2"
 
 arch="$3"
 
+arch="${arch//-/_}"
+
 device="$4"
+
+mkdir -p /usr/share/shock-os-imager/cache/images
+
+mkdir -p /usr/share/shock-os-imager/cache/sigs
+
+rm /usr/share/shock-os-imager/metainfo
+
+rm -rf /usr/share/shock-os-imager/cache/sigs/*
+
+echo "#Getting metadata..."
+
+wget -q https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P /usr/share/shock-os-imager/
+
+source /usr/share/shock-os-imager/metainfo
+
+imagevar="${version}_${edition}_${arch}"
+
+if [[ ! -f /usr/share/shock-os-imager/cache/images/"$imagevar" ]]
+then
+
+    url="${imagevar}_URL"
+
+    url="${!url}"
+
+    wget -O /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" "$url" 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/'
+
+fi
+
+sig_url="${imagevar}_SIG_URL"
+
+sig_url="${!sig_url}"
+
+echo "#Getting signature..."
+
+wget -Oq /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" "$sig_url"
+
+echo "#Verifying image..."
+
+rm /usr/share/shock-os-image/key.asc
+
+wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/key.asc -P /usr/share/shock-os-imager/
+
+gpg --import /usr/share/shock-os-imager/key.asc
+
+gpg --verify /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" || { echo 'ERROR: IMAGE FILE DID NOT MATCH SIGNATURE!!!'; exit 1; }
+
+imagevar_sha256="${imagevar}_SHA256"
+
+if [[ "$(sha256sum /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz")" != "${!imagevar_sha256}" ]]
+then
+
+    echo 'ERROR: INVALID SHA256SUM, FILE HAS BEEN TAMPERED WITH!!!'
+
+    exit 1
+
+fi
+
+echo "#Writing image..."
+
+sudo unxz -c /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | sudo dd of=$target_drive bs=4M status=progress
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

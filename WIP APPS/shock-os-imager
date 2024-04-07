@@ -9,7 +9,7 @@ rm ~/.cache/shock-tmp/shock-os-imager/*
 until [[ -f ~/.cache/shock-tmp/shock-os-imager/metainfo ]]
 do
 
-    wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P ~/.cache/shock-tmp/shock-os-imager/
+    wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P ~/.cache/shock-tmp/shock-os-imager/
 
     if [[ ! -f ~/.cache/shock-tmp/shock-os-imager/metainfo ]]
     then
@@ -25,9 +25,13 @@ do
 
         fi
 
+    fi
+
 done
 
 function refresh() {
+
+source ~/.cache/shock-tmp/shock-os-imager/metainfo
 
 version=''
 
@@ -190,7 +194,7 @@ do
     elif [[ "$ex" == "2" ]] #Options
     then
 
-        if [[ -d /usr/share/shock-os-imager/cached-images ]]
+        if [[ -f /usr/share/shock-os-imager/image-caching-enabled ]]
         then
 
             caching_enabled="TRUE"
@@ -210,15 +214,15 @@ do
         if [[ "$ex" == "0" ]]
         then
 
-            if [[ "$caching_enabled" == "TRUE" ]] && [[ ! -d /usr/share/shock-os-imager/cached-images ]] #Enable caching
+            if [[ "$caching_enabled" == "TRUE" ]] && [[ ! -f /usr/share/shock-os-imager/image-caching-enabled ]] #Enable caching
             then
 
-                pkexec mkdir -p /usr/share/shock-os-imager/cached-images
+                pkexec touch /usr/share/shock-os-imager/image-caching-enabled
 
-            elif [[ "$caching_enabled" == "FALSE" ]] && [[ -d /usr/share/shock-os-imager/cached-images ]] #Disable caching
+            elif [[ "$caching_enabled" == "FALSE" ]] && [[ -f /usr/share/shock-os-imager/image-caching-enabled ]] #Disable caching
             then
 
-                pkexec rm -rf /usr/share/shock-os-imager/cached-images
+                pkexec rm /usr/share/shock-os-imager/image-caching-enabled
 
             fi
 
@@ -230,7 +234,7 @@ do
 
     fi
 
-fi
+done
 
     
 
