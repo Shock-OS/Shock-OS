@@ -41,107 +41,196 @@ device=''
 
 refresh
 
-
-
-drives=($(lsblk | grep /media | grep -oP "(sd[a-z]|mmcblk[0-9])" | awk '{print "/dev/"$1}' | sort -u))
-
-drives_selection=""
-
-for drive in "${drives[@]}"
+while true
 do
 
-    drive_label=""
+    drives=($(lsblk | grep /media | grep -oP "(sd[a-z]|mmcblk[0-9])" | awk '{print "/dev/"$1}' | sort -u))
 
-    for num in {1..1000}
+    drives_selection=""
+
+    for drive in "${drives[@]}"
     do
 
-        part_label=""
+        drive_label=""
 
-        if [[ "$drive" == "/dev/mmcblk"* ]]
+        for num in {1..1000}
+        do
+
+            part_label=""
+
+            if [[ "$drive" == "/dev/mmcblk"* ]]
+            then
+
+                part_label="$(lsblk --output LABEL "${drive}p${num}")"
+
+            else
+
+                part_label="$(lsblk --output LABEL "${drive}${num}")"
+
+            fi
+
+            part_label="${part_label:6}" #Removes leading 'LABEL ' from part_label
+
+            if [[ -z "$part_label" ]]
+            then
+
+                break
+
+            elif [[ -z "$drive_label" ]]
+            then
+
+                drive_label="$part_label"
+
+            else
+
+                drive_label+=",$part_label"
+
+            fi
+
+        done
+
+        if [[ -z "$drive_label" ]]
         then
 
-            part_label="$(lsblk --output LABEL "${drive}p${num}")"
-
-        else
-
-            part_label="$(lsblk --output LABEL "${drive}${num}")"
+            drive_label="NO LABEL"
 
         fi
 
-        part_label="${part_label:6}" #Removes leading 'LABEL ' from part_label
-
-        if [[ -z "$part_label" ]]
+        if [[ "$device" == "$drive" ]]
         then
 
-            break
+            drive="^${drive}"
 
-        elif [[ -z "$drive_label" ]]
+        fi
+
+        if [[ -z "$drives_selection" ]]
         then
 
-            drive_label="$part_label"
+            drives_selection="$drive ($drive_label)"
 
         else
 
-            drive_label+=",$part_label"
+            drives_selection+='!'"$drive ($drive_label)"
 
         fi
 
     done
 
-    if [[ -z "$drive_label" ]]
+    versions_yad_cb=""
+
+    for item in "${versions[@]}"
+    do
+
+        if [[ "$version" == "$item" ]]
+        then
+
+            item="^${item}"
+
+        fi
+
+        if [[ -z "$versions_yad_cb" ]]
+        then
+
+            versions_yad_cb+="$item"
+
+        else
+
+            versions_yad_cb+="!${item}"
+
+        fi
+
+    done
+
+    if [[ "$edition" == "MATE" ]]
     then
 
-        drive_label="NO LABEL"
-
-    fi
-
-    if [[ "$device" == "$drive" ]]
-    then
-
-        drive="^${drive}"
-
-    fi
-
-    if [[ -z "$drives_selection" ]]
-    then
-
-        drives_selection="$drive ($drive_label)"
+        editions_yad_cb='GNOME!^MATE'
 
     else
 
-        drives_selection+='!'"$drive ($drive_label)"
+        editions_yad_cb='GNOME!MATE'
 
     fi
 
-done
+    if [[ "$arch" == "32-bit" ]]
+    then
 
-output="$(yad --width=500 --height=280 --window-icon=shock-os-imager --title="Shock OS Imager" --form --always-print-result --field="Version:":LBL '' --field="":CB "$versions" --field="Edition:":LBL '' --field="":CB 'GNOME!MATE' --field="Architecture:":LBL '' --field="":CB '64-bit!32-bit' --field="Storage Device:":LBL '' --field="":CB "$drives_selection" --buttons-layout=end --button="Refresh"\!gtk-refresh:1 "$clear_button" --button="Start Flashing"\!gtk-ok:0)"
+        arches_yad_cb='64-bit!^32-bit'
 
-ex=$?
+    else
 
-version="$(echo "$output" | awk -F'|' '{print $2}')"
+        arches_yad_cb='64-bit!32-bit'
 
-edition="$(echo "$output" | awk -F'|' '{print $4}')"
+    fi
 
-arch="$(echo "$output" | awk -F'|' '{print $6}')"
+    output="$(yad --width=500 --height=280 --window-icon=shock-os-imager --title="Shock OS Imager" --form --always-print-result --field="Version:":LBL '' --field="":CB "$versions_yad_cb" --field="Edition:":LBL '' --field="":CB "$editions_yad_cb" --field="Architecture:":LBL '' --field="":CB "$arches_yad_cb" --field="Storage Device:":LBL '' --field="":CB "$drives_selection" --buttons-layout=spread --button="Options"\!tweaks-app:2 --button="Refresh"\!gtk-refresh:1 --button="Start Flashing"\!gtk-ok:0)"
 
-device="$(echo "$output" | awk -F'|' '{print $8}')"
+    ex=$?
 
-device="${string%% *}"
+    version="$(echo "$output" | awk -F'|' '{print $2}')"
 
+    edition="$(echo "$output" | awk -F'|' '{print $4}')"
 
-if [[ "$ex" == "0" ]] #Flash
-then
+    arch="$(echo "$output" | awk -F'|' '{print $6}')"
 
-    pkexec shock-os-imager-flash "URL-${!version}-${!edition}-${!arch}" "$device"
+    device="$(echo "$output" | awk -F'|' '{print $8}')"
 
-elif [[ "$ex" == "1" ]] #Refresh
-then
+    device="${string%% *}"
 
-    refresh
+    if [[ "$ex" == "0" ]] #Flash
+    then
 
-elif [[ "$ex" == "2" ]] #Options
-then
+        pkexec shock-os-imager-write-image "$version" "$edition" "$arch" "$device"
+
+    elif [[ "$ex" == "1" ]] #Refresh
+    then
+
+        refresh
+
+    elif [[ "$ex" == "2" ]] #Options
+    then
+
+        if [[ -d /usr/share/shock-os-imager/cached-images ]]
+        then
+
+            caching_enabled="TRUE"
+
+        else
+
+            caching_enabled="FALSE"
+
+        fi
+
+        output="$(yad --width=300 --window-icon=shock-os-imager --title="Options" --form --field="<big><b>Caching Images</b></big>":LBL '' --field="Caching images significantly reduces the amount of time it takes to flash the same image later, but these images also occupy several gigabytes of space. If you flash the same image or images often, and have sufficient space on your computer, caching is recommended. If you rarely use Shock OS Imager and/or don't have enough space on your computer, then we'd recommend disabling caching.":LBL '' --field="Delete Cached Images":FBTN 'shock-os-imager-remove-cached-images' --field="Enable Caching":CHK "$caching_enabled" --buttons-layout=edge --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0)"
+
+        ex=$?
+
+        caching_enabled="$(echo "$output" | awk -F'|' '{print $4}')"
+
+        if [[ "$ex" == "0" ]]
+        then
+
+            if [[ "$caching_enabled" == "TRUE" ]] && [[ ! -d /usr/share/shock-os-imager/cached-images ]] #Enable caching
+            then
+
+                pkexec mkdir -p /usr/share/shock-os-imager/cached-images
+
+            elif [[ "$caching_enabled" == "FALSE" ]] && [[ -d /usr/share/shock-os-imager/cached-images ]] #Disable caching
+            then
+
+                pkexec rm -rf /usr/share/shock-os-imager/cached-images
+
+            fi
+
+        fi
+
+    else
+
+        exit
+
+    fi
+
+fi
 
     
 
