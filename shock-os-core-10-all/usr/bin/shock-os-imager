@@ -1,92 +1,81 @@
 #!/bin/bash
 
-runuser="$1"
 
-#the root check element begins
 
-if (($(id -u)!=0))
-then
 
-    echo "Script must be run as root. Exiting..."
 
-    exit
+rm ~/.cache/shock-tmp/shock-os-imager/*
 
-fi
+until [[ -f ~/.cache/shock-tmp/shock-os-imager/metainfo ]]
+do
 
-#the root check element ends
+    wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P ~/.cache/shock-tmp/shock-os-imager/
 
-function clean() {
+    if [[ ! -f ~/.cache/shock-tmp/shock-os-imager/metainfo ]]
+    then
 
-mkdir -p /usr/share/shock-os-imager
+        yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="Shock OS Imager requires an internet connection to continue. Please ensure internet connectivity and try again." --buttons-layout=edge --button="Close"\!gtk-close:1 --button="Retry"\!edit-undo:0
 
-mkdir -p /usr/share/shock-os-imager/sha256sums
+        ex=$?
 
-rm /usr/share/shock-os-imager/images
+        if [[ "$ex" != "0" ]]
+        then
 
-rm /usr/share/shock-os-imager/cached-images/download*
+            exit
 
-rm -rf /usr/share/shock-os-imager/sha256sums/*
+        fi
+
+    fi
+
+done
+
+function refresh() {
+
+source ~/.cache/shock-tmp/shock-os-imager/metainfo
+
+version=''
+
+edition=''
+
+arch=''
+
+device=''
 
 }
 
-clean
+refresh
 
-success2="FALSE"
-
-until [[ "$success2" == "TRUE" ]]
+while true
 do
 
-	until [[ -f /usr/share/shock-os-imager/images ]]
-	do
-
-		wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/images -P /usr/share/shock-os-imager
-
-		if [[ ! -f /usr/share/shock-os-imager/images ]]
-		then
-
-			yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Shock OS Imager requires an internet connection. Please reconnect to the internet and hit 'Retry'." --button="Retry"\!edit-undo
-
-			ex=$?
-
-			if ((ex!=0))
-			then
-
-				exit
-
-			fi
-
-		fi
-
-	done
-
-	eval "$(cat /usr/share/shock-os-imager/images)"
-
-	drives=($(lsblk | grep /media | grep -oP "(sd[a-z]|mmcblk[0-9])" | awk '{print "/dev/"$1}' | sort -u))
+    drives=($(lsblk | grep /media | grep -oP "(sd[a-z]|mmcblk[0-9])" | awk '{print "/dev/"$1}' | sort -u))
 
     drives_selection=""
 
-    for i in "${drives[@]}"
+    for drive in "${drives[@]}"
     do
 
         drive_label=""
 
-        for a in {1..1000}
+        for num in {1..1000}
         do
 
-            LABEL=""
+            part_label=""
 
-            if [[ "$i" == "/dev/mmcblk"* ]]
+            if [[ "$drive" == "/dev/mmcblk"* ]]
             then
 
-                eval "$(sudo blkid "${i}p${a}" | grep -o 'LABEL="[^"]*"')"
+                part_label="$(lsblk --output LABEL "${drive}p${num}")"
 
             else
 
-                eval "$(sudo blkid "${i}${a}" | grep -o 'LABEL="[^"]*"')"
+                part_label="$(lsblk --output LABEL "${drive}${num}")"
 
             fi
 
-            if [[ -z "$LABEL" ]]
+            part_label="${part_label:6}" #Removes leading 'LABEL ' from part_label
+
+            if [[ -z "$part_label" ]]
             then
 
                 break
@@ -94,11 +83,11 @@ do
             elif [[ -z "$drive_label" ]]
             then
 
-                drive_label="$LABEL"
+                drive_label="$part_label"
 
             else
 
-                drive_label+=",$LABEL"
+                drive_label+=", $part_label"
 
             fi
 
@@ -111,322 +100,158 @@ do
 
         fi
 
+        if [[ "$device" == "$drive" ]]
+        then
+
+            drive="^${drive}"
+
+        fi
+
         if [[ -z "$drives_selection" ]]
         then
 
-            drives_selection="$i ($drive_label)"
+            drives_selection="$drive ($drive_label)"
 
         else
 
-            drives_selection+='!'"$i ($drive_label)"
+            drives_selection+='!'"$drive ($drive_label)"
 
         fi
 
     done
 
-    if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)>0))
+    versions_yad_cb=""
+
+    for item in "${versions[@]}"
+    do
+
+        if [[ "$version" == "$item" ]]
+        then
+
+            item="^${item}"
+
+        fi
+
+        if [[ -z "$versions_yad_cb" ]]
+        then
+
+            versions_yad_cb+="$item"
+
+        else
+
+            versions_yad_cb+="!${item}"
+
+        fi
+
+    done
+
+    if [[ "$edition" == "MATE" ]]
     then
 
-        cached_images_button='--button=Delete Cached Images!gtk-delete:30'\!remove
+        editions_yad_cb='GNOME!^MATE'
 
     else
 
-        cached_images_button=""
+        editions_yad_cb='GNOME!MATE'
 
     fi
 
-	output="$(yad --window-icon=shock-os-imager --title="Shock OS Imager" --text="Install Shock OS onto an external storage device." --form --field="SD card/USB drive:":CB "$drives_selection" --field="Shock OS version:":CB "$images" "$cached_images_button" --button="Refresh"\!gtk-refresh:10 --button="Flash"\!/usr/share/shock/shock-logo.svg:20)"
-
-	ex=$?
-
-	target_drive="$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')"
-
-	target_drive_display_name="$(echo $output | awk 'BEGIN {FS="|" } { print $1 }')"
-
-	target_drive="$(echo "$target_drive" | cut -d' ' -f1)"
-
-    if ((ex==30)) #delete cached images
+    if [[ "$arch" == "32-bit" ]]
     then
 
-        if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)>1)) #plural
+        arches_yad_cb='64-bit!^32-bit'
+
+    else
+
+        arches_yad_cb='64-bit!32-bit'
+
+    fi
+
+    output="$(yad --width=500 --height=280 --window-icon=shock-os-imager --title="Shock OS Imager" --form --always-print-result --field="Version:":LBL '' --field="":CB "$versions_yad_cb" --field="Edition:":LBL '' --field="":CB "$editions_yad_cb" --field="Architecture:":LBL '' --field="":CB "$arches_yad_cb" --field="Storage Device:":LBL '' --field="":CB "$drives_selection" --buttons-layout=spread --button="Options"\!tweaks-app:2 --button="Refresh"\!gtk-refresh:1 --button="Start Flashing"\!gtk-ok:0)"
+
+    ex=$?
+
+    version="$(echo "$output" | awk -F'|' '{print $2}')"
+
+    edition="$(echo "$output" | awk -F'|' '{print $4}')"
+
+    arch="$(echo "$output" | awk -F'|' '{print $6}')"
+
+    device="$(echo "$output" | awk -F'|' '{print $8}')"
+
+    device="${string%% *}"
+
+    if [[ "$ex" == "0" ]] #Flash
+    then
+
+        pkexec shock-os-imager-write-image "$version" "$edition" "$arch" "$device"
+
+    elif [[ "$ex" == "1" ]] #Refresh
+    then
+
+        refresh
+
+    elif [[ "$ex" == "2" ]] #Options
+    then
+
+        if [[ -f /usr/share/shock-os-imager/image-caching-enabled ]]
         then
 
-            rmci_text="There are $(ls /usr/share/shock-os-imager/cached-images | wc -l) cached images on your system, taking up a total of $(du -sh /usr/share/shock-os-imager/cached-images | awk '{print $1}') of space. Would you like to delete them?"
+            caching_enabled="TRUE"
 
-        else #singular
-        
-            rmci_text="There is 1 cached image on your system, taking up a total of $(du -sh /usr/share/shock-os-imager/cached-images | awk '{print $1}') of space. Would you like to delete it?"
+        else
+
+            caching_enabled="FALSE"
 
         fi
 
-        yad --window-icon=shock-os-imager --title="Shock OS Imager" --text="$rmci_text" --button="Yes, remove"\!gtk-ok --button="No, keep"\!gtk-cancel
+        output="$(yad --width=300 --window-icon=shock-os-imager --title="Options" --form --field="<big><b>Caching Images</b></big>":LBL '' --field="Caching images significantly reduces the amount of time it takes to flash the same image later, but these images also occupy several gigabytes of space. If you flash the same image or images often, and have sufficient space on your computer, caching is recommended. If you rarely use Shock OS Imager and/or don't have enough space on your computer, then we'd recommend disabling caching.":LBL '' --field="Delete Cached Images":FBTN 'shock-os-imager-remove-cached-images' --field="Enable Caching":CHK "$caching_enabled" --buttons-layout=edge --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0)"
 
         ex=$?
 
-        if ((ex==0))
+        caching_enabled="$(echo "$output" | awk -F'|' '{print $4}')"
+
+        if [[ "$ex" == "0" ]]
         then
 
-            rm -rf /usr/share/shock-os-imager/cached-images/*
+            if [[ "$caching_enabled" == "TRUE" ]] && [[ ! -f /usr/share/shock-os-imager/image-caching-enabled ]] #Enable caching
+            then
 
-            yad --window-icon=shock-os-imager --image=emblem-default --title="Shock OS Imager" --text="All cached images have been successfully removed." --button="Dismiss"\!gtk-cancel
+                pkexec touch /usr/share/shock-os-imager/image-caching-enabled
+
+            elif [[ "$caching_enabled" == "FALSE" ]] && [[ -f /usr/share/shock-os-imager/image-caching-enabled ]] #Disable caching
+            then
+
+                pkexec rm /usr/share/shock-os-imager/image-caching-enabled
+
+            fi
 
         fi
 
-	elif [[ "$target_drive" == "(null)" ]] && ((ex==20))
-	then
-        yad --width=600 --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="You have not selected a drive to flash. Please plug in a storage device to install Shock OS on, and then click 'Retry'" --button="Retry"\!edit-undo
+    else
 
-    elif [[ -z "$(lsblk -o PATH | grep -w $target_drive)" ]] && ((ex==20)) #if error reading the device (perhaps it was unplugged)
-    then
-
-        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --button="Retry"\!edit-undo
-
-	elif (($(lsblk -o PATH,SIZE -b | grep -w $target_drive | awk '{print $2}')<15000000000)) && ((ex==20)) #if drive is less than 16GB
-    then
-
-		target_drive="(null)"
-
-        yad --width=600 --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="The SD card/USB drive you selected is too small. Shock OS requires a storage device of at least 16GB. Please insert a storage device that is at least 16GB in size, then press 'Retry' when you are ready to continue." --button="Retry"\!edit-undo
-
-    elif ((ex!=10)) && ((ex!=20))
-	then
-
-		exit
-
-	elif ((ex==20))
-    then
-
-        success2="TRUE"
+        exit
 
     fi
 
 done
 
-image_to_flash="$(echo $output | awk 'BEGIN {FS="|" } { print $2 }')"
+    
 
-image_to_flash_display="$image_to_flash"
+        
 
-image_to_flash="$(echo "$output" | awk -F'|' '{print $2}')"
 
-image_to_flash_display_name="$image_to_flash"
 
-image_to_flash_codename="${image_to_flash:13}"
 
-if [[ "$image_to_flash" == *"Legacy"* ]]
-then
 
-	image_to_flash_variant="Legacy"
 
-else
-	
-	image_to_flash_variant="$(echo "$image_to_flash_codename" | sed 's/[^0-9]*//g')"
 
-fi
 
-image_to_flash="$(echo "$image_to_flash_codename" | cut -f1 -d" ")$image_to_flash_variant"
 
-if ((ex==20)) #flash
-then
 
-	url="${!image_to_flash}"
 
-	filename="$(basename "${url%/*}")"
 
-	if [[ ! -f /usr/share/shock-os-imager/cached-images/$filename ]] #if Shock OS image is not already downloaded
-	then
 
-		mkdir -p /usr/share/shock-os-imager/cached-images
 
-        clean
-
-		{
-
-        wget "$url" -P /usr/share/shock-os-imager/cached-images 2>&1 || {
-
-            clean
-
-            yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Failed to download $image_to_flash_display. The program will now exit." --button="Exit"\!gtk-cancel ; kill $$
-
-            }
-
-        } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=shock-os-imager --progress --title="Shock OS Imager" --width=310 --text="Downloading $image_to_flash_display. This may take a while..." --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button="Cancel"\!gtk-cancel:1
-
-		mv /usr/share/shock-os-imager/cached-images/download /usr/share/shock-os-imager/cached-images/$filename
-
-	fi
-
-#THE VERIFICATION SEGMENT BEGINS
-
-    # Launch the command in the background and capture its PID
-    {
-
-    mkdir -p /usr/share/shock-os-imager/sha256sums || { clean; yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="The directory /usr/share/shock-os-imager/sha256sums does not exist and could not be created." --button="Exit"\!gtk-cancel; exit 1; }
-
-    rm -rf /usr/share/shock-os-imager/sha256sums/* || { clean; yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Failed to remove files from /usr/share/shock-os-imager/sha256sums." --button="Exit"\!gtk-cancel; exit 1; }
-
-    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/shockos.asc -P /usr/share/shock-os-imager/sha256sums || { clean; yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Failed to download the GPG key to verify the image." --button="Exit"\!gtk-cancel; exit 1; }
-
-    gpg --import /usr/share/shock-os-imager/sha256sums/shockos.asc || { clean; yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Failed to import the GPG key to verify the image." --button="Exit"\!gtk-cancel; exit 1; }
-
-    wget https://raw.githubusercontent.com/Shock-OS/shock-os-imager/main/sha256sums -P /usr/share/shock-os-imager/sha256sums || { clean; yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Failed to fetch the sha256sums to verify the image." --button="Exit"\!gtk-cancel; exit 1; }
-
-    wget https://github.com/Shock-OS/shock-os-imager/raw/main/sha256sums.sig -P /usr/share/shock-os-imager/sha256sums || { clean; yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="Failed to fetch the sha256sums.sig to verify the image." --button="Exit"\!gtk-cancel; exit 1; }
-
-    if [[ "$(gpg --verify /usr/share/shock-os-imager/sha256sums/sha256sums.sig /usr/share/shock-os-imager/sha256sums/sha256sums 2>&1 | grep 'Primary key fingerprint:')" != "Primary key fingerprint: 9515 D970 4C1B 1B3B 58CB  606D D2EA 4E12 F633 2179" ]]
-    then
-
-        clean
-
-        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="sha256sums has been tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --button="Exit"\!gtk-cancel
-
-        exit 1
-
-    fi
-
-    eval "$(cat /usr/share/shock-os-imager/sha256sums/sha256sums)"
-
-    sha256sum="${!image_to_flash}"
-
-    if [[ "$(sha256sum -b /usr/share/shock-os-imager/cached-images/$filename | cut -d' ' -f1)" != "$sha256sum" ]]
-    then
-
-        clean
-
-        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="$filename was tampered with during or after it was downloaded. Please double check your computer and your internet router for viruses and malware." --button="Exit"\!gtk-cancel
-
-        exit 1
-
-    fi
-
-    } > /dev/null 2>&1 & command_pid=$!
-
-    # Show the progress window using YAD
-
-    yad --window-icon=shock-os-imager --title="Shock OS Imager" --text="Verifying $filename..." --progress --pulsate --progress-text="" --width=300 --height=100 --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
-
-    # Wait for either the command to finish or the YAD window to close
-    wait -n "$command_pid" "$yad_pid"
-
-    # Get the command's exit code
-    ex=$?
-
-    # Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
-    if ps -p "$command_pid"
-    then
-
-        kill "$command_pid"
-
-    else
-
-        kill "$yad_pid"
-
-    fi
-
-    # Check if the command exited with a non-zero code and show an error message if needed
-    if ((ex!=0))
-    then
-
-        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="The verification has been cancelled, and the program will now exit." --button="Exit"\!gtk-cancel
-
-        kill $$
-
-    fi
-
-#THE VERIFICATION SEGMENT ENDS
-
-    if [[ -z "$(lsblk -o PATH | grep -w $target_drive)" ]] #if error reading the device (perhaps it was unplugged)
-    then
-
-        clean
-
-        yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="An error occured while preparing '$target_drive_display_name' for flashing. Perhaps it was unplugged." --button="Exit"\!gtk-cancel
-
-        exit 1
-
-    fi
-
-	partitions=$(lsblk -n "$target_drive" | grep -c '^')
-
-	for ((i=1; i<=$partitions; i++))
-	do
-
-		umount "$target_drive$i"
-
-	done
-
-#THE WRITE SEGMENT BEGINS
-
-    cancelled="FALSE"
-
-    # Launch the command in the background and capture its PID
-    { sudo unxz -c /usr/share/shock-os-imager/cached-images/"$filename" | sudo dd of=$target_drive bs=4M status=progress; } > /dev/null 2>&1 & command_pid=$!
-
-    # Show the progress window using YAD
-
-    yad --window-icon=shock-os-imager --title="Shock OS Imager" --text="Writing $image_to_flash_display to $target_drive_display_name. This will take about 30 minutes..." --progress --pulsate --progress-text="" --width=300 --height=100 --center --fixed --button="Cancel"\!gtk-cancel:1 & yad_pid=$!
-
-    # Wait for either the command to finish or the YAD window to close
-    wait -n "$command_pid" "$yad_pid"
-
-    # Get the command's exit code
-    ex=$?
-
-   # Close the YAD progress window (if the command finished), or kill the command (if the YAD window was closed)
-    if ps -p "$command_pid"
-    then
-
-        yad --fixed --window-icon=shock-os-imager --title="Shock OS Imager" --progress-text="Cancelling..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
-
-        cancelled="TRUE"
-
-        kill "$command_pid"
-
-        eject "$target_drive"
-
-        kill $killpid
-
-    else
-
-        kill "$yad_pid"
-
-    fi
-
-    # Check if the command exited with a non-zero code and show an error message if needed
-    if ((ex!=0))
-    then
-
-        clean
-
-        if [[ "$cancelled" == "TRUE" ]]
-        then
-
-            yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="The operation was cancelled, and the program will now exit." --button="Exit"\!gtk-cancel
-
-        else
-
-            yad --window-icon=shock-os-imager --image=emblem-important --title="Shock OS Imager" --text="An error occurred while writing the image, and the program will now exit." --button="Exit"\!gtk-cancel
-
-        fi
-
-        kill $$
-
-    fi
-
-#THE WRITE SEGMENT ENDS
-
-    clean
-
-	sudo -u "$runuser" -EH notify-send --app-name="Shock OS Imager" --icon=shock-os-imager "Flashing Complete" "$image_to_flash_display has successfully been flashed to $target_drive_display_name."
-
-	yad --window-icon=shock-os-imager --title="Shock OS Imager" --text="Congratulations! $image_to_flash_display has successfully been flashed to $target_drive_display_name. Thank you and enjoy!" --button="Dismiss"\!gtk-cancel
-
-elif ((ex!=10))
-then
-
-    clean
-
-	exit
-
-fi
 
 

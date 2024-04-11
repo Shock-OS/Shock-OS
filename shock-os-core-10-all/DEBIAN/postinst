@@ -107,6 +107,8 @@ rm -r /etc/skel/.local/share/themes/Yaru-xhdpi
 
 echo "Hidden=true" | tee -a /usr/share/applications/htop.desktop
 
+echo "Hidden=true" | tee -a /usr/share/applications/mpv.desktop
+
 echo "Hidden=true" | tee -a /usr/share/applications/yad-icon-browser.desktop
 
 #the above command renames the apps to Shock OS friendly names
