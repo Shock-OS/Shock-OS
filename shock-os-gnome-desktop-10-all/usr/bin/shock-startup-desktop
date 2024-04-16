@@ -3,6 +3,8 @@
 if [[ -f ~/.config/shock/first-run-indicator ]]
 then
 
+    gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+
     gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple"
 
     gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
@@ -42,26 +44,6 @@ then
     gsettings set org.gnome.desktop.background picture-uri-dark "'file:///usr/share/images/desktop-base/desktop-background.xml'"
 
     dconf reset /org/gnome/shell/extensions/hidetopbar/enable-intellihide #Using DConf because extension does not support GSettings, resets the Hide Top Bar extension to defaults now that the initial setup has been completed
-
-    #THE FLATPAK GTK THEMING PATCH BEGINS
-
-    flatpak override --user --filesystem="~/.themes:ro"
-
-    flatpak override --user --filesystem="~/.icons:ro"
-
-    flatpak override --user --filesystem="~/.shock/themes:ro"
-
-    flatpak override --user --filesystem="~/.shock/icons:ro"
-
-    flatpak override --user --filesystem="xdg-data/themes:ro"
-
-    flatpak override --user --filesystem="~/.config/gtk-4.0:ro"
-
-    flatpak override --user --env=GTK_THEME="Yaru-purple"
-
-    #THE FLATPAK GTK THEMING PATCH ENDS
-
-    rm ~/.config/shock/first-run-indicator
 
 else #NON-FIRST-RUN-SETUP-COMMANDS GO HERE
 

@@ -13,7 +13,7 @@ IFS=$'\n'
 
 source /usr/share/shock/dist-info
 
-setup_todo_list=(choose_language choose_dialect apply_locale_settings choose_kb_model_and_layout apply_keyboard_settings choose_timezone apply_timezone_settings choose_username create_password verify_password apply_user_settings)
+setup_todo_list=(choose_language choose_dialect apply_locale_settings choose_kb_model_and_layout apply_keyboard_settings choose_timezone apply_timezone_settings choose_username create_password verify_password choose_hostname apply_user_settings)
 
 username=""
 
@@ -33,9 +33,9 @@ then
 
     gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
 
-    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru-dark"
+    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru"
 
-    gsettings set org.mate.Marco.general theme "Yaru"
+    gsettings set org.mate.Marco.general theme "Yaru-dark"
 
     gsettings set org.mate.Marco.general center-new-windows "true"
 
@@ -61,9 +61,9 @@ else #if GNOME Edition
 
     gsettings set org.gnome.mutter center-new-windows "true"
 
-    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple"
+    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple-dark"
 
-    gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
+    gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple-dark"
 
     gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
 
@@ -857,6 +857,14 @@ fi
 
 }
 
+function choose_hostname() {
+
+hostname="$(yad --undecorated --entry --text="Please choose a name for this machine:" --entry-text="$(echo "$full_name" | awk '{print $1}')'s $(cat /proc/device-tree/model | awk '{print $1,$2,$3}')" --buttons-layout=edge --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
+
+sudo hostnamectl set-hostname "$hostname"
+
+}
+
 function apply_user_settings() {
 
 sudo adduser --disabled-password --gecos "$full_name" "$username" || { deluser --remove-home "$username"; yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Something went wrong while creating the user. Please try again." --button="Retry"\!edit-undo-symbolic; setup_todo_item=$((setup_todo_item-4)); return; }
@@ -893,7 +901,7 @@ echo 'shock-startup' | sudo tee -a "/home/$username/.bashrc"
 
 setup_todo_item=0
 
-until ((setup_todo_item==11))
+until ((setup_todo_item==12))
 do
 
     echo "EX: $ex" #DEBUG

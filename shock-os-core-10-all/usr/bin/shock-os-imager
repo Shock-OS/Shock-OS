@@ -179,12 +179,81 @@ do
 
     device="$(echo "$output" | awk -F'|' '{print $8}')"
 
-    device="${string%% *}"
+    device="${device%% *}"
 
     if [[ "$ex" == "0" ]] #Flash
     then
 
-        pkexec shock-os-imager-write-image "$version" "$edition" "$arch" "$device"
+        yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="WARNING: This will ERASE ALL DATA on device ${device}. Are you sure you would like to continue?" --button="No, cancel"\!gtk-cancel:1 --button="Yes, continue"\!go-next:0
+
+        ex=$?
+
+        if [[ "$ex" == "0" ]]
+        then
+
+            image_writer_output_dir="$(mktemp -d)"
+
+            script -afe "$image_writer_output_dir"/output.txt -c "pkexec shock-os-imager-write-image \"$version\" \"$edition\" \"$arch\" \"$device\" \"$image_writer_output_dir\"" || touch "$image_writer_output_dir"/cancelled_indicator & image_writer_pid=$!
+
+            { inotifywait -m -e create "$image_writer_output_dir" & echo $! | tee "$image_writer_output_dir"/inotifywait_pid; } | while read -r event #wait for pkexec password to be entered
+            do
+
+                if [[ -f "${image_writer_output_dir}/ready_indicator" ]] || [[ -f "${image_writer_output_dir}/cancelled_indicator" ]]
+                then
+
+                    kill "$(cat "$image_writer_output_dir"/inotifywait_pid)"
+
+                    break
+
+                fi
+
+            done
+
+            if [[ -f "${image_writer_output_dir}/ready_indicator" ]]
+            then
+
+                { inotifywait -m -e modify "$image_writer_output_dir"/output.txt & echo $! | tee "$image_writer_output_dir"/inotifywait_pid; } | while read -r event
+                do
+
+                    line="$(cat "$image_writer_output_dir"/output.txt | tail -n 1)"
+
+                    echo "$line"
+
+                    if [[ "$line" == "Script done on "* ]]
+                    then
+
+                        kill "$(cat "$image_writer_output_dir"/inotifywait_pid)"
+
+                        break
+
+                    fi
+
+                done | yad --progress & yad_pid=$!
+
+                wait -n "$image_writer_pid" "$yad_pid"
+
+                if ps -p "$image_writer_pid"
+                then
+
+                    touch "$image_writer_output_dir"/kill_indicator
+
+                else
+
+                    kill "$yad_pid"
+
+                fi
+
+            else
+
+                yad --window-icon=shock-os-imager --image=emblem-default-symbolic --title="Shock OS Imager" --text="Operation aborted. No changes were made to device ${device}." --button="Dismiss"\!gtk-close
+
+            fi
+
+        else
+
+            yad --window-icon=shock-os-imager --image=emblem-default-symbolic --title="Shock OS Imager" --text="Operation aborted. No changes were made to device ${device}." --button="Dismiss"\!gtk-close
+
+        fi
 
     elif [[ "$ex" == "1" ]] #Refresh
     then

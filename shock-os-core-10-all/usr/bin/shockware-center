@@ -2,8 +2,6 @@
 
 IFS=$'\n'
 
-yad --fixed --picture --window-icon=shockware-center --filename=/usr/share/shockware-center/shockware-loader.png --size=fit --width=1000 --height=397 --undecorated --no-buttons --skip-taskbar & splash_kilpid=$!
-
 source /usr/share/shockware-center/appstream-dirs
 
 currently_loading="FALSE"
@@ -22,6 +20,8 @@ then
 fi
 
 }
+
+start_loading
 
 function end_loading() {
 
@@ -98,8 +98,6 @@ done
 keyword=""
 
 category="All Applications"
-
-kill -9 $splash_kilpid
 
 while true
 do

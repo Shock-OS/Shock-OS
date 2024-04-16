@@ -23,6 +23,29 @@ arch="${arch//-/_}"
 
 device="$4"
 
+image_writer_output_dir="$5"
+
+touch "$image_writer_output_dir"/ready_indicator
+
+{ inotifywait -m "$image_writer_output_dir" & inotifywait_killpid=$!; } | while read -r event
+do
+
+    if [[ -f "${image_writer_output_dir}/kill_indicator" ]]
+    then
+
+        echo "CANCELLING..."
+
+        kill $$
+
+    elif [[ ! -f "${image_writer_output_dir}/output.txt" ]]
+    then
+
+        kill "$inotifywait_killpid"
+
+    fi
+
+done &
+
 mkdir -p /usr/share/shock-os-imager/cache/images
 
 mkdir -p /usr/share/shock-os-imager/cache/sigs
@@ -39,7 +62,7 @@ source /usr/share/shock-os-imager/metainfo
 
 imagevar="${version}_${edition}_${arch}"
 
-if [[ ! -f /usr/share/shock-os-imager/cache/images/"$imagevar" ]]
+if [[ ! -f /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" ]]
 then
 
     url="${imagevar}_URL"
@@ -60,7 +83,7 @@ wget -q -O /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" "$sig_
 
 echo "#Verifying image..."
 
-rm /usr/share/shock-os-image/key.asc
+rm /usr/share/shock-os-imager/key.asc
 
 wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/key.asc -P /usr/share/shock-os-imager/
 
@@ -70,7 +93,11 @@ gpg --verify /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" /usr
 
 imagevar_sha256="${imagevar}_SHA256"
 
-if [[ "$(sha256sum /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz")" != "${!imagevar_sha256}" ]]
+sha256="$(sha256sum /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz")"
+
+sha256="${sha256%% *}"
+
+if [[ "$sha256" != "${!imagevar_sha256}" ]]
 then
 
     echo 'ERROR: INVALID SHA256SUM, FILE HAS BEEN TAMPERED WITH!!!'
@@ -81,9 +108,15 @@ fi
 
 echo "#Writing image..."
 
-sudo unxz -c /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | sudo dd of=$target_drive bs=4M status=progress
+umount $device*
 
+image_size=$(xz -l /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | awk 'NR==2 {print $5}')
 
+image_size=$(echo "$image_size" | sed 's/,//g' | cut -d '.' -f 1)
+
+image_size=$((image_size*1024*1024))
+
+xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | pv -s "$image_size" -n | dd of=$device bs=4M
 
 
 
