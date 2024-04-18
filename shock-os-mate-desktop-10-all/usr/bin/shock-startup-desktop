@@ -16,11 +16,11 @@ then
 
     set_compositor
 
-    gsettings set org.mate.interface gtk-theme "Yaru-purple"
+    gsettings set org.mate.interface gtk-theme "Yaru-purple-dark"
 
-    gsettings set org.mate.Marco.general theme "Yaru"
+    gsettings set org.mate.Marco.general theme "Yaru-dark"
 
-    gsettings set org.mate.interface icon-theme "Yaru-purple"
+    gsettings set org.mate.interface icon-theme "Yaru-purple-dark"
 
     gsettings set org.mate.peripherals-mouse cursor-theme "Yaru"
 

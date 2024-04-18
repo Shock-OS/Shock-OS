@@ -5,11 +5,11 @@ then
 
     gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
 
-    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple"
+    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple-dark"
 
-    gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
+    gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple-dark"
 
-    gsettings set org.gnome.shell.extensions.user-theme name "Yaru-purple"
+    gsettings set org.gnome.shell.extensions.user-theme name "Yaru-purple-dark"
 
     gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
 

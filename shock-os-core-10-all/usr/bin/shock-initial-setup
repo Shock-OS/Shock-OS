@@ -861,6 +861,8 @@ function choose_hostname() {
 
 hostname="$(yad --undecorated --entry --text="Please choose a name for this machine:" --entry-text="$(echo "$full_name" | awk '{print $1}')'s $(cat /proc/device-tree/model | awk '{print $1,$2,$3}')" --buttons-layout=edge --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
 
+ex=$?
+
 sudo hostnamectl set-hostname "$hostname"
 
 }

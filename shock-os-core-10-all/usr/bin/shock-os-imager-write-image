@@ -93,9 +93,7 @@ gpg --verify /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" /usr
 
 imagevar_sha256="${imagevar}_SHA256"
 
-sha256="$(sha256sum /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz")"
-
-sha256="${sha256%% *}"
+sha256="$(sha256sum /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | cut -d' ' -f1)"
 
 if [[ "$sha256" != "${!imagevar_sha256}" ]]
 then
@@ -117,6 +115,17 @@ image_size=$(echo "$image_size" | sed 's/,//g' | cut -d '.' -f 1)
 image_size=$((image_size*1024*1024))
 
 xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | pv -s "$image_size" -n | dd of=$device bs=4M
+
+echo "#Verifying..."
+
+if [[ "$(sha256sum "$device" | cut -d' ' -f1)" != "${!imagevar_sha256}" ]]
+then
+
+    echo 'ERROR: VERIFICATION FAILED, AN ERROR OCCURRED WHILE FLASHING!!!'
+
+    exit 1
+
+fi
 
 
 

@@ -193,7 +193,7 @@ do
 
             image_writer_output_dir="$(mktemp -d)"
 
-            script -afe "$image_writer_output_dir"/output.txt -c "pkexec shock-os-imager-write-image \"$version\" \"$edition\" \"$arch\" \"$device\" \"$image_writer_output_dir\"" || touch "$image_writer_output_dir"/cancelled_indicator & image_writer_pid=$!
+            { script -afe "$image_writer_output_dir"/output.txt -c "pkexec shock-os-imager-write-image \"$version\" \"$edition\" \"$arch\" \"$device\" \"$image_writer_output_dir\"" || touch "$image_writer_output_dir"/cancelled_indicator; image_writer_ex=$?; } & image_writer_pid=$!
 
             { inotifywait -m -e create "$image_writer_output_dir" & echo $! | tee "$image_writer_output_dir"/inotifywait_pid; } | while read -r event #wait for pkexec password to be entered
             do
@@ -228,7 +228,7 @@ do
 
                     fi
 
-                done | yad --progress & yad_pid=$!
+                done | yad --window-icon=shock-os-imager --title="Shock OS Imager" --text="The device $device is being flashed. Please do not unplug the device during this process." --progress --button="Cancel"\!gtk-cancel & yad_pid=$!
 
                 wait -n "$image_writer_pid" "$yad_pid"
 
@@ -240,6 +240,19 @@ do
                 else
 
                     kill "$yad_pid"
+
+                fi
+
+                echo "IMAGE_WRITER_EX: $image_writer_ex" #DEBUG
+
+                if [[ "$image_writer_ex" == "0" ]]
+                then
+
+                    notify-send --app-name="Shock OS Imager" --icon=shock-os-imager "Device Flashed Successfully!" "The device ($device) was successfully flashed. Feel free to remove it."
+
+                else
+
+                    notify-send --app-name="Shock OS Imager" --icon=emblem-important-symbolic "Failed to Flash Device" "Failed to flash the device ($device). Please try again later."
 
                 fi
 
