@@ -25,6 +25,16 @@ device="$4"
 
 image_writer_output_dir="$5"
 
+if [[ ! -f /usr/share/shock-os-imager/settings.ini ]]
+then
+
+    echo 'caching_enabled=TRUE
+device_verification_enabled=TRUE' | tee /usr/share/shock-os-imager/settings.ini
+
+fi
+
+source /usr/share/shock-os-imager/settings.ini
+
 touch "$image_writer_output_dir"/ready_indicator
 
 { inotifywait -m "$image_writer_output_dir" & inotifywait_killpid=$!; } | while read -r event
@@ -116,24 +126,34 @@ image_size=$((image_size*1024*1024))
 
 xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | pv -s "$image_size" -n | dd of=$device bs=4M
 
-echo "#Verifying..."
-
-uncompressed_size="$(xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | wc -c)"
-
-device_sha256sum="$(dd if="$device" bs=1 count="$uncompressed_size" | sha256sum | cut -d' ' -f1)"
-
-imagevar_uncompressed_sha256sum="${imagevar}_uncompressed_sha256sum"
-
-if [[ "$device_sha256sum" != "${!imagevar_uncompressed_sha256sum}" ]]
+if [[ "$device_verification_enabled" == "TRUE" ]]
 then
 
-    echo 'ERROR: VERIFICATION FAILED, AN ERROR OCCURRED WHILE FLASHING!!!'
+    echo "#Verifying..."
 
-    exit 1
+    uncompressed_size="$(xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | wc -c)"
+
+    device_sha256sum="$(dd if="$device" bs=1 count="$uncompressed_size" | pv -s "$uncompressed_size" -n | sha256sum | cut -d' ' -f1)"
+
+    imagevar_uncompressed_sha256sum="${imagevar}_uncompressed_sha256sum"
+
+    if [[ "$device_sha256sum" != "${!imagevar_uncompressed_sha256sum}" ]]
+    then
+
+        echo 'ERROR: VERIFICATION FAILED, AN ERROR OCCURRED WHILE FLASHING!!!'
+
+        exit 1
+
+    fi
 
 fi
 
+if [[ "$caching_enabled" == "FALSE" ]]
+then
 
+    rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"
+
+fi
 
 
 
