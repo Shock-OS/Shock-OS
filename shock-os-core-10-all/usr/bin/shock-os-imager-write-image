@@ -65,7 +65,7 @@ imagevar="${version}_${edition}_${arch}"
 if [[ ! -f /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" ]]
 then
 
-    url="${imagevar}_URL"
+    url="${imagevar}_url"
 
     url="${!url}"
 
@@ -73,7 +73,7 @@ then
 
 fi
 
-sig_url="${imagevar}_SIG_URL"
+sig_url="${imagevar}_sig_url"
 
 sig_url="${!sig_url}"
 
@@ -91,14 +91,14 @@ gpg --import /usr/share/shock-os-imager/key.asc
 
 gpg --verify /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" || { echo 'ERROR: IMAGE FILE DID NOT MATCH SIGNATURE!!!'; exit 1; }
 
-imagevar_sha256="${imagevar}_SHA256"
+imagevar_compressed_sha256sum="${imagevar}_compressed_sha256sum"
 
-sha256="$(sha256sum /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | cut -d' ' -f1)"
+compressed_sha256sum="$(sha256sum /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | cut -d' ' -f1)"
 
-if [[ "$sha256" != "${!imagevar_sha256}" ]]
+if [[ "$compressed_sha256sum" != "${!imagevar_compressed_sha256sum}" ]]
 then
 
-    echo 'ERROR: INVALID SHA256SUM, FILE HAS BEEN TAMPERED WITH!!!'
+    echo 'ERROR: INVALID sha256SUM, FILE HAS BEEN TAMPERED WITH!!!'
 
     exit 1
 
@@ -118,7 +118,13 @@ xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | pv -s "$im
 
 echo "#Verifying..."
 
-if [[ "$(dd if="$device" bs=4096 count="$(xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | wc -c)" | sha256sum | cut -d' ' -f1)" != "${!imagevar_sha256}" ]]
+uncompressed_size="$(xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | wc -c)"
+
+device_sha256sum="$(dd if="$device" bs=1 count="$uncompressed_size" | sha256sum | cut -d' ' -f1)"
+
+imagevar_uncompressed_sha256sum="${imagevar}_uncompressed_sha256sum"
+
+if [[ "$device_sha256sum" != "${!imagevar_uncompressed_sha256sum}" ]]
 then
 
     echo 'ERROR: VERIFICATION FAILED, AN ERROR OCCURRED WHILE FLASHING!!!'
