@@ -118,7 +118,7 @@ xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | pv -s "$im
 
 echo "#Verifying..."
 
-if [[ "$(sha256sum "$device" | cut -d' ' -f1)" != "${!imagevar_sha256}" ]]
+if [[ "$(dd if="$device" bs=4096 count="$(xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | wc -c)" | sha256sum | cut -d' ' -f1)" != "${!imagevar_sha256}" ]]
 then
 
     echo 'ERROR: VERIFICATION FAILED, AN ERROR OCCURRED WHILE FLASHING!!!'
