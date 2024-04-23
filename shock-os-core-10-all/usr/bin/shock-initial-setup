@@ -863,7 +863,16 @@ hostname="$(yad --undecorated --entry --text="Please choose a name for this mach
 
 ex=$?
 
-sudo hostnamectl set-hostname "$hostname"
+if [[ "$ex" == "0" ]]
+then
+
+    sudo hostnamectl set-hostname "$hostname"
+
+else
+
+    setup_todo_item=$((setup_todo_item-1)) #ensures the back button goes back to the create_password step instead of the verify_password step
+
+fi
 
 }
 

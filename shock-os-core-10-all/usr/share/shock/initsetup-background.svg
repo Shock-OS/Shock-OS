@@ -9,7 +9,7 @@
    id="svg5"
    inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    sodipodi:docname="initsetup-background.svg"
-   inkscape:export-filename="/home/carson/Xtra/Shock OS/9.0 Garrett/shockos-9.0-all/usr/share/shock/initsetup-background.png"
+   inkscape:export-filename="/home/carson/Xtra/Shock OS/X Jasmine/shock-os-core-10-all/usr/share/shock/initsetup-background.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -2967,7 +2967,7 @@
      id="layer1"
      transform="translate(348.39142,150.47893)">
     <rect
-       style="fill:#ffffff;stroke-width:1.99999"
+       style="fill:#7764d8;fill-opacity:1;stroke-width:1.99999"
        id="rect1600"
        width="1499.0159"
        height="872.78967"
