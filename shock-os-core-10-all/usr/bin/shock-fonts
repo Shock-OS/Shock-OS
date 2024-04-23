@@ -31,7 +31,19 @@ do
 
     fi
 
-    font_to_change="$(yad --height=230 --window-icon=preferences-desktop-font --title="Fonts" --list --text='Which system font would you like to change?' --column='' --no-headers "Application Font" "Desktop Font" "Document Font" "Monospace Font" "Window Title Font" "Reset All Fonts to Defaults" --buttons-layout=spread --button="Browse"\!applications-internet:1 --button="Install"\!add:2 "$remove_button" --button="Next"\!go-next:0)"
+    font_to_change="$(yad --height=230 --window-icon=preferences-desktop-font --title="Fonts" --list \
+
+                        --text='Which system font would you like to change?' \
+
+                        --column='' \
+
+                        --no-headers \
+
+                        "Application Font" "Desktop Font" "Document Font" "Monospace Font" "Window Title Font" "Reset All Fonts to Defaults" \
+
+                        --buttons-layout=spread \
+
+                        --button="Browse"\!applications-internet:1 --button="Install"\!add:2 "$remove_button" --button="Next"\!go-next:0)"
 
     ex=$?
 
@@ -114,7 +126,15 @@ do
 
         fonts=($(ls ~/.fonts))
 
-        font_to_remove="$(yad --window-icon=preferences-desktop-font --title="Remove Fonts" --width=400 --height=300 --list --column="Name" --no-headers "${fonts[@]}" --button="Remove"\!remove)"
+        font_to_remove="$(yad --window-icon=preferences-desktop-font --title="Remove Fonts" --width=400 --height=300 --list \
+
+                            --column="Name" \
+
+                            --no-headers \
+
+                            "${fonts[@]}" \
+
+                            --button="Remove"\!remove)"
 
         detect_exit
 
@@ -128,7 +148,13 @@ do
         if [[ "$font_to_change" == "Application Font|" ]]
         then
 
-            new_font="$(yad --font --title="Application Font" --window-icon=preferences-desktop-font --fontname="$(gsettings get org.mate.interface font-name | sed "s/'//g")" --buttons-layout=edge --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
+            new_font="$(yad --title="Application Font" --window-icon=preferences-desktop-font --font \
+
+                            --fontname="$(gsettings get org.mate.interface font-name | sed "s/'//g")" \
+
+                            --buttons-layout=edge \
+
+                            --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
             ex=$?
 
@@ -151,7 +177,13 @@ do
         elif [[ "$font_to_change" == "Desktop Font|" ]]
         then
 
-            new_font="$(yad --font --title="Desktop Font" --window-icon=preferences-desktop-font --fontname="$(gsettings get org.mate.caja.desktop font | sed "s/'//g")" --buttons-layout=edge --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
+            new_font="$(yad --title="Desktop Font" --window-icon=preferences-desktop-font --font \
+
+                            --fontname="$(gsettings get org.mate.caja.desktop font | sed "s/'//g")" \
+
+                            --buttons-layout=edge \
+
+                            --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
             ex=$?
 
@@ -170,7 +202,13 @@ do
         elif [[ "$font_to_change" == "Document Font|" ]]
         then
 
-            new_font="$(yad --font --title="Document Font" --window-icon=preferences-desktop-font --fontname="$(gsettings get org.mate.interface document-font-name | sed "s/'//g")" --buttons-layout=edge --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
+            new_font="$(yad --title="Document Font" --window-icon=preferences-desktop-font --font \
+
+                            --fontname="$(gsettings get org.mate.interface document-font-name | sed "s/'//g")" \
+
+                            --buttons-layout=edge \
+
+                            --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
             ex=$?
 
@@ -193,7 +231,13 @@ do
         elif [[ "$font_to_change" == "Monospace Font|" ]]
         then
 
-            new_font="$(yad --font --title="Monospace Font" --window-icon=preferences-desktop-font --fontname="$(gsettings get org.mate.interface monospace-font-name | sed "s/'//g")" --buttons-layout=edge --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
+            new_font="$(yad --title="Monospace Font" --window-icon=preferences-desktop-font --font \
+
+                            --fontname="$(gsettings get org.mate.interface monospace-font-name | sed "s/'//g")" \
+
+                            --buttons-layout=edge \
+
+                            --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
             ex=$?
 
@@ -216,7 +260,13 @@ do
         elif [[ "$font_to_change" == "Window Title Font|" ]]
         then
 
-            new_font="$(yad --font --title="Window Title Font" --window-icon=preferences-desktop-font --fontname="$(gsettings get org.mate.Marco.general titlebar-font | sed "s/'//g")" --buttons-layout=edge --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
+            new_font="$(yad --title="Window Title Font" --window-icon=preferences-desktop-font --font \
+
+                            --fontname="$(gsettings get org.mate.Marco.general titlebar-font | sed "s/'//g")" \
+
+                            --buttons-layout=edge \
+
+                            --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
             ex=$?
 

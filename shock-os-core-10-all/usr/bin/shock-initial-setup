@@ -9,11 +9,35 @@ then
 
 fi
 
+yad --undecorated --fixed --progress --pulsate --progress-text="Loading..." --no-buttons
+
 IFS=$'\n'
 
 source /usr/share/shock/dist-info
 
-setup_todo_list=(choose_language choose_dialect apply_locale_settings choose_kb_model_and_layout apply_keyboard_settings choose_timezone apply_timezone_settings choose_username create_password verify_password choose_hostname apply_user_settings)
+setup_todo_list=(choose_language \
+
+                    choose_dialect \
+
+                    apply_locale_settings \
+
+                    choose_kb_model_and_layout \
+
+                    apply_keyboard_settings \
+
+                    choose_timezone \
+
+                    apply_timezone_settings \
+
+                    choose_username \
+
+                    create_password \
+
+                    verify_password \
+
+                    choose_hostname \
+
+                    apply_user_settings)
 
 username=""
 
@@ -176,7 +200,19 @@ echo "LANG_ABS: ${lang_abs[@]}" #DEBUG
 
 #PRELOADING ENDS
 
-yad --undecorated --center --window-icon=/usr/share/shock/shock-logo.svg --width=400 --title="Welcome" --picture --size=fit --filename=/usr/share/shock/initsetup-welcome-logo.png --text="<span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." --text-align=center --buttons-layout=center --button="Next"\!go-next-symbolic
+yad --undecorated --center --window-icon=/usr/share/shock/shock-logo.svg --width=400 --title="Welcome" --picture \
+
+    --size=fit \
+
+    --filename=/usr/share/shock/initsetup-welcome-logo.png \
+
+    --text="<span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." \
+
+    --text-align=center \
+
+    --buttons-layout=center \
+
+    --button="Next"\!go-next-symbolic
 
 function choose_language() {
 
@@ -206,7 +242,11 @@ done
 
 yad_cb_languages="${yad_cb_languages::-1}"
 
-output="$(yad --undecorated --center --fixed --form --field="Language:":CB "$yad_cb_languages" --button="Next"\!go-next-symbolic:0)"
+output="$(yad --undecorated --center --fixed --form \
+
+            --field="Language:":CB "$yad_cb_languages" \
+
+            --button="Next"\!go-next-symbolic:0)"
 
 ex=$?
 
@@ -289,7 +329,13 @@ done
 
 yad_cb_languages="${yad_cb_languages::-1}"
 
-output="$(yad --undecorated --center --fixed --form --field="Dialect:":CB "$yad_cb_languages" --buttons-layout=edge --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
+output="$(yad --undecorated --center --fixed --form \
+
+            --field="Dialect:":CB "$yad_cb_languages" \
+
+            --buttons-layout=edge \
+
+            --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
 
 ex=$?
 
@@ -422,7 +468,17 @@ done
 
 yad_cb_kb_layout="${yad_cb_kb_layout::-1}"
 
-output="$(yad --undecorated --center --fixed --form --always-print-result --field="Model:":CB "$yad_cb_kb_model" --field="Layout:":CB "$yad_cb_kb_layout" --buttons-layout=edge --button="Back"\!go-previous-symbolic:1 --button="Choose Model Variant":2 --button="Next"\!go-next-symbolic:0)"
+output="$(yad --undecorated --center --fixed --form \
+
+            --always-print-result \
+
+            --field="Model:":CB "$yad_cb_kb_model" \
+
+            --field="Layout:":CB "$yad_cb_kb_layout" \
+
+            --buttons-layout=edge \
+
+            --button="Back"\!go-previous-symbolic:1 --button="Choose Model Variant":2 --button="Next"\!go-next-symbolic:0)"
 
 ex=$?
 
@@ -482,7 +538,15 @@ done
 
 yad_cb_kb_variant="${yad_cb_kb_variant::-1}"
 
-output=$(yad --undecorated --center --fixed --form --always-print-result --field="Variant:":CB "$yad_cb_kb_variant" --buttons-layout=edge --button="Cancel"\!gtk-cancel-symbolic:2 --button="Next"\!go-next-symbolic:0)
+output=$(yad --undecorated --center --fixed --form \
+
+            --always-print-result \
+
+            --field="Variant:":CB "$yad_cb_kb_variant" \
+
+            --buttons-layout=edge \
+
+            --button="Cancel"\!gtk-cancel-symbolic:2 --button="Next"\!go-next-symbolic:0)
 
 ex=$?
 
@@ -633,7 +697,13 @@ do
 
     yad_cb_timezone_folders="${yad_cb_timezone_folders::-1}"
 
-    output="$(yad --undecorated --center --fixed --form --field="Timezone:":CB "$yad_cb_timezone_folders" --buttons-layout=edge --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
+    output="$(yad --undecorated --center --fixed --form \
+
+                --field="Timezone:":CB "$yad_cb_timezone_folders" \
+
+                --buttons-layout=edge \
+
+                --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
 
     ex=$?
 
@@ -709,7 +779,17 @@ success="FALSE"
 until [[ "$success" == "TRUE" ]] || [[ "$ex" == "1" ]]
 do
 
-    output="$(yad --undecorated --center --fixed --text="Please create a user." --form --focus-field="$focus_field" --field="Username:" "$username" --field="Full Name:" "$full_name" --buttons-layout=edge --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
+    output="$(yad --undecorated --center --fixed --text="Please create a user." --form \
+
+                --focus-field="$focus_field" \
+
+                --field="Username:" "$username" \
+
+                --field="Full Name:" "$full_name" \
+
+                --buttons-layout=edge \
+
+                --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
 
     ex=$?
 
@@ -797,7 +877,13 @@ success="FALSE"
 until [[ "$success" == "TRUE" ]] || [[ "$ex" == "1" ]]
 do
 
-    pa1="$(yad --undecorated --center --fixed --text="Please create a secure password:" --entry --hide-text --buttons-layout=edge --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
+    pa1="$(yad --undecorated --center --fixed --text="Please create a secure password:" --entry \
+
+            --hide-text \
+
+            --buttons-layout=edge \
+
+            --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
 
     ex=$?
 
@@ -838,7 +924,13 @@ then
     until [[ "$pa1" == "$pa2" ]] || [[ "$ex" == "1" ]]
     do
 
-        pa2="$(yad --undecorated --center --fixed --text="Verify the password:" --entry --hide-text --buttons-layout=edge --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
+        pa2="$(yad --undecorated --center --fixed --text="Verify the password:" --entry \
+
+                --hide-text \
+
+                --buttons-layout=edge \
+
+                --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
 
         ex=$?
 
@@ -859,7 +951,15 @@ fi
 
 function choose_hostname() {
 
-hostname="$(yad --undecorated --entry --text="Please choose a name for this machine:" --entry-text="$(echo "$full_name" | awk '{print $1}')'s $(cat /proc/device-tree/model | awk '{print $1,$2,$3}')" --buttons-layout=edge --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
+hostname="$(yad --undecorated --entry \
+
+                --text="Please choose a name for this machine:" \
+
+                --entry-text="$(echo "$full_name" | awk '{print $1}')'s $(cat /proc/device-tree/model | awk '{print $1,$2,$3}')" \
+
+                --buttons-layout=edge \
+
+                --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
 
 ex=$?
 
