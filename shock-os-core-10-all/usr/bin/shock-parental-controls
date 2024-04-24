@@ -49,7 +49,13 @@ then
 
 fi
 
-output="$(yad --window-icon=shock-parental-controls --title="Parental Controls" --text="You can manage the limits and restrictions of child profiles." --form --field="Child Profile:":CB "$userlist" --field="Restriction:":CB 'Set/Manage Screen Time Limit!Manage Screen Time Tracking Settings' --button="Next"\!go-next)"
+output="$(yad --window-icon=shock-parental-controls --title="Parental Controls" --text="You can manage the limits and restrictions of child profiles." --form \
+
+            --field="Child Profile:":CB "$userlist" \
+
+            --field="Restriction:":CB 'Set/Manage Screen Time Limit!Manage Screen Time Tracking Settings' \
+
+            --button="Next"\!go-next)"
 
 user_display_name="$(echo "$output" | awk -F'|' '{print $1}')"
 
@@ -94,7 +100,13 @@ then
     until ((total_minutes>=10))
     do
 
-        output="$(yad --window-icon=shock-parental-controls --title="Screen Time Limit" --text="You can set a daily screen time limit for $user_display_name." --form --field="Hours:":NUM '2!0..23' --field="Minutes:":NUM '30!0..59' --button="Apply"\!gtk-ok)"
+        output="$(yad --window-icon=shock-parental-controls --title="Screen Time Limit" --text="You can set a daily screen time limit for $user_display_name." --form \
+
+                    --field="Hours:":NUM '2!0..23' \
+
+                    --field="Minutes:":NUM '30!0..59' \
+
+                    --button="Apply"\!gtk-ok)"
 
         ex=$?
 
@@ -172,7 +184,13 @@ then
 
     fi
 
-    output="$(yad --window-icon=shock-parental-controls --title="Parental Controls" --form --field="Track screen time for user '$user'":CHK "$track_screentime" --field="Days to track screen time":NUM "${screentime_track_days}\!1..65525" --button="Apply"\!gtk-ok)"
+    output="$(yad --window-icon=shock-parental-controls --title="Parental Controls" --form \
+
+                --field="Track screen time for user '$user'":CHK "$track_screentime" \
+
+                --field="Days to track screen time":NUM "${screentime_track_days}\!1..65525" \
+
+                --button="Apply"\!gtk-ok)"
 
     ex=$?
 

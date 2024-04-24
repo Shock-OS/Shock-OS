@@ -70,7 +70,29 @@ success="FALSE"
 until [[ "$success" == "TRUE" ]]
 do
 
-    output="$(yad --window-icon=software-update-available --width=100 --title="Settings" --form --field="Delay between each scan for updates:":LBL "" --field="Hours:":NUM "${hours}\!0..96" --field="Minutes:":NUM "${minutes}\!0..59" --field="":LBL "" --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" --field="Automatic updates":CHK "$automatic_updates" --field="":LBL "" --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" --buttons-layout=edge --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0)"
+    output="$(yad --window-icon=software-update-available --width=100 --title="Settings" --form \
+
+                --field="Delay between each scan for updates:":LBL "" \
+
+                --field="Hours:":NUM "${hours}\!0..96" \
+
+                --field="Minutes:":NUM "${minutes}\!0..59" \
+
+                --field="":LBL "" \
+
+                --field="If enabled, automatic updates will as root on a daily basis. You cannot log out, shutdown, or restart the system while automatic updates are being applied.":LBL "" \
+
+                --field="Automatic updates":CHK "$automatic_updates" \
+
+                --field="":LBL "" \
+
+                --field="If enabled, you will be notified when an upgrade to a new version of Shock OS is available.":LBL "" \
+
+                --field="Notify me of new versions of Shock OS":CHK "$notify_of_new_versions_of_shock_os" \
+
+                --buttons-layout=edge \
+
+                --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0)"
 
     ex=$?
 
@@ -267,7 +289,23 @@ page=0
 while true
 do
 
-    yad --window-icon=software-update-available --title="Update Manager" --width=800 --height=500 --text="$window_text" --list --no-click --dclick-action="" --buttons-layout=edge --column="Type":IMG --column="Name" $page_buttons --button="Settings"\!tweaks-app:1 --button="Install Updates"\!software-update-available:2 "${all_updates[@]}"
+    yad --window-icon=software-update-available --title="Update Manager" --width=800 --height=500 --text="$window_text" --list \
+
+        --no-click \
+
+        --dclick-action="" \
+
+        --column="Type":IMG \
+
+        --column="Name" \
+
+        --buttons-layout=edge \
+
+        $page_buttons \
+
+        --button="Settings"\!tweaks-app:1 --button="Install Updates"\!software-update-available:2 \
+
+        "${all_updates[@]}"
 
     ex=$?
 

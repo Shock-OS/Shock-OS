@@ -103,7 +103,7 @@ gpg --verify /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" /usr
 
 imagevar_compressed_sha256sum="${imagevar}_compressed_sha256sum"
 
-compressed_sha256sum="$(sha256sum /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | cut -d' ' -f1)"
+compressed_sha256sum="$(pv -n /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | sha256sum | cut -d' ' -f1)"
 
 if [[ "$compressed_sha256sum" != "${!imagevar_compressed_sha256sum}" ]]
 then
@@ -124,14 +124,16 @@ image_size=$(echo "$image_size" | sed 's/,//g' | cut -d '.' -f 1)
 
 image_size=$((image_size*1024*1024))
 
-xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | pv -s "$image_size" -n | dd of=$device bs=4M
+dd_output="$(xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | pv -s "$image_size" -n | dd of=$device bs=4M 2>&1)"
+
+echo "DD_OUTPUT: $dd_output" #DEBUG
 
 if [[ "$device_verification_enabled" == "TRUE" ]]
 then
 
     echo "#Verifying..."
 
-    uncompressed_size="$(xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | wc -c)"
+    uncompressed_size="$(echo "$dd_output" | awk 'NR==3 {print $1}')"
 
     device_sha256sum="$(dd if="$device" bs=1 count="$uncompressed_size" | pv -s "$uncompressed_size" -n | sha256sum | cut -d' ' -f1)"
 

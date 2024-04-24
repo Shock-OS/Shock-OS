@@ -68,7 +68,13 @@ do
 
             else
 
-                yad --plug=$key --tabnum=$usernum --list --column="Date" --column="Time Used" --column="Percentage of $total_minutes_display used":BAR "${screentimes[@]}" &
+                yad --plug=$key --tabnum=$usernum --list \
+
+                    --column="Date" \
+
+                    --column="Time Used" \
+
+                    --column="Percentage of $total_minutes_display used":BAR "${screentimes[@]}" &
 
             fi
 
@@ -90,7 +96,13 @@ do
 
         else
 
-            yad --window-icon=shock-screentime --width=600 --height=400 --title="Screen Time" --notebook --key=$key "${tabs[@]}" --button="Refresh"\!gtk-refresh
+            yad --window-icon=shock-screentime --width=600 --height=400 --title="Screen Time" --notebook \
+
+                --key=$key \
+
+                "${tabs[@]}" \
+
+                --button="Refresh"\!gtk-refresh
 
         fi
 
@@ -120,7 +132,17 @@ NOTE: To manage the screen time tracking settings of child profiles, use the Par
 
         else
 
-            yad --window-icon=shock-screentime --width=600 --height=400 --title="Screen Time" --text="Click 'Settings' to manage your screen time settings. Change screen time settings for child profiles in the Parental Controls app." --notebook --key=$key "${tabs[@]}" --buttons-layout=edge --button="Settings"\!tweaks-app:1 --button="Refresh"\!gtk-refresh:0
+            yad --window-icon=shock-screentime --width=600 --height=400 --title="Screen Time" --notebook \
+
+                --text="Click 'Settings' to manage your screen time settings. Change screen time settings for child profiles in the Parental Controls app." \
+
+                --key=$key \
+
+                "${tabs[@]}" \
+
+                --buttons-layout=edge \
+
+                --button="Settings"\!tweaks-app:1 --button="Refresh"\!gtk-refresh:0
 
         fi
 
@@ -151,7 +173,15 @@ NOTE: To manage the screen time tracking settings of child profiles, use the Par
 
         fi
 
-        output="$(yad --window-icon=shock-screentime --width=200 --title="Screen Time" --form --field="Track my screen time":CHK "$track_screentime" --field="Days to track screen time":NUM "${screentime_track_days}\!1..65525" --field="Manage the screen time track days of child profiles in the Parental Controls app.":LBL '' --button="Apply"\!gtk-ok)"
+        output="$(yad --window-icon=shock-screentime --width=200 --title="Screen Time" --form \
+
+                    --field="Track my screen time":CHK "$track_screentime" \
+
+                    --field="Days to track screen time":NUM "${screentime_track_days}\!1..65525" \
+
+                    --field="Manage the screen time track days of child profiles in the Parental Controls app.":LBL '' \
+
+                    --button="Apply"\!gtk-ok)"
 
         ex=$?
 

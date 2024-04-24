@@ -71,21 +71,63 @@ then
         if [[ "$1" != "--setup" ]] #if regular mode
         then
 
-            output="$(yad --window-icon=system-users --title="New User" --form --focus-field="$focus_field" --field="Username:" "$username" --field="Full name:" "$full_name" --field="":LBL "" --field="For security reasons, a strong password is highly recommended. Strong passwords consist of:
+            output="$(yad --window-icon=system-users --title="New User" --form \
+
+                            --focus-field="$focus_field" \
+
+                            --field="Username:" "$username" \
+
+                            --field="Full name:" "$full_name" \
+
+                            --field="":LBL "" \
+
+                            --field="For security reasons, a strong password is highly recommended. Strong passwords consist of:
         - at least eight characters
         - both lower and upper case letters
         - numbers
-        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --field="":LBL "" --field="The privilages of child profiles can be managed in the 'Parental Controls' app. Screen time limits can be imposed on child profiles. Child profiles cannot gain root access or use the 'sudo' command.":LBL "" --field="Child Profile":CHK "$kidprofile" --separator='`' --button="Create User"\!add)"
+        - special characters":LBL "" \
+
+                            --field="Password:":H "" \
+
+                            --field="Verify password:":H "" \
+
+                            --field="":LBL "" \
+
+                            --field="The privilages of child profiles can be managed in the 'Parental Controls' app. Screen time limits can be imposed on child profiles. Child profiles cannot gain root access or use the 'sudo' command.":LBL "" \
+
+                            --field="Child Profile":CHK "$kidprofile" \
+
+                            --separator='`' \
+
+                            --button="Create User"\!add)"
 
         else #initial setup mode
 
             kidprofile="FALSE"
 
-            output="$(yad --window-icon=system-users --title="New User" --form --focus-field="$focus_field" --field="Username:" "$username" --field="Full name:" "$full_name" --field="":LBL "" --field="For security reasons, a strong password is highly recommended. Strong passwords consist of:
+            output="$(yad --window-icon=system-users --title="New User" --form \
+
+                            --focus-field="$focus_field" \
+
+                            --field="Username:" "$username" \
+
+                            --field="Full name:" "$full_name" \
+
+                            --field="":LBL "" \
+
+                            --field="For security reasons, a strong password is highly recommended. Strong passwords consist of:
         - at least eight characters
         - both lower and upper case letters
         - numbers
-        - special characters":LBL "" --field="Password:":H "" --field="Verify password:":H "" --separator='`' --button="Finish Setup"\!gtk-yes)"
+        - special characters":LBL "" \
+
+                            --field="Password:":H "" \
+
+                            --field="Verify password:":H "" \
+
+                            --separator='`' \
+
+                            --button="Finish Setup"\!gtk-yes)"
 
         fi
 
@@ -288,7 +330,17 @@ then
 
         done
 
-        output="$(yad --window-icon=system-users --title="Remove User" --buttons-layout=center --text="Please select the user you would like to remove below:" --list --no-headers --column="Name" --column="Username":HD "${user_list[@]}" --button="Next"\!go-next)"
+        output="$(yad --window-icon=system-users --title="Remove User" --buttons-layout=center --text="Please select the user you would like to remove below:" --list \
+
+                        --no-headers \
+
+                        --column="Name" \
+
+                        --column="Username":HD \
+
+                        "${user_list[@]}" \
+
+                        --button="Next"\!go-next)"
 
         detect_exit
 

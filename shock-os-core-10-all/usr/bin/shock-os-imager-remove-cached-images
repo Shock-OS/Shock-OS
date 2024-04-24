@@ -1,13 +1,14 @@
 #!/bin/bash
 
-if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)>1)) #plural
+if (($(ls /usr/share/shock-os-imager/cache/images | wc -l)>1)) #plural
 then
 
-    text="There are $(ls /usr/share/shock-os-imager/cached-images | wc -l) cached images on your system, taking up a total of $(du -sh /usr/share/shock-os-imager/cached-images | awk '{print $1}') of space. Would you like to delete them?"
+    text="There are $(ls /usr/share/shock-os-imager/cache/images | wc -l) cached images on your system, taking up a total of $(du -sh /usr/share/shock-os-imager/cache/images | awk '{print $1}') of space. Would you like to delete them?"
 
-elif (($(ls /usr/share/shock-os-imager/cached-images | wc -l)==1)) #singular
+elif (($(ls /usr/share/shock-os-imager/cache/images | wc -l)==1)) #singular
+then
 
-    text="There is 1 cached image on your system, taking up a total of $(du -sh /usr/share/shock-os-imager/cached-images | awk '{print $1}') of space. Would you like to delete it?"
+    text="There is 1 cached image on your system, taking up a total of $(du -sh /usr/share/shock-os-imager/cache/images | awk '{print $1}') of space. Would you like to delete it?"
 
 else #none
 
@@ -24,7 +25,7 @@ ex=$?
 if ((ex==0))
 then
 
-    pkexec rm -rf /usr/share/shock-os-imager/cached-images/*
+    pkexec rm -rf /usr/share/shock-os-imager/cache/images/*
 
     yad --window-icon=shock-os-imager --image=emblem-default-symbolic --title="Shock OS Imager" --text="All cached images have been successfully removed." --button="Dismiss"\!gtk-cancel
 

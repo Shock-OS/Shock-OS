@@ -78,7 +78,21 @@ do
 
     fi
 
-    output="$(yad --window-icon=shock-webapps --width=400 --height=300 --title="Web Apps" --text="Create, edit and delete web apps." --list --always-print-result --column="Icon":IMG --column="Name" --column="FILEPATH":HD "${webapp_list[@]}" --buttons-layout=spread --button="Add"\!add --button="Remove"\!remove --button="Edit"\!gtk-edit)"
+    output="$(yad --window-icon=shock-webapps --width=400 --height=300 --title="Web Apps" --text="Create, edit and delete web apps." --list \
+
+                    --always-print-result \
+
+                    --column="Icon":IMG \
+
+                    --column="Name" \
+
+                    --column="FILEPATH":HD \
+
+                    "${webapp_list[@]}" \
+
+                    --buttons-layout=spread \
+
+                    --button="Add"\!add --button="Remove"\!remove --button="Edit"\!gtk-edit)"
 
     action=$?
 
@@ -174,7 +188,27 @@ do
 
             categories_selection="${categories_selection//"${shock_webapp_category}"/"^${shock_webapp_category}"}"
 
-            output="$(yad --window-icon=shock-webapps --title="Web Apps" --form --focus-field="$focus_field" --field="Name:" "$shock_webapp_name" --field="Address:" "$shock_webapp_address" --field="Icon:":FL "$shock_webapp_icon" --field="Category:":CB "$categories_selection" --field="Browser:":CB "$browser_selection" --field="Parameters:" "$shock_webapp_parameters" --field="Isolated Profile":CHK "$shock_webapp_isolated" --field="Private/Incognito Window":CHK "$shock_webapp_private" --button="Save"\!media-floppy)"
+            output="$(yad --window-icon=shock-webapps --title="Web Apps" --form \
+
+                            --focus-field="$focus_field" \
+
+                            --field="Name:" "$shock_webapp_name" \
+
+                            --field="Address:" "$shock_webapp_address" \
+
+                            --field="Icon:":FL "$shock_webapp_icon" \
+
+                            --field="Category:":CB "$categories_selection" \
+
+                            --field="Browser:":CB "$browser_selection" \
+
+                            --field="Parameters:" "$shock_webapp_parameters" \
+
+                            --field="Isolated Profile":CHK "$shock_webapp_isolated" \
+
+                            --field="Private/Incognito Window":CHK "$shock_webapp_private" \
+
+                            --button="Save"\!media-floppy)"
 
             ex=$?
 
