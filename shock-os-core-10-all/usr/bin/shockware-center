@@ -489,27 +489,16 @@ do
             fi
 
             eval "yad --window-icon=shockware-center --width=800 --height=500 --title=\"Shockware Center\" --list \
-
                     --text=\"${category_text}Page $page of $total_pages <small>Double-click on an app to install/remove it.</small>\" \
-
                     --column=\"Icon\":IMG \
-
                     --column=\"Name\" \
-
                     --column=\"TYPE\":HD \
-
                     --column=\"PACKAGE\":HD \
-
                     --column=\"ID\":HD \
-
                     --column=\"ICON\":HD \
-
                     ${yad_list[@]} \
-
                     --dclick-action=\"shockware-center-view-package $show_apt_packages $show_flatpaks $flatpak_appstream_dir\" \
-
                     --buttons-layout=spread \
-
                     --button=\"Settings\"\!tweaks-app:0 --button=\"Categories\"\!open-menu-symbolic:1 --button=\"Search\"\!gtk-find:2 $page_buttons"
 
             ex=$?
@@ -567,13 +556,9 @@ do
             fi
 
 	        output="$(yad --fixed --window-icon=shockware-center --title="Shockware Center" --form \
-
                         --field="Rows per page:":CB "$rows_per_page_selection" \
-
                         --field='':CB "$show_packages_selection" \
-
                         --buttons-layout=edge \
-
                         --button="Refresh Catalog"\!gtk-refresh:1 --button="Apply"\!gtk-ok:0)"
 
 	        ex=$?
@@ -626,37 +611,21 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
         then
 
             output="$(yad --fixed --window-icon=shockware-center --title="Shockware Center" --list \
-
                         --no-headers \
-
                         --width=400 \
-
                         --height=300 \
-
                         --column="Icon":IMG \
-
                         --column="Category" \
-
                             open-menu-symbolic "All Applications" \
-
                             applications-accessories Accessories \
-
                             applications-science Education \
-
                             applications-games Games \
-
                             applications-graphics Graphics \
-
                             applications-internet Internet \
-
                             applications-office Office \
-
                             applications-development Programming \
-
                             applications-multimedia Multimedia \
-
                             applications-system "System Tools" \
-
                         --button="Go"\!go-next)"
 
             ex=$?
@@ -732,15 +701,10 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
                 fi
 
                 output="$(yad --fixed --window-icon=shockware-center --title="Shockware Center" --text="Please enter a search term." --form \
-
                             --always-print-result \
-
                             --field="Keyword:" "$keyword" \
-
                             --field="Category:":CB "$category_selection" \
-
                             --buttons-layout=edge \
-
                             --button="Show All"\!open-menu-symbolic:1 --button="Search"\!gtk-find:0)"
 
                 ex=$?
@@ -780,9 +744,7 @@ show_flatpaks=$show_flatpaks" | tee ~/.config/shock/shockware-center
         then
 
             output=$(yad --fixed --window-icon=shockware-center --title="Shockware Center" --form \
-
                         --field="Jump to Page:":NUM "$page\!1..$(expr ${#results_full[@]} / $rows_per_page)" \
-
                         --button=Jump\!gtk-jump-to-ltr)
 
             ex=$?

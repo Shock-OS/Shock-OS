@@ -14,11 +14,8 @@ else
 fi
 
 output="$(yad --window-icon=time-admin --title="Time and Date" --form \
-
                 --always-print-result \
-
                 --field="Clock Format":CB "$clock_format_selection" \
-
                 --button="Advanced Time Settings"\!tweaks-app:1 --button="Apply"\!gtk-ok:0)"
 
 ex=$?
