@@ -9,7 +9,7 @@ then
 
 fi
 
-yad --undecorated --fixed --progress --pulsate --progress-text="Loading..." --no-buttons
+yad --undecorated --fixed --progress --pulsate --progress-text="Loading..." --no-buttons &
 
 IFS=$'\n'
 

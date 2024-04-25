@@ -2,7 +2,7 @@
 Name=Package Installer
 GenericName=Package Installer
 Comment=Install, reinstall, or remove .deb packages
-Exec=shock-package-installer %f
+Exec=/bin/bash /usr/bin/shock-package-installer %f
 Icon=package
 Terminal=false
 Type=Application
