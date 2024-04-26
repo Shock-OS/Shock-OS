@@ -131,11 +131,11 @@ echo "DD_OUTPUT: $dd_output" #DEBUG
 if [[ "$device_verification_enabled" == "TRUE" ]]
 then
 
-    echo "#Verifying..."
+    echo "#Verifying device..."
 
     uncompressed_size="$(echo "$dd_output" | awk 'NR==3 {print $1}')"
 
-    device_sha256sum="$(dd if="$device" bs=1 count="$uncompressed_size" | pv -s "$uncompressed_size" -n | sha256sum | cut -d' ' -f1)"
+    device_sha256sum="$(dd if="$device" bs=4M count="${uncompressed_size}B" | pv -s "$uncompressed_size" -n | sha256sum | cut -d' ' -f1)"
 
     imagevar_uncompressed_sha256sum="${imagevar}_uncompressed_sha256sum"
 
