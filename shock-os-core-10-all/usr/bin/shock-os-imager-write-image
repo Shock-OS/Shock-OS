@@ -79,7 +79,7 @@ then
 
     url="${!url}"
 
-    wget -O /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" "$url" 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/'
+    wget -O --connect-timeout=20 /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" "$url" 2>&1 || rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/'
 
 fi
 
@@ -128,25 +128,20 @@ dd_output="$(xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"
 
 echo "DD_OUTPUT: $dd_output" #DEBUG
 
-if [[ "$device_verification_enabled" == "TRUE" ]]
+echo "#Verifying device..."
+
+uncompressed_size="$(echo "$dd_output" | awk 'NR==3 {print $1}')"
+
+device_sha256sum="$(dd if="$device" bs=4M count="${uncompressed_size}B" | pv -s "$uncompressed_size" -n | sha256sum | cut -d' ' -f1)"
+
+imagevar_uncompressed_sha256sum="${imagevar}_uncompressed_sha256sum"
+
+if [[ "$device_sha256sum" != "${!imagevar_uncompressed_sha256sum}" ]]
 then
 
-    echo "#Verifying device..."
+    echo 'ERROR: VERIFICATION FAILED, AN ERROR OCCURRED WHILE FLASHING!!!'
 
-    uncompressed_size="$(echo "$dd_output" | awk 'NR==3 {print $1}')"
-
-    device_sha256sum="$(dd if="$device" bs=4M count="${uncompressed_size}B" | pv -s "$uncompressed_size" -n | sha256sum | cut -d' ' -f1)"
-
-    imagevar_uncompressed_sha256sum="${imagevar}_uncompressed_sha256sum"
-
-    if [[ "$device_sha256sum" != "${!imagevar_uncompressed_sha256sum}" ]]
-    then
-
-        echo 'ERROR: VERIFICATION FAILED, AN ERROR OCCURRED WHILE FLASHING!!!'
-
-        exit 1
-
-    fi
+    exit 1
 
 fi
 

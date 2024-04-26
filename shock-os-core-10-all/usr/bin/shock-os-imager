@@ -191,42 +191,46 @@ do
     if [[ "$ex" == "0" ]] #Flash
     then
 
-        yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="WARNING: This will ERASE ALL DATA on device ${device}. Are you sure you would like to continue?" --button="No, cancel"\!gtk-cancel:1 --button="Yes, continue"\!go-next:0
+        device_size="$(cat /sys/class/block/$(basename "$block_device")/size)"
 
-        ex=$?
+        free_space="$(df -B 1G / | awk 'NR==2 {print $4}')"
 
-        if [[ "$ex" == "0" ]]
+        if (($((device_size * 512)) < 12884901888)) #if device is less than 12GB. Using 12GB because it is clearly bigger than 8GB but will allow any 16GB drive.
         then
 
-            image_writer_output_dir="$(mktemp -d)"
+            yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="ERROR: The selected device is too small. The target device must be at least 16 GBs in size for Shock OS to work properly. Please try again with a larger SD card or USB drive." --button="Dismiss"\!gtk-close
 
-            { script -afe "$image_writer_output_dir"/output.txt -c "pkexec shock-os-imager-write-image \"$version\" \"$edition\" \"$arch\" \"$device\" \"$image_writer_output_dir\"" || touch "$image_writer_output_dir"/cancelled_indicator; echo "$?" | tee "$image_writer_output_dir"/image_writer_ex; } & image_writer_pid=$!
+        elif ((free_space<5)) && [[ ! -f /usr/share/shock-os-imager/cache/images/"${version}_${edition}_${arch}.img.xz" ]] #if less than 5GB of free space on system and image isn't cached
+        then
 
-            { inotifywait -m -e create "$image_writer_output_dir" & echo $! | tee "$image_writer_output_dir"/inotifywait_pid; } | while read -r event #wait for pkexec password to be entered
-            do
-
-                if [[ -f "${image_writer_output_dir}/ready_indicator" ]] || [[ -f "${image_writer_output_dir}/cancelled_indicator" ]]
-                then
-
-                    kill "$(cat "$image_writer_output_dir"/inotifywait_pid)"
-
-                    break
-
-                fi
-
-            done
-
-            if [[ -f "${image_writer_output_dir}/ready_indicator" ]]
+            if (($(ls /usr/share/shock-os-imager/cache/images | wc -l)!=0)) #if cached images
             then
 
-                { inotifywait -m -e modify "$image_writer_output_dir"/output.txt & echo $! | tee "$image_writer_output_dir"/inotifywait_pid; } | while read -r event
+                shock-os-imager-remove-cached-images --nospace
+
+            else
+
+                yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="Your system only has $free_space GBs left of space, which is not sufficient to download an image of Shock OS to flash. Shock OS Imager requires a minimum of 5 GBs of free space to download a new image." --button="Dismiss"\!gtk-close
+
+            fi
+
+        else
+
+            yad --width=500 --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="WARNING: This will ERASE ALL DATA on device ${device}. Are you sure you would like to continue?" --button="No, cancel"\!gtk-cancel:1 --button="Yes, continue"\!go-next:0
+
+            ex=$?
+
+            if [[ "$ex" == "0" ]]
+            then
+
+                image_writer_output_dir="$(mktemp -d)"
+
+                { script -afe "$image_writer_output_dir"/output.txt -c "pkexec shock-os-imager-write-image \"$version\" \"$edition\" \"$arch\" \"$device\" \"$image_writer_output_dir\"" || touch "$image_writer_output_dir"/cancelled_indicator; echo "$?" | tee "$image_writer_output_dir"/image_writer_ex; } & image_writer_pid=$!
+
+                { inotifywait -m -e create "$image_writer_output_dir" & echo $! | tee "$image_writer_output_dir"/inotifywait_pid; } | while read -r event #wait for pkexec password to be entered
                 do
 
-                    line="$(cat "$image_writer_output_dir"/output.txt | tail -n 1)"
-
-                    echo "$line"
-
-                    if [[ "$line" == "Script done on "* ]]
+                    if [[ -f "${image_writer_output_dir}/ready_indicator" ]] || [[ -f "${image_writer_output_dir}/cancelled_indicator" ]]
                     then
 
                         kill "$(cat "$image_writer_output_dir"/inotifywait_pid)"
@@ -235,35 +239,62 @@ do
 
                     fi
 
-                done | yad --window-icon=shock-os-imager --title="Shock OS Imager" --text="The device $device is being flashed. Please do not unplug the device during this process." --progress --button="Cancel"\!gtk-cancel & yad_pid=$!
+                done
 
-                wait -n "$image_writer_pid" "$yad_pid"
-
-                if ps -p "$image_writer_pid"
+                if [[ -f "${image_writer_output_dir}/ready_indicator" ]]
                 then
 
-                    touch "$image_writer_output_dir"/kill_indicator
+                    { inotifywait -m -e modify "$image_writer_output_dir"/output.txt & echo $! | tee "$image_writer_output_dir"/inotifywait_pid; } | while read -r event
+                    do
+
+                        line="$(cat "$image_writer_output_dir"/output.txt | tail -n 1)"
+
+                        echo "$line"
+
+                        if [[ "$line" == "Script done on "* ]]
+                        then
+
+                            kill "$(cat "$image_writer_output_dir"/inotifywait_pid)"
+
+                            break
+
+                        fi
+
+                    done | yad --window-icon=shock-os-imager --title="Shock OS Imager" --text="The device $device is being flashed. Please do not unplug the device during this process." --progress --button="Cancel"\!gtk-cancel & yad_pid=$!
+
+                    wait -n "$image_writer_pid" "$yad_pid"
+
+                    if ps -p "$image_writer_pid"
+                    then
+
+                        touch "$image_writer_output_dir"/kill_indicator
+
+                    else
+
+                        kill "$yad_pid"
+
+                    fi
+
+                    wait "$image_writer_pid"
+
+                    image_writer_ex="$(cat "$image_writer_output_dir"/image_writer_ex)"
+
+                    echo "IMAGE_WRITER_EX: $image_writer_ex" #DEBUG
+
+                    if [[ "$image_writer_ex" == "0" ]]
+                    then
+
+                        notify-send --app-name="Shock OS Imager" --icon=shock-os-imager "Device Flashed Successfully!" "The device ($device) was successfully flashed. Feel free to remove it."
+
+                    else
+
+                        notify-send --app-name="Shock OS Imager" --icon=emblem-important-symbolic "Failed to Flash Device" "Failed to flash the device ($device). Please try again later."
+
+                    fi
 
                 else
 
-                    kill "$yad_pid"
-
-                fi
-
-                wait "$image_writer_pid"
-
-                image_writer_ex="$(cat "$image_writer_output_dir"/image_writer_ex)"
-
-                echo "IMAGE_WRITER_EX: $image_writer_ex" #DEBUG
-
-                if [[ "$image_writer_ex" == "0" ]]
-                then
-
-                    notify-send --app-name="Shock OS Imager" --icon=shock-os-imager "Device Flashed Successfully!" "The device ($device) was successfully flashed. Feel free to remove it."
-
-                else
-
-                    notify-send --app-name="Shock OS Imager" --icon=emblem-important-symbolic "Failed to Flash Device" "Failed to flash the device ($device). Please try again later."
+                    yad --window-icon=shock-os-imager --image=emblem-default-symbolic --title="Shock OS Imager" --text="Operation aborted. No changes were made to device ${device}." --button="Dismiss"\!gtk-close
 
                 fi
 
@@ -272,10 +303,6 @@ do
                 yad --window-icon=shock-os-imager --image=emblem-default-symbolic --title="Shock OS Imager" --text="Operation aborted. No changes were made to device ${device}." --button="Dismiss"\!gtk-close
 
             fi
-
-        else
-
-            yad --window-icon=shock-os-imager --image=emblem-default-symbolic --title="Shock OS Imager" --text="Operation aborted. No changes were made to device ${device}." --button="Dismiss"\!gtk-close
 
         fi
 
@@ -296,8 +323,6 @@ do
 
             caching_enabled="TRUE"
 
-            device_verification_enabled="FALSE"
-
         fi
 
         output="$(yad --width=300 --window-icon=shock-os-imager --title="Options" --form \
@@ -305,10 +330,6 @@ do
                     --field="Caching images significantly reduces the amount of time it takes to flash the same image later, but these images also occupy several gigabytes of space. If you flash the same image or images often, and have sufficient space on your computer, caching is recommended. If you rarely use Shock OS Imager and/or don't have enough space on your computer, then we'd recommend disabling caching.":LBL '' \
                     --field="Delete Cached Images":FBTN 'shock-os-imager-remove-cached-images' \
                     --field="Cache Images":CHK "$caching_enabled" \
-                    --field="":LBL '' \
-                    --field="<big><b>Device Verification</b></big>":LBL '' \
-                    --field="If enabled, the device will be checked after flashing to ensure there were no errors in the process, and that the device contains the correct contents. This option is disabled by default because it takes a long time and errors are unlikely.":LBL '' \
-                    --field="Verify device after flashing":CHK "$device_verification_enabled" \
                     --buttons-layout=edge \
                     --button="Cancel"\!gtk-cancel:1 --button="Apply"\!gtk-ok:0)"
 
@@ -316,16 +337,13 @@ do
 
         caching_enabled_2="$(echo "$output" | awk -F'|' '{print $4}')"
 
-        device_verification_enabled_2="$(echo "$output" | awk -F'|' '{print $8}')"
-
         if [[ "$ex" == "0" ]]
         then
 
-            if [[ "$caching_enabled" != "$caching_enabled_2" ]] || [[ "$device_verification_enabled" != "$device_verification_enabled_2" ]]
+            if [[ "$caching_enabled" != "$caching_enabled_2" ]]
             then
 
-                pkexec bash -c "echo 'caching_enabled=$caching_enabled_2
-device_verification_enabled=$device_verification_enabled_2' | tee /usr/share/shock-os-imager/settings.ini"
+                pkexec bash -c "echo 'caching_enabled=$caching_enabled_2' | tee /usr/share/shock-os-imager/settings.ini"
 
             fi
 
