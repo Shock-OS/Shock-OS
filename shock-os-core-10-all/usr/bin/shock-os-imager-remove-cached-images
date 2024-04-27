@@ -5,7 +5,7 @@ then
 
     free_space="$(df -B 1G / | awk 'NR==2 {print $4}')"
 
-    text="Your system only has $free_space GBs of space left, which is not sufficient to download an image of Shock OS to flash. Shock OS Imager requires a minimum of 5GBs of free space to download a new image. "
+    text="Your system only has $free_space GBs of space left, which is not sufficient to download an image of Shock OS to flash. Shock OS Imager requires a minimum of 5 GBs of free space to download a new image. "
 
 fi
 

@@ -7,7 +7,7 @@ then
 
     echo "Script must be run as root. Exiting..."
 
-    exit
+    exit 2
 
 fi
 
@@ -19,11 +19,11 @@ edition="$2"
 
 arch="$3"
 
-arch="${arch//-/_}"
-
 device="$4"
 
 image_writer_output_dir="$5"
+
+imagevar="${version}_${edition}_${arch}"
 
 if [[ ! -f /usr/share/shock-os-imager/settings.ini ]]
 then
@@ -37,7 +37,7 @@ source /usr/share/shock-os-imager/settings.ini
 
 touch "$image_writer_output_dir"/ready_indicator
 
-{ inotifywait -m "$image_writer_output_dir" & inotifywait_killpid=$!; } | while read -r event
+{ inotifywait -m "$image_writer_output_dir" & echo "$!" | tee "$image_writer_output_dir"/inotifywait_killpid; } | while read -r event
 do
 
     if [[ -f "${image_writer_output_dir}/kill_indicator" ]]
@@ -45,12 +45,21 @@ do
 
         echo "CANCELLING..."
 
-        kill $$
+        if [[ -f "${image_writer_output_dir}/image_download_pid" ]]
+        then
+
+            kill -9 "$(cat "$image_writer_output_dir"/image_download_pid)"
+
+        else
+
+            kill $$
+
+        fi
 
     elif [[ ! -f "${image_writer_output_dir}/output.txt" ]]
     then
 
-        kill "$inotifywait_killpid"
+        kill "$(cat "$image_writer_output_dir"/inotifywait_killpid)"
 
     fi
 
@@ -64,22 +73,43 @@ rm /usr/share/shock-os-imager/metainfo
 
 rm -rf /usr/share/shock-os-imager/cache/sigs/*
 
+sleep 1
+
 echo "#Getting metadata..."
 
-wget -q https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P /usr/share/shock-os-imager/
+sleep 1
+
+wget --timeout=5 -q https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P /usr/share/shock-os-imager/ || { echo 'ERROR: FAILED TO DOWNLOAD METAINFO'; exit 3; }
 
 source /usr/share/shock-os-imager/metainfo
 
-imagevar="${version}_${edition}_${arch}"
-
 if [[ ! -f /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" ]]
 then
+
+    sleep 1
+
+    echo "#Downloading image..."
+
+    sleep 1
 
     url="${imagevar}_url"
 
     url="${!url}"
 
-    wget -O --connect-timeout=20 /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" "$url" 2>&1 || rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/'
+    { { wget --timeout=20 -O /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" "$url" 2>&1 || { rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"; echo 'ERROR: FAILED TO DOWNLOAD IMAGE'; exit 3; }; } | sed -n 's/.* \([0-9]\{1,2\}\)%.*/\1/p'; } & echo "$!" | tee "$image_writer_output_dir"/image_download_pid
+
+    sleep 1
+
+    wait "$(cat "$image_writer_output_dir"/image_download_pid)"
+
+    if [[ -f "${image_writer_output_dir}/kill_indicator" ]] #YES, this IS needed (mostly for if the process was cancelled during the download)
+    then
+
+        rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"
+
+        exit 1
+
+    fi
 
 fi
 
@@ -87,19 +117,11 @@ sig_url="${imagevar}_sig_url"
 
 sig_url="${!sig_url}"
 
-echo "#Getting signature..."
-
-wget -q -O /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" "$sig_url"
+sleep 1
 
 echo "#Verifying image..."
 
-rm /usr/share/shock-os-imager/key.asc
-
-wget https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/key.asc -P /usr/share/shock-os-imager/
-
-gpg --import /usr/share/shock-os-imager/key.asc
-
-gpg --verify /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" || { echo 'ERROR: IMAGE FILE DID NOT MATCH SIGNATURE!!!'; exit 1; }
+sleep 1
 
 imagevar_compressed_sha256sum="${imagevar}_compressed_sha256sum"
 
@@ -108,13 +130,33 @@ compressed_sha256sum="$(pv -n /usr/share/shock-os-imager/cache/images/"${imageva
 if [[ "$compressed_sha256sum" != "${!imagevar_compressed_sha256sum}" ]]
 then
 
-    echo 'ERROR: INVALID sha256SUM, FILE HAS BEEN TAMPERED WITH!!!'
+    echo 'ERROR: INVALID SHA256SUM, IMAGE IS CORRUPTED.'
 
-    exit 1
+    exit 4
 
 fi
 
+sleep 1
+
+echo "#Getting signature..."
+
+sleep 1
+
+wget --timeout=5 -q -O /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" "$sig_url" || { echo 'ERROR: FAILED TO DOWNLOAD SIGNATURE'; exit 3; }
+
+rm /usr/share/shock-os-imager/key.asc
+
+wget --timeout=5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/key.asc -P /usr/share/shock-os-imager/ || { echo 'ERROR: FAILED TO DOWNLOAD KEY'; exit 3; }
+
+gpg --import /usr/share/shock-os-imager/key.asc
+
+gpg --verify /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" || { echo 'ERROR: IMAGE FILE DID NOT MATCH SIGNATURE.'; exit 4; }
+
+sleep 1
+
 echo "#Writing image..."
+
+sleep 1
 
 umount $device*
 
@@ -128,7 +170,11 @@ dd_output="$(xz -cd /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"
 
 echo "DD_OUTPUT: $dd_output" #DEBUG
 
+sleep 1
+
 echo "#Verifying device..."
+
+sleep 1
 
 uncompressed_size="$(echo "$dd_output" | awk 'NR==3 {print $1}')"
 
@@ -139,9 +185,9 @@ imagevar_uncompressed_sha256sum="${imagevar}_uncompressed_sha256sum"
 if [[ "$device_sha256sum" != "${!imagevar_uncompressed_sha256sum}" ]]
 then
 
-    echo 'ERROR: VERIFICATION FAILED, AN ERROR OCCURRED WHILE FLASHING!!!'
+    echo 'ERROR: VERIFICATION FAILED, AN ERROR OCCURRED WHILE FLASHING.'
 
-    exit 1
+    exit 5
 
 fi
 
