@@ -1,30 +1,5 @@
 #!/bin/bash
 
-rm ~/.cache/shock-tmp/shock-os-imager/*
-
-until [[ -f ~/.cache/shock-tmp/shock-os-imager/metainfo ]]
-do
-
-    wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P ~/.cache/shock-tmp/shock-os-imager/
-
-    if [[ ! -f ~/.cache/shock-tmp/shock-os-imager/metainfo ]]
-    then
-
-        yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="Shock OS Imager requires an internet connection to continue. Please ensure internet connectivity and try again." --buttons-layout=edge --button="Close"\!gtk-close:1 --button="Retry"\!edit-undo:0
-
-        ex=$?
-
-        if [[ "$ex" != "0" ]]
-        then
-
-            exit
-
-        fi
-
-    fi
-
-done
-
 function refresh() {
 
 source ~/.cache/shock-tmp/shock-os-imager/metainfo
@@ -43,6 +18,31 @@ refresh
 
 while true
 do
+
+    rm ~/.cache/shock-tmp/shock-os-imager/*
+
+    until [[ -f ~/.cache/shock-tmp/shock-os-imager/metainfo ]]
+    do
+
+        wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P ~/.cache/shock-tmp/shock-os-imager/
+
+        if [[ ! -f ~/.cache/shock-tmp/shock-os-imager/metainfo ]]
+        then
+
+            yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="Shock OS Imager requires an internet connection to continue. Please ensure internet connectivity and try again." --buttons-layout=edge --button="Close"\!gtk-close:1 --button="Retry"\!edit-undo:0
+
+            ex=$?
+
+            if [[ "$ex" != "0" ]]
+            then
+
+                exit
+
+            fi
+
+        fi
+
+    done
 
     drives=($(lsblk | grep /media | grep -oP "(sd[a-z]|mmcblk[0-9])" | awk '{print "/dev/"$1}' | sort -u))
 

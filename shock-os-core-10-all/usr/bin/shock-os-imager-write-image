@@ -37,11 +37,13 @@ source /usr/share/shock-os-imager/settings.ini
 
 touch "$image_writer_output_dir"/ready_indicator
 
-{ inotifywait -m "$image_writer_output_dir" & echo "$!" | tee "$image_writer_output_dir"/inotifywait_killpid; } | while read -r event
+{ inotifywait -m -e create,delete "$image_writer_output_dir" & echo "$!" | tee "$image_writer_output_dir"/inotifywait_killpid; } | while read -r event
 do
 
     if [[ -f "${image_writer_output_dir}/kill_indicator" ]]
     then
+
+        kill "$(cat "$image_writer_output_dir"/inotifywait_killpid)"
 
         echo "CANCELLING..."
 
@@ -96,7 +98,7 @@ then
 
     url="${!url}"
 
-    { { wget --timeout=20 -O /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" "$url" 2>&1 || { rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"; echo 'ERROR: FAILED TO DOWNLOAD IMAGE'; exit 3; }; } | sed -n 's/.* \([0-9]\{1,2\}\)%.*/\1/p'; } & echo "$!" | tee "$image_writer_output_dir"/image_download_pid
+    { { wget --timeout=20 -O /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" "$url" 2>&1 || rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"; } | sed -n 's/.* \([0-9]\{1,2\}\)%.*/\1/p'; } & echo "$!" | tee "$image_writer_output_dir"/image_download_pid
 
     sleep 1
 
@@ -108,6 +110,13 @@ then
         rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"
 
         exit 1
+
+    elif [[ ! -f /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" ]] #if file deleted because download failed
+    then
+
+        echo "ERROR: FAILED TO DOWNLOAD IMAGE"
+
+        exit 3
 
     fi
 
