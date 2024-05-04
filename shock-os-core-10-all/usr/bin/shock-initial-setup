@@ -9,8 +9,6 @@ then
 
 fi
 
-yad --undecorated --fixed --progress --pulsate --progress-text="Loading..." --no-buttons &
-
 IFS=$'\n'
 
 source /usr/share/shock/dist-info
