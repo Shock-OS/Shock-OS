@@ -98,7 +98,7 @@ then
 
     url="${!url}"
 
-    { { wget --timeout=20 -O /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" "$url" 2>&1 || rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"; } | sed -n 's/.* \([0-9]\{1,2\}\)%.*/\1/p'; } & echo "$!" | tee "$image_writer_output_dir"/image_download_pid
+    { { wget --timeout=20 -O /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" "$url" 2>&1 || rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"; } | awk '/[0-9]+%/ { match($0, /[0-9]+%/); num = substr($0, RSTART, RLENGTH-1); print "#Downloading image... (" num "%)" }'; } & echo "$!" | tee "$image_writer_output_dir"/image_download_pid
 
     sleep 1
 
