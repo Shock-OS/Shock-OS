@@ -21,7 +21,7 @@ arch="$3"
 
 device="$4"
 
-image_writer_output_dir="$5"
+tmpdir="$5"
 
 imagevar="${version}_${edition}_${arch}"
 
@@ -35,22 +35,22 @@ fi
 
 source /usr/share/shock-os-imager/settings.ini
 
-touch "$image_writer_output_dir"/ready_indicator
+touch "$tmpdir"/writer/ready_indicator
 
-{ inotifywait -m -e create,delete "$image_writer_output_dir" & echo "$!" | tee "$image_writer_output_dir"/inotifywait_killpid; } | while read -r event
+{ inotifywait -m -e create,delete "$tmpdir"/writer & echo "$!" | tee "$tmpdir"/writer/inotifywait_killpid; } | while read -r event
 do
 
-    if [[ -f "${image_writer_output_dir}/kill_indicator" ]]
+    if [[ -f "${tmpdir}/writer/kill_indicator" ]]
     then
 
-        kill "$(cat "$image_writer_output_dir"/inotifywait_killpid)"
+        kill "$(cat "$tmpdir"/writer/inotifywait_killpid)"
 
         echo "CANCELLING..."
 
-        if [[ -f "${image_writer_output_dir}/image_download_pid" ]]
+        if [[ -f "${tmpdir}/writer/image_download_pid" ]]
         then
 
-            kill -9 "$(cat "$image_writer_output_dir"/image_download_pid)"
+            kill -9 "$(cat "$tmpdir"/writer/image_download_pid)"
 
         else
 
@@ -58,10 +58,10 @@ do
 
         fi
 
-    elif [[ ! -f "${image_writer_output_dir}/output.txt" ]]
+    elif [[ ! -f "${tmpdir}/writer/output.txt" ]]
     then
 
-        kill "$(cat "$image_writer_output_dir"/inotifywait_killpid)"
+        kill "$(cat "$tmpdir"/writer/inotifywait_killpid)"
 
     fi
 
@@ -81,9 +81,9 @@ echo "#Getting metadata..."
 
 sleep 1
 
-wget --timeout=5 -q https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P /usr/share/shock-os-imager/ || { echo 'ERROR: FAILED TO DOWNLOAD METAINFO'; exit 3; }
+wget --retry-connrefused --tries=0 --timeout=5 -q https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P /usr/share/shock-os-imager/ || { echo 'ERROR: FAILED TO DOWNLOAD METAINFO'; exit 3; }
 
-wget --timeout 5 https://github.com/Shock-OS/Shock-OS/raw/imager/metainfo.sig -P /usr/share/shock-os-imager/
+wget --retry-connrefused --tries=0 --timeout 5 https://github.com/Shock-OS/Shock-OS/raw/imager/metainfo.sig -P /usr/share/shock-os-imager/
 
 gpg --verify /usr/share/shock-os-imager/metainfo.sig /usr/share/shock-os-imager/metainfo || { echo "ERROR: FAILED TO VERIFY METAINFO"; exit 4; }
 
@@ -102,13 +102,13 @@ then
 
     url="${!url}"
 
-    { { wget --timeout=20 -O /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" "$url" 2>&1 || rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"; } | awk '/[0-9]+%/ { match($0, /[0-9]+%/); num = substr($0, RSTART, RLENGTH-1); print "#Downloading image... (" num "%)" }'; } & echo "$!" | tee "$image_writer_output_dir"/image_download_pid
+    { { wget --retry-connrefused --tries=0 --timeout=20 -O /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" "$url" 2>&1 || rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"; } | sed -u 's/.* \([0-9]\+\)% .*/\1\n#Downloading image... (\1%)/'; } & echo "$!" | tee "$tmpdir"/writer/image_download_pid
 
     sleep 1
 
-    wait "$(cat "$image_writer_output_dir"/image_download_pid)"
+    wait "$(cat "$tmpdir"/writer/image_download_pid)"
 
-    if [[ -f "${image_writer_output_dir}/kill_indicator" ]] #YES, this IS needed (mostly for if the process was cancelled during the download)
+    if [[ -f "${tmpdir}/writer/kill_indicator" ]] #YES, this IS needed (mostly for if the process was cancelled during the download)
     then
 
         rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"
@@ -155,11 +155,11 @@ echo "#Getting signature..."
 
 sleep 1
 
-wget --timeout=5 -q -O /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" "$sig_url" || { echo 'ERROR: FAILED TO DOWNLOAD SIGNATURE'; exit 3; }
+wget --retry-connrefused --tries=0 --timeout=5 -q -O /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" "$sig_url" || { echo 'ERROR: FAILED TO DOWNLOAD SIGNATURE'; exit 3; }
 
 rm /usr/share/shock-os-imager/key.asc
 
-wget --timeout=5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/key.asc -P /usr/share/shock-os-imager/ || { echo 'ERROR: FAILED TO DOWNLOAD KEY'; exit 3; }
+wget --retry-connrefused --tries=0 --timeout=5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/key.asc -P /usr/share/shock-os-imager/ || { echo 'ERROR: FAILED TO DOWNLOAD KEY'; exit 3; }
 
 gpg --import /usr/share/shock-os-imager/key.asc
 

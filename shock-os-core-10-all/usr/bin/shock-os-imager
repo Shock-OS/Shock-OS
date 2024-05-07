@@ -1,8 +1,10 @@
 #!/bin/bash
 
+tmpdir="$(mktemp -d)"
+
 function refresh() {
 
-source ~/.cache/shock-tmp/shock-os-imager/metainfo
+source "$tmpdir"/metainfo
 
 version=''
 
@@ -14,19 +16,25 @@ device=''
 
 }
 
+function cleanup() {
+
+rm -rf "$tmpdir"
+
+}
+
 refresh
 
 while true
 do
 
-    rm ~/.cache/shock-tmp/shock-os-imager/*
+    rm "$tmpdir"/metainfo
 
-    until [[ -f ~/.cache/shock-tmp/shock-os-imager/metainfo ]]
+    until [[ -f "$tmpdir"/metainfo ]]
     do
 
-        wget --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P ~/.cache/shock-tmp/shock-os-imager/
+        wget --retry-connrefused --tries=0 --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P "$tmpdir"/
 
-        if [[ ! -f ~/.cache/shock-tmp/shock-os-imager/metainfo ]]
+        if [[ ! -f "$tmpdir"/metainfo ]]
         then
 
             yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="Shock OS Imager requires an internet connection to continue. Please ensure internet connectivity and try again." --buttons-layout=edge --button="Close"\!gtk-close:1 --button="Retry"\!edit-undo:0
@@ -36,6 +44,8 @@ do
             if [[ "$ex" != "0" ]]
             then
 
+                cleanup
+
                 exit
 
             fi
@@ -44,9 +54,30 @@ do
 
     done
 
-    wget --timeout 5 https://github.com/Shock-OS/Shock-OS/raw/imager/metainfo.sig -P ~/.cache/shock-tmp/shock-os-imager/
+    rm "$tmpdir"/key.asc
 
-    gpg --verify ~/.cache/shock-tmp/shock-os-imager/metainfo.sig ~/.cache/shock-tmp/shock-os-imager/metainfo || { yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Metainfo could not be verified. Please try again later." --button="Dismiss"\!gtk-close; exit 1; }
+    rm "$tmpdir"/metainfo.sig
+
+    wget --retry-connrefused --tries=0 --timeout=5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/key.asc -P "$tmpdir"/
+
+    wget --retry-connrefused --tries=0 --timeout 5 https://github.com/Shock-OS/Shock-OS/raw/imager/metainfo.sig -P "$tmpdir"/
+
+    gpg --import "$tmpdir"/key.asc
+
+    gpg --verify "$tmpdir"/metainfo.sig "$tmpdir"/metainfo || { yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Metainfo could not be verified. Please try again later." --button="Dismiss"\!gtk-close; cleanup; exit 1; }
+
+    source "$tmpdir"/metainfo
+
+    if ((${#versions[@]}==0))
+    then
+
+        yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Could not read metainfo. Please try again later." --button="Dismiss"\!gtk-close
+
+        cleanup
+
+        exit 1
+
+    fi
 
     drives=($(lsblk | grep /media | grep -oP "(sd[a-z]|mmcblk[0-9])" | awk '{print "/dev/"$1}' | sort -u))
 
@@ -156,7 +187,7 @@ do
 
     fi
 
-    if [[ "$arch" == "32-bit" ]]
+    if [[ "$arch" == "32_bit" ]] #Yes, underscore IS correct
     then
 
         arches_yad_cb='64-bit!^32-bit'
@@ -241,17 +272,19 @@ do
             if [[ "$ex" == "0" ]]
             then
 
-                image_writer_output_dir="$(mktemp -d)"
+                mkdir -p "$tmpdir"/writer
 
-                script -afe "$image_writer_output_dir"/output.txt -c "pkexec bash -c '/usr/bin/shock-os-imager-write-image \"$version\" \"$edition\" \"$arch\" \"$device\" \"$image_writer_output_dir\"; echo \"\$?\" | tee \"$image_writer_output_dir\"/image_writer_ex'" || touch "$image_writer_output_dir"/cancelled_indicator & image_writer_pid=$!
+                rm -rf "$tmpdir"/writer/*
 
-                { inotifywait -m -e create "$image_writer_output_dir" & echo $! | tee "$image_writer_output_dir"/inotifywait_pid; } | while read -r event #wait for pkexec password to be entered
+                script -afe "$tmpdir"/writer/output.txt -c "pkexec bash -c '/usr/bin/shock-os-imager-write-image \"$version\" \"$edition\" \"$arch\" \"$device\" \"$tmpdir\"; echo \"\$?\" | tee \"$tmpdir/writer\"/image_writer_ex'" || touch "$tmpdir"/writer/cancelled_indicator & image_writer_pid=$!
+
+                { inotifywait -m -e create "$tmpdir/writer" & echo $! | tee "$tmpdir"/writer/inotifywait_pid; } | while read -r event #wait for pkexec password to be entered
                 do
 
-                    if [[ -f "${image_writer_output_dir}/ready_indicator" ]] || [[ -f "${image_writer_output_dir}/cancelled_indicator" ]]
+                    if [[ -f "${tmpdir}/writer/ready_indicator" ]] || [[ -f "${tmpdir}/writer/cancelled_indicator" ]]
                     then
 
-                        kill "$(cat "$image_writer_output_dir"/inotifywait_pid)"
+                        kill "$(cat "$tmpdir"/writer/inotifywait_pid)"
 
                         break
 
@@ -259,20 +292,20 @@ do
 
                 done
 
-                if [[ -f "${image_writer_output_dir}/ready_indicator" ]]
+                if [[ -f "${tmpdir}/writer/ready_indicator" ]]
                 then
 
-                    { inotifywait -m -e modify "$image_writer_output_dir"/output.txt & echo $! | tee "$image_writer_output_dir"/inotifywait_pid; } | while read -r event
+                    { inotifywait -m -e modify "$tmpdir"/writer/output.txt & echo $! | tee "$tmpdir"/writer/inotifywait_pid; } | while read -r event
                     do
 
-                        line="$(cat "$image_writer_output_dir"/output.txt | tail -n 1)"
+                        line="$(cat "$tmpdir"/writer/output.txt | tail -n 1)"
 
                         echo "$line"
 
                         if [[ "$line" == "Script done on "* ]]
                         then
 
-                            kill "$(cat "$image_writer_output_dir"/inotifywait_pid)"
+                            kill "$(cat "$tmpdir"/writer/inotifywait_pid)"
 
                             break
 
@@ -285,7 +318,7 @@ do
                     if ps -p "$image_writer_pid"
                     then
 
-                        touch "$image_writer_output_dir"/kill_indicator
+                        touch "$tmpdir"/writer/kill_indicator
 
                     else
 
@@ -295,7 +328,7 @@ do
 
                     wait "$image_writer_pid"
 
-                    image_writer_ex="$(cat "$image_writer_output_dir"/image_writer_ex)"
+                    image_writer_ex="$(cat "$tmpdir"/writer/image_writer_ex)"
 
                     echo "IMAGE_WRITER_EX: $image_writer_ex" #DEBUG
 
@@ -325,7 +358,11 @@ do
                     elif [[ "$image_writer_ex" == "4" ]] #If metainfo could not be verified
                     then
 
-                        yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Metainfo could not be verified." --button="Dismiss"\!gtk-close
+                        yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Metainfo could not be verified. Please try again later." --button="Dismiss"\!gtk-close
+
+                        cleanup
+
+                        exit 1
 
                     elif [[ "$image_writer_ex" == "5" ]] #If image was corruped
                     then
@@ -363,7 +400,7 @@ do
 
                 fi
 
-                rm -rf "$image_writer_output_dir"
+                cleanup
 
             else
 
@@ -417,6 +454,8 @@ do
         fi
 
     else
+
+        cleanup
 
         exit
 
