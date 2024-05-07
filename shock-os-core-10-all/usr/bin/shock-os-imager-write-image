@@ -83,6 +83,10 @@ sleep 1
 
 wget --timeout=5 -q https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P /usr/share/shock-os-imager/ || { echo 'ERROR: FAILED TO DOWNLOAD METAINFO'; exit 3; }
 
+wget --timeout 5 https://github.com/Shock-OS/Shock-OS/raw/imager/metainfo.sig -P /usr/share/shock-os-imager/
+
+gpg --verify /usr/share/shock-os-imager/metainfo.sig /usr/share/shock-os-imager/metainfo || { echo "ERROR: FAILED TO VERIFY METAINFO"; exit 4; }
+
 source /usr/share/shock-os-imager/metainfo
 
 if [[ ! -f /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" ]]
@@ -141,7 +145,7 @@ then
 
     echo 'ERROR: INVALID SHA256SUM, IMAGE IS CORRUPTED.'
 
-    exit 4
+    exit 5
 
 fi
 
@@ -159,7 +163,7 @@ wget --timeout=5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/key.
 
 gpg --import /usr/share/shock-os-imager/key.asc
 
-gpg --verify /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" || { echo 'ERROR: IMAGE FILE DID NOT MATCH SIGNATURE.'; exit 4; }
+gpg --verify /usr/share/shock-os-imager/cache/sigs/"${imagevar}.img.xz.sig" /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" || { echo 'ERROR: IMAGE FILE DID NOT MATCH SIGNATURE.'; exit 5; }
 
 sleep 1
 
@@ -196,7 +200,7 @@ then
 
     echo 'ERROR: VERIFICATION FAILED, AN ERROR OCCURRED WHILE FLASHING.'
 
-    exit 5
+    exit 6
 
 fi
 

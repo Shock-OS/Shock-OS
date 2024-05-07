@@ -44,6 +44,10 @@ do
 
     done
 
+    wget --timeout 5 https://github.com/Shock-OS/Shock-OS/raw/imager/metainfo.sig -P ~/.cache/shock-tmp/shock-os-imager/
+
+    gpg --verify ~/.cache/shock-tmp/shock-os-imager/metainfo.sig ~/.cache/shock-tmp/shock-os-imager/metainfo || { yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Metainfo could not be verified. Please try again later." --button="Dismiss"\!gtk-close; exit 1; }
+
     drives=($(lsblk | grep /media | grep -oP "(sd[a-z]|mmcblk[0-9])" | awk '{print "/dev/"$1}' | sort -u))
 
     drives_selection=""
@@ -318,7 +322,12 @@ do
 
                         yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="ERROR: Failed to download the required files. Please check your internet connection and try again later." --button="Dismiss"\!gtk-close
 
-                    elif [[ "$image_writer_ex" == "4" ]] #If image was corruped
+                    elif [[ "$image_writer_ex" == "4" ]] #If metainfo could not be verified
+                    then
+
+                        yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Metainfo could not be verified." --button="Dismiss"\!gtk-close
+
+                    elif [[ "$image_writer_ex" == "5" ]] #If image was corruped
                     then
 
                         if [[ -f /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" ]]
@@ -341,7 +350,7 @@ do
 
                         fi
 
-                    elif [[ "$image_writer_ex" == "5" ]] #If flashing error occured
+                    elif [[ "$image_writer_ex" == "6" ]] #If flashing error occured
                     then
 
                         yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="ERROR: An error occured while flashing the device." --button="Dismiss"\!gtk-close
