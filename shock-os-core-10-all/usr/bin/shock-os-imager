@@ -4,7 +4,7 @@ tmpdir="$(mktemp -d)"
 
 function refresh() {
 
-source "$tmpdir"/metainfo
+source "$tmpdir"/metadata
 
 version=''
 
@@ -27,14 +27,14 @@ refresh
 while true
 do
 
-    rm "$tmpdir"/metainfo
+    rm "$tmpdir"/metadata
 
-    until [[ -f "$tmpdir"/metainfo ]]
+    until [[ -f "$tmpdir"/metadata ]]
     do
 
-        wget --retry-connrefused --tries=0 --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P "$tmpdir"/
+        wget --retry-connrefused --tries=0 --timeout 5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metadata -P "$tmpdir"/
 
-        if [[ ! -f "$tmpdir"/metainfo ]]
+        if [[ ! -f "$tmpdir"/metadata ]]
         then
 
             yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="Shock OS Imager requires an internet connection to continue. Please ensure internet connectivity and try again." --buttons-layout=edge --button="Close"\!gtk-close:1 --button="Retry"\!edit-undo:0
@@ -56,22 +56,22 @@ do
 
     rm "$tmpdir"/key.asc
 
-    rm "$tmpdir"/metainfo.sig
+    rm "$tmpdir"/metadata.sig
 
     wget --retry-connrefused --tries=0 --timeout=5 https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/key.asc -P "$tmpdir"/
 
-    wget --retry-connrefused --tries=0 --timeout 5 https://github.com/Shock-OS/Shock-OS/raw/imager/metainfo.sig -P "$tmpdir"/
+    wget --retry-connrefused --tries=0 --timeout 5 https://github.com/Shock-OS/Shock-OS/raw/imager/metadata.sig -P "$tmpdir"/
 
     gpg --import "$tmpdir"/key.asc
 
-    gpg --verify "$tmpdir"/metainfo.sig "$tmpdir"/metainfo || { yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Metainfo could not be verified. Please try again later." --button="Dismiss"\!gtk-close; cleanup; exit 1; }
+    gpg --verify "$tmpdir"/metadata.sig "$tmpdir"/metadata || { yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Metadata could not be verified. Please try again later." --button="Dismiss"\!gtk-close; cleanup; exit 1; }
 
-    source "$tmpdir"/metainfo
+    source "$tmpdir"/metadata
 
     if ((${#versions[@]}==0))
     then
 
-        yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Could not read metainfo. Please try again later." --button="Dismiss"\!gtk-close
+        yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Could not read metadata. Please try again later." --button="Dismiss"\!gtk-close
 
         cleanup
 
@@ -355,10 +355,10 @@ do
 
                         yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="ERROR: Failed to download the required files. Please check your internet connection and try again later." --button="Dismiss"\!gtk-close
 
-                    elif [[ "$image_writer_ex" == "4" ]] #If metainfo could not be verified
+                    elif [[ "$image_writer_ex" == "4" ]] #If metadata could not be verified
                     then
 
-                        yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Metainfo could not be verified. Please try again later." --button="Dismiss"\!gtk-close
+                        yad --window-icon=shock-os-imager --title="Shock OS Imager" --image=emblem-important-symbolic --text="ERROR: Metadata could not be verified. Please try again later." --button="Dismiss"\!gtk-close
 
                         cleanup
 

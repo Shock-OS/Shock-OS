@@ -71,7 +71,7 @@ mkdir -p /usr/share/shock-os-imager/cache/images
 
 mkdir -p /usr/share/shock-os-imager/cache/sigs
 
-rm /usr/share/shock-os-imager/metainfo
+rm /usr/share/shock-os-imager/metadata
 
 rm -rf /usr/share/shock-os-imager/cache/sigs/*
 
@@ -81,13 +81,13 @@ echo "#Getting metadata..."
 
 sleep 1
 
-wget --retry-connrefused --tries=0 --timeout=5 -q https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metainfo -P /usr/share/shock-os-imager/ || { echo 'ERROR: FAILED TO DOWNLOAD METAINFO'; exit 3; }
+wget --retry-connrefused --tries=0 --timeout=5 -q https://raw.githubusercontent.com/Shock-OS/Shock-OS/imager/metadata -P /usr/share/shock-os-imager/ || { echo 'ERROR: FAILED TO DOWNLOAD METADATA'; exit 3; }
 
-wget --retry-connrefused --tries=0 --timeout 5 https://github.com/Shock-OS/Shock-OS/raw/imager/metainfo.sig -P /usr/share/shock-os-imager/
+wget --retry-connrefused --tries=0 --timeout 5 https://github.com/Shock-OS/Shock-OS/raw/imager/metadata.sig -P /usr/share/shock-os-imager/
 
-gpg --verify /usr/share/shock-os-imager/metainfo.sig /usr/share/shock-os-imager/metainfo || { echo "ERROR: FAILED TO VERIFY METAINFO"; exit 4; }
+gpg --verify /usr/share/shock-os-imager/metadata.sig /usr/share/shock-os-imager/metadata || { echo "ERROR: FAILED TO VERIFY METADATA"; exit 4; }
 
-source /usr/share/shock-os-imager/metainfo
+source /usr/share/shock-os-imager/metadata
 
 if [[ ! -f /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" ]]
 then
