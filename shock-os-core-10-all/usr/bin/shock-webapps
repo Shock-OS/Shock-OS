@@ -2,6 +2,12 @@
 
 IFS=$'\n'
 
+function yad() {
+
+GDK_BACKEND=x11 yad $@
+
+}
+
 runuser="$(whoami)"
 
 installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT

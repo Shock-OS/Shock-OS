@@ -2,6 +2,12 @@
 
 #This script is run upon startup and on-command to automatically set the audio output to HDMI if HDMI output is being used (because if it is, it is most likely the desired audio output device)
 
+function yad() {
+
+GDK_BACKEND=x11 yad $@
+
+}
+
 xrandr_output="$(xrandr)"
 
 if [[ "$xrandr_output" == *"HDMI-1 connected"* ]] || [[ "$xrandr_output" == *"HDMI-2 connected"* ]]

@@ -2,6 +2,12 @@
 
 #This script checks for an available upgrade to a newer version of Shock OS and notifies the user if one is available
 
+function yad() {
+
+GDK_BACKEND=x11 yad $@
+
+}
+
 while true
 do
 

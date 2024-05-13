@@ -20,6 +20,12 @@ fi
 
 #the root check element ends
 
+function yad() {
+
+GDK_BACKEND=x11 yad $@
+
+}
+
 function clean() {
 
 rm -r /usr/share/shock-release-upgrader/upgrades/*

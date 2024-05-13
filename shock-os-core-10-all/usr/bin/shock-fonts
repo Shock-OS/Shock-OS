@@ -15,6 +15,12 @@ fi
 
 }
 
+function yad() {
+
+GDK_BACKEND=x11 yad $@
+
+}
+
 while true
 do
 

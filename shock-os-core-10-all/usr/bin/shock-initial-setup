@@ -927,6 +927,8 @@ fi
 
 function apply_user_settings() {
 
+yad --progress-text="Setting up your system..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
+
 sudo adduser --disabled-password --gecos "$full_name" "$username" || { deluser --remove-home "$username"; yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Something went wrong while creating the user. Please try again." --button="Retry"\!edit-undo-symbolic; setup_todo_item=$((setup_todo_item-4)); return; }
 
 echo "$username:$pa1" | sudo chpasswd || { yad --undecorated --center --fixed --image=emblem-important-symbolic --text="ERROR: Failed to set the user password." --button="Dismiss"\!gtk-cancel-symbolic; setup_todo_item=$((setup_todo_item-3)); return; }
@@ -956,6 +958,8 @@ sudo systemctl daemon-reload
 echo 'shock-startup' | sudo tee -a "/home/$username/.bashrc"
 
 #the setup finalizer temporary autologin patch ends
+
+kill "$killpid"
 
 }
 

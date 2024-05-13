@@ -1,5 +1,11 @@
 #!/bin/bash
 
+function yad() {
+
+GDK_BACKEND=x11 yad $@
+
+}
+
 source /usr/share/shock/dist-info
 
 if (($(getconf LONG_BIT)==32))

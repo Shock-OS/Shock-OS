@@ -2,7 +2,7 @@
 
 #Change the Shock OS GNOME layouts from the command line (also used as a backend for the graphical settings)
 
-if [[ " $* " =~ " panel " ]] && [[ ! " $* " =~ " dock " ]] #panel mode
+if [[ " $* " =~ " panel " ]] && [[ ! " $* " =~ " dock " ]] && [[ ! " $* " =~ " vanilla " ]] #panel mode
 then
 
     if [[ " $* " =~ " --defaults " ]] #reset to defaults
@@ -55,7 +55,7 @@ then
 
     gnome-extensions enable panel-osd@berend.de.schouwer.gmail.com
 
-elif [[ ! " $* " =~ " panel " ]] && [[ " $* " =~ " dock " ]] #dock mode
+elif [[ " $* " =~ " dock " ]] && [[ ! " $* " =~ " panel " ]] && [[ ! " $* " =~ " vanilla " ]] #dock mode
 then
 
     if [[ " $* " =~ " --defaults " ]] #reset to defaults
@@ -86,6 +86,19 @@ then
 
     gnome-extensions enable dash-to-dock@micxgx.gmail.com
 
+elif [[ " $* " =~ " vanilla " ]] && [[ ! " $* " =~ " dock " ]] && [[ ! " $* " =~ " panel " ]] #vanilla mode
+then
+
+    gnome-extensions disable ding@rastersoft.com
+
+    gnome-extensions disable arcmenu@arcmenu.com
+
+    gnome-extensions disable dash-to-panel@jderose9.github.com
+
+    gnome-extensions disable panel-osd@berend.de.schouwer.gmail.com
+
+    gnome-extensions disable dash-to-dock@micxgx.gmail.com
+
 else
 
     if [[ "$*" != "--help" ]] || [[ "$*" != "help" ]]
@@ -98,8 +111,9 @@ else
     echo "USAGE: shock-gnome-layouts [panel/dock] OPTIONS
 
 LAYOUTS:
-    panel:          the default layout featuring a full desktop panel, similar to Windows 7+ style
-    dock:           an application dock and top bar, similar to Mac OS style, better suited for touchscreen displays
+    panel:          The default layout featuring a full desktop panel, similar to Windows 7+ style
+    dock:           An application dock and top bar, similar to Mac OS style, better suited for touchscreen displays
+    vanilla:        The vanilla GNOME layout, featuring a top bar, no panel, and no dock.
 
 OPTIONS:
     --defaults:     reset all layout-related settings to their defaults, overwriting any user-configured settings"

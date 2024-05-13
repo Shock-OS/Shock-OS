@@ -1,5 +1,11 @@
 #!/bin/bash
 
+function yad() {
+
+GDK_BACKEND=x11 yad $@
+
+}
+
 runuser="$(whoami)"
 
 total_minutes=$(cat /usr/share/shock-screentime/"$runuser"/dailylimit)

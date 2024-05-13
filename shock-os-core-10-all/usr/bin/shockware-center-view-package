@@ -1,5 +1,11 @@
 #!/bin/bash
 
+function yad() {
+
+GDK_BACKEND=x11 yad $@
+
+}
+
 show_apt_packages="$1"
 
 show_flatpaks="$2"

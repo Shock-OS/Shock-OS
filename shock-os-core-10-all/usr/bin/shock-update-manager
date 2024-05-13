@@ -11,6 +11,12 @@ fi
 
 IFS=$'\n'
 
+function yad() {
+
+GDK_BACKEND=x11 yad $@
+
+}
+
 automatic_updates=""
 
 notify_of_new_versions_of_shock_os=""

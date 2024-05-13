@@ -2,6 +2,12 @@
 
 tmpdir="$(mktemp -d)"
 
+function yad() {
+
+GDK_BACKEND=x11 yad $@
+
+}
+
 function refresh() {
 
 source "$tmpdir"/metadata
@@ -249,10 +255,10 @@ do
 
             yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="ERROR: The selected device is too small. The target device must be at least 16 GBs in size for Shock OS to work properly. Please try again with a larger SD card or USB drive." --button="Dismiss"\!gtk-close
 
-        elif ((free_space<5)) && [[ ! -f /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" ]] #if less than 5GB of free space on system and image isn't cached
+        elif ((free_space<5)) && [[ ! -f /usr/share/shock-os-imager/cached-images/"${imagevar}.img.xz" ]] #if less than 5GB of free space on system and image isn't cached
         then
 
-            if (($(ls /usr/share/shock-os-imager/cache/images | wc -l)!=0)) #if cached images
+            if (($(ls /usr/share/shock-os-imager/cached-images | wc -l)!=0)) #if cached images
             then
 
                 shock-os-imager-remove-cached-images --nospace
@@ -272,19 +278,15 @@ do
             if [[ "$ex" == "0" ]]
             then
 
-                mkdir -p "$tmpdir"/writer
+                script -afe "$tmpdir"/output.txt -c "pkexec bash -c '/usr/bin/shock-os-imager-write-image \"$version\" \"$edition\" \"$arch\" \"$device\" \"$tmpdir\"; echo \"\$?\" | tee \"$tmpdir\"/image_writer_ex'" || touch "$tmpdir"/cancelled_indicator & image_writer_pid=$!
 
-                rm -rf "$tmpdir"/writer/*
-
-                script -afe "$tmpdir"/writer/output.txt -c "pkexec bash -c '/usr/bin/shock-os-imager-write-image \"$version\" \"$edition\" \"$arch\" \"$device\" \"$tmpdir\"; echo \"\$?\" | tee \"$tmpdir/writer\"/image_writer_ex'" || touch "$tmpdir"/writer/cancelled_indicator & image_writer_pid=$!
-
-                { inotifywait -m -e create "$tmpdir/writer" & echo $! | tee "$tmpdir"/writer/inotifywait_pid; } | while read -r event #wait for pkexec password to be entered
+                { inotifywait -m -e create "$tmpdir" & echo $! | tee "$tmpdir"/inotifywait_pid; } | while read -r event #wait for pkexec password to be entered
                 do
 
-                    if [[ -f "${tmpdir}/writer/ready_indicator" ]] || [[ -f "${tmpdir}/writer/cancelled_indicator" ]]
+                    if [[ -f "${tmpdir}/ready_indicator" ]] || [[ -f "${tmpdir}/cancelled_indicator" ]]
                     then
 
-                        kill "$(cat "$tmpdir"/writer/inotifywait_pid)"
+                        kill "$(cat "$tmpdir"/inotifywait_pid)"
 
                         break
 
@@ -292,20 +294,20 @@ do
 
                 done
 
-                if [[ -f "${tmpdir}/writer/ready_indicator" ]]
+                if [[ -f "${tmpdir}/ready_indicator" ]]
                 then
 
-                    { inotifywait -m -e modify "$tmpdir"/writer/output.txt & echo $! | tee "$tmpdir"/writer/inotifywait_pid; } | while read -r event
+                    { inotifywait -m -e modify "$tmpdir"/output.txt & echo $! | tee "$tmpdir"/inotifywait_pid; } | while read -r event
                     do
 
-                        line="$(cat "$tmpdir"/writer/output.txt | tail -n 1)"
+                        line="$(cat "$tmpdir"/output.txt | tail -n 1)"
 
                         echo "$line"
 
                         if [[ "$line" == "Script done on "* ]]
                         then
 
-                            kill "$(cat "$tmpdir"/writer/inotifywait_pid)"
+                            kill "$(cat "$tmpdir"/inotifywait_pid)"
 
                             break
 
@@ -318,7 +320,7 @@ do
                     if ps -p "$image_writer_pid"
                     then
 
-                        touch "$tmpdir"/writer/kill_indicator
+                        touch "$tmpdir"/kill_indicator
 
                     else
 
@@ -328,7 +330,7 @@ do
 
                     wait "$image_writer_pid"
 
-                    image_writer_ex="$(cat "$tmpdir"/writer/image_writer_ex)"
+                    image_writer_ex="$(cat "$tmpdir"/image_writer_ex)"
 
                     echo "IMAGE_WRITER_EX: $image_writer_ex" #DEBUG
 
@@ -367,7 +369,7 @@ do
                     elif [[ "$image_writer_ex" == "5" ]] #If image was corruped
                     then
 
-                        if [[ -f /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz" ]]
+                        if [[ -f /usr/share/shock-os-imager/cached-images/"${imagevar}.img.xz" ]]
                         then
 
                             yad --window-icon=shock-os-imager --image=emblem-important-symbolic --title="Shock OS Imager" --text="ERROR: The image has been corrupted. Would you like to delete it?" --button="Yes, remove"\!gtk-ok --button="No, keep"\!gtk-cancel
@@ -377,7 +379,7 @@ do
                             if [[ "$ex" == "0" ]]
                             then
 
-                                pkexec rm -rf /usr/share/shock-os-imager/cache/images/"${imagevar}.img.xz"
+                                pkexec rm -rf /usr/share/shock-os-imager/cached-images/"${imagevar}.img.xz"
 
                             fi
 
