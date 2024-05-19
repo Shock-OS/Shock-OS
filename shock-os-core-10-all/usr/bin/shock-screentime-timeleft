@@ -2,7 +2,7 @@
 
 function yad() {
 
-GDK_BACKEND=x11 yad $@
+GDK_BACKEND=x11 /usr/bin/yad "$@"
 
 }
 
