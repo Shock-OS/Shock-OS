@@ -80,6 +80,6 @@ do
 
     fi
 
-    shock-ss-sleep-update-scan-interval
+    shock-shared-function-sleep-update-scan-interval
 
 done

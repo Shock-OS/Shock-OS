@@ -1,0 +1,54 @@
+#!/bin/bash
+
+#This shared function checks to see whether or not the given file is a compressed archive.
+
+if [[ -n "$2" ]]
+then
+
+    echo "ERROR: Too many arguments."
+
+    exit 252
+
+elif [[ ! -f "$1" ]]
+then
+
+    echo "ERROR: ${1}: No such file or directory."
+
+    exit 252
+
+fi
+
+archive_types=("bz2" "gz" "rar" "tar" "xz" "zip" "7z")
+
+file="$1"
+
+file_type="$(file -b --mime-type "$file")"
+
+if [[ "$file_type" != "application/"* ]]
+then
+
+    echo "FALSE"
+
+    exit 1
+
+else
+
+    for archive_type in "${archive_types[@]}"
+    do
+
+        if [[ "$file_type" =~ "$archive_type" ]]
+        then
+
+            echo "TRUE"
+
+            exit 0
+
+        fi
+
+    done
+
+    echo "FALSE"
+
+    exit 1
+
+fi

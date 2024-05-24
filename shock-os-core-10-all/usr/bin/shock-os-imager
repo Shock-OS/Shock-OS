@@ -313,7 +313,7 @@ do
 
                         fi
 
-                    done | yad --window-icon=shock-os-imager --title="Shock OS Imager" --text="The device $device is being flashed. Please do not unplug the device during this process." --progress --button="Cancel"\!gtk-cancel & yad_pid=$!
+                    done | GDK_BACKEND=x11 /usr/bin/yad --window-icon=shock-os-imager --title="Shock OS Imager" --text="The device $device is being flashed. Please do not unplug the device during this process." --progress --button="Cancel"\!gtk-cancel & yad_pid=$! #Yes, GDK_BACKEND=x11 is required for this window to be killed properly, at least until YAD fully supports Wayland
 
                     wait -n "$image_writer_pid" "$yad_pid"
 

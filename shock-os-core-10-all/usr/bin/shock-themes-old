@@ -2,6 +2,8 @@
 
 IFS=$'\n'
 
+source /usr/share/shock/dist-info
+
 function yad() {
 
 GDK_BACKEND=x11 /usr/bin/yad "$@"
@@ -217,6 +219,11 @@ do
 
 		        yadlist+=("preferences-desktop-theme" "Metacity theme" "${current_theme:$nl}" "dialog-no" "dialog-yes" "dialog-no")
 
+            elif [[ "$(ls -d "$i"/*/)" == "${i}/gnome-shell/" ]] || [[ "$(ls -d "$i"/*/)" == *"${i}/gnome-shell"* && "$(ls -d "$i"/*/)" != *"${i}/gtk-3"* && "$(ls -d "$i"/*/)" != *"${i}/gtk-4"* ]]
+            then
+
+                yadlist+=("preferences-desktop-theme" "GNOME Shell theme" "${current_theme:$nl}" "dialog-yes" "dialog-no" "dialog-no")
+
             elif [[ "$(basename "$(readlink -f "$i")" | awk '{print tolower($0)}')" == *"libadwaita"* ]] && [[ -f "$(find "$i"/* -name gtk*.css | head -n1)" ]]
             then
 
@@ -232,6 +239,17 @@ do
                 else
 
                     gtk3_support="dialog-no"
+
+                fi
+
+                if [[ "$(ls -d "$i"/*/)" == *"${i}/gnome-shell/"* ]]
+                then
+
+                    gnome_shell_support="dialog-yes"
+
+                else
+
+                    gnome_shell_support="dialog-no"
 
                 fi
 
@@ -257,7 +275,16 @@ do
 
                 fi
 
-                yadlist+=("preferences-desktop-theme" "Theme pack" "${current_theme:$nl}" "$gtk3_support" "$metacity_support" "$libadwaita_support")
+                if [[ "$DE_EDITION" == "GNOME" ]]
+                then
+
+                    yadlist+=("preferences-desktop-theme" "Theme pack" "${current_theme:$nl}" "$gnome_shell_support" "$gtk3_support" "$libadwaita_support")
+
+                else #MATE
+
+                    yadlist+=("preferences-desktop-theme" "Theme pack" "${current_theme:$nl}" "$gtk3_support" "$metacity_support" "$libadwaita_support")
+
+                fi
 
             fi
 
@@ -295,8 +322,16 @@ do
 
     #Yes, all the spaces in the Name column are necesarry. It makes the Name column wider and pushes over the checkboxes.
 
-	output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --text="Install, remove, rename or use themes, icons and cursors." --list --column="Type":IMG --column=ToolTip:HD --column="Name                                                         " --column="GTK+":IMG --column="Metacity":IMG --column="LibAdwaita":IMG --tooltip-column=2 --always-print-result --search-column=3 --response=4 --height=300 --buttons-layout=spread --button="Browse"\!applications-internet --button="Install"\!add --button="Remove"\!remove --button="Rename"\!gtk-edit --button="Use"\!dialog-ok "${yadlist[@]}"
-)"
+    if [[ "$DE_EDITION" == "GNOME" ]]
+    then
+
+        output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --text="Install, remove, rename or use themes, icons and cursors." --list --column="Type":IMG --column=ToolTip:HD --column="Name                                                         " --column="GNOME Shell":IMG --column="GTK+":IMG --column="LibAdwaita":IMG --tooltip-column=2 --always-print-result --search-column=3 --response=4 --height=300 --buttons-layout=spread --button="Browse"\!applications-internet --button="Install"\!add --button="Remove"\!remove --button="Rename"\!gtk-edit --button="Use"\!dialog-ok "${yadlist[@]}")"
+
+    else #MATE
+
+	    output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --text="Install, remove, rename or use themes, icons and cursors." --list --column="Type":IMG --column=ToolTip:HD --column="Name                                                         " --column="GTK+":IMG --column="Metacity":IMG --column="LibAdwaita":IMG --tooltip-column=2 --always-print-result --search-column=3 --response=4 --height=300 --buttons-layout=spread --button="Browse"\!applications-internet --button="Install"\!add --button="Remove"\!remove --button="Rename"\!gtk-edit --button="Use"\!dialog-ok "${yadlist[@]}")"
+
+    fi
 
 	ex=$?
 
@@ -321,7 +356,9 @@ do
 		if ((ex==0))
 		then
 
-            if [[ "$file" == *".deb" ]]
+            is_archive="$(shock-shared-function-is-compressed "$file")"
+
+            if ! [[ -d "$file" || "$is_archive" == "TRUE" ]]
             then
 
                 yad --window-icon=preferences-desktop-theme --image=emblem-important --title="Install" --text="$file is not a compatible theme file. Please choose a folder or a compressed archive containing the theme you want to install." --button="Dismiss"\!gtk-cancel
@@ -350,6 +387,8 @@ do
                 found_dir="TRUE"
 
                 itd="$(find "$tmpdir" -name index*.theme | head -n1 | rev | cut -d '/' -f 2- | rev)"
+
+                gscssd="$(find "$tmpdir" -name gnome-shell.css | head -n1 | rev | cut -d '/' -f 2- | rev)"
 
                 mtd="$(find "$tmpdir" -name metacity-1 | head -n1 | rev | cut -d '/' -f 2- | rev)"
 
@@ -417,6 +456,13 @@ do
 
                     #the above for loop sets the Shock OS theme as a fallback theme
 
+                elif [[ -d "$gscssd" ]]
+                then
+
+                    cd "$gscssd"
+
+                    cd ..
+
                 elif [[ -d "$mtd" ]]
                 then
 
@@ -449,8 +495,6 @@ do
                 if [[ "$found_dir" == "TRUE" ]]
                 then
 
-                    replace_start_icons .
-
 			        for i in *
 			        do
 
@@ -458,6 +502,8 @@ do
 			            then
 
                             worked="TRUE"
+
+                            replace_start_icons "$i"
 
                             mkdir -p ~/.icons
 
@@ -487,7 +533,7 @@ do
 
 			            fi
 
-                        if [[ "$(cat "$i/index.theme")" == *"X-GNOME-Metatheme"* ]] || [[ -d "$(find "$i" -name metacity-1 | head -n1)" ]] || [[ -d "$(find "$i" -name 'gtk-*' | head -n1)" ]] || [[ -f "$i/settings.ini" ]] || [[ "$(basename "$i" | awk '{print tolower($0)}')" == *"libadwaita"* && -f "$(find "$i" -name gtk*.css | head -n1)" ]]
+                        if [[ "$(cat "$i/index.theme")" == *"X-GNOME-Metatheme"* ]] || [[ -d "$(find "$i" -name gnome-shell | head -n1)" ]] || [[ -d "$(find "$i" -name metacity-1 | head -n1)" ]] || [[ -d "$(find "$i" -name 'gtk-*' | head -n1)" ]] || [[ -f "$i/settings.ini" ]] || [[ "$(basename "$i" | awk '{print tolower($0)}')" == *"libadwaita"* && -f "$(find "$i" -name gtk*.css | head -n1)" ]]
                         then
 
                             worked="TRUE"
@@ -549,7 +595,7 @@ do
 
 			yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important --text="You cannot remove the default theme." --button="Dismiss"\!gtk-cancel
 
-		elif [[ "$type" == "Theme pack" ]] || [[ "$type" == "Metacity theme" ]] #if theme pack
+		elif [[ "$type" == "Theme pack" ]] || [[ "$type" == "GNOME Shell Theme" ]] || [[ "$type" == "Metacity theme" ]]  #if theme pack
 		then
 
             if [[ "$(gsettings get org.mate.interface gtk-theme)" == "'${runuser}_${name}'" ]] || [[ "$(gsettings get org.mate.Marco.general theme)" == "'${runuser}_${name}'" ]]

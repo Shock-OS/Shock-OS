@@ -1,0 +1,9 @@
+{
+    "uuid": "layout-submenu@yourdomain",
+    "name": "Layout Submenu",
+    "description": "An extension to add a custom layout submenu in the Appearance tab",
+    "shell-version": ["43"],
+    "version": 1,
+    "depends": ["org.gnome.ControlCenter.desktop"]
+}
+

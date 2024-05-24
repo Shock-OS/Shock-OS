@@ -1,0 +1,829 @@
+#!/bin/bash
+
+IFS=$'\n'
+
+runuser="$(whoami)"
+
+nl="${#runuser}"
+
+nl=$((nl+1))
+
+mkdir -p ~/.config/shock/themes
+
+yaru_colors=(Bark Blue Magenta Olive Orange PrussianGreen Purple Red Sage Viridian)
+
+source /usr/share/shock/dist-info
+
+function yad() {
+
+GDK_BACKEND=x11 /usr/bin/yad "$@"
+
+}
+
+function apply_gtk_theme() {
+
+if [[ "$DE_EDITION" == "GNOME" ]]
+then
+
+    gsettings set org.gnome.desktop.interface gtk-theme "$1"
+
+else #MATE
+
+    gsettings set org.mate.interface gtk-theme "$1"
+
+fi
+
+}
+
+function apply_icon_theme() {
+
+if [[ "$DE_EDITION" == "GNOME" ]]
+then
+
+    gsettings set org.gnome.desktop.interface icon-theme "$1"
+
+else #MATE
+
+    gsettings set org.mate.interface icon-theme "$1"
+
+fi
+
+}
+
+function apply_libadwaita_theme() {
+
+rm -r ~/.config/gtk-4.0
+
+ln -sf /usr/share/themes/"$1"/gtk-4.0 ~/.config
+
+}
+
+function apply_cursor_theme() {
+
+if [[ "$DE_EDITION" == "GNOME" ]]
+then
+
+    gsettings set org.gnome.desktop.interface cursor-theme "$1"
+
+else #MATE
+
+    gsettings set org.mate.peripherals-mouse cursor-theme "$1"
+
+fi
+
+}
+
+function unsupported_message() {
+
+yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important-symbolic --text="Sorry, '$file' does not contain a supported theme." --button="Dismiss"\!gtk-close
+
+}
+
+function install() {
+
+local file="$(yad --window-icon=preferences-desktop-theme --title="Themes" --file --button="Install"\!document-open)"
+
+yad --fixed --window-icon=preferences-desktop-theme --title="Themes" --progress-text="Installing $(basename "$file")..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & local killpid=$!
+
+if [[ -d "$file" ]]
+then
+
+    local dir="$file"
+
+elif [[ "$(shock-shared-function-is-compressed "$file")" == "TRUE" ]]
+then
+
+    local dir="$(mktemp -d)"
+
+    unp "$file" -- -C "$dir"
+
+else
+
+    kill $killpid
+
+    unsupported_message
+
+fi
+
+local theme_dir="$(find "$dir" -name index.theme)"
+
+if [[ -z "$theme_dir" ]]
+then
+
+    local theme_dir="$(find "$dir" -name gtk-3.0)"
+
+    if [[ -z "$theme_dir" ]]
+    then
+
+        local theme_dir="$(find "$dir" -name gtk-4.0)"
+
+        if [[ -z "$theme_dir" ]]
+        then
+
+            if [[ "$DE_EDITION" == "GNOME" ]]
+            then
+
+                local theme_dir="$(find "$dir" -name gnome-shell)"
+
+            else #MATE
+
+                local theme_dir="$(find "$dir" -name metacity-1)"
+
+            fi
+
+            if [[ -z "$theme_dir" ]]
+            then
+
+                local theme_dir="$(find "$dir" -name cursors)"
+
+                if [[ -z "$theme_dir" ]]
+                then
+
+                    local theme_dir="$(find "$dir" -name cursor.theme)"
+
+                    if [[ -z "$theme_dir" ]]
+                    then
+
+                        kill $killpid
+
+                        unsupported_message
+
+                        return 1
+
+                    fi
+
+                fi
+
+            fi
+
+        fi
+
+    fi
+
+fi
+
+cd "$theme_dir"
+
+local cwd="$(basename "$(pwd)")"
+
+if [[ "$cwd" == "gtk-3.0" ]] || [[ "$cwd" == "gtk-4.0" ]] || [[ "$cwd" == "gnome-shell" ]] || [[ "$cwd" == "metacity-1" ]] || [[ "$cwd" == "cursors" ]]
+then
+
+    cd ..
+
+fi
+
+local cwd="$(pwd)"
+
+if [[ "$(cat index.theme)" =~ "[Icon Theme]" ]] || [[ -f icon-theme.cache ]] || [[ -d cursors ]] || [[ -f cursor.theme ]]
+then
+
+    shock-shared-function-replace-start-icons "$cwd"
+
+    mkdir -p ~/.shock/icons/
+
+    cp -r "$cwd" ~/.shock/icons/
+
+fi
+
+if [[ -d gtk-3.0 ]] || [[ -d gtk-4.0 ]] || [[ -d gnome-shell ]] || [[ -d metacity-1 ]]
+then
+
+    if [[ "$DE_EDITION" == "GNOME" ]]
+    then
+
+        if [[ -d metacity-1 ]] && ! [[ -d gtk-3.0 || -d gtk-4.0 || -d gnome-shell ]]
+        then
+
+            kill $killpid
+
+            yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important-symbolic --text="'$(basename "$file")' appears to be a Metacity theme, which is not supported on GNOME. Therefore, the theme will not be installed." --button="Dismiss"\!gtk-close
+
+            return 1
+
+        fi
+
+    else #MATE
+
+        if [[ -d gnome-shell ]] && ! [[ -d gtk-3.0 || -d gtk-4.0 || -d metacity-1 ]]
+        then
+
+            kill $killpid
+
+            yad --window-icon=preferences-desktop-theme --title="Themes" --image=emblem-important-symbolic --text="'$(basename "$file")' appears to be a GNOME Shell theme, which is not supported on MATE. Therefore, the theme will not be installed." --button="Dismiss"\!gtk-close
+
+            return 1
+
+        fi
+
+    fi
+
+    mkdir -p ~/.shock/themes/
+
+    cp -r "$cwd" ~/.shock/themes/
+
+fi
+
+}
+
+source ~/.config/shock/themes/yaru
+
+if [[ "$DE_EDITION" == "GNOME" ]]
+then
+
+    color_scheme="$(gsettings get org.gnome.desktop.interface color-scheme)"
+
+    if [[ "$color_scheme" == "'prefer-dark'" ]]
+    then
+
+        lod='Light!^Dark'
+
+    else
+
+        lod='Light!Dark'
+
+    fi
+
+else #MATE
+
+    if [[ "$user_lod" == "dark" ]]
+    then
+
+        lod='Light!^Dark'
+
+    else
+
+        lod='Light!Dark'
+
+    fi
+
+fi
+
+color=""
+
+yad_cb_colors=""
+
+for theme in "${yaru_colors[@]}"
+do
+
+    if [[ "$user_color" == "$(echo "$theme" | awk '{print tolower($0)}')" ]] || [[ "$theme" == "Orange" && "$user_color" == "orange" ]]
+    then
+
+        theme="^${theme}"
+
+    fi
+
+    if [[ -z "$yad_cb_colors" ]]
+    then
+
+        yad_cb_colors="$theme"
+
+    else
+
+        yad_cb_colors+="!${theme}"
+
+    fi
+
+done
+
+output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --form --field="Style:":CB "$lod" --field="Color:":CB "$yad_cb_colors" --button="Use Custom Themes"\!tweaks-app:1 --button="Apply"\!gtk-ok:0)"
+
+ex=$?
+
+lod=$(echo "$output" | awk -F'|' '{print $1}')
+
+color=$(echo "$output" | awk -F'|' '{print $2}')
+
+lod=$(echo "$lod" | awk '{print tolower($0)}')
+
+color=$(echo "$color" | awk '{print tolower($0)}')
+
+if [[ "$ex" == "0" ]] #Apply
+then
+
+    if [[ "$color" == "orange" ]]
+    then
+
+        if [[ "$lod" == "dark" ]]
+        then
+
+            theme="Yaru-dark"
+
+        else
+
+            theme="Yaru"
+
+        fi
+
+    elif [[ "$lod" == "dark" ]]
+    then
+
+        theme="Yaru-${color}-dark"
+
+    else
+
+        theme="Yaru-${color}"
+
+    fi
+
+    if [[ "$DE_EDITION" == "GNOME" ]]
+    then
+
+        gsettings set org.gnome.shell.extensions.user-theme name "$theme"
+
+        if [[ "$lod" == "dark" ]]
+        then
+
+            gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+
+        else
+
+            gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
+
+        fi
+
+    else #MATE
+
+        if [[ "$lod" == "dark" ]]
+        then
+
+            gsettings set org.mate.Marco.general theme "Yaru-dark"
+
+        else
+
+            gsettings set org.mate.Marco.general theme "Yaru"
+
+        fi
+
+    fi
+
+    apply_gtk_theme "$theme"
+
+    apply_icon_theme "$theme"
+
+    apply_libadwaita_theme "$theme"
+
+    apply_cursor_theme "Yaru"
+
+    echo "user_lod=${lod}
+user_color=${color}" | tee ~/.config/shock/themes/yaru
+
+elif [[ "$ex" == "1" ]] #Use custom themes
+then
+
+    source ~/.config/shock/themes/custom
+
+    gnome_shell_themes=""
+
+    gtk_themes=""
+
+    metacity_themes=""
+
+    libadwaita_themes=""
+
+    icon_themes=""
+
+    cursor_themes=""
+
+    for theme in $(ls ~/.themes)
+    do
+
+        if [[ "$DE_EDITION" == "GNOME" ]]
+        then
+
+            if [[ -d ~/.themes/"$theme"/gnome-shell ]]
+            then
+
+                if [[ -z "$gnome_shell_themes" ]]
+                then
+
+                    gnome_shell_themes="${theme:$nl}"
+
+                else
+
+                    if [[ "$user_gnome_shell_theme" == "$theme" ]]
+                    then
+
+                        gnome_shell_themes+="!^${theme:$nl}"
+
+                    else
+
+                        gnome_shell_themes+="!${theme:$nl}"
+
+                    fi
+
+                fi
+
+            fi
+
+        fi
+
+        if [[ -d ~/.themes/"$theme"/gtk-3.0 ]]
+        then
+
+            if [[ -z "$gtk_themes" ]]
+            then
+
+                gtk_themes="${theme:$nl}"
+
+            else
+
+                if [[ "$user_gtk_theme" == "$theme" ]]
+                then
+
+                    gtk_themes+="!^${theme:$nl}"
+
+                else
+
+                    gtk_themes+="!${theme:$nl}"
+
+                fi
+
+            fi
+
+        fi
+
+        if [[ "$DE_EDITION" == "MATE" ]]
+        then
+
+            if [[ -d ~/.themes/"$theme"/metacity-1 ]]
+            then
+
+                if [[ -z "$metacity_themes" ]]
+                then
+
+                    metacity_themes="${themes:$nl}"
+
+                else
+
+                    if [[ "$user_metacity_theme" == "$theme" ]]
+                    then
+
+                        metacity_themes+="!^${theme:$nl}"
+
+                    else
+
+                        metacity_themes+="!${theme:$nl}"
+
+                    fi
+
+                fi
+
+            fi
+
+        fi
+
+        if [[ -d ~/.themes/"$theme"/gtk-4.0 ]]
+        then
+
+            if [[ -z "$libadwaita_themes" ]]
+            then
+
+                libadwaita_themes="${theme:$nl}"
+
+            else
+
+                if [[ "$user_libadwaita_theme" == "$theme" ]]
+                then
+
+                    libadwaita_themes+="!^${theme:$nl}"
+
+                else
+
+                    libadwaita_themes+="!${theme:$nl}"
+
+                fi
+
+            fi
+
+        fi
+
+    done
+
+    for theme in $(ls ~/.icons)
+    do
+
+        if [[ -f ~/.icons/"$theme"/icon-theme.cache || "$(cat ~/.icons/"$theme"/index.theme)" =~ "[Icon Theme]" ]] && [[ ! -d ~/.icons/"$theme"/cursors ]]
+        then
+
+            if [[ -z "$icon_themes" ]]
+            then
+
+                icon_themes="${theme:$nl}"
+
+            else
+
+                if [[ "$user_icon_theme" == "$theme" ]]
+                then
+
+                    icon_themes+="!^${theme:$nl}"
+
+                else
+
+                    icon_themes+="!${theme:$nl}"
+
+                fi
+
+            fi
+
+        fi
+
+        if [[ -d ~/.icons/"$theme"/cursors ]] || [[ -f ~/.icons/"$theme"/cursor.theme ]]
+        then
+
+            if [[ -z "$cursor_themes" ]]
+            then
+
+                cursor_themes="${theme:$nl}"
+
+            else
+
+                if [[ "$user_cursor_theme" == "$theme" ]]
+                then
+
+                    cursor_themes+="!^${theme:$nl}"
+
+                else
+
+                    cursor_themes+="!${theme:$nl}"
+
+                fi
+
+            fi
+
+        fi
+
+    done
+
+    if [[ -n "$gnome_shell_themes" ]]
+    then
+
+        if [[ "$user_gnome_shell_theme" == "(Leave unchanged)" ]]
+        then
+
+            gnome_shell_themes+="!^(Leave unchanged)"
+
+        else
+
+            gnome_shell_themes+="!(Leave unchanged)"
+
+        fi
+
+    fi
+
+    if [[ -n "$gtk_themes" ]]
+    then
+
+        if [[ "$user_gtk_theme" == "(Leave unchanged)" ]]
+        then
+
+            gtk_themes+="!^(Leave unchanged)"
+
+        else
+
+            gtk_themes+="!(Leave unchanged)"
+
+        fi
+
+    fi
+
+    if [[ -n "$metacity_themes" ]]
+    then
+
+        if [[ "$user_metacity_theme" == "(Leave unchanged)" ]]
+        then
+
+            metacity_themes+="!^(Leave unchanged)"
+
+        else
+
+            metacity_themes+="!(Leave unchanged)"
+
+        fi
+
+    fi
+
+    if [[ -n "$libadwaita_themes" ]]
+    then
+
+        if [[ "$user_libadwaita_theme" == "(Leave unchanged)" ]]
+        then
+
+            libadwaita_themes+="!^(Leave unchanged)"
+
+        else
+
+            libadwaita_themes+="!(Leave unchanged)"
+
+        fi
+
+    fi
+
+    if [[ -n "$icon_themes" ]]
+    then
+
+        if [[ "$user_icon_theme" == "(Leave unchanged)" ]]
+        then
+
+            icon_themes+="!^(Leave unchanged)"
+
+        else
+
+            icon_themes+="!(Leave unchanged)"
+
+        fi
+
+    fi
+
+    if [[ -n "$cursor_themes" ]]
+    then
+
+        if [[ "$user_cursor_theme" == "(Leave unchanged)" ]]
+        then
+
+            cursor_themes+="!^(Leave unchanged)"
+
+        else
+
+            cursor_themes+="!(Leave unchanged)"
+
+        fi
+
+    fi
+
+    if [[ "$DE_EDITION" == "GNOME" ]]
+    then
+
+        output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --form \
+                        --field="Gnome Shell Theme:":LBL '' \
+                        --field="":CB "$gnome_shell_themes" \
+                        --field="GTK Theme:":LBL '' \
+                        --field="":CB "$gtk_themes" \
+                        --field="Libadwaita Theme:":LBL '' \
+                        --field="":CB "$libadwaita_themes" \
+                        --field="Icon Theme:":LBL '' \
+                        --field="":CB "$icon_themes" \
+                        --field="Cursor Theme":LBL '' \
+                        --field="":CB "$cursor_themes" \
+                        --buttons-layout=spread \
+                        --button="Install"\!add:0 --button="Remove"\!remove:2 --button="Apply"\!gtk-ok:0)"
+
+        ex=$?
+
+        gnome_shell_theme=$(echo "$output" | awk -F'|' '{print $2}')
+
+        gtk_theme=$(echo "$output" | awk -F'|' '{print $4}')
+
+        libadwaita_theme=$(echo "$output" | awk -F'|' '{print $6}')
+
+        icon_theme=$(echo "$output" | awk -F'|' '{print $8}')
+
+        cursor_theme=$(echo "$output" | awk -F'|' '{print $10}')
+
+        if [[ "$ex" == "0" ]] #Apply
+        then
+
+            if [[ "$gnome_shell_theme" != "(Leave unchanged)" ]] && [[ "$gnome_shell_theme" != "(null)" ]]
+            then
+
+                gsettings set org.gnome.shell.extensions.user-theme name "$gnome_shell_theme"
+
+            fi
+
+            if [[ "$gtk_theme" != "(Leave unchanged)" ]] && [[ "$gtk_theme" != "(null)" ]]
+            then
+
+                apply_gtk_theme "$gtk_theme"
+
+            fi
+
+            if [[ "$libadwaita_theme" != "(Leave unchanged)" ]] && [[ "$libadwaita_theme" != "(null)" ]]
+            then
+
+                apply_libadwaita_theme "$libadwaita_theme"
+
+            fi
+
+            if [[ "$icon_theme" != "(Leave unchanged)" ]] && [[ "$icon_theme" != "(null)" ]]
+            then
+
+                apply_icon_theme "$icon_theme"
+
+            fi
+
+            if [[ "$cursor_theme" != "(Leave unchanged)" ]] && [[ "$cursor_theme" != "(null)" ]]
+            then
+
+                apply_cursor_theme "$cursor_theme"
+
+            fi
+
+            echo "user_gnome_shell_theme=\"$gnome_shell_theme\"
+user_gtk_theme=\"$gtk_theme\"
+user_libadwaita_theme=\"$libadwaita_theme\"
+user_icon_theme=\"$icon_theme\"
+user_cursor_theme=\"$cursor_theme\"" | tee ~/.config/shock/themes/custom
+
+        fi
+
+    else #MATE
+
+        output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --form \
+                        --field="GTK Theme:":LBL '' \
+                        --field="":CB "$gtk_themes" \
+                        --field="Metacity Theme:":LBL '' \
+                        --field="":CB "$metacity_themes" \
+                        --field="Libadwaita Theme:":LBL '' \
+                        --field="":CB "$libadwaita_themes" \
+                        --field="Icon Theme:":LBL '' \
+                        --field="":CB "$icon_themes" \
+                        --field="Cursor Theme":LBL '' \
+                        --field="":CB "$cursor_themes" \
+                        --buttons-layout=spread \
+                        --button="Install"\!add:0 --button="Remove"\!remove:2 --button="Apply"\!gtk-ok:0)"
+
+        ex=$?
+
+        gtk_theme=$(echo "$output" | awk -F'|' '{print $2}')
+
+        metacity_theme=$(echo "$output" | awk -F'|' '{print $4}')
+
+        libadwaita_theme=$(echo "$output" | awk -F'|' '{print $6}')
+
+        icon_theme=$(echo "$output" | awk -F'|' '{print $8}')
+
+        cursor_theme=$(echo "$output" | awk -F'|' '{print $10}')
+
+        if [[ "$ex" == "0" ]]
+        then
+
+            if [[ "$gtk_theme" != "(Leave unchanged)" ]] && [[ "$gtk_theme" != "(null)" ]]
+            then
+
+                apply_gtk_theme "$gtk_theme"
+
+            fi
+
+            if [[ "$metacity_theme" != "(Leave unchanged)" ]] && [[ "$metacity_theme" != "(null)" ]]
+            then
+
+                gsettings set org.mate.Marco.general theme "$metacity_theme"
+
+            fi
+
+            if [[ "$libadwaita_theme" != "(Leave unchanged)" ]] && [[ "$libadwaita_theme" != "(null)" ]]
+            then
+
+                apply_libadwaita_theme "$libadwaita_theme"
+
+            fi
+
+            if [[ "$icon_theme" != "(Leave unchanged)" ]] && [[ "$icon_theme" != "(null)" ]]
+            then
+
+                apply_icon_theme "$icon_theme"
+
+            fi
+
+            if [[ "$cursor_theme" != "(Leave unchanged)" ]] && [[ "$cursor_theme" != "(null)" ]]
+            then
+
+                apply_cursor_theme "$cursor_theme"
+
+            fi
+
+            echo "user_gtk_theme=\"$gtk_theme\"
+user_metacity_theme=\"$metacity_theme\"
+user_libadwaita_theme=\"$libadwaita_theme\"
+user_icon_theme=\"$icon_theme\"
+user_cursor_theme=\"$cursor_theme\"" | tee ~/.config/shock/themes/custom
+
+        fi
+
+    fi
+
+    echo "GTK THEME: $gtk_theme
+METACITY THEME: $metacity_theme
+LIBADWAITA THEME: $libadwaita_theme
+ICON THEME: $icon_theme
+CURSOR THEME: $cursor_theme" #DEBUG
+
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

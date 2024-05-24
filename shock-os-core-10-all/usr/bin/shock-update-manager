@@ -306,7 +306,9 @@ do
 
         install_updates
 
-        yad --window-icon=software-update-available --title="Update Manager" --progress-text="Refreshing cache..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & refresh_killpid=$!
+        #the following line uses '/usr/bin/yad' to avoid calling the yad function
+
+        /usr/bin/yad --window-icon=software-update-available --title="Update Manager" --progress-text="Refreshing cache..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & refresh_killpid=$!
 
         sudo shock-update-manager-refresh
 

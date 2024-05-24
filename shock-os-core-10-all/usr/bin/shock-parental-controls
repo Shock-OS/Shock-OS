@@ -146,7 +146,7 @@ then
 
     chattr +i /usr/share/shock-screentime/"$user"/dailylimit
 
-    total_display="$(shock-ss-pretty-time $total_minutes)"
+    total_display="$(shock-shared-function-pretty-time $total_minutes)"
 
     if ((ex==0)) #if overwriting
     then

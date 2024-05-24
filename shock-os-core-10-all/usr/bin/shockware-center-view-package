@@ -51,7 +51,9 @@ fi
 
 function start_loading() {
 
-yad --window-icon=shockware-center --title="Shockware Center" --progress-text="Loading app info..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
+#the following line uses '/usr/bin/yad' to avoid calling the yad function
+
+/usr/bin/yad --window-icon=shockware-center --title="Shockware Center" --progress-text="Loading app info..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
 
 }
 

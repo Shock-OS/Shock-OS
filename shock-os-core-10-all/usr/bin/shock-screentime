@@ -56,14 +56,14 @@ do
 
             fi
 
-            total_minutes_display="$(shock-ss-pretty-time $total_minutes)"
+            total_minutes_display="$(shock-shared-function-pretty-time $total_minutes)"
 
             for date in $(ls -t /usr/share/shock-screentime/"$user"/dates/*)
             do
 
                 used_minutes=$(cat "$date")
 
-                screentimes+=("$(basename "$date")" "$(shock-ss-pretty-time $used_minutes)" "$(echo "scale=2; $used_minutes / $total_minutes * 100" | bc)")
+                screentimes+=("$(basename "$date")" "$(shock-shared-function-pretty-time $used_minutes)" "$(echo "scale=2; $used_minutes / $total_minutes * 100" | bc)")
 
             done
 

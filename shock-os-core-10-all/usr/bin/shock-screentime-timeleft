@@ -10,7 +10,7 @@ runuser="$(whoami)"
 
 total_minutes=$(cat /usr/share/shock-screentime/"$runuser"/dailylimit)
 
-total_minutes_display="$(shock-ss-pretty-time $total_minutes)"
+total_minutes_display="$(shock-shared-function-pretty-time $total_minutes)"
 
 while true
 do
@@ -30,7 +30,7 @@ do
 
     remaining_minutes=$((total_minutes-used_minutes))
 
-    remaining_minutes_display="$(shock-ss-pretty-time $remaining_minutes)"
+    remaining_minutes_display="$(shock-shared-function-pretty-time $remaining_minutes)"
 
     percentage=$(echo "scale=0; ($remaining_minutes * 100) / $total_minutes" | bc)
 

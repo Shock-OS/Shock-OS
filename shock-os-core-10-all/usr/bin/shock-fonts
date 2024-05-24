@@ -21,6 +21,19 @@ GDK_BACKEND=x11 /usr/bin/yad "$@"
 
 }
 
+source /usr/share/shock/dist-info
+
+if [[ "$DE_EDITION" == "MATE" ]]
+then
+
+    font_options=("Application Font" "Desktop Font" "Document Font" "Monospace Font" "Window Title Font" "Reset All Fonts to Defaults")
+
+else
+
+    font_options=("Interface Font" "Document Font" "Monospace Font" "Reset All Fonts to Defaults")
+
+fi
+
 while true
 do
 
@@ -41,7 +54,7 @@ do
                         --text='Which system font would you like to change?' \
                         --column='' \
                         --no-headers \
-                        "Application Font" "Desktop Font" "Document Font" "Monospace Font" "Window Title Font" "Reset All Fonts to Defaults" \
+                        "${font_options[@]}" \
                         --buttons-layout=spread \
                         --button="Browse"\!applications-internet:1 --button="Install"\!add:2 "$remove_button" --button="Next"\!go-next:0)"
 
@@ -57,12 +70,12 @@ do
 
         file="$(yad --window-icon=preferences-desktop-font --title="Install Fonts" --file --button="Install"\!gtk-open)"
 
-        info="$(file -b --mime-type "$file")"
+        is_archive="$(shock-shared-function-is-compressed "$file")"
 
-        if [[ -f "$file" ]] && [[ "$info" != "application/"* ]] #if file selected
+        if [[ -f "$file" ]] && [[ "$is_archive" == "FALSE" ]] #if file selected
         then
 
-            if [[ "$info" == "font/"* ]]
+            if [[ "$(file -b --mime-type "$file")" == "font/"* ]]
             then
 
                 mkdir -p ~/.fonts
@@ -73,7 +86,7 @@ do
 
         else
 
-            if [[ -f "$file" ]] && [[ "$info" == "application/"* ]] #if archive selected
+            if [[ -f "$file" ]] && [[ "$is_archive" == "TRUE" ]] #if archive selected
             then
 
                 dir="$(mktemp -d)"
@@ -141,11 +154,11 @@ do
     elif ((ex==0)) #next
     then
 
-        if [[ "$font_to_change" == "Application Font|" ]]
+        if [[ "$font_to_change" == "Application Font|" ]] || [[ "$font_to_change" == "Interface Font|" ]]
         then
 
             new_font="$(yad --title="Application Font" --window-icon=preferences-desktop-font --font \
-                            --fontname="$(gsettings get org.mate.interface font-name | sed "s/'//g")" \
+                            --fontname="$(gsettings get org.gnome.desktop.interface font-name | sed "s/'//g")" \
                             --buttons-layout=edge \
                             --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
@@ -156,14 +169,14 @@ do
 
                 gsettings set org.mate.interface font-name "$new_font"
 
-                gsettings set org.gnome.desktop.interface font-name "$new_font" #MUTTER COMPATIBILITY
+                gsettings set org.gnome.desktop.interface font-name "$new_font"
 
             elif [[ "$ex" == "1" ]] #reset to default
             then
 
                 gsettings set org.mate.interface font-name "Ubuntu 11"
 
-                gsettings set org.gnome.desktop.interface font-name "Ubuntu 11" #MUTTER COMPATIBILITY
+                gsettings set org.gnome.desktop.interface font-name "Ubuntu 11"
 
             fi
 
@@ -193,7 +206,7 @@ do
         then
 
             new_font="$(yad --title="Document Font" --window-icon=preferences-desktop-font --font \
-                            --fontname="$(gsettings get org.mate.interface document-font-name | sed "s/'//g")" \
+                            --fontname="$(gsettings get org.gnome.desktop.interface document-font-name | sed "s/'//g")" \
                             --buttons-layout=edge \
                             --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
@@ -204,14 +217,14 @@ do
 
                 gsettings set org.mate.interface document-font-name "$new_font"
 
-                gsettings set org.gnome.desktop.interface document-font-name "$new_font" #MUTTER COMPATIBILITY
+                gsettings set org.gnome.desktop.interface document-font-name "$new_font"
 
             elif [[ "$ex" == "1" ]] #reset to default
             then
 
                 gsettings set org.mate.interface document-font-name "Ubuntu 11"
 
-                gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11" #MUTTER COMPATIBILITY
+                gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11"
 
             fi
 
@@ -219,7 +232,7 @@ do
         then
 
             new_font="$(yad --title="Monospace Font" --window-icon=preferences-desktop-font --font \
-                            --fontname="$(gsettings get org.mate.interface monospace-font-name | sed "s/'//g")" \
+                            --fontname="$(gsettings get org.gnome.desktop.interface monospace-font-name | sed "s/'//g")" \
                             --buttons-layout=edge \
                             --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
@@ -230,14 +243,14 @@ do
 
                 gsettings set org.mate.interface monospace-font-name "$new_font"
 
-                gsettings set org.gnome.desktop.interface monospace-font-name "$new_font" #MUTTER COMPATIBILITY
+                gsettings set org.gnome.desktop.interface monospace-font-name "$new_font"
 
             elif [[ "$ex" == "1" ]] #reset to default
             then
 
                 gsettings set org.mate.interface monospace-font-name "Monospace 13"
 
-                gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13" #MUTTER COMPATIBILITY
+                gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13"
 
             fi
 
@@ -245,7 +258,7 @@ do
         then
 
             new_font="$(yad --title="Window Title Font" --window-icon=preferences-desktop-font --font \
-                            --fontname="$(gsettings get org.mate.Marco.general titlebar-font | sed "s/'//g")" \
+                            --fontname="$(gsettings get org.gnome.desktop.wm.preferences titlebar-font | sed "s/'//g")" \
                             --buttons-layout=edge \
                             --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
 
@@ -256,14 +269,14 @@ do
 
                 gsettings set org.mate.Marco.general titlebar-font "$new_font"
 
-                gsettings set org.gnome.desktop.wm.preferences titlebar-font "$new_font" #MUTTER COMPATIBILITY
+                gsettings set org.gnome.desktop.wm.preferences titlebar-font "$new_font"
 
             elif [[ "$ex" == "1" ]] #reset to default
             then
 
                 gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
 
-                gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11" #MUTTER COMPATIBILITY
+                gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11"
 
             fi
 
@@ -276,21 +289,21 @@ do
 
             gsettings set org.mate.interface font-name "Ubuntu 11"
 
-            gsettings set org.gnome.desktop.interface font-name "Ubuntu 11" #MUTTER COMPATIBILITY
+            gsettings set org.gnome.desktop.interface font-name "Ubuntu 11"
 
             gsettings set org.mate.caja.desktop font "Ubuntu 11"
 
             gsettings set org.mate.interface document-font-name "Ubuntu 11"
 
-            gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11" #MUTTER COMPATIBILITY
+            gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11"
 
             gsettings set org.mate.interface monospace-font-name "Monospace 13"
 
-            gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13" #MUTTER COMPATIBILITY
+            gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13"
 
             gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
 
-            gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11" #MUTTER COMPATIBILITY
+            gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11"
 
         fi
 

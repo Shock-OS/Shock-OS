@@ -8,22 +8,7 @@ echo 'FULL_NAME="Shock OS X Jasmine"' | tee -a /usr/share/shock/dist-info
 
 #the above set of commands copies the os release file to /usr/lib
 
-for a in /usr/share/shock-themes/icons/symbolic/16x16/*
-do
-
-    for b in $(find /usr/share/icons -name "$(basename "$a")")
-    do
-
-        if [[ -n "$b" ]]
-        then
-
-            cp -f "/usr/share/shock-themes/icons/symbolic/$(identify -format "%wx%h" "$b")/$(basename "$a")" "$b"
-
-        fi
-
-    done
-
-done
+shock-shared-function-replace-start-icons /usr/share/icons
 
 #the above command replaces GNOME and MATE start menu icons with the Shock OS logo
 
