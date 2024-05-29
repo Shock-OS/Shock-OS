@@ -1,0 +1,52 @@
+#!/bin/bash
+
+source /usr/share/shock/dist-info
+
+if [[ "$DE_EDITION" == "GNOME" ]]
+then
+
+    cursor_size="$(gsettings get org.gnome.desktop.interface cursor-size)"
+
+else #MATE
+
+    cursor_size="$(gsettings get org.Mate.interface cursor-size)"
+
+fi
+
+output="$(GDK_BACKEND=x11 yad --window-icon=preferences-desktop-theme --title="Themes" --form \
+                --field="Cursor size:":NUM "${cursor_size}\!1..128\!1" \
+                --button="Reset to Default"\!edit-undo:1 --button="Apply"\!gtk-ok:0)"
+
+ex=$?
+
+cursor_size=$(echo "$output" | awk -F'|' '{print $1}')
+
+if [[ "$ex" == "0" ]] #Apply
+then
+
+    if [[ "$DE_EDITION" == "GNOME" ]]
+    then
+
+        gsettings set org.gnome.desktop.interface cursor-size "$cursor_size"
+
+    else #MATE
+
+        gsettings set org.Mate.interface cursor-size "$cursor_size"
+
+    fi
+
+elif [[ "$ex" == "1" ]] #Reset to Default
+then
+
+    if [[ "$DE_EDITION" == "GNOME" ]]
+    then
+
+        gsettings reset org.gnome.desktop.interface cursor-size
+
+    else
+
+        gsettings reset org.Mate.interface cursor-size
+
+    fi
+
+fi
