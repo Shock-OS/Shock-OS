@@ -75,6 +75,51 @@ GDK_BACKEND=x11 /usr/bin/yad "$@"
 
 }
 
+function get_gtk_theme() {
+
+if [[ "$DE_EDITION" == "GNOME" ]]
+then
+
+    gsettings get org.gnome.desktop.interface gtk-theme | sed "s/^'//;s/'$//"
+
+else #MATE
+
+    gsettings get org.mate.interface gtk-theme | sed "s/^'//;s/'$//"
+
+fi
+
+}
+
+function get_icon_theme() {
+
+if [[ "$DE_EDITION" == "GNOME" ]]
+then
+
+    gsettings get org.gnome.desktop.interface icon-theme | sed "s/^'//;s/'$//"
+
+else #MATE
+
+    gsettings get org.mate.interface icon-theme | sed "s/^'//;s/'$//"
+
+fi
+
+}
+
+function get_cursor_theme() {
+
+if [[ "$DE_EDITION" == "GNOME" ]]
+then
+
+    gsettings get org.gnome.desktop.interface cursor-theme | sed "s/^'//;s/'$//"
+
+else #MATE
+
+    gsettings get org.mate.peripherals-mouse cursor-theme | sed "s/^'//;s/'$//"
+
+fi
+
+}
+
 function apply_gtk_theme() {
 
 if [[ "$DE_EDITION" == "GNOME" ]]
@@ -242,6 +287,113 @@ fi
 
 }
 
+function cannot_remove_bc_in_use_message() {
+
+yad --window-icon=preferences-desktop-theme --image=emblem-important-symbolic --title="Themes" --text="You cannot remove this theme while it is in use. Please switch to a different theme before attempting to remove this one." --button="Dismiss"\!gtk-close
+
+}
+
+function manage_window() {
+
+themes=()
+
+for folder in {themes,icons}
+do
+
+    for theme in ~/."$folder"/*
+    do
+
+        theme=$(basename "$theme")
+
+        theme="${theme:$nl}"
+
+        themes+=("$theme")
+
+    done
+
+done
+
+themes=($(printf "%s\n" "${themes[@]}" | sort -u))
+
+output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --text="Rename, modify, or remove themes." --list \
+                --column="Name":TEXT \
+                --no-headers \
+                "${themes[@]}" \
+                --button="Remove"\!remove:1 --button="Edit"\!gtk-edit:2 --button="Done"\!gtk-ok:0)"
+
+ex=$?
+
+theme=$(echo "$output" | awk -F'|' '{print $1}')
+
+if [[ "$ex" == "1" ]] #Remove
+then
+
+    if [[ -d ~/.themes/"${runuser}_${theme}" ]] #If theme
+    then
+
+        if [[ "$DE_EDITION" == "GNOME" ]] && [[ -d ~/.themes/"${runuser}_${theme}"/gnome-shell ]] && [[ "$(gsettings get org.gnome.shell.extensions.user-theme name | sed "s/^'//;s/'$//")" == "${runuser}_${theme}" ]]
+        then
+
+            cannot_remove_bc_in_use_message
+
+        elif [[ -d ~/.themes/"${runuser}_${theme}"/gtk-3.0 ]] && [[ "$(get_gtk_theme)" == "${runuser}_${theme}" ]]
+        then
+
+            cannot_remove_bc_in_use_message
+
+        elif [[ "$DE_EDITION" == "MATE" ]] && [[ -d ~/.themes/"${runuser}_${theme}"/metacity-1 ]] && [[ "$(gsettings get org.mate.Marco.general theme | sed "s/^'//;s/'$//")" == "${runuser}_${theme}" ]]
+        then
+
+            cannot_remove_bc_in_use_message
+
+        else
+
+            yad --window-icon=preferences-desktop-theme --title="Themes" --text="Are you sure you would like to remove '${theme}'?" --button="Yes, remove"\!remove:1 --button="No, cancel"\!gtk-cancel:0
+
+            ex=$?
+
+            if [[ "$ex" == "1" ]]
+            then
+
+                rm -r "$(readlink ~/.themes/"${runuser}_${theme}")"
+
+            fi
+
+        fi
+
+    else #If icon theme
+
+        if [[ "$(get_icon_theme)" == "${runuser}_${theme}" ]] || [[ "$(get_cursor_theme)" == "${runuser}_${theme}" ]]
+        then
+
+            cannot_remove_bc_in_use_message
+
+        else
+
+            yad --window-icon=preferences-desktop-theme --title="Themes" --text="Are you sure you would like to remove '${theme}'?" --button="Yes, remove"\!remove:1 --button="No, cancel"\!gtk-cancel:0
+
+            ex=$?
+
+            if [[ "$ex" == "1" ]]
+            then
+
+                rm -r "$(readlink ~/.icons/"${runuser}_${theme}")"
+
+            fi
+
+        fi
+
+    fi
+
+elif [[ "$ex" == "2" ]] #Edit
+then
+
+    RESUME HERE
+
+fi
+
+}
+
 source ~/.config/shock/themes/yaru
 
 if [[ "$DE_EDITION" == "GNOME" ]]
@@ -302,7 +454,10 @@ do
 
 done
 
-output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --form --field="Style:":CB "$lod" --field="Color:":CB "$yad_cb_colors" --button="Use Custom Themes"\!tweaks-app:1 --button="Apply"\!gtk-ok:0)"
+output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --form \
+                --field="Style:":CB "$lod" \
+                --field="Color:":CB "$yad_cb_colors" \
+                --button="Use Custom Themes"\!tweaks-app:1 --button="Apply"\!gtk-ok:0)"
 
 ex=$?
 
@@ -683,7 +838,7 @@ then
                         --field="":CB "$cursor_themes" \
                         --field="Change cursor size":BTN 'shock-themes-change-cursor-size' \
                         --buttons-layout=spread \
-                        --button="Install"\!add:1 --button="Remove"\!remove:2 --button="Apply"\!gtk-ok:0)"
+                        --button="Install"\!add:1 --button="Manage"\!preferences-system:2 --button="Apply"\!gtk-ok:0)"
 
         ex=$?
 
@@ -746,6 +901,11 @@ user_cursor_theme=\"$cursor_theme\"" | tee ~/.config/shock/themes/custom
 
             install_window
 
+        elif [[ "$ex" == "2" ]] #Manage
+        then
+
+            manage_window
+
         fi
 
     else #MATE
@@ -763,7 +923,7 @@ user_cursor_theme=\"$cursor_theme\"" | tee ~/.config/shock/themes/custom
                         --field="":CB "$cursor_themes" \
                         --field="Change cursor size":BTN 'shock-themes-change-cursor-size' \
                         --buttons-layout=spread \
-                        --button="Install"\!add:1 --button="Remove"\!remove:2 --button="Apply"\!gtk-ok:0)"
+                        --button="Install"\!add:1 --button="Manage"\!preferences-system:2 --button="Apply"\!gtk-ok:0)"
 
         ex=$?
 
@@ -825,6 +985,11 @@ user_cursor_theme=\"$cursor_theme\"" | tee ~/.config/shock/themes/custom
         then
 
             install_window
+
+        elif [[ "$ex" == "2" ]] #Manage
+        then
+
+            manage_window
 
         fi
 
