@@ -20,9 +20,7 @@ setup_todo_list=(choose_language \
                     apply_keyboard_settings \
                     choose_timezone \
                     apply_timezone_settings \
-                    choose_username \
-                    create_password \
-                    verify_password \
+                    create_user \
                     choose_hostname \
                     apply_user_settings)
 
@@ -308,7 +306,7 @@ done
 
 yad_cb_languages="${yad_cb_languages::-1}"
 
-output="$(yad --undecorated --center --fixed --form \
+output="$(yad --undecorated --center --fixed --text="<span font_weight='bold' font_size='larger'>Choose Your Language</span>" --form \
             --field="Dialect:":CB "$yad_cb_languages" \
             --buttons-layout=edge \
             --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
@@ -444,7 +442,7 @@ done
 
 yad_cb_kb_layout="${yad_cb_kb_layout::-1}"
 
-output="$(yad --undecorated --center --fixed --form \
+output="$(yad --undecorated --center --fixed --text="<span font_weight='bold' font_size='larger'>Configure Keyboard</span>" --form \
             --always-print-result \
             --field="Model:":CB "$yad_cb_kb_model" \
             --field="Layout:":CB "$yad_cb_kb_layout" \
@@ -509,7 +507,7 @@ done
 
 yad_cb_kb_variant="${yad_cb_kb_variant::-1}"
 
-output=$(yad --undecorated --center --fixed --form \
+output=$(yad --undecorated --center --fixed --text="Choose Keyboard Variant" --form \
             --always-print-result \
             --field="Variant:":CB "$yad_cb_kb_variant" \
             --buttons-layout=edge \
@@ -664,7 +662,7 @@ do
 
     yad_cb_timezone_folders="${yad_cb_timezone_folders::-1}"
 
-    output="$(yad --undecorated --center --fixed --form \
+    output="$(yad --undecorated --center --fixed --text="<span font_weight='bold' font_size='larger'>Choose Timezone</span>" --form \
                 --field="Timezone:":CB "$yad_cb_timezone_folders" \
                 --buttons-layout=edge \
                 --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
@@ -732,21 +730,37 @@ echo "$selected_timezone_folder" | sudo tee /etc/timezone
 
 #USER CREATION
 
-function choose_username() {
+function create_user() {
 
 ex="0"
 
-focus_field=1
+focus_field=2
+
+require_password="TRUE"
 
 success="FALSE"
 
 until [[ "$success" == "TRUE" ]] || [[ "$ex" == "1" ]]
 do
 
-    output="$(yad --undecorated --center --fixed --text="Please create a user." --form \
+    output="$(yad --undecorated --center --fixed --text="<span font_weight='bold' font_size='larger'>Create a User</span>" --form \
                 --focus-field="$focus_field" \
-                --field="Username:" "$username" \
-                --field="Full Name:" "$full_name" \
+                --field="Username:":LBL '' \
+                --field="" "$username" \
+                --field="Full Name:":LBL '' \
+                --field="" "$full_name" \
+                --field="":LBL '' \
+                --field="For security reasons, passwords should be:
+    - at least 8 characters long
+    - include upper and lower case letters
+    - include numbers and symbols
+    - be random, not something guessable like a birth date, anniversary, etc.
+Password:":LBL '' \
+                --field="" '' \
+                --field="Verify Password:":LBL '' \
+                --field="" '' \
+                --field="Require my password to log in":CHK "$require_password" \
+                --separator=$'\n' \
                 --buttons-layout=edge \
                 --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
 
@@ -755,9 +769,15 @@ do
     if [[ "$ex" == "0" ]]
     then
 
-        username="$(echo "$output" | awk -F'|' '{print $1}')"
+        username="$(echo "$output" | awk 'NR==2')"
 
-        full_name="$(echo "$output" | awk -F'|' '{print $2}')"
+        full_name="$(echo "$output" | awk 'NR==4')"
+
+        pa1="$(echo "$output" | awk 'NR==7')"
+
+        pa2="$(echo "$output" | awk 'NR==9')"
+
+        require_password="$(echo "$output" | awk 'NR==10')"
 
         success="TRUE"
 
@@ -766,7 +786,7 @@ do
 
             yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Your username cannot be empty." --button="Retry"\!edit-undo-symbolic
 
-            focus_field=1
+            focus_field=2
 
             success="FALSE"
 
@@ -775,7 +795,7 @@ do
 
             yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Your username cannot contain spaces." --button="Retry"\!edit-undo-symbolic
 
-            focus_field=1
+            focus_field=2
 
             success="FALSE"
 
@@ -784,7 +804,7 @@ do
 
             yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Your username cannot be 'shock'." --button="Retry"\!edit-undo-symbolic
 
-            focus_field=1
+            focus_field=2
 
             success="FALSE"
 
@@ -793,7 +813,7 @@ do
 
             yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Your username does not meet the necessary requirements. Usernames must start with a lowercase letter and can only contain lowercase letters, digits, hyphens and underscores." --button="Retry"\!edit-undo-symbolic
 
-            focus_field=1
+            focus_field=2
 
             success="FALSE"
 
@@ -802,7 +822,7 @@ do
 
             yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Your full name cannot be empty." --button="Retry"\!edit-undo-symbolic
 
-            focus_field=2
+            focus_field=4
 
             success="FALSE"
 
@@ -811,47 +831,16 @@ do
 
             yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Your full name cannot only consist of spaces." --button="Retry"\!edit-undo-symbolic
 
-            focus_field=2
+            focus_field=4
 
             success="FALSE"
 
-        fi
-
-    fi
-
-done
-
-}
-
-function create_password() {
-
-ex="0"
-
-pa1="1"
-
-pa2="2"
-
-success="FALSE"
-
-until [[ "$success" == "TRUE" ]] || [[ "$ex" == "1" ]]
-do
-
-    pa1="$(yad --undecorated --center --fixed --text="Please create a secure password:" --entry \
-            --hide-text \
-            --buttons-layout=edge \
-            --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
-
-    ex=$?
-
-    if [[ "$ex" == "0" ]]
-    then
-
-        success="TRUE"
-
-        if [[ -z "$pa1" ]]
+        elif [[ -z "$pa1" ]]
         then
 
             yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Your password cannot be empty." --button="Retry"\!edit-undo-symbolic
+
+            focus_field=7
 
             success="FALSE"
 
@@ -860,6 +849,17 @@ do
 
             yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Your password cannot contain spaces." --button="Retry"\!edit-undo-symbolic
 
+            focus_field=7
+
+            success="FALSE"
+
+        elif [[ "$pa1" != "$pa2" ]]
+        then
+
+            yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Oops! The passwords don't match. Please try again." --button="Retry"\!edit-undo-symbolic
+
+            focus_field=7
+
             success="FALSE"
 
         fi
@@ -870,42 +870,10 @@ done
 
 }
 
-function verify_password() {
-
-ex="0"
-
-if [[ "$success" == "TRUE" ]]
-then
-
-    until [[ "$pa1" == "$pa2" ]] || [[ "$ex" == "1" ]]
-    do
-
-        pa2="$(yad --undecorated --center --fixed --text="Verify the password:" --entry \
-                --hide-text \
-                --buttons-layout=edge \
-                --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
-
-        ex=$?
-
-        if [[ "$ex" == "0" ]] && [[ "$pa1" != "$pa2" ]]
-        then
-
-            yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Oops! The passwords don't match. Please try again." --button="Retry"\!edit-undo-symbolic
-
-            ex="1"
-
-        fi
-
-    done
-
-fi
-
-}
-
 function choose_hostname() {
 
 hostname="$(yad --undecorated --entry \
-                --text="Please choose a name for this machine:" \
+                --text="<span font_weight='bold' font_size='larger'>Name this Machine</span>\nPlease choose a name for this machine:" \
                 --entry-text="$(echo "$full_name" | awk '{print $1}')'s $(cat /proc/device-tree/model | awk '{print $1,$2,$3}')" \
                 --buttons-layout=edge \
                 --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
@@ -941,6 +909,26 @@ sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,
 
 echo "%$username ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/initsetup-rootpriv #enables the user to run all commands without a password (temporarily)
 
+if [[ "$require_password" == "FALSE" ]]
+then
+
+    if [[ "$DE_EDITION" == "GNOME" ]]
+    then
+
+        echo "AutomaticLoginEnable = true" | tee -a /etc/gdm3/daemon.conf
+
+        echo "AutomaticLogin = $username" | tee -a /etc/gdm3/daemon.conf
+
+    else #MATE
+
+        echo "autologin-user=$username" | tee -a /etc/lightdm/lightdm.conf
+
+        echo "autologin-user-timeout=0" | tee -a /etc/lightdm/lightdm.conf
+
+    fi
+
+fi
+
 #the setup finalizer temporary autologin patch begins
 
 sed -i 's/#NAutoVTs=6/NAutoVTs=1/g' /etc/systemd/logind.conf
@@ -965,7 +953,7 @@ kill "$killpid"
 
 setup_todo_item=0
 
-until ((setup_todo_item==12))
+until ((setup_todo_item==10))
 do
 
     echo "EX: $ex" #DEBUG
