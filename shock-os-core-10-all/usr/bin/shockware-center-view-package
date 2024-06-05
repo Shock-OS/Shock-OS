@@ -80,7 +80,7 @@ then
 
 else
 
-    yad --notification --image=shockware-center --icon-size=30 --text="The Shockware Center is running. Please do not turn off your computer." --command='' & echo "$!" | tee ~/.cache/shock-tmp/shockware-center/indicator_killpid
+    GDK_BACKEND=x11 /usr/bin/yad --notification --image=shockware-center --icon-size=30 --text="The Shockware Center is running. Please do not turn off your computer." --command='' & echo "$!" | tee ~/.cache/shock-tmp/shockware-center/indicator_killpid
 
     echo "1" | tee ~/.cache/shock-tmp/shockware-center/indicator_instances
 

@@ -88,7 +88,7 @@ then
 
 else #NON-FIRST-RUN-SETUP COMMANDS GO HERE
 
-    gsettings set org.mate.lockdown disable-log-out "false" #ensures that the user can logout and shutdown (fixes the shutdown menu being locked if the system crashed during automatic updates)
+    gsettings reset org.mate.lockdown disable-log-out #ensures that the user can logout and shutdown (fixes the shutdown menu being locked if the system crashed during automatic updates)
 
 fi
 

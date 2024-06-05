@@ -57,7 +57,7 @@ do
 
                 notify-send --app-name="Release Upgrader" --urgency=critical --icon=shock-release-upgrader "System Upgrade Available" "The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available."
 
-                yad --notification --image=shock-release-upgrader --icon-size=48 --text="The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available. Click to upgrade."
+                GDK_BACKEND=x11 /usr/bin/yad --notification --image=shock-release-upgrader --icon-size=48 --text="The upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename is available. Click to upgrade."
 
                 yad --window-icon=shock-release-upgrader --width=100 --title="Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename" --text="Are you sure you would like to upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename at this time? If not, you can always choose to upgrade at a later time." --button="Yes, proceed to upgrade"\!gtk-ok --button="No, abort upgrade"\!gtk-cancel
 

@@ -11,6 +11,8 @@ fi
 
 IFS=$'\n'
 
+source /usr/share/shock/dist-info
+
 function yad() {
 
 GDK_BACKEND=x11 /usr/bin/yad "$@"
@@ -148,7 +150,20 @@ echo "#"
 
 function install_updates() {
 
-gsettings set org.mate.lockdown disable-log-out "true" #stops the user from accessing the shutdown menu while updates are being applied.
+gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.CloseNotification "$(cat ~/.cache/shock-tmp/shock-update-manager/notification_id)"
+
+rm ~/.cache/shock-tmp/shock-update-manager/notification_id
+
+if [[ "$DE_EDITION" == "GNOME" ]] #stops the user from accessing the shutdown menu while updates are being applied.
+then
+
+    gsettings set org.gnome.desktop.lockdown disable-log-out "true"
+
+else #MATE
+
+    gsettings set org.mate.lockdown disable-log-out "true"
+
+fi
 
 kill "$(cat ~/.cache/shock-tmp/shock-update-manager/indicator_pid)"
 
@@ -165,7 +180,7 @@ else
 
 fi
 
-yad --notification --image=software-update-available --text="$yad_text" --command='' & notification_killpid=$!
+GDK_BACKEND=x11 /usr/bin/yad --notification --image=software-update-available --text="$yad_text" --command='' & notification_killpid=$!
 
 mkdir -p ~/.cache/shock-tmp/shock-update-manager
 

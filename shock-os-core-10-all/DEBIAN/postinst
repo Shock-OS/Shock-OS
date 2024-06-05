@@ -63,6 +63,8 @@ mkdir -p /etc/skel/.cache
 
 mkdir -p /etc/skel/.local/share/applications
 
+mkdir -p /etc/skel/.config/shock/themes
+
 echo 'user_lod=dark
 user_color=purple' | tee /etc/skel/.config/shock/themes/yaru
 

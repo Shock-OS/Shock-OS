@@ -40,7 +40,7 @@ do
 
             fi
 
-            yad --notification --image=aptdaemon-upgrade --icon-size=48 --text="Automatic updates are being installed. Please do not turn off your computer." --command="" & killpid=$!
+            GDK_BACKEND=x11 /usr/bin/yad --notification --image=aptdaemon-upgrade --icon-size=48 --text="Automatic updates are being installed. Please do not turn off your computer." --command="" & killpid=$!
 
             wait $auto_updates_killpid
 
@@ -65,11 +65,39 @@ do
 
             fi
 
-            notify-send --app-name="Update Manager" --icon=software-update-available "Update Manager" "$notification_text"
-
-            yad --notification --image=software-update-available --text="$yad_text" --command='shock-update-manager' & killpid=$!
-
             mkdir -p ~/.cache/shock-tmp/shock-update-manager
+
+            {
+
+            { { read -r notification_id; echo "$notification_id" | tee ~/.cache/shock-tmp/shock-update-manager/notification_id; } && { read -r notification_button_clicked; echo "$notification_button_clicked" | tee ~/.cache/shock-tmp/shock-update-manager/notification_button_clicked; }; } < <(stdbuf -o0 notify-send -w --app-name="Update Manager" --icon=software-update-available --action="TRUE"="Open Update Manager" "Update Manager" "$notification_text") &
+
+            { inotifywait -m -e create ~/.cache/shock-tmp/shock-update-manager & echo "$!" | tee ~/.cache/shock-tmp/shock-update-manager/inotifywait_pid; } | while read -r event
+            do
+
+                if [[ "$event" == *" CREATE notification_button_clicked" ]]
+                then
+
+                    if [[ "$(cat ~/.cache/shock-tmp/shock-update-manager/notification_button_clicked)" == "TRUE" ]]
+                    then
+
+                        shock-update-manager
+
+                    fi
+
+                    break
+
+                elif [[ "$event" == *" DELETE notification_id" ]]
+                then
+
+                    break
+
+                fi
+
+            done
+
+            } &
+
+            GDK_BACKEND=x11 /usr/bin/yad --notification --image=software-update-available --text="$yad_text" --command='shock-update-manager' & killpid=$!
 
             echo "$killpid" | tee ~/.cache/shock-tmp/shock-update-manager/indicator_pid
 
