@@ -14,7 +14,7 @@ yaru_colors=(Bark Blue Magenta Olive Orange PrussianGreen Purple Red Sage Viridi
 
 #BEGIN PRELOADING OF `FIND` COMMAND ARGUMENTS USED WHEN INSTALLING THEMES
 
-archive_types=($(unp -s | awk 'NR>1 {print $1}' | tr -d ':' | tr ',' '\n' | sed 's/^/./' | awk '{ print length, $0 }' | sort -nr | cut -d" " -f2-))
+archive_types=($(unp -s | awk 'NR>1 {print $1}' | cut -d':' -f1 | tr ',' '\n' | sed 's/^/./' | awk '{ print length, $0 }' | sort -nr | cut -d" " -f2))
 
 find_cmd_args_archives=""
 

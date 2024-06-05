@@ -18,7 +18,7 @@ then
 
 fi
 
-archive_types=($(unp -s | awk 'NR>1 {print $1}' | tr -d ':' | tr ',' '\n' | sed 's/^/./' | awk '{ print length, $0 }' | sort -nr | cut -d" " -f2-))
+archive_types=($(unp -s | awk 'NR>1 {print $1}' | cut -d':' -f1 | tr ',' '\n' | sed 's/^/./' | awk '{ print length, $0 }' | sort -nr | cut -d" " -f2))
 
 file="$1"
 
@@ -36,7 +36,7 @@ else
     for archive_type in "${archive_types[@]}"
     do
 
-        if [[ "$file_type" == "application/${archive_type}" ]]
+        if [[ "$file" == *"$archive_type" ]]
         then
 
             echo "TRUE"
