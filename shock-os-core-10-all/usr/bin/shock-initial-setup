@@ -221,7 +221,7 @@ done
 
 yad_cb_languages="${yad_cb_languages::-1}"
 
-output="$(yad --undecorated --center --fixed --form \
+output="$(yad --undecorated --center --fixed --text="<span font_weight='bold' font_size='larger'>Choose Your Language</span>" --form \
             --field="Language:":CB "$yad_cb_languages" \
             --button="Next"\!go-next-symbolic:0)"
 
@@ -306,7 +306,7 @@ done
 
 yad_cb_languages="${yad_cb_languages::-1}"
 
-output="$(yad --undecorated --center --fixed --text="<span font_weight='bold' font_size='larger'>Choose Your Language</span>" --form \
+output="$(yad --undecorated --center --fixed --text="<span font_weight='bold' font_size='larger'>Choose Your Dailect</span>" --form \
             --field="Dialect:":CB "$yad_cb_languages" \
             --buttons-layout=edge \
             --button="Back"\!go-previous-symbolic:1 --button="Next"\!go-next-symbolic:0)"
@@ -507,7 +507,7 @@ done
 
 yad_cb_kb_variant="${yad_cb_kb_variant::-1}"
 
-output=$(yad --undecorated --center --fixed --text="Choose Keyboard Variant" --form \
+output=$(yad --undecorated --center --fixed --text="<span font_weight='bold' font_size='larger'>Choose Keyboard Variant</span>" --form \
             --always-print-result \
             --field="Variant:":CB "$yad_cb_kb_variant" \
             --buttons-layout=edge \
@@ -756,9 +756,9 @@ do
     - include numbers and symbols
     - be random, not something guessable like a birth date, anniversary, etc.
 Password:":LBL '' \
-                --field="" '' \
+                --field="":H '' \
                 --field="Verify Password:":LBL '' \
-                --field="" '' \
+                --field="":H '' \
                 --field="Require my password to log in":CHK "$require_password" \
                 --separator=$'\n' \
                 --buttons-layout=edge \
@@ -915,15 +915,15 @@ then
     if [[ "$DE_EDITION" == "GNOME" ]]
     then
 
-        echo "AutomaticLoginEnable = true" | tee -a /etc/gdm3/daemon.conf
+        sudo sed -i "s/#  AutomaticLoginEnable = true/  AutomaticLoginEnable = true/g" /etc/gdm3/daemon.conf
 
-        echo "AutomaticLogin = $username" | tee -a /etc/gdm3/daemon.conf
+        sudo sed -i "s/#  AutomaticLogin = user1/  AutomaticLogin = $username/g" /etc/gdm3/daemon.conf
 
     else #MATE
 
-        echo "autologin-user=$username" | tee -a /etc/lightdm/lightdm.conf
+        echo "autologin-user=$username" | tee -a /etc/lightdm/lightdm.conf #NEEDS TO BE REDONE
 
-        echo "autologin-user-timeout=0" | tee -a /etc/lightdm/lightdm.conf
+        echo "autologin-user-timeout=0" | tee -a /etc/lightdm/lightdm.conf #NEEDS TO BE REDONE
 
     fi
 
