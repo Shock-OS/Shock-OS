@@ -2,7 +2,26 @@
 
 #Change the Shock OS GNOME layouts from the command line (also used as a backend for the graphical settings)
 
-if [[ " $* " =~ " panel " ]] && [[ ! " $* " =~ " dock " ]] && [[ ! " $* " =~ " vanilla " ]] #panel mode
+function show_help() {
+
+echo "USAGE: shock-gnome-layouts [panel/dock] OPTIONS
+
+LAYOUTS:
+    panel:          The default layout featuring a full desktop panel, similar to Windows 7+ style
+    dock:           An application dock and top bar, similar to Mac OS style, better suited for touchscreen displays
+    vanilla:        The vanilla GNOME layout, featuring a top bar, no panel, and no dock.
+
+OPTIONS:
+    --defaults:     reset all layout-related settings to their defaults, overwriting any user-configured settings"
+
+}
+
+if [[ "$*" =~ "help" ]]
+then
+
+    show_help
+
+elif [[ " $* " =~ " panel " ]] && [[ ! " $* " =~ " dock " ]] && [[ ! " $* " =~ " vanilla " ]] #panel mode
 then
 
     if [[ " $* " =~ " --defaults " ]] #reset to defaults
@@ -101,23 +120,31 @@ then
 
 else
 
-    if [[ "$*" != "--help" ]] || [[ "$*" != "help" ]]
-    then
+    echo "SYNTAX ERROR"
 
-        echo "SYNTAX ERROR"$'\n'
+    echo ""
 
-    fi
-
-    echo "USAGE: shock-gnome-layouts [panel/dock] OPTIONS
-
-LAYOUTS:
-    panel:          The default layout featuring a full desktop panel, similar to Windows 7+ style
-    dock:           An application dock and top bar, similar to Mac OS style, better suited for touchscreen displays
-    vanilla:        The vanilla GNOME layout, featuring a top bar, no panel, and no dock.
-
-OPTIONS:
-    --defaults:     reset all layout-related settings to their defaults, overwriting any user-configured settings"
+    show_help
 
 fi
+
+if [[ " $* " =~ " --defaults " ]] && [[ ! "$*" =~ "help" ]] && [[ ! -f ~/.config/shock/first-run-indicator ]] #reset to defaults, doesn't run on first run because it isn't needed then and may cause unnecessary delays
+then
+
+    gsettings reset-recursively org.gnome.shell.extensions.appindicator
+
+    gnome-extensions enable ubuntu-appindicators@ubuntu.com
+
+fi
+
+
+
+
+
+
+
+
+
+
 
     

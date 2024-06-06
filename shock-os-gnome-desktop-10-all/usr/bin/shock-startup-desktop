@@ -45,6 +45,8 @@ then
 
     dconf reset /org/gnome/shell/extensions/hidetopbar/enable-intellihide #Using DConf because extension does not support GSettings, resets the Hide Top Bar extension to defaults now that the initial setup has been completed
 
+    gnome-extensions enable ubuntu-appindicators@ubuntu.com
+
     gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/shock-terminal-shortcut/']"
 
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/shock-terminal-shortcut/ name 'Shock OS Terminal Shortcut'

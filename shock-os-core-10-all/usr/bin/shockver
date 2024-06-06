@@ -1,11 +1,5 @@
 #!/bin/bash
 
-function yad() {
-
-GDK_BACKEND=x11 /usr/bin/yad "$@"
-
-}
-
 source /usr/share/shock/dist-info
 
 if (($(getconf LONG_BIT)==32))
@@ -19,7 +13,7 @@ else
 
 fi
 
-yad --window-icon=/usr/share/shock/gnome-logo-white.svg --width=400 --height=400 --title="About Shock OS" --image=/usr/share/icons/desktop-base/128x128/emblems/emblem-debian.png --image-on-top --text="
+GDK_BACKEND=x11 /usr/bin/yad --window-icon=/usr/share/shock/gnome-logo-white.svg --title="About Shock OS" --image=/usr/share/shock/shockver-image.png --width=430 --fixed --text="
 <b>${FULL_NAME}</b>
 
 $(cat /proc/device-tree/model)
@@ -28,5 +22,4 @@ $DE_EDITION Edition
 
 $arch
 
-<small>Built on ${BUILD_DATE}</small>
-" --text-align=center --buttons-layout=center --button="Close"\!gtk-close
+<small>Built on ${BUILD_DATE}</small>" --text-align=center --button="Close"\!gtk-close
