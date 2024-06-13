@@ -150,37 +150,50 @@ echo "#"
 
 function install_updates() {
 
-gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.CloseNotification "$(cat ~/.cache/shock-tmp/shock-update-manager/notification_id)"
-
-rm ~/.cache/shock-tmp/shock-update-manager/notification_id
-
-if [[ "$DE_EDITION" == "GNOME" ]] #stops the user from accessing the shutdown menu while updates are being applied.
+if [[ "$DE_EDITION" == "GNOME" ]] #shows updates in progress notification and stops the user from accessing the shutdown menu while updates are being applied.
 then
 
     gsettings set org.gnome.desktop.lockdown disable-log-out "true"
+
+    gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.CloseNotification "$(cat ~/.cache/shock-tmp/shock-update-manager/gnome_updates_available_notification_id)"
+
+    rm ~/.cache/shock-tmp/shock-update-manager/gnome_updates_available_notification_id
+
+    if ((all_updates_num>1))
+    then
+
+        notification_title="Installing an Update"
+
+    else
+
+        notification_title="Installing Updates"
+
+    fi
+
+    notify-send -w --icon=software-update-available --app-name="Update Manager" "$notification_title" "Please do not turn off your computer." & notification_killpid=$?
 
 else #MATE
 
     gsettings set org.mate.lockdown disable-log-out "true"
 
+    kill "$(cat ~/.cache/shock-tmp/shock-update-manager/mate_updates_available_indicator_pid)"
+
+    rm ~/.cache/shock-tmp/shock-update-manager/mate_updates_available_indicator_pid
+
+    if ((all_updates_num>1))
+    then
+
+        notification_text="Updates are being installed. Please do not turn off your computer."
+
+    else
+
+        notification_text="An update is being installed. Please do not turn off your computer."
+
+    fi
+
+    /usr/bin/yad --notification --image=software-update-available --text="$notification_text" --command='' & notification_killpid=$!
+
 fi
-
-kill "$(cat ~/.cache/shock-tmp/shock-update-manager/indicator_pid)"
-
-rm ~/.cache/shock-tmp/shock-update-manager/indicator_pid
-
-if ((all_updates_num>1))
-then
-
-    yad_text="Updates are being installed. Please do not turn off your computer."
-
-else
-
-    yad_text="An update is being installed. Please do not turn off your computer."
-
-fi
-
-GDK_BACKEND=x11 /usr/bin/yad --notification --image=software-update-available --text="$yad_text" --command='' & notification_killpid=$!
 
 mkdir -p ~/.cache/shock-tmp/shock-update-manager
 

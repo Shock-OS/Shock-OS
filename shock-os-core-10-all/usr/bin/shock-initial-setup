@@ -585,6 +585,8 @@ do
 
     current_timezone_folder="$(echo "$current_timezone_folder" | cut -d'/' -f2)"
 
+    current_timezone_folder="${current_timezone_folder//_/ }"
+
     echo "CURRENT_TIMEZONE_FOLDER: $current_timezone_folder" #DEBUG
 
     yad_cb_timezone_folders=""
@@ -625,7 +627,7 @@ do
 
             timezone_folder="${timezone_folder//_/ }" #replaces underscores with spaces to make locale names look nicer
 
-            if [[ "$timezone_folder" == "$current_timezone_folder" ]]
+            if [[ "$timezone_folder" == "$current_timezone_folder" ]] || [[ "$timezone_folder" == "None of the above" && ! " ${timezone_folders[@]} " =~ " $current_timezone_folder " ]] 
             then
 
                 yad_cb_timezone_folders+="^${timezone_folder}!"
@@ -884,10 +886,6 @@ if [[ "$ex" == "0" ]]
 then
 
     sudo hostnamectl set-hostname "$hostname"
-
-else
-
-    setup_todo_item=$((setup_todo_item-1)) #ensures the back button goes back to the create_password step instead of the verify_password step
 
 fi
 

@@ -8,6 +8,8 @@ GDK_BACKEND=x11 /usr/bin/yad "$@"
 
 }
 
+source /usr/share/shock/dist-info
+
 #this script checks for available updates and sends a notification if any are available
 
 while true
@@ -30,7 +32,16 @@ do
             if (($(ps aux | awk '{print $1,$11,$12}' | grep -c "root /bin/bash /usr/bin/shock-auto-updates")<=2)) #installs automatic updates if they aren't already running
             then
 
-                gsettings set org.mate.lockdown disable-log-out "true" #stops the user from accessing the shutdown menu while automatic updates are being applied.
+                if [[ "$DE_EDITION" == "GNOME" ]] #stops the user from accessing the shutdown menu while automatic updates are being applied.
+                then
+
+                    gsettings set org.gnome.desktop.lockdown disable-log-out "true"
+
+                else #MATE
+
+                    gsettings set org.mate.lockdown disable-log-out "true"
+
+                fi
 
                 sudo shock-auto-updates & auto_updates_killpid=$!
 
@@ -42,66 +53,92 @@ do
 
             GDK_BACKEND=x11 /usr/bin/yad --notification --image=aptdaemon-upgrade --icon-size=48 --text="Automatic updates are being installed. Please do not turn off your computer." --command="" & killpid=$!
 
+            if [[ "$DE_EDITION" == "GNOME" ]]
+            then
+
+                notify-send -w --app-name="Update Manager" --icon=aptdaemon-upgrade "Automatic Updates" "Automatic updates are being installed. Please do not turn off your computer." & gnome_notification_killpid=$!
+
+            fi
+
             wait $auto_updates_killpid
 
             kill $killpid
 
-            gsettings set org.mate.lockdown disable-log-out "false" #allows the user to access the shutdown menu.
+            if [[ "$DE_EDITION" == "GNOME" ]] #allows the user to access the shutdown menu.
+            then
+
+                kill "$gnome_notification_killpid"
+
+                gsettings set org.gnome.desktop.lockdown disable-log-out "false"
+
+            else #MATE
+
+                gsettings set org.mate.lockdown disable-log-out "false"
+
+            fi
 
         else
 
-            if (($updates>1))
+            if ((updates>1))
             then
 
-                yad_text="$updates updates are available. Click to install them."
+                if [[ "$DE_EDITION" == "GNOME" ]]
+                then
 
-                notification_text="$updates updates are available."
+                    notification_title="Updates Are Available"
+
+                    notification_text="Click to install them."
+
+                else #MATE
+
+                    notification_text="$updates updates are available."
+
+                    yad_text="$updates updates are available. Click to install them."
+
+                fi
 
             else
 
-                yad_text="An update is available. Click to install it."
+                if [[ "$DE_EDITION" == "GNOME" ]]
+                then
 
-                notification_text="An update is available."
+                    notification_title="An Update Is Available"
+
+                    notification_text="Click to install it."
+
+                else #MATE
+
+                    yad_text="An update is available. Click to install it."
+
+                    notification_text="An update is available."
+
+                fi
 
             fi
 
             mkdir -p ~/.cache/shock-tmp/shock-update-manager
 
-            {
+            if [[ "$DE_EDITION" == "GNOME" ]]
+            then
 
-            { { read -r notification_id; echo "$notification_id" | tee ~/.cache/shock-tmp/shock-update-manager/notification_id; } && { read -r notification_button_clicked; echo "$notification_button_clicked" | tee ~/.cache/shock-tmp/shock-update-manager/notification_button_clicked; }; } < <(stdbuf -o0 notify-send -w --app-name="Update Manager" --icon=software-update-available --action="TRUE"="Open Update Manager" "Update Manager" "$notification_text") &
+                ex="$(python3 /usr/bin/shock-shared-function-send-notification.py --title="$notification_title" --text="$notification_text" --icon=software-update-available --idfile="/home/$(whoami)/.cache/shock-tmp/shock-update-manager/gnome_updates_available_notification_id")"
 
-            { inotifywait -m -e create ~/.cache/shock-tmp/shock-update-manager & echo "$!" | tee ~/.cache/shock-tmp/shock-update-manager/inotifywait_pid; } | while read -r event
-            do
-
-                if [[ "$event" == *" CREATE notification_button_clicked" ]]
+                if [[ "$ex" == "0" ]]
                 then
 
-                    if [[ "$(cat ~/.cache/shock-tmp/shock-update-manager/notification_button_clicked)" == "TRUE" ]]
-                    then
-
-                        shock-update-manager
-
-                    fi
-
-                    break
-
-                elif [[ "$event" == *" DELETE notification_id" ]]
-                then
-
-                    break
+                    /bin/bash /usr/bin/shock-update-manager
 
                 fi
 
-            done
+            else #MATE
 
-            } &
+                GDK_BACKEND=x11 /usr/bin/yad --notification --image=software-update-available --text="$yad_text" --command='/bin/bash /usr/bin/shock-update-manager' & killpid=$!
 
-            GDK_BACKEND=x11 /usr/bin/yad --notification --image=software-update-available --text="$yad_text" --command='shock-update-manager' & killpid=$!
+                echo "$killpid" | tee ~/.cache/shock-tmp/shock-update-manager/mate_updates_available_indicator_pid
 
-            echo "$killpid" | tee ~/.cache/shock-tmp/shock-update-manager/indicator_pid
+                wait $killpid
 
-            wait $killpid
+            fi
 
             if [[ -f ~/.cache/shock-tmp/shock-update-manager/updates_in_progress_indicator_pid ]] #if updates are being installed, wait for them to finish.
             then
