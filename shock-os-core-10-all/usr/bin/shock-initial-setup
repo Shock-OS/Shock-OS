@@ -697,6 +697,13 @@ do
         if [[ "$selected_timezone_folder" != "None of the above" ]]
         then
 
+            if [[ "$selected_timezone_folder" == *" Ocean" ]] #Removes ' Ocean' pretty name if present
+            then
+
+                selected_timezone_folder="${selected_timezone_folder::-6}"
+
+            fi
+
             selected_timezone_folder="${selected_timezone_folder// /_}" #puts the underscores back
 
             if [[ -d "$selected_timezone_folder" ]]
@@ -752,8 +759,8 @@ do
                 --field="Full Name:":LBL '' \
                 --field="" "$full_name" \
                 --field="":LBL '' \
-                --field="For security reasons, passwords should be:
-    - at least 8 characters long
+                --field="For security reasons, passwords should:
+    - be at least 8 characters long
     - include upper and lower case letters
     - include numbers and symbols
     - be random, not something guessable like a birth date, anniversary, etc.
