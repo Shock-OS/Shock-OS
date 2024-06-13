@@ -6,7 +6,7 @@ from gi.repository import GLib
 
 def notification_action(bus, message):
     if message.get_member() == "ActionInvoked":
-        # No need to print '0' here, as it is already printed by notification when clicked
+        print("0")
         loop.quit()  # Stop the main loop
     elif message.get_member() == "NotificationClosed":
         print("1")

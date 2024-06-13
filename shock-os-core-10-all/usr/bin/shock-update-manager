@@ -162,15 +162,15 @@ then
     if ((all_updates_num>1))
     then
 
-        notification_title="Installing an Update"
+        notification_title="Installing Updates"
 
     else
 
-        notification_title="Installing Updates"
+        notification_title="Installing an Update"
 
     fi
 
-    notify-send -w --icon=software-update-available --app-name="Update Manager" "$notification_title" "Please do not turn off your computer." & notification_killpid=$?
+    notify-send -w --icon=software-update-available --app-name="Update Manager" "$notification_title" "Please do not turn off your computer." & notification_killpid=$!
 
 else #MATE
 
@@ -260,7 +260,7 @@ fi
 
 rm ~/.cache/shock-tmp/shock-update-manager/updates_in_progress_indicator_pid
 
-kill "$notification_killpid"
+kill -2 "$notification_killpid"
 
 if [[ "$DE_EDITION" == "GNOME" ]] #allows the user to access the shutdown menu.
 then
