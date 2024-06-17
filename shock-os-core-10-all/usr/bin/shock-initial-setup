@@ -104,7 +104,7 @@ else #if GNOME Edition
 
 fi
 
-shock-pulseaudio-autoconfig
+/bin/bash /usr/bin/shock-shared-function-set-audio-output-to-hdmi
 
 amixer -D pulse sset Master 100% #sets volume to 100% so the setup music can be heard
 

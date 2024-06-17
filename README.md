@@ -28,7 +28,7 @@ Shock OS is built by installing a .deb package on top of a fresh install of Rasp
 
 `$ git clone https://github.com/Shock-OS/Shock-OS.git`
 
-`cd Shock-OS`
+`$ cd Shock-OS`
 
 `$ dpkg-deb --build shockos-*.0-all.deb`
 

@@ -1,0 +1,52 @@
+#!/bin/bash
+
+#welcome screen for Shock OS. Run on first-boot
+
+if [[ "$1" == "--startup" && -f ~/.config/shock/welcome-indicator ]] || [[ "$1" != "--startup" ]]
+then
+
+    source /usr/share/shock/dist-info
+
+    if [[ "$DE_EDITION" == "GNOME" ]]
+    then
+
+        set_background_command="gnome-control-center background"
+
+    else #MATE
+
+        set_background_command="shock-backgrounds"
+
+    fi
+
+    output="$(GDK_BACKEND=x11 /usr/bin/yad --window-icon=/usr/share/shock/gnome-logo-white.svg --title="Welcome to Shock OS" --form \
+        --width=500 \
+        --field="Welcome to Shock OS! Here are a few things you can do to personalize your system:":LBL "" \
+        --field="Set Desktop Background"\!preferences-desktop-wallpaper:FBTN "$set_background_command" \
+        --field="Choose Themes and Accent Colors"\!preferences-desktop-theme:FBTN "shock-themes" \
+        --field="Choose Panel Layout"\!mate-panel:FBTN "shock-panel-layouts" \
+        --field="":LBL "" \
+        --field="Search for, install, and remove apps and games with the Shockware Center.":LBL "" \
+        --field="Browse the Shockware Center"\!shockware-center:FBTN "shockware-center" \
+        --field="":LBL "" \
+        --field="Thank you for choosing Shock OS! We hope you love it!
+
+    Genesis 1:1":LBL "" \
+        --field="":LBL "" \
+        --field="Launch this window at startup":CHK "TRUE" \
+        --button="Dismiss"\!gtk-cancel)"
+
+    if [[ "$output" == *"FALSE"* ]]
+    then
+
+        rm ~/.config/shock/welcome-indicator
+
+    elif [[ ! -f ~/.config/shock/welcome-indicator ]]
+    then
+
+        mkdir -p ~/.config/shock/
+
+        touch ~/.config/shock/welcome-indicator
+
+    fi
+
+fi

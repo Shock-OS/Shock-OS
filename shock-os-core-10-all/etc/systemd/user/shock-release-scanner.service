@@ -3,7 +3,7 @@ Description=Check for upgrades to newer versions of Shock OS
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/shock-release-scanner
+ExecStart=/bin/bash /usr/bin/shock-release-scanner
 
 [Install]
 WantedBy=graphical-session.target

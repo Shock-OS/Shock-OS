@@ -3,7 +3,7 @@ Description=Checks for system updates and notifies the user if any are available
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/shock-updates-scanner
+ExecStart=/bin/bash /usr/bin/shock-updates-scanner
 
 [Install]
 WantedBy=graphical-session.target

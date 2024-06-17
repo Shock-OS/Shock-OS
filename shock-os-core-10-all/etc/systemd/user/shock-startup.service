@@ -3,7 +3,7 @@ Description=Manages Shock OS startup procedures
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/shock-startup
+ExecStart=/bin/bash /usr/bin/shock-startup
 
 [Install]
 WantedBy=graphical-session.target

@@ -32,6 +32,8 @@ then
 
     shock-startup-desktop
 
+    /bin/bash /usr/bin/shock-shared-function-set-audio-output-to-hdmi
+
     #THE FLATPAK GTK THEMING PATCH BEGINS
 
     flatpak override --user --filesystem="~/.themes:ro"
@@ -53,8 +55,6 @@ then
     rm ~/.config/shock/first-run-indicator
 
 fi
-
-shock-startup-desktop
 
 mkdir -p ~/.cache/shock-tmp
 
