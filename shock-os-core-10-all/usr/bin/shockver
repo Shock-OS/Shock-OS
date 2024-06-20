@@ -14,12 +14,12 @@ else
 fi
 
 GDK_BACKEND=x11 /usr/bin/yad --window-icon=/usr/share/shock/gnome-logo-white.svg --title="About Shock OS" --image=/usr/share/shock/shockver-image.png --width=430 --fixed --text="
-<b>${FULL_NAME}</b>
+<b>${SHOCK_FULL_NAME}</b>
 
 $(cat /proc/device-tree/model)
 
-$DE_EDITION Edition
+$SHOCK_DE_EDITION Edition
 
 $arch
 
-<small>Built on ${BUILD_DATE}</small>" --text-align=center --button="Close"\!gtk-close
+<small>Built on ${SHOCK_BUILD_DATE}</small>" --text-align=center --button="Close"\!gtk-close

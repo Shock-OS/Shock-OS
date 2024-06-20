@@ -20,6 +20,8 @@ fi
 
 #the root check element ends
 
+source /usr/share/shock/dist-info
+
 function yad() {
 
 GDK_BACKEND=x11 /usr/bin/yad "$@"
@@ -138,19 +140,17 @@ done
 
 }
 
-function install-and-verify-edition() {
+function download-and-verify-package() {
 
-#USAGE: install-and-verify-edition <package name (ex: mate)> <display name (ex: MATE Edition)>
+#USAGE: download-and-verify-package <package name (ex: mate)> <display name (ex: MATE Edition)>
 
-wget-internet-check "{ wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/${upgrto_version}-${1}.zip -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { yad --window-icon=shock-release-upgrader --image=emblem-important --title=\"Download Failed\" --text=\"Failed to download the upgrade pack. The upgrade has been cancelled.\" --button=\"Exit\"\!gtk-cancel; cancel; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --image=shock-release-upgrader --progress --title=\"Downloading the Upgrade Pack\" --width=310 --text=\"Downloading the Shock OS $upgrto_version_display_name $upgrto_version_codename ${2} upgrade pack. This may take a while...\" --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button=\"Cancel Upgrade\"\!gtk-cancel:1" "/usr/share/shock-release-upgrader/upgrades/${upgrto_version}-${1}.zip"
+wget-internet-check "{ wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/${upgrto_version}-${1}.zip -P /usr/share/shock-release-upgrader/upgrades 2>&1 || { yad --window-icon=shock-release-upgrader --image=emblem-important --title=\"Download Failed\" --text=\"Failed to download the upgrade pack. The upgrade has been cancelled.\" --button=\"Exit\"\!gtk-cancel; cancel; }; } | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --window-icon=/usr/share/shock-release-upgrader/icon.svg --image=shock-release-upgrader --progress --title=\"Downloading the Upgrade Pack\" --width=310 --text=\"Downloading the Shock OS $upgrto_version $upgrto_version_codename ${2} upgrade pack. This may take a while...\" --progress --width=300 --height=100 --center --fixed --auto-close --auto-kill --button=\"Cancel Upgrade\"\!gtk-cancel:1" "/usr/share/shock-release-upgrader/upgrades/${upgrto_version}-${1}.zip"
 
 wget-internet-check "wget --timeout 5 https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/${upgrto_version}-${1}.zip.sig -P /usr/share/shock-release-upgrader/upgrades" "/usr/share/shock-release-upgrader/upgrades/${upgrto_version}-${1}.zip.sig"
 
 verify /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-${1}.zip.sig" /usr/share/shock-release-upgrader/upgrades/"${upgrto_version}-${1}.zip" "Verifying the ${2} update package..."
 
 }
-
-current_version="$(apt show shock-os-core | grep Version: | awk '{print $2}')"
 
 mkdir -p /usr/share/shock-release-upgrader
 
@@ -183,20 +183,9 @@ done
 
 latest_version="$(cat /usr/share/shock-release-upgrader/codenames | wc -l)"
 
-upgrto_version=$((current_version+1))
+upgrto_version=$((SHOCK_VERSION_NUM+1))
 
-if [[ "$upgrto_version" == "10" ]]
-then
-
-    upgrto_version_display_name="X"
-
-else
-
-    upgrto_version_display_name="$upgrto_version"
-
-fi
-
-if ((latest_version>current_version))
+if ((latest_version>SHOCK_VERSION_NUM))
 then
 
     upgrto_version_codename="$(sed -n "$upgrto_version"p /usr/share/shock-release-upgrader/codenames)"
@@ -211,7 +200,7 @@ then
 
 NOTE: The logout and power options in the start menu will be temporarily disabled while upgrading because powering off the machine during the upgrade process is highly discouraged and may render your system unusable.
 
-Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename' when you are ready to go on." --width=500 --ok-label="Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_codename" --cancel-label="Cancel"
+Please press 'Upgrade to Shock OS $upgrto_version $upgrto_version_codename' when you are ready to go on." --width=500 --ok-label="Upgrade to Shock OS $upgrto_version $upgrto_version_codename" --cancel-label="Cancel"
 
     ex=$?
 
@@ -226,18 +215,16 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
 
     rm -r /usr/share/shock-release-upgrader/upgrades/*
 
-    install-and-verify-edition "core" "core"
+    download-and-verify-package "core" "core"
 
-    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq))
-
-    if [[ " ${installed_packages[@]} " == *" shock-os-mate-desktop "* ]] #GET MATE EDITION UPGRADES
+    if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
     then
 
-        install-and-verify-edition "mate" "MATE Edition"
+        download-and-verify-package "gnome" "GNOME Edition"
 
-    else #GET GNOME EDITION UPGRADES
+    else #MATE
 
-        install-and-verify-edition "gnome" "GNOME Edition"
+        download-and-verify-package "mate" "MATE Edition"
 
     fi
 
@@ -302,14 +289,14 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
             if [[ -f "$dir"/override ]]
             then
 
-                bash "$dir"/override
+                /bin/bash "$dir"/override
 
             else
 
                 if [[ -f "$dir"/preupgr ]]
                 then
 
-                    bash "$dir"/preupgr
+                    /bin/bash "$dir"/preupgr
 
                 fi
 
@@ -319,7 +306,7 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
                 if [[ -f "$dir"/postupgr ]]
                 then
 
-                    bash "$dir"/postupgr
+                    /bin/bash "$dir"/postupgr
 
                 fi
 
@@ -338,10 +325,17 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
 
     fi
 
-    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq))
-
-    if [[ " ${installed_packages[@]} " == *" shock-os-mate-desktop "* ]]
+    if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
     then
+
+        if [[ "$(apt show shock-os-gnome-desktop | grep Version: | awk '{print $2}')" != "$upgrto_version" ]]
+        then
+
+            upgrade_successful="FALSE"
+
+        fi
+
+    else #MATE
 
         if [[ "$(apt show shock-os-mate-desktop | grep Version: | awk '{print $2}')" != "$upgrto_version" ]]
         then
@@ -350,17 +344,14 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
 
         fi
 
-    elif [[ "$(apt show shock-os-gnome-desktop | grep Version: | awk '{print $2}')" != "$upgrto_version" ]]
-    then
-
-        upgrade_successful="FALSE"
-
     fi
 
-    if [[ "$upgrade_successful" == "TRUE" ]]
+    source /usr/share/shock/dist-info
+
+    if [[ "$SHOCK_VERSION_NUM" == "$upgrto_version" ]]
     then
 
-        yad --window-icon=shock-release-upgrader --image=emblem-default --title="Upgrade Complete" --text="Congratulations! Your system has sucessfully been upgraded to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please reboot for the changes to take full effect." --button="Reboot Later"\!gtk-ok:1 --button="Reboot Now"\!gtk-refresh:0
+        yad --window-icon=shock-release-upgrader --image=emblem-default --title="Upgrade Complete" --text="Congratulations! Your system has sucessfully been upgraded to Shock OS $upgrto_version $upgrto_version_codename. Please reboot for the changes to take full effect." --button="Reboot Later"\!gtk-ok:1 --button="Reboot Now"\!gtk-refresh:0
 
         ex=$?
 
@@ -375,7 +366,7 @@ Please press 'Upgrade to Shock OS $upgrto_version_display_name $upgrto_version_c
 
         clean
 
-        yad --window-icon=shock-release-upgrader --image=emblem-important --title="Upgrade Failed" --text="Something went wrong, and your system was not upgraded to Shock OS $upgrto_version_display_name $upgrto_version_codename. Please double-check your internet connection and try again later." --button="Exit"\!gtk-cancel
+        yad --window-icon=shock-release-upgrader --image=emblem-important --title="Upgrade Failed" --text="Something went wrong, and your system was not upgraded to Shock OS $upgrto_version $upgrto_version_codename. Please double-check your internet connection and try again later." --button="Exit"\!gtk-cancel
 
     fi
 

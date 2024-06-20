@@ -23,7 +23,7 @@ GDK_BACKEND=x11 /usr/bin/yad "$@"
 
 source /usr/share/shock/dist-info
 
-if [[ "$DE_EDITION" == "MATE" ]]
+if [[ "$SHOCK_DE_EDITION" == "MATE" ]]
 then
 
     font_options=("Application Font" "Desktop Font" "Document Font" "Monospace Font" "Window Title Font" "Reset All Fonts to Defaults")

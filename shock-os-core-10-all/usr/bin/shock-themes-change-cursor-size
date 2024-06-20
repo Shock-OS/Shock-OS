@@ -2,7 +2,7 @@
 
 source /usr/share/shock/dist-info
 
-if [[ "$DE_EDITION" == "GNOME" ]]
+if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
 then
 
     cursor_size="$(gsettings get org.gnome.desktop.interface cursor-size)"
@@ -24,7 +24,7 @@ cursor_size=$(echo "$output" | awk -F'|' '{print $1}')
 if [[ "$ex" == "0" ]] #Apply
 then
 
-    if [[ "$DE_EDITION" == "GNOME" ]]
+    if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
     then
 
         gsettings set org.gnome.desktop.interface cursor-size "$cursor_size"
@@ -38,7 +38,7 @@ then
 elif [[ "$ex" == "1" ]] #Reset to Default
 then
 
-    if [[ "$DE_EDITION" == "GNOME" ]]
+    if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
     then
 
         gsettings reset org.gnome.desktop.interface cursor-size

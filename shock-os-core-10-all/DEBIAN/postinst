@@ -4,15 +4,13 @@ cd /
 
 sed -i '1s/.*/PRETTY_NAME="Shock OS X Jasmine"/' /usr/lib/os-release
 
-echo 'FULL_NAME="Shock OS X Jasmine"' | tee -a /usr/share/shock/dist-info
+python3 /usr/bin/shock-edit-dist-info.py --full-name="Shock OS X Jasmine" --version-number=10
 
 #the above set of commands copies the os release file to /usr/lib
 
 shock-shared-function-replace-start-icons /usr/share/icons
 
 #the above command replaces GNOME and MATE start menu icons with the Shock OS logo
-
-chmod -R a+w /usr/share/shock
 
 echo "0" | tee /usr/share/shock/setupvalue
 

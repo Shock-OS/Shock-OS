@@ -2,7 +2,7 @@
 
 source /usr/share/shock/dist-info
 
-if [[ "$DE_EDITION" == "MATE" ]]
+if [[ "$SHOCK_DE_EDITION" == "MATE" ]]
 then
 
     if (($(ps aux | awk '{print $1,$11,$12}' | grep -c "$(whoami) /bin/bash /usr/bin/shock-update-manager")>2)) #exits the program if it is already running for this user
@@ -155,7 +155,7 @@ echo "#"
 
 function install_updates() {
 
-if [[ "$DE_EDITION" == "GNOME" ]] #shows updates in progress notification and stops the user from accessing the shutdown menu while updates are being applied.
+if [[ "$SHOCK_DE_EDITION" == "GNOME" ]] #shows updates in progress notification and stops the user from accessing the shutdown menu while updates are being applied.
 then
 
     gsettings set org.gnome.desktop.lockdown disable-log-out "true"
@@ -267,7 +267,7 @@ rm ~/.cache/shock-tmp/shock-update-manager/updates_in_progress_indicator_pid
 
 kill -2 "$notification_killpid"
 
-if [[ "$DE_EDITION" == "GNOME" ]] #allows the user to access the shutdown menu.
+if [[ "$SHOCK_DE_EDITION" == "GNOME" ]] #allows the user to access the shutdown menu.
 then
 
     gsettings set org.gnome.desktop.lockdown disable-log-out "false"

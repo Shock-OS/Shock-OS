@@ -83,7 +83,7 @@ fi
 
 source /usr/share/shock/dist-info
 
-if [[ "$DE_EDITION" == "MATE" ]] #APPLIES TO MATE EDITION ONLY
+if [[ "$SHOCK_DE_EDITION" == "MATE" ]] #APPLIES TO MATE EDITION ONLY
 then
 
     if [[ " $* " =~ " --style=" ]]

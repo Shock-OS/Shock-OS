@@ -7,7 +7,7 @@ then
 
     source /usr/share/shock/dist-info
 
-    if [[ "$DE_EDITION" == "GNOME" ]]
+    if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
     then
 
         set_background_command="gnome-control-center background"

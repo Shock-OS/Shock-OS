@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Release Upgrader
+Exec=/bin/bash /usr/bin/shock-release-upgrader
+Icon=shock-release-upgrader
+Comment=Checks for available system upgrades and notifies the user if they are available
+X-GNOME-Autostart-Phase=Application
+Name[en_US]=shock-release-scanner.desktop

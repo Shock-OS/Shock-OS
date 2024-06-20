@@ -38,7 +38,7 @@ source /usr/share/shock/dist-info
 
 targets=(index.theme gtk-3.0 gtk-4.0 cursors cursor.theme)
 
-if [[ "$DE_EDITION" == "GNOME" ]]
+if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
 then
 
     targets+=(gnome-shell)
@@ -77,7 +77,7 @@ GDK_BACKEND=x11 /usr/bin/yad "$@"
 
 function get_gtk_theme() {
 
-if [[ "$DE_EDITION" == "GNOME" ]]
+if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
 then
 
     gsettings get org.gnome.desktop.interface gtk-theme | sed "s/^'//;s/'$//"
@@ -102,7 +102,7 @@ echo "$theme"
 
 function get_icon_theme() {
 
-if [[ "$DE_EDITION" == "GNOME" ]]
+if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
 then
 
     gsettings get org.gnome.desktop.interface icon-theme | sed "s/^'//;s/'$//"
@@ -117,7 +117,7 @@ fi
 
 function get_cursor_theme() {
 
-if [[ "$DE_EDITION" == "GNOME" ]]
+if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
 then
 
     gsettings get org.gnome.desktop.interface cursor-theme | sed "s/^'//;s/'$//"
@@ -132,7 +132,7 @@ fi
 
 function set_gtk_theme() {
 
-if [[ "$DE_EDITION" == "GNOME" ]]
+if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
 then
 
     gsettings set org.gnome.desktop.interface gtk-theme "$1"
@@ -155,7 +155,7 @@ ln -sf /usr/share/themes/"$1"/gtk-4.0 ~/.config
 
 function set_icon_theme() {
 
-if [[ "$DE_EDITION" == "GNOME" ]]
+if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
 then
 
     gsettings set org.gnome.desktop.interface icon-theme "$1"
@@ -170,7 +170,7 @@ fi
 
 function set_cursor_theme() {
 
-if [[ "$DE_EDITION" == "GNOME" ]]
+if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
 then
 
     gsettings set org.gnome.desktop.interface cursor-theme "$1"
@@ -341,7 +341,7 @@ then
     if [[ -d ~/.themes/"${runuser}_${theme}" ]] #If theme
     then
 
-        if [[ "$DE_EDITION" == "GNOME" ]] && [[ -d ~/.themes/"${runuser}_${theme}"/gnome-shell ]] && [[ "$(gsettings get org.gnome.shell.extensions.user-theme name | sed "s/^'//;s/'$//")" == "${runuser}_${theme}" ]]
+        if [[ "$SHOCK_DE_EDITION" == "GNOME" ]] && [[ -d ~/.themes/"${runuser}_${theme}"/gnome-shell ]] && [[ "$(gsettings get org.gnome.shell.extensions.user-theme name | sed "s/^'//;s/'$//")" == "${runuser}_${theme}" ]]
         then
 
             cannot_remove_bc_in_use_message
@@ -351,7 +351,7 @@ then
 
             cannot_remove_bc_in_use_message
 
-        elif [[ "$DE_EDITION" == "MATE" ]] && [[ -d ~/.themes/"${runuser}_${theme}"/metacity-1 ]] && [[ "$(gsettings get org.mate.Marco.general theme | sed "s/^'//;s/'$//")" == "${runuser}_${theme}" ]]
+        elif [[ "$SHOCK_DE_EDITION" == "MATE" ]] && [[ -d ~/.themes/"${runuser}_${theme}"/metacity-1 ]] && [[ "$(gsettings get org.mate.Marco.general theme | sed "s/^'//;s/'$//")" == "${runuser}_${theme}" ]]
         then
 
             cannot_remove_bc_in_use_message
@@ -441,7 +441,7 @@ then
 
                     mv ~/.themes/"${runuser}_${theme}" ~/.themes/"${runuser}_${newname}"
 
-                    if [[ "$DE_EDITION" == "GNOME" ]]
+                    if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
                     then
 
                         if [[ "$(gsettings get org.gnome.shell.extensions.user-theme name)" == "'${runuser}_${theme}'" ]]
@@ -515,7 +515,7 @@ do
 
     source ~/.config/shock/themes/yaru
 
-    if [[ "$DE_EDITION" == "GNOME" ]]
+    if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
     then
 
         color_scheme="$(gsettings get org.gnome.desktop.interface color-scheme)"
@@ -616,7 +616,7 @@ do
 
         fi
 
-        if [[ "$DE_EDITION" == "GNOME" ]]
+        if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
         then
 
             gsettings set org.gnome.shell.extensions.user-theme name "$theme"
@@ -678,7 +678,7 @@ do
         for theme in $(ls ~/.themes)
         do
 
-            if [[ "$DE_EDITION" == "GNOME" ]]
+            if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
             then
 
                 if [[ -d ~/.themes/"$theme"/gnome-shell ]]
@@ -733,7 +733,7 @@ do
 
             fi
 
-            if [[ "$DE_EDITION" == "MATE" ]]
+            if [[ "$SHOCK_DE_EDITION" == "MATE" ]]
             then
 
                 if [[ -d ~/.themes/"$theme"/metacity-1 ]]
@@ -941,7 +941,7 @@ do
 
         fi
 
-        if [[ "$DE_EDITION" == "GNOME" ]]
+        if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
         then
 
             output="$(yad --window-icon=preferences-desktop-theme --title="Themes" --form \

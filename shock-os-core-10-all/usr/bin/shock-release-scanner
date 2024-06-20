@@ -2,6 +2,8 @@
 
 #This script checks for an available upgrade to a newer version of Shock OS and notifies the user if one is available
 
+source /usr/share/shock/dist-info
+
 function yad() {
 
 GDK_BACKEND=x11 /usr/bin/yad "$@"
@@ -18,8 +20,6 @@ do
 
     else
 
-        current_version="$(apt show shock-os-core | grep Version: | awk '{print $2}')"
-
         mkdir -p ~/.cache/shock-tmp/shock-release-scanner
 
         rm -r ~/.cache/shock-tmp/shock-release-scanner/*
@@ -35,7 +35,7 @@ do
 
             latest_version="$(cat ~/.cache/shock-tmp/shock-release-scanner/codenames | wc -l)"
 
-            upgrto_version=$((current_version+1))
+            upgrto_version=$((SHOCK_VERSION_NUM+1))
 
             if [[ "$upgrto_version" == "10" ]]
             then
@@ -50,7 +50,7 @@ do
 
             wget https://sourceforge.net/projects/shock-os-download-mirror/files/upgrades/shock-release-upgrader/available-upgrades -P ~/.cache/shock-tmp/shock-release-scanner
 
-            if ((latest_version>current_version)) && [[ "$(cat ~/.cache/shock-tmp/shock-release-scanner/available-upgrades)" == *"${current_version}-->${upgrto_version}"* ]]
+            if ((latest_version>SHOCK_VERSION_NUM)) && [[ "$(cat ~/.cache/shock-tmp/shock-release-scanner/available-upgrades)" == *"${SHOCK_VERSION_NUM}-->${upgrto_version}"* ]]
             then
 
                 upgrto_version_codename="$(sed -n "$upgrto_version"p ~/.cache/shock-tmp/shock-release-scanner/codenames)"

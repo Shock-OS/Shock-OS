@@ -28,7 +28,7 @@ username=""
 
 full_name=""
 
-if [[ "DE_EDITION" == "MATE" ]]
+if [[ "SHOCK_DE_EDITION" == "MATE" ]]
 then
 
     if [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
@@ -917,7 +917,7 @@ echo "%$username ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/initsetup
 if [[ "$require_password" == "FALSE" ]]
 then
 
-    if [[ "$DE_EDITION" == "GNOME" ]]
+    if [[ "$SHOCK_DE_EDITION" == "GNOME" ]]
     then
 
         sudo sed -i "s/#  AutomaticLoginEnable = true/  AutomaticLoginEnable = true/g" /etc/gdm3/daemon.conf
