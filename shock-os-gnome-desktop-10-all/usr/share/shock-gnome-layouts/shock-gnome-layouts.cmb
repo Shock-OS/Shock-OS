@@ -28,6 +28,7 @@
   <object_property>
 	(1,1,"GtkWindow","default-height","200",None,None,None,None,None,None,None,None,None),
 	(1,1,"GtkWindow","default-width","400",None,None,None,None,None,None,None,None,None),
+	(1,1,"GtkWindow","icon-name","panel-bottom-symbolic",None,None,None,None,None,None,None,None,None),
 	(1,1,"GtkWindow","resizable","False",None,None,None,None,None,None,None,None,None),
 	(1,1,"GtkWindow","title","Layouts",None,None,None,None,None,None,None,None,None),
 	(1,2,"GtkOrientable","orientation","vertical",None,None,None,None,None,None,None,None,None),
