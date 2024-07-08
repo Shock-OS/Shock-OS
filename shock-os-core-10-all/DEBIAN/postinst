@@ -159,8 +159,6 @@ systemctl enable --global shock-startup
 
 systemctl enable --global shock-release-scanner
 
-systemctl enable --global shock-updates-scanner
-
 #the systemd services patch ends
 
 #the splash screen patch begins
