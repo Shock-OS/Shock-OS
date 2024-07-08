@@ -5,12 +5,8 @@ import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 
-# PUT CODE HERE TO GET THE CURRENT LAYOUT AND ACTIVATE THE CORRESPONDING BUTTON
-
 parser = argparse.ArgumentParser(description="Change the GNOME layout")
-
 parser.add_argument("--debug", action="store_true", help="Enable debug mode (print variables)")
-
 args = parser.parse_args()
 
 class MyApp(Gtk.Application):
@@ -31,6 +27,27 @@ class MyApp(Gtk.Application):
         # Group the buttons
         dock_mode_button.set_group(panel_mode_button)
         vanilla_mode_button.set_group(panel_mode_button)
+        
+        # Get the current layout mode
+        panel_mode_state = subprocess.run(["gnome-extensions info dash-to-panel@jderose9.github.com | grep State: | awk -F': ' '{print $2}' | tr -d '[:space:]'"], shell=True, capture_output=True, text=True)
+        if args.debug:
+            print(f"PANEL_MODE_STATE: {panel_mode_state.stdout}")
+        if panel_mode_state.stdout == "ENABLED":
+            if args.debug:
+                print("Current layout: panel")
+            panel_mode_button.set_active(self)
+        else:
+            dock_mode_state = subprocess.run(["gnome-extensions info dash-to-dock@micxgx.gmail.com | grep State: | awk -F': ' '{print $2}' | tr -d '[:space:]'"], shell=True, capture_output=True, text=True)
+            if args.debug:
+                print(f"DOCK_MODE_STATE: {dock_mode_state.stdout}")
+            if dock_mode_state.stdout == "ENABLED":
+                if args.debug:
+                    print(f"Current layout: dock")
+                dock_mode_button.set_active(self)
+            else:
+                if args.debug:
+                    print("Neither dock mode nor panel mode are enabled, assuming vanilla mode is set.")
+                vanilla_mode_button.set_active(self)
 
         def panel_mode_selected(self):
             if panel_mode_button.get_active():
