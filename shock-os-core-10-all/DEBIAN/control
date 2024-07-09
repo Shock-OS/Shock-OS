@@ -3,7 +3,7 @@ Version: 10
 Architecture: all
 Essential: no
 Priority: optional
-Depends: apt-config-icons, fonts-ubuntu, gnupg, imagemagick, libgtk3-perl, libnotify-bin, ntpdate, pv, unp, wget, wmctrl, xz-utils, yad, yaru-theme-gtk, yaru-theme-icon, yad, zenity
+Depends: apt-config-icons, fonts-ubuntu, gnupg, imagemagick, libgtk3-perl, libnotify-bin, ntpdate, pv, python3-watchdog unp, wget, wmctrl, xz-utils, yad, yaru-theme-gtk, yaru-theme-icon, yad, zenity
 Recommends: btrfs-progs, cups, dosfstools, flatpak, libfuse2, libreoffice, libreoffice-gnome, mpv, mtools, ntp, plymouth, plymouth-themes, rpi-chromium-mods, system-config-printer
 Maintainer: Carson Grover
 Description: Core apps and system files for Shock OS. This package contains critical Shock OS software. Removing or tampering with this package will break your system.
