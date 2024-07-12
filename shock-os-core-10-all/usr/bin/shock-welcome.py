@@ -1,0 +1,93 @@
+import argparse
+import os
+import subprocess
+import sys
+import dist-info
+import gi
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk
+
+username = os.getlogin()
+
+parser = argparse.ArgumentParser(description="Shock OS Welcome Screen")
+
+parser.add_argument('--debug', action='store_true', help='Launch the software in debug mode (print variables).')
+
+args = parser.parse_args()
+
+if args.debug:
+    print(f"SHOCK_DE_EDITION: {SHOCK_DE_EDITION}")
+
+class MyApp(Adw.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
+
+    def on_activate(self, app):
+        # Create a Builder
+        builder = Gtk.Builder()
+        builder.add_from_file("/usr/share/shock-welcome/shock-welcome.ui")
+
+        # Get background, themes, and layouts buttons
+        set_background_button = builder.get_object("set_background_button")
+        themes_button = builder.get_object("themes_button")
+        set_layout_button = builder.get_object("set_layout_button")
+
+        set_background_button.connect("clicked", self.set_background)
+        themes_button.connect("clicked", self.set_theme)
+        set_layout_button.connect("clicked", self.set_layout)
+
+        if SHOCK_DE_EDITION == "MATE":
+            set_layout_button_label = builder.get_object("set_layout_button_label")
+            set_layout_button_label.set_text("Set Panel Layout")
+
+        # Get Shockware Center button
+        shockware_center_button = builder.get_object("shockware_center_button")
+        shockware_center_button.connect("clicked", self.launch_shockware_center)
+
+        # Get the 'Launch at startup' checkbox and the Close button
+        launch_at_startup_checkbox = builder.get_object("launch_at_startup_checkbox")
+        if os.path.exists(f'/home/{username}/.local/share/shock-welcome/run-at-startup-indicator'):
+            launch_at_startup_checkbox.set_active(True)
+        else:
+            launch_at_startup_checkbox.set_active(False)
+        
+        close_button = builder.get_object("close_button")
+        close_button.connect("clicked", self.close_window)
+
+        # Obtain and show the main window
+        self.main_window = builder.get_object("main_window")
+        self.main_window.connect("close_request", self.check_startup_preferences)
+        self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        self.main_window.present()
+        
+    def set_background():
+        if SHOCK_DE_EDITION == "GNOME":
+            subprocess.run(['gnome-control-center', 'background'])
+        else: #MATE Edition
+            subprocess.run(['/bin/bash', '/usr/bin/shock-backgrounds'])
+
+    def set_theme():
+        subprocess.run(['/bin/bash', '/usr/bin/shock-themes'])
+
+    def set_layout():
+        if SHOCK_DE_EDITION == "GNOME":
+            subprocess.run(['python3', '/usr/bin/shock-gnome-layouts.py'])
+        else: #MATE Edition
+            subprocess.run(['/bin/bash', '/usr/bin/shock-panel-layouts'])
+
+    def launch_shockware_center():
+        subprocess.run(['/bin/bash', '/usr/bin/shockware-center'])
+
+    def close_window():
+        self.main_window.destroy()
+
+    def check_startup_preferences():
+        if launch_at_startup_checkbox.get_active():
+            with open(f'/home/{username}/.local/share/shock-welcome/run-at-startup-indicator', 'w') as file:
+                pass  # Do nothing, just create the file
+        elif os.path.exists(f'/home/{username}/.local/share/shock-welcome/run-at-startup-indicator'):
+            os.remove(f'/home/{username}/.local/share/shock-welcome/run-at-startup-indicator')
+
+app = MyApp(application_id="net.ShockOS.Welcome")
+app.run()

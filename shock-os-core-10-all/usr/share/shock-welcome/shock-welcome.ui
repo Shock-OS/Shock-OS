@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.90.4 -->
+<interface>
+  <!-- interface-name shock-welcome.ui -->
+  <requires lib="gtk" version="4.12"/>
+  <object class="GtkApplicationWindow" id="main_window">
+    <property name="icon-name">start-here</property>
+    <property name="title">Welcome to Shock OS</property>
+    <child>
+      <object class="GtkBox">
+        <property name="margin-bottom">5</property>
+        <property name="margin-end">5</property>
+        <property name="margin-start">5</property>
+        <property name="margin-top">5</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="justify">center</property>
+            <property name="label">Welcome to Shock OS! Here are a few things you can do to personalize your system:</property>
+            <property name="margin-bottom">5</property>
+            <property name="margin-top">5</property>
+            <property name="wrap">True</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="homogeneous">True</property>
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkButton" id="set_background_button">
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">gnome-settings-background</property>
+                        <property name="pixel-size">64</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="justify">center</property>
+                        <property name="label">Set Desktop Background</property>
+                        <property name="wrap">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="themes_button">
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">preferences-desktop-theme</property>
+                        <property name="pixel-size">64</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="justify">center</property>
+                        <property name="label">Choose Themes and Accent Colors</property>
+                        <property name="wrap">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="set_layout_button">
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">gtk-missing-image</property>
+                        <property name="pixel-size">64</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="set_layout_button_label">
+                        <property name="justify">center</property>
+                        <property name="label">Choose Panel Layout</property>
+                        <property name="wrap">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Search for, install, and remove apps and games with the Shockware Center.</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="shockware_center_button">
+            <child>
+              <object class="GtkBox">
+                <property name="halign">center</property>
+                <property name="spacing">5</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">shockware-center</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Browse the Shockware Center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">20</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Thank you for choosing Shock OS! We hope you love it!</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Genesis 1:1</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="baseline-position">bottom</property>
+            <property name="hexpand">True</property>
+            <property name="hexpand-set">True</property>
+            <property name="valign">end</property>
+            <child>
+              <object class="GtkCheckButton" id="launch_at_startup_checkbox">
+                <property name="active">True</property>
+                <property name="halign">start</property>
+                <property name="label">Launch this window at startup</property>
+                <property name="valign">end</property>
+                <property name="vexpand">True</property>
+                <property name="vexpand-set">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparator">
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
+                <property name="opacity">0.0</property>
+                <property name="overflow">hidden</property>
+                <property name="visible">False</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="close_button">
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">gtk-close</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Close</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
