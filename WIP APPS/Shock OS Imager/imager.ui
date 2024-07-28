@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.90.4 -->
+<interface>
+  <!-- interface-name imager.ui -->
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkApplicationWindow" id="main_window">
+    <property name="default-height">245</property>
+    <property name="default-width">400</property>
+    <property name="icon-name">shock-os-imager</property>
+    <property name="resizable">False</property>
+    <property name="title">Shock OS Imager</property>
+    <child>
+      <object class="GtkBox">
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">5</property>
+        <property name="margin-start">5</property>
+        <property name="margin-top">5</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Version:</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkComboBoxText" id="version_cb"/>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Edition:</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkComboBoxText" id="edition_cb"/>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Architecture:</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkComboBoxText" id="arch_cb"/>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Device:</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkComboBoxText" id="device_cb">
+                <property name="hexpand">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="refresh_button">
+                <property name="icon-name">view-refresh</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="margin-end">5</property>
+            <property name="margin-start">5</property>
+            <property name="margin-top">10</property>
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkButton" id="settings_button">
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
+                <property name="icon-name">settings-app-symbolic</property>
+                <property name="label">Settings</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">5</property>
+                    <property name="vexpand">True</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">preferences-system-symbolic</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Settings</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="flash_button">
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
+                <property name="icon-name">media-flash</property>
+                <property name="label">Flash</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">media-flash</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="justify">center</property>
+                        <property name="label">Flash</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkMessageDialog" id="error_no_drive">
+    <property name="buttons">ok</property>
+    <property name="default-height">175</property>
+    <property name="default-width">300</property>
+    <property name="message-type">error</property>
+    <property name="resizable">False</property>
+    <property name="secondary-text">Please select a drive to flash.</property>
+    <property name="title">No Drive Selected</property>
+    <property name="transient-for">main_window</property>
+  </object>
+</interface>
