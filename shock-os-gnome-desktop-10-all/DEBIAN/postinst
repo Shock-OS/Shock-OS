@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python3 /usr/bin/shock-edit-dist-info.py --de-edition="GNOME"
+sudo python3 /usr/bin/shock-edit-dist-info.py --de-edition="GNOME"
 
 echo "Hidden=true" | tee -a /usr/share/applications/org.gnome.font-viewer.desktop
 

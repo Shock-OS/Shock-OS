@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=ShockVer
+Comment=View operating system and hardware information
+Exec=python3 /usr/bin/shockver.py
+Icon=/usr/share/shock/gnome-logo-white.svg
+Terminal=false
+Type=Application
+StartupNotify=false
+NoDisplay=true

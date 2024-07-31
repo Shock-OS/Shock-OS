@@ -1,0 +1,97 @@
+import shutil
+storage = shutil.disk_usage('/')
+import subprocess
+import sys
+sys.path.append('/usr/share/shock')
+import dist_info
+import gi
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk
+
+class MyApp(Gtk.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
+
+    def on_activate(self, app):
+        # Create a Builder
+        builder = Gtk.Builder()
+        builder.add_from_file("/usr/share/shockver/shockver.ui")
+
+        # Get the labels
+        full_name_label = builder.get_object("full_name_label")
+        edition_label = builder.get_object("edition_label")
+        arch_label = builder.get_object("arch_label")
+        build_date_label = builder.get_object("build_date_label")
+
+        # Set the labels
+        full_name = dist_info.full_name
+        full_name_label.set_label(f"<b>{full_name}</b>")
+        edition = dist_info.edition
+        edition_label.set_label(f"{edition} Edition")
+        arch = subprocess.run(["getconf", "LONG_BIT"], capture_output=True, text=True)
+        arch = arch.stdout.strip()
+        if arch == "64":
+            arch = "64-bit"
+        else:
+            arch = "32-bit"
+        arch_label.set_label(arch)
+        build_date = dist_info.build_date
+        build_date_label.set_label(f"Built on {build_date}")
+
+        # Get the hardware info labels
+        model_label = builder.get_object("model_label")
+        ram_label = builder.get_object("ram_label")
+        total_space_label = builder.get_object("total_space_label")
+        available_space_label = builder.get_object("available_space_label")
+
+        # Set the hardware info labels
+        model = subprocess.run(["cat", "/proc/device-tree/model"], capture_output=True, text=True)
+        model = model.stdout
+        model_label.set_label(f"Model: {model}")
+        ram = subprocess.run(["grep MemTotal /proc/meminfo | awk '{print $2}'"], capture_output=True, shell=True, text=True)
+        ram = ram.stdout
+        ram = int(ram)
+        if ram > 500000: # if larger than 512 MB, show size in GB
+            ram = ram/1024/1024
+            ram = round(ram)
+            ram = f"{ram} GB"
+        else: # if 512 GB or smaller
+            ram = ram/1024
+            if (512 - ram) < (256 - ram): # if closer to 512 MB of RAM
+                ram = "512 MB"
+            else:
+                ram = "256 MB"
+        ram_label.set_label(f"RAM: {ram}")
+        total_space = storage.total/(1024**3) # converts from KB to GB
+        if total_space > 1000:
+            total_space = total_space/1024 # converts from GB to TB
+            total_space = round(total_space)
+            total_space_label.set_label(f"Total space: {total_space} TB")
+        else:
+            total_space = round(total_space)
+            total_space_label.set_label(f"Total space: {total_space} GB")
+        available_space = storage.free/(1024**3) # converts from KB to GB
+        if available_space > 1000:
+            available_space = available_space/1024 # converts from KB to TB
+            available_space = round(available_space)
+            available_space_label.set_label(f"Available space: {available_space} TB")
+        else:
+            available_space = round(available_space)
+            available_space_label.set_label(f"Available space: {available_space} GB")
+
+        # Get the close button
+        close_button = builder.get_object("close_button")
+        close_button.connect("clicked", self.close)
+
+        # Obtain and show the main window
+        self.main_window = builder.get_object("main_window")
+        self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        self.main_window.present()
+
+    def close(self, button):
+        self.main_window.destroy()
+
+app = MyApp(application_id="net.ShockOS.ShockVer")
+app.run()
+

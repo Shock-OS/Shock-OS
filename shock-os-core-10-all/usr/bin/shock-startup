@@ -71,10 +71,10 @@ else
 
 fi
 
-if [[ -f ~/.config/shock/welcome-indicator ]]
+if [[ -f ~/.local/share/shock-welcome/run-at-startup-indicator ]]
 then
 
-    shock-welcome &
+    python3 /usr/bin/shock-welcome.py &
 
 fi
 

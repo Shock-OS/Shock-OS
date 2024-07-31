@@ -26,7 +26,7 @@ class MyApp(Gtk.Application):
     def on_activate(self, app):
         # Create a Builder
         builder = Gtk.Builder()
-        builder.add_from_file("imager.ui")
+        builder.add_from_file("shock-os-imager-main-window.ui")
 
         # Get Error Message dialog window
         error_no_drive = builder.get_object('error_no_drive')
@@ -91,7 +91,11 @@ class MyApp(Gtk.Application):
                 if args.debug:
                     print("ERROR: Please select a device")
             else:
-                app.quit()
+                app.win.destroy()
+                img_url = metadata.img_urls[version,edition,arch]
+                print(f"img_url='{img_url}'")
+                print(f"sig_url='{sig_url}'")
+                print(f"device='{device}'")
                 if args.debug:
                     print(version,edition,arch,sep="_")
         

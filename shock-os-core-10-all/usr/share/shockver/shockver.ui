@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.90.4 -->
+<interface>
+  <!-- interface-name shockver.ui -->
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkApplicationWindow" id="main_window">
+    <property name="default-height">300</property>
+    <property name="default-width">300</property>
+    <property name="icon-name">/usr/share/shock/gnome-logo-white.svg</property>
+    <property name="resizable">False</property>
+    <property name="title">ShockVer</property>
+    <child>
+      <object class="GtkBox">
+        <property name="margin-bottom">5</property>
+        <property name="margin-end">5</property>
+        <property name="margin-start">5</property>
+        <property name="margin-top">5</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
+        <child>
+          <object class="GtkImage">
+            <property name="file">/usr/share/shock/gnome-logo-white.svg</property>
+            <property name="margin-bottom">15</property>
+            <property name="margin-top">15</property>
+            <property name="pixel-size">128</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="full_name_label">
+            <property name="label">&lt;b&gt;FULL NAME&lt;/b&gt;</property>
+            <property name="use-markup">True</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="edition_label">
+            <property name="label">EDITION</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="arch_label">
+            <property name="label">ARCH</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="build_date_label">
+            <property name="label">BUILD DATE</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkExpander">
+            <property name="label">&lt;small&gt;Hardware Info&lt;/small&gt;</property>
+            <property name="margin-top">10</property>
+            <property name="use-markup">True</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">5</property>
+                <child>
+                  <object class="GtkLabel" id="model_label">
+                    <property name="halign">start</property>
+                    <property name="label">Model:</property>
+                    <property name="margin-top">5</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="ram_label">
+                    <property name="halign">start</property>
+                    <property name="label">RAM:</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="total_space_label">
+                    <property name="halign">start</property>
+                    <property name="label">Total space:</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="available_space_label">
+                    <property name="halign">start</property>
+                    <property name="label">Available space:</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="close_button">
+            <property name="halign">end</property>
+            <property name="valign">end</property>
+            <property name="vexpand">True</property>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">5</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">gtk-close</property>
+                    <property name="icon-size">normal</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Close</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

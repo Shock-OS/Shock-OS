@@ -1,25 +1,5 @@
 #!/bin/bash
 
-source /usr/share/shock/dist-info
+# This is just a command-line wrapper to launch ShockVer from the .desktop file
 
-if (($(getconf LONG_BIT)==32))
-then
-
-    arch="ARM 32-bit"
-
-else
-
-    arch="ARM 64-bit"
-
-fi
-
-GDK_BACKEND=x11 /usr/bin/yad --window-icon=/usr/share/shock/gnome-logo-white.svg --title="About Shock OS" --image=/usr/share/shock/shockver-image.png --width=430 --fixed --text="
-<b>${SHOCK_FULL_NAME}</b>
-
-$(cat /proc/device-tree/model)
-
-$SHOCK_DE_EDITION Edition
-
-$arch
-
-<small>Built on ${SHOCK_BUILD_DATE}</small>" --text-align=center --button="Close"\!gtk-close
+gtk-launch net.ShockOS.ShockVer.desktop

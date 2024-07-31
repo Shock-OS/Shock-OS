@@ -4,6 +4,9 @@
   <ui>
 	(1,None,"shock-welcome.ui","shock-welcome.ui",None,None,None,None,None,None,None)
   </ui>
+  <ui_library>
+	(1,"gtk","4.0",None)
+  </ui_library>
   <object>
 	(1,1,"GtkApplicationWindow","main_window",None,None,None,None,-1,None,None),
 	(1,2,"GtkBox",None,1,None,None,None,-1,None,None),
@@ -34,11 +37,11 @@
 	(1,27,"GtkButton","close_button",25,None,None,None,2,None,None),
 	(1,28,"GtkBox",None,27,None,None,None,-1,None,None),
 	(1,29,"GtkImage",None,28,None,None,None,None,None,None),
-	(1,30,"GtkLabel",None,28,None,None,None,1,None,None),
-	(1,31,"GtkSeparator",None,25,None,None,None,1,None,None)
+	(1,30,"GtkLabel",None,28,None,None,None,1,None,None)
   </object>
   <object_property>
 	(1,1,"GtkWindow","icon-name","start-here",None,None,None,None,None,None,None,None,None),
+	(1,1,"GtkWindow","resizable","False",None,None,None,None,None,None,None,None,None),
 	(1,1,"GtkWindow","title","Welcome to Shock OS",None,None,None,None,None,None,None,None,None),
 	(1,2,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),
 	(1,2,"GtkOrientable","orientation","vertical",None,None,None,None,None,None,None,None,None),
@@ -91,13 +94,10 @@
 	(1,26,"GtkWidget","valign","end",None,None,None,None,None,None,None,None,None),
 	(1,26,"GtkWidget","vexpand","True",None,None,None,None,None,None,None,None,None),
 	(1,26,"GtkWidget","vexpand-set","True",None,None,None,None,None,None,None,None,None),
+	(1,27,"GtkWidget","halign","end",None,None,None,None,None,None,None,None,None),
+	(1,27,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
 	(1,28,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),
 	(1,29,"GtkImage","icon-name","gtk-close",None,None,None,None,None,None,None,None,None),
-	(1,30,"GtkLabel","label","Close",None,None,None,None,None,None,None,None,None),
-	(1,31,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
-	(1,31,"GtkWidget","hexpand-set","True",None,None,None,None,None,None,None,None,None),
-	(1,31,"GtkWidget","opacity","0.0",None,None,None,None,None,None,None,None,None),
-	(1,31,"GtkWidget","overflow","hidden",None,None,None,None,None,None,None,None,None),
-	(1,31,"GtkWidget","visible","False",None,None,None,None,None,None,None,None,None)
+	(1,30,"GtkLabel","label","Close",None,None,None,None,None,None,None,None,None)
   </object_property>
 </cambalache-project>

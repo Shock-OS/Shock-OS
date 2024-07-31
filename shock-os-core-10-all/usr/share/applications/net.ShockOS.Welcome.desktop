@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Welcome Screen
+Comment=First-run startup window introducing you to Shock OS
+Exec=python3 /usr/bin/shock-welcome.py
+Icon=/usr/share/shock/gnome-logo-white.svg
+Terminal=false
+Type=Application
+StartupNotify=false
+NoDisplay=true

@@ -2,7 +2,8 @@ import argparse
 import os
 import subprocess
 import sys
-import dist-info
+sys.path.append('/usr/share/shock')
+import dist_info
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
@@ -16,9 +17,9 @@ parser.add_argument('--debug', action='store_true', help='Launch the software in
 args = parser.parse_args()
 
 if args.debug:
-    print(f"SHOCK_DE_EDITION: {SHOCK_DE_EDITION}")
+    print(f"EDITION: {dist_info.edition}")
 
-class MyApp(Adw.Application):
+class MyApp(Gtk.Application):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.connect('activate', self.on_activate)
@@ -37,7 +38,7 @@ class MyApp(Adw.Application):
         themes_button.connect("clicked", self.set_theme)
         set_layout_button.connect("clicked", self.set_layout)
 
-        if SHOCK_DE_EDITION == "MATE":
+        if dist_info.edition == "MATE":
             set_layout_button_label = builder.get_object("set_layout_button_label")
             set_layout_button_label.set_text("Set Panel Layout")
 
@@ -61,28 +62,28 @@ class MyApp(Adw.Application):
         self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
         self.main_window.present()
         
-    def set_background():
-        if SHOCK_DE_EDITION == "GNOME":
-            subprocess.run(['gnome-control-center', 'background'])
+    def set_background(self, set_background_button):
+        if dist_info.edition == "GNOME":
+            subprocess.Popen(['gnome-control-center', 'background'])
         else: #MATE Edition
-            subprocess.run(['/bin/bash', '/usr/bin/shock-backgrounds'])
+            subprocess.Popen(['/bin/bash', '/usr/bin/shock-backgrounds'])
 
-    def set_theme():
-        subprocess.run(['/bin/bash', '/usr/bin/shock-themes'])
+    def set_theme(self, themes_button):
+        subprocess.Popen(['/bin/bash', '/usr/bin/shock-themes'])
 
-    def set_layout():
-        if SHOCK_DE_EDITION == "GNOME":
-            subprocess.run(['python3', '/usr/bin/shock-gnome-layouts.py'])
+    def set_layout(self, set_layout_button):
+        if dist_info.edition == "GNOME":
+            subprocess.Popen(['python3', '/usr/bin/shock-gnome-layouts.py'])
         else: #MATE Edition
-            subprocess.run(['/bin/bash', '/usr/bin/shock-panel-layouts'])
+            subprocess.Popen(['/bin/bash', '/usr/bin/shock-panel-layouts'])
 
-    def launch_shockware_center():
-        subprocess.run(['/bin/bash', '/usr/bin/shockware-center'])
+    def launch_shockware_center(self, shockware_center_button):
+        subprocess.Popen(['/bin/bash', '/usr/bin/shockware-center'])
 
-    def close_window():
+    def close_window(self):
         self.main_window.destroy()
 
-    def check_startup_preferences():
+    def check_startup_preferences(self, close_request):
         if launch_at_startup_checkbox.get_active():
             with open(f'/home/{username}/.local/share/shock-welcome/run-at-startup-indicator', 'w') as file:
                 pass  # Do nothing, just create the file

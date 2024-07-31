@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
+<cambalache-project version="0.17.3" target_tk="gtk-4.0">
+  <ui>
+	(1,None,"shockver.ui","shockver.ui",None,None,None,None,None,None,None)
+  </ui>
+  <ui_library>
+	(1,"gtk","4.0",None)
+  </ui_library>
+  <object>
+	(1,1,"GtkApplicationWindow","main_window",None,None,None,None,-1,None,None),
+	(1,2,"GtkBox",None,1,None,None,None,-1,None,None),
+	(1,3,"GtkImage",None,2,None,None,None,None,None,None),
+	(1,4,"GtkLabel","full_name_label",2,None,None,None,1,None,None),
+	(1,5,"GtkLabel","edition_label",2,None,None,None,2,None,None),
+	(1,6,"GtkLabel","arch_label",2,None,None,None,3,None,None),
+	(1,7,"GtkLabel","build_date_label",2,None,None,None,4,None,None),
+	(1,8,"GtkExpander",None,2,None,None,None,5,None,None),
+	(1,9,"GtkButton","close_button",2,None,None,None,6,None,None),
+	(1,10,"GtkBox",None,9,None,None,None,-1,None,None),
+	(1,11,"GtkImage",None,10,None,None,None,None,None,None),
+	(1,12,"GtkLabel",None,10,None,None,None,1,None,None),
+	(1,13,"GtkBox",None,8,None,None,None,-1,None,None),
+	(1,14,"GtkLabel","model_label",13,None,None,None,None,None,None),
+	(1,15,"GtkLabel","ram_label",13,None,None,None,1,None,None),
+	(1,16,"GtkLabel","total_space_label",13,None,None,None,2,None,None),
+	(1,17,"GtkLabel","available_space_label",13,None,None,None,3,None,None)
+  </object>
+  <object_property>
+	(1,1,"GtkWindow","default-height","300",None,None,None,None,None,None,None,None,None),
+	(1,1,"GtkWindow","default-width","300",None,None,None,None,None,None,None,None,None),
+	(1,1,"GtkWindow","icon-name","/usr/share/shock/gnome-logo-white.svg",None,None,None,None,None,None,None,None,None),
+	(1,1,"GtkWindow","resizable","False",None,None,None,None,None,None,None,None,None),
+	(1,1,"GtkWindow","title","ShockVer",None,None,None,None,None,None,None,None,None),
+	(1,2,"GtkBox","spacing","10",None,None,None,None,None,None,None,None,None),
+	(1,2,"GtkOrientable","orientation","vertical",None,None,None,None,None,None,None,None,None),
+	(1,2,"GtkWidget","margin-bottom","5",None,None,None,None,None,None,None,None,None),
+	(1,2,"GtkWidget","margin-end","5",None,None,None,None,None,None,None,None,None),
+	(1,2,"GtkWidget","margin-start","5",None,None,None,None,None,None,None,None,None),
+	(1,2,"GtkWidget","margin-top","5",None,None,None,None,None,None,None,None,None),
+	(1,3,"GtkImage","file","/usr/share/shock/gnome-logo-white.svg",None,None,None,None,None,None,None,None,None),
+	(1,3,"GtkImage","pixel-size","128",None,None,None,None,None,None,None,None,None),
+	(1,3,"GtkWidget","margin-bottom","15",None,None,None,None,None,None,None,None,None),
+	(1,3,"GtkWidget","margin-top","15",None,None,None,None,None,None,None,None,None),
+	(1,4,"GtkLabel","label","&lt;b&gt;FULL NAME&lt;/b&gt;",None,None,None,None,None,None,None,None,None),
+	(1,4,"GtkLabel","use-markup","True",None,None,None,None,None,None,None,None,None),
+	(1,5,"GtkLabel","label","EDITION",None,None,None,None,None,None,None,None,None),
+	(1,6,"GtkLabel","label","ARCH",None,None,None,None,None,None,None,None,None),
+	(1,7,"GtkLabel","label","BUILD DATE",None,None,None,None,None,None,None,None,None),
+	(1,8,"GtkExpander","label","&lt;small&gt;Hardware Info&lt;/small&gt;",None,None,None,None,None,None,None,None,None),
+	(1,8,"GtkExpander","use-markup","True",None,None,None,None,None,None,None,None,None),
+	(1,8,"GtkWidget","margin-top","10",None,None,None,None,None,None,None,None,None),
+	(1,9,"GtkWidget","halign","end",None,None,None,None,None,None,None,None,None),
+	(1,9,"GtkWidget","valign","end",None,None,None,None,None,None,None,None,None),
+	(1,9,"GtkWidget","vexpand","True",None,None,None,None,None,None,None,None,None),
+	(1,10,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),
+	(1,11,"GtkImage","icon-name","gtk-close",None,None,None,None,None,None,None,None,None),
+	(1,11,"GtkImage","icon-size","normal",None,None,None,None,None,None,None,None,None),
+	(1,12,"GtkLabel","label","Close",None,None,None,None,None,None,None,None,None),
+	(1,13,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),
+	(1,13,"GtkOrientable","orientation","vertical",None,None,None,None,None,None,None,None,None),
+	(1,14,"GtkLabel","label","Model:",None,None,None,None,None,None,None,None,None),
+	(1,14,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
+	(1,14,"GtkWidget","margin-top","5",None,None,None,None,None,None,None,None,None),
+	(1,15,"GtkLabel","label","RAM:",None,None,None,None,None,None,None,None,None),
+	(1,15,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
+	(1,16,"GtkLabel","label","Total space:",None,None,None,None,None,None,None,None,None),
+	(1,16,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
+	(1,17,"GtkLabel","label","Available space:",None,None,None,None,None,None,None,None,None),
+	(1,17,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None)
+  </object_property>
+</cambalache-project>
