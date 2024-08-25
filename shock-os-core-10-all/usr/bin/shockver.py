@@ -2,8 +2,14 @@ import shutil
 storage = shutil.disk_usage('/')
 import subprocess
 import sys
-sys.path.append('/usr/share/shock')
-import dist_info
+try:
+    sys.path.append('/usr/share/shock')
+    import dist_info
+except:
+    print("ERROR: Could not retreive distribution information. Below are possible reasons for this error:")
+    print("1. You are not running Shock OS.")
+    print("2. The version of Shock OS you are running is to old for this program. This program requires Shock OS X Jasmine or later to function properly.")
+    sys.exit()
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
@@ -25,9 +31,9 @@ class MyApp(Gtk.Application):
         build_date_label = builder.get_object("build_date_label")
 
         # Set the labels
-        full_name = dist_info.full_name
+        full_name = getattr(dist_info, 'full_name', "ERROR: FULL NAME UNAVAILABLE")
         full_name_label.set_label(f"<b>{full_name}</b>")
-        edition = dist_info.edition
+        edition = getattr(dist_info, 'edition', "ERROR: EDITION NOT AVAILABLE")
         edition_label.set_label(f"{edition} Edition")
         arch = subprocess.run(["getconf", "LONG_BIT"], capture_output=True, text=True)
         arch = arch.stdout.strip()
@@ -36,8 +42,11 @@ class MyApp(Gtk.Application):
         else:
             arch = "32-bit"
         arch_label.set_label(arch)
-        build_date = dist_info.build_date
+        build_date = getattr(dist_info, 'build_date', "ERROR: BUILD DATE NOT AVAILABLE")
         build_date_label.set_label(f"Built on {build_date}")
+        if "ERROR" in full_name or "ERROR" in edition or "ERROR" in build_date:
+            print("ERROR: Could not retrieve system metadata. Your operating system appears to be corrupted.")
+            sys.exit()
 
         # Get the hardware info labels
         model_label = builder.get_object("model_label")

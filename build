@@ -28,7 +28,7 @@ then
 
     echo "SHOCK_BUILD_DATE=\"$(date "+%A, %B %e$suffix, %Y")\"" | tee shock-os-core-10-all/usr/share/shock/dist-info
 
-    echo "SHOCK_BUILD_DATE = \"$(date "+%A, %B %e$suffix, %Y")\"" | tee shock-os-core-10-all/usr/share/shock/dist-info.py
+    echo "SHOCK_BUILD_DATE = \"$(date "+%A, %B %e$suffix, %Y")\"" | tee shock-os-core-10-all/usr/share/shock/dist_info.py
 
     rm -r BUILD-OUT
 
