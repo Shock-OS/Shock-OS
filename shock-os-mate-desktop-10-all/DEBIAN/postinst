@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo python3 /usr/bin/shock-edit-dist-info.py --de-edition="MATE"
+sudo python3 /usr/bin/shock-edit-dist-info.py --edition="MATE"
 
 #the above command will replace the default Debian wallpapers with the Shock OS wallpapers
 
