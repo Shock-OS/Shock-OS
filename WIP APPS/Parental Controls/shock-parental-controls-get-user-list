@@ -1,0 +1,43 @@
+#!/bin/bash
+usernames=()
+full_names=()
+uid_min=$(grep -E '^UID_MIN|^UID_MAX' /etc/login.defs | awk 'NR==1 {print $2}')
+uid_max=$(grep -E '^UID_MIN|^UID_MAX' /etc/login.defs | awk 'NR==2 {print $2}')
+for (( uid=uid_min; uid<=uid_max; uid++ ))
+do
+    user_info=$(getent passwd $uid)
+    if [[ -z "$user_info" ]]
+    then
+        break
+    else
+        username="$(echo "$user_info" | awk -F':' '{print $1}')"
+        usernames+=("$username")
+        full_name="$(echo "$user_info" | awk -F':' '{print $5}')"
+        full_name=${full_name::-3}
+        full_names+=("$full_name")
+    fi
+done
+usernames_pl=""
+for username in "${usernames[@]}"
+do
+    if [[ -z "$usernames_pl" ]]
+    then
+        usernames_pl="['${username}'"
+    else
+        usernames_pl+=", '${username}'"
+    fi
+done
+usernames_pl+="]"
+full_names_pl=""
+for full_name in "${full_names[@]}"
+do
+    if [[ -z "$full_names_pl" ]]
+    then
+        full_names_pl="['${full_name}'"
+    else
+        full_names_pl+=", '${full_name}'"
+    fi
+done
+full_names_pl+="]"
+echo "usernames = ${usernames_pl}"
+echo "full_names = ${full_names_pl}"
