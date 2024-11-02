@@ -1,76 +1,48 @@
 #!/bin/bash
 
 #the root check element begins
-
 if (($(id -u)!=0))
 then
-
     echo "Script must be run as root. Exiting..."
-
     exit
-
 fi
-
 #the root check element ends
 
 if [[ "$1" != "--setup" ]]
 then
-
     runuser="$1"
-
 fi
 
 #THE DETECT EXIT FUNCTION BEGINS
-
 function detect_exit() {
-
 ex=$?
-
 if ((ex!=0)) && [[ "$1" != "--setup" ]]
 then
-
     exit
-
 fi
-
 }
-
 #THE DETECT EXIT FUNCTION ENDS
 
 if [[ "$1" != "--setup" ]]
 then
-
     yad --window-icon=system-users --title="Users" --text="Would you like to add or remove users?" --button="Add"\!add --button="Remove"\!remove --button="Advanced"\!tweaks-app --button="Cancel"\!gtk-cancel --buttons-layout=center
-
     ex=$?
-
 else #if running initial setup
-
     ex=0
-
 fi
 
 if ((ex==0)) #add
 then
-
     success="no"
-
     username=""
-
     full_name=""
-
     pa1=""
-
     pa2=""
-
     focus_field="1"
-
     until [[ "$success" == "yes" ]]
     do
-
         if [[ "$1" != "--setup" ]] #if regular mode
         then
-
             output="$(yad --window-icon=system-users --title="New User" --form \
                             --focus-field="$focus_field" \
                             --field="Username:" "$username" \
@@ -88,11 +60,8 @@ then
                             --field="Child Profile":CHK "$kidprofile" \
                             --separator='`' \
                             --button="Create User"\!add)"
-
         else #initial setup mode
-
             kidprofile="FALSE"
-
             output="$(yad --window-icon=system-users --title="New User" --form \
                             --focus-field="$focus_field" \
                             --field="Username:" "$username" \
@@ -107,282 +76,158 @@ then
                             --field="Verify password:":H "" \
                             --separator='`' \
                             --button="Finish Setup"\!gtk-yes)"
-
         fi
-
         ex=$?
-
         if ((ex==0))
         then
-
                 username="$(echo "$output" | awk -F'`' '{print $1}')"
-
                 full_name="$(echo "$output" | awk -F'`' '{print $2}')"
-
                 pa1="$(echo "$output" | awk -F'`' '{print $5}')"
-
                 pa2="$(echo "$output" | awk -F'`' '{print $6}')"
-
                 kidprofile="$(echo "$output" | awk -F'`' '{print $9}')"
-
             success="yes"
-
             if [[ "$(grep -o '`' <<<"$output" | wc -l)" != "9" && "$1" != "--setup" ]] || [[ "$(grep -o '`' <<<"$output" | wc -l)" != "6" && "$1" == "--setup" ]]
             then
-
                 yad --window-icon=system-users --title="Unsupported Character" --text='You cannot use the "`" character in any field. Please try again.' --button="Retry"\!edit-undo
-
                 detect_exit
-
                 success="no"
-
                 username=""
-
                 full_name=""
-
                 pa1=""
-
                 pa2=""
-
                 focus_field="1"
-
             elif [[ -z "$username" ]] || [[ "$username" == *" "* ]]
             then
-
                 yad --window-icon=system-users --title="Invalid Username" --text="Your username cannot be empty or contain spaces. Please try again." --button="Retry"\!edit-undo
-
                 detect_exit
-
                 success="no"
-
                 focus_field="1"
-
             elif [[ -d /home/"$username" ]]
             then
-
                 yad --window-icon=system-users --title="User Already Exists" --text="The username '$username' is already taken. Please choose a different one." --button="Retry"\!edit-undo
-
                 detect_exit
-
                 success="no"
-
                 focus_field="1"
-
             elif (($(expr "$username" : "^[a-z][-a-z0-9_]*\$" )==0)) #if username doesn't match the regular expression configured via the NAME_REGEX variable
             then
-
                 yad --window-icon=system-users --title="Invalid Username" --text="That username does not meet the necessary requirements. Usernames must start with a lowercase letter and can only contain lowercase letters, digits, hyphens and underscores." --button="Retry"\!edit-undo
-
                 detect_exit
-
                 success="no"
-
                 focus_field="1"
-
             elif [[ -z "$full_name" ]] || ! [[ $full_name = *[!\ ]* ]]
             then
-
                 yad --window-icon=system-users --title="Invalid Full Name" --text="Your full name cannot be empty or only consist of spaces. Please try again." --button="Retry"\!edit-undo
-
                 detect_exit
-
                 success="no"
-
                 focus_field="2"
-
             elif [[ -z "$pa1" || "$pa1" == *" "* ]]
             then
-
                 yad --window-icon=system-users --title="Invalid Password" --text="Your password cannot be empty or contain spaces. Please try again." --button="Retry"\!edit-undo
-
                 detect_exit
-
                 success="no"
-
                 focus_field="5"
-
             elif [[ "$pa1" != "$pa2" ]]
             then
-
                 yad --window-icon=system-users --title="Passwords Did Not Match" --text="Oops! The passwords did not match. Please try again." --button="Retry"\!edit-undo
-
                 detect_exit
-
                 success="no"
-
                 focus_field="5"
-
             fi
-
         elif [[ "$1" != "--setup" ]]
         then
-
             exit
-
         fi
-
     done
-
         username="$(echo "$username" | awk '{print tolower($0)}')" #this command makes all the letters lowercase
-
         username="$(echo ${username//[[:blank:]]/})" #this command removes all spaces
-
         username="$(echo "$username" | tr -cd '[:alnum:]._-')" #this command removes all numbers
-
         adduser --disabled-password --gecos "$full_name" "$username" || { yad --window-icon=system-users --image=emblem-important --text="Failed to create a new user. The program will now exit." --button="Exit"\!gtk-cancel; kill $$; } #the user has been created
-
         echo "$username:$pa1" | chpasswd
-
         pa1=""
-
         pa2=""
-
         if [[ "$kidprofile" == "TRUE" ]]
         then
-
             groupadd shock-child
-
             ex=$?
-
             if ((ex!=0)) && ((ex!=9))
             then
-
                 yad --window-icon=system-users --image=emblem-important --text="Failed to create the 'shock-child' group. The program will now exit." --button="Exit"\!gtk-cancel
-
                 exit 1
-
             fi
-
             usermod -a -G adm,dialout,cdrom,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio,shock-child $username || { yad --window-icon=system-users --image=emblem-important --text="Failed to add the user to the required groups. The program will now exit." --button="Exit"\!gtk-cancel; kill $$; } #the user has been added to the required groups (excluding sudo)
-
         else
-
             usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,render,netdev,spi,i2c,gpio $username || { yad --window-icon=system-users --image=emblem-important --text="Failed to add the user to the required groups. The program will now exit." --button="Exit"\!gtk-cancel; kill $$; } #the user has been added to the required groups
-
         fi
 
         if [[ "$1" == "--setup" ]] #initial setup stuff
         then
-
             echo "%$username ALL=(ALL:ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/initsetup-rootpriv #enables the user to run all commands without a password (temporarily)
-
             #the setup finalizer temporary autologin patch begins
-
             sed -i 's/#NAutoVTs=6/NAutoVTs=1/g' /etc/systemd/logind.conf
-
             echo "[Service]
             ExecStart=
             ExecStart=-/usr/sbin/agetty --autologin $username --noclear %I $TERM" | tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
-
             systemctl is-enabled getty@tty1.service
-
             systemctl enable getty@tty1.service
-
             systemctl daemon-reload
-
             echo 'shock-startup' | tee -a "/home/$username/.bashrc"
-
             #the setup finalizer temporary autologin patch ends
-
         else #Do not show congrats screen during intial setup
-
             yad --window-icon=system-users --title="User Created Successfully" --text="Congratulations! You have successfully created the user '$username'." --button="Dismiss"\!gtk-cancel
-
         fi
-
 elif ((ex==1)) #remove
 then
-
     urs="no"
-
     until [[ "$urs" == "yes" ]]
     do
-
         IFS=$'\n'
-
         user_list=()
-
         for i in $(ls /home)
         do
-
             user_list+=("$(getent passwd "$i" | awk -F ':' '{gsub(/,/, "", $5); print $5}') ("$i")" "$i")
-
         done
-
         output="$(yad --window-icon=system-users --title="Remove User" --buttons-layout=center --text="Please select the user you would like to remove below:" --list \
                         --no-headers \
                         --column="Name" \
                         --column="Username":HD \
                         "${user_list[@]}" \
                         --button="Next"\!go-next)"
-
         detect_exit
-
         user_to_remove_display_name="$(echo "$output" | awk -F'|' '{print $1}')"
-
         user_to_remove="$(echo "$output" | awk -F'|' '{print $2}')"
-
         yad --window-icon=system-users --title="Remove User" --text="You are about to remove the user '$user_to_remove_display_name'. THIS ACTION IS IRREVERSABLE AND WILL ERASE ALL THEIR DATA. Are you sure you would like to delete '$user_to_remove_display_name'?" --button="DELETE USER"\!remove --button="Cancel"\!gtk-cancel
-
         ex=$?
-
         if ((ex!=0))
         then
-
             yad --window-icon=system-users --title="Operation Aborted" --text="The user '$user_to_remove_display_name' was not removed. No changes were made to your system." --button="Dismiss"\!gtk-cancel
-
             exit
-
         fi
-
         urs="yes"
-
         if [[ "$(w | grep x-session-manager | awk '{print " "$1" "}')" == *" $user_to_remove "* ]]
         then
-
             yad --window-icon=system-users --title="Cannot Remove User" --text="You cannot remove the user '$user_to_remove_display_name' because they are currently logged in." --button="Retry"\!edit-undo
-
             detect_exit
-
             urs="no"
-
         elif [[ "$(ps -u $user_to_remove)" == *":"* ]]
         then
-
             yad --window-icon=system-users --title="Cannot Remove User" --text="The user '$user_to_remove_display_name' cannot be removed because they have been logged in and are still occupied by some system processes. To delete this user, reboot the system (without loggin in as '$user_to_remove_display_name') and try again." --button="Dismiss"\!gtk-cancel
-
             exit
-
         elif [[ ! -d /home/"$user_to_remove" ]]
         then
-
             yad --window-icon=system-users --title="Cannot Remove User" --text="The user '$user_to_remove_display_name' does not exist." --button="Retry"\!edit-undo
-
             detect_exit
-
             urs="no"
-
         fi
-
     done
-
     #removing restricting child profile files if they exist... (ignore errors from these lines if user being removed is not a child profile)
-
     chattr -R -i /usr/share/shock-screentime/"$user_to_remove"
-
     rm -r /usr/share/shock-screentime/"$user_to_remove"
-
     #child profile files removed
-
     deluser --remove-home $user_to_remove || (yad --window-icon=system-users --image=emblem-important --text="Failed to remove $user_to_remove. The program will now exit." --button="Exit"\!gtk-cancel; kill $$)
-
     yad --window-icon=system-users --title="User Successfully Removed" --text="Congratulations! The user '$user_to_remove_display_name' has successfully been removed." --button="Dismiss"\!gtk-cancel
-
 elif ((ex==2))
 then
-
     sudo -u "$runuser" users-admin
-
 fi
             
 

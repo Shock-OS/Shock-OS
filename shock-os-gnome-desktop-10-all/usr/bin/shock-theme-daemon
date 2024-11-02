@@ -4,83 +4,49 @@
 
 gsettings monitor org.gnome.desktop.interface color-scheme | while read -r setting
 do
-
     current_shell_theme="$(gsettings get org.gnome.shell.extensions.user-theme name | sed "s/^'//;s/'$//")"
-
     if [[ "$current_shell_theme" == "Yaru-"* ]] || [[ "$current_shell_theme" == "Yaru" ]] #if using one of the build-in Yaru themes
     then
-
         if [[ "$setting" == "color-scheme: 'prefer-dark'" ]]
         then
-
             if [[ "$current_shell_theme" != "Yaru-"*"-dark" ]] || [[ "$current_shell_theme" == "Yaru" ]]
             then
-
                 gsettings set org.gnome.shell.extensions.user-theme name "${current_shell_theme}-dark"
-
             fi
-
         elif [[ "$current_shell_theme" == "Yaru-"*"-dark" ]] || [[ "$current_shell_theme" == "Yaru-dark" ]]
         then
-
             gsettings set org.gnome.shell.extensions.user-theme name "${current_shell_theme::-5}"
-
         fi
-
     fi
-
     current_gtk_theme="$(gsettings get org.gnome.desktop.interface gtk-theme | sed "s/^'//;s/'$//")"
-
     if [[ "$current_gtk_theme" == "Yaru-"* ]] || [[ "$current_gtk_theme" == "Yaru" ]] #if using one of the build-in Yaru themes
     then
-
         if [[ "$setting" == "color-scheme: 'prefer-dark'" ]]
         then
-
             if [[ "$current_gtk_theme" != "Yaru-"*"-dark" ]] || [[ "$current_gtk_theme" == "Yaru" ]]
             then
-
                 gsettings set org.gnome.desktop.interface gtk-theme "${current_gtk_theme}-dark"
-
                 flatpak override --user --env=GTK_THEME="${current_gtk_theme}-dark"
-
             fi
-
         elif [[ "$current_gtk_theme" == "Yaru-"*"-dark" ]] || [[ "$current_gtk_theme" == "Yaru-dark" ]]
         then
-
             gsettings set org.gnome.desktop.interface gtk-theme "${current_gtk_theme::-5}"
-
             flatpak override --user --env=GTK_THEME="${current_gtk_theme::-5}"
-
         fi
-
     fi
-
     current_icon_theme="$(gsettings get org.gnome.desktop.interface icon-theme | sed "s/^'//;s/'$//")"
-
     if [[ "$current_icon_theme" == "Yaru-"* ]] || [[ "$current_icon_theme" == "Yaru" ]] #if using one of the build-in Yaru themes
     then
-
         if [[ "$setting" == "color-scheme: 'prefer-dark'" ]]
         then
-
             if [[ "$current_icon_theme" != "Yaru-"*"-dark" ]] || [[ "$current_icon_theme" == "Yaru" ]]
             then
-
                 gsettings set org.gnome.desktop.interface icon-theme "${current_icon_theme}-dark"
-
             fi
-
         elif [[ "$current_icon_theme" == "Yaru-"*"-dark" ]] || [[ "$current_icon_theme" == "Yaru-dark" ]]
         then
-
             gsettings set org.gnome.desktop.interface icon-theme "${current_icon_theme::-5}"
-
         fi
-
     fi
-
 done
 
-            

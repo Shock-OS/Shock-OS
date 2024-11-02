@@ -2,53 +2,31 @@
 
 if [[ "$(cat ~/.config/shock/panel)" == "Traditional|" ]]
 then
-
     panel_layouts='Modern!^Traditional'
-
 else
-
     panel_layouts='Modern!Traditional'
-
 fi
-
 output="$(yad --picture --window-icon=mate-panel --width=300 --title="Panel Layouts" --text="Please choose a panel layout." --form \
                 --field="Panel Layout:":CB "$panel_layouts" \
                 --button="Apply"\!gtk-ok)"
-
 ex=$?
-
 if ((ex==0))
 then
-
     clock_format="$(dconf read /org/mate/panel/objects/clockapplet/prefs/format)"
-
     if [[ "$output" == "Modern|" ]]
     then
-
         mate-panel --reset --layout=default
-
     elif [[ "$output" == "Traditional|" ]]
     then
-
         mate-panel --reset --layout=fedora
-
     fi
-
     echo "$output" | tee ~/.config/shock/panel
-
     sleep 5
-
     dconf write /org/mate/panel/objects/clockapplet/prefs/format "$clock_format"
-
     if [[ "$clock_format" == "'24-hour'" ]] #Change time format for GNOME apps (GNOME Clocks)
     then
-
         gsettings set org.gnome.desktop.interface clock-format "24h"
-
     else
-
         gsettings set org.gnome.desktop.interface clock-format "12h"
-
     fi
-
 fi

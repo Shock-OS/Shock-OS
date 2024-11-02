@@ -1,20 +1,11 @@
 #!/bin/bash
 
 sudo python3 /usr/bin/shock-edit-dist-info.py --edition="GNOME"
-
 echo "Hidden=true" | tee -a /usr/share/applications/org.gnome.font-viewer.desktop
-
 systemctl enable --global shock-desktop-icons-daemon
-
 systemctl enable --global shock-theme-daemon
-
 systemctl set-default multi-user #ensures the target is set to multi-user
-
 rsync -rl --keep-dirlinks /usr/share/shock/install-temp/* /
-
 gtk-update-icon-cache -f /usr/share/icons/Yaru/
-
 rm -r /usr/share/shock/install-temp
-
-
 

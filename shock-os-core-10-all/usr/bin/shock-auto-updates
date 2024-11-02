@@ -1,18 +1,12 @@
 #!/bin/bash
 
 #the root check element begins
-
 if (($(id -u)!=0))
 then
-
     echo "Script must be run as root. Exiting..."
-
     exit
-
 fi
-
 #the root check element ends
 
 sudo apt upgrade -y
-
 flatpak update -y

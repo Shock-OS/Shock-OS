@@ -4,51 +4,31 @@
 
 if [[ -n "$2" ]]
 then
-
     echo "ERROR: Too many arguments."
-
     exit 252
-
 elif [[ ! -f "$1" ]]
 then
-
     echo "ERROR: ${1}: No such file or directory."
-
     exit 252
-
 fi
 
 archive_types=($(unp -s | awk 'NR>1 {print $1}' | cut -d':' -f1 | tr ',' '\n' | sed 's/^/./' | awk '{ print length, $0 }' | sort -nr | cut -d" " -f2))
-
 file="$1"
-
 file_type="$(file -b --mime-type "$file")"
 
 if [[ "$file_type" != "application/"* ]]
 then
-
     echo "FALSE"
-
     exit 1
-
 else
-
     for archive_type in "${archive_types[@]}"
     do
-
         if [[ "$file" == *"$archive_type" ]]
         then
-
             echo "TRUE"
-
             exit 0
-
         fi
-
     done
-
     echo "FALSE"
-
     exit 1
-
 fi
