@@ -1,0 +1,254 @@
+#!/usr/bin/env python3
+
+import sys
+import gi
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk, GLib
+import argparse
+import magic
+from pathlib import Path
+import subprocess
+import threading
+import re
+
+parser = argparse.ArgumentParser(description="Install or remove .deb files (or .apk files if Android app support is enabled).")
+
+parser.add_argument('--verbose', action='store_true')
+
+args = parser.parse_args()
+
+verbose = args.verbose
+
+class PackageInstaller(Gtk.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
+
+    def on_activate(self, app):
+        # Create a Builder
+        builder = Gtk.Builder()
+        builder.add_from_file("shock-package-installer.ui")
+
+        # Obtain widgets
+        self.file_button = builder.get_object("file_button")
+        self.file_button.connect("clicked", self.open_file)
+        self.file_chooser = builder.get_object("file_chooser")
+        self.file_chooser.connect("response", self.parse_file) # DEPRECATED IN GTK 4.10+, WILL NEED TO BE REDONE IN THE FUTURE
+        self.install_button = builder.get_object("install_button")
+        self.install_button.connect("clicked", self.install_button_clicked)
+        self.install_button.set_sensitive(False)
+        self.install_button_label = builder.get_object("install_button_label")
+        self.reinstall_button = builder.get_object("reinstall_button")
+        self.reinstall_button.connect("clicked", self.reinstall_button_clicked)
+        self.reinstall_button.set_visible(False)
+        self.remove_button = builder.get_object("remove_button")
+        self.remove_button.connect("clicked", self.remove_button_clicked)
+        self.remove_button.set_visible(False)
+        self.package_info_label = builder.get_object("package_info_label")
+        self.package_type_label = builder.get_object("package_type_label")
+        self.package_info_text = builder.get_object("package_info_text")
+        self.installing_box = builder.get_object("installing_box")
+        self.installing_label = builder.get_object("installing_label")
+        self.spinner = builder.get_object("spinner")
+        self.progress_bar = builder.get_object("progress_bar")
+        self.installing_box.set_visible(False)
+
+        # Obtain and show the main window
+        self.main_window = builder.get_object("main_window")
+        self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        self.main_window.present()
+
+    def open_file(self, button):
+        self.file_chooser.show() # DEPRECATED IN GTK 4.10+, WILL NEED TO BE REDONE IN THE FUTURE
+
+    def parse_file(self, file, file_chooser): # Get file info
+        self.file = file.get_file().get_path() # DEPRECATED IN GTK 4.10+, WILL NEED TO BE REDONE IN THE FUTURE
+        if verbose:
+            print(f"self.file: {self.file}")
+        self.refresh_page()
+
+    def refresh_page(self):
+        self.install_button.set_sensitive(False)
+        self.reinstall_button.set_sensitive(False)
+        self.remove_button.set_sensitive(False)
+        self.installing_box.set_visible(False)
+        file_type = magic.from_file(self.file)
+        file_ext = Path(self.file)
+        file_ext = f"{file_ext.suffix}"
+        if "Debian binary package" in file_type and file_ext == ".deb": # DEBIAN .DEB PACKAGES
+            self.pkg_type = "deb"
+            if verbose:
+                print("Debian .deb package")
+            self.package_name = subprocess.run([f"dpkg-deb --info {self.file} | grep 'Package:' | awk '{{print $2}}' | awk '{{print tolower($0)}}'"], shell=True, capture_output=True, text=True)
+            self.package_name = self.package_name.stdout.strip()
+            package_info = subprocess.run([f"dpkg-deb --info {self.file} control"], shell=True, capture_output=True, text=True)
+            package_info = package_info.stdout.strip()
+            installed = subprocess.run([f"dpkg-query --show {self.package_name} | awk '{{print $2}}'"], shell=True, capture_output=True, text=True)
+            installed_version = installed.stdout.strip()
+            if installed_version: # if installed
+                package_version = subprocess.run([f"dpkg-deb --show {self.file} | awk '{{print $2}}'"], shell=True, capture_output=True, text=True)
+                package_version = package_version.stdout.strip()
+                installed_version = subprocess.run([f"dpkg-query --show {self.package_name} | awk '{{print $2}}'"], shell=True, capture_output=True, text=True)
+                installed_version = installed_version.stdout.strip()
+                if verbose:
+                    print("PACKAGE IS ALREADY INSTALLED")
+                    print(f"DEB VERSION: {package_version}")
+                    print(f"INSTALLED VERSION: {installed_version}")
+                if package_version == installed_version: # if both .deb and installed versions are the same
+                    self.install_button.set_visible(False)
+                    self.reinstall_button.set_sensitive(True)
+                    self.reinstall_button.set_visible(True)
+                    if verbose:
+                        print("DEB AND INSTALLED VERSION ARE THE SAME, REINSTALL")
+                else:
+                    compvers = subprocess.run([f"dpkg --compare-versions {package_version} gt {installed_version}"], shell=True, capture_output=True) # Check if .deb is newer
+                    compvers = compvers.returncode
+                    if compvers == "0": # if .deb is newer
+                        self.install_button_label.set_label("Upgrade")
+                        self.installing_label.set_label("Upgrading...")
+                        if verbose:
+                            print("DEB IS NEWER, UPGRADE AVAILABLE")
+                    else: # if .deb is older
+                        self.install_button_label.set_label("Downgrade")
+                        self.installing_label.set_label("Downgrading...")
+                        if verbose:
+                            print("DEB IS OLDER, DOWNGRADE")
+                    self.reinstall_button.set_visible(False)
+                    self.install_button.set_sensitive(True)
+                    self.install_button.set_visible(True)
+                self.remove_button.set_sensitive(True)
+                self.remove_button.set_visible(True)
+            else: # if not installed
+                self.install_button_label.set_label("Install")
+                self.installing_label.set_label("Installing...")
+                self.reinstall_button.set_visible(False)
+                self.remove_button.set_visible(False)
+                self.install_button.set_sensitive(True)
+                self.install_button.set_visible(True)
+            self.package_info_label.set_label(self.package_name)
+            self.package_type_label.set_label("Debian .deb package")
+            self.package_info_text.set_text(package_info)
+                
+        elif "Flatpak repository reference" in file_type and file_ext == ".flatpakref": # FLATPAK REPOSITORY REFERENCES
+            self.pkg_type = "flatpakref"
+            if verbose:
+                print("Flatpak repository reference")
+                
+        elif "Android package (APK)" in file_type and file_ext == ".apk": # ANDROID .APK PACKAGES
+            self.pkg_type = "apk"
+            if verbose:
+                print("Android .apk package")
+            waydroid_installed = subprocess.run([f"dpkg-query --show waydroid | awk '{{print $2}}'"], shell=True, capture_output=True, text=True)
+            waydroid_installed = waydroid_installed.stdout.strip()
+            if waydroid_installed:
+                apkinfo_installed = subprocess.run([f"dpkg-query --show apkinfo | awk '{{print $2}}'"], shell=True, capture_output=True, text=True)
+                apkinfo_installed = apkinfo_installed.stdout.strip()
+                if apkinfo_installed:
+                    app_name = subprocess.run([f"apkinfo {self.file} | grep 'App name:' | cut -d' ' -f3-"], shell=True, capture_output=True, text=True)
+                    app_name = app_name.stdout.strip()
+                    self.package_name = subprocess.run([f"apkinfo {self.file} | grep 'Package:' | cut -d' ' -f2-"], shell=True, capture_output=True, text=True)
+                    self.package_name = self.package_name.stdout.strip()
+                    package_info = subprocess.run(["apkinfo", self.file], capture_output=True, text=True)
+                    package_info = package_info.stdout.strip()
+                    waydroid_running = subprocess.run([f"waydroid status | grep 'Session:' | awk '{{print $2}}'"], shell=True, capture_output=True, text=True)
+                    waydroid_running = waydroid_running.stdout.strip()
+                    if waydroid_running != "RUNNING":
+                        print("Waydroid is not running, starting session...")
+                        subprocess.run(["/usr/bin/shock-waydroid-start-session.sh"]) # wait for process to finish
+                    installed_apps = subprocess.run([f"waydroid app list | grep 'packageName:' | awk '{{print $2}}'"], shell=True, capture_output=True, text=True)
+                    installed_apps = installed_apps.stdout.strip()
+                    if self.package_name in installed_apps.split(): # if app is installed
+                        self.install_button.set_visible(False)
+                        self.reinstall_button.set_sensitive(True)
+                        self.reinstall_button.set_visible(True)
+                        self.remove_button.set_sensitive(True)
+                        self.remove_button.set_visible(True)
+                        if verbose:
+                            print("App is already installed.")
+                    else: # if app is not installed
+                        self.reinstall_button.set_visible(False)
+                        self.remove_button.set_visible(False)
+                        self.install_button_label.set_label("Install")
+                        self.installing_label.set_label("Installing...")
+                        self.install_button.set_sensitive(True)
+                        self.install_button.set_visible(True)
+                    self.package_info_label.set_label(app_name)
+                    self.package_type_label.set_label("Android .apk package")
+                    self.package_info_text.set_text(package_info)
+                else:
+                    print("ERROR: apkinfo not installed. Please run 'sudo apt install apkinfo'")
+            else:
+                print("ERROR: Android app support is not installed.")
+                
+        elif file_ext == ".AppImage": # APPIMAGES
+            self.pkg_type = "appimage"
+            if verbose:
+                print("AppImage")
+
+        if verbose:
+                print(f"PACKAGE NAME: {self.package_name}")
+                print(f"PACKAGE INFO: {package_info}")
+        self.file_button.set_sensitive(True)
+
+    def install_button_clicked(self, button):
+        self.installing_label.set_label("Installing...")
+        self.progress_bar.set_text("Downloading...")
+        self.prepare_for_action("install")
+
+    def reinstall_button_clicked(self, button):
+        self.installing_label.set_label("Reinstalling...")
+        self.progress_bar.set_text("Downloading...")
+        self.prepare_for_action("reinstall")
+
+    def remove_button_clicked(self, button):
+        self.installing_label.set_label("Removing...")
+        self.progress_bar.set_text("Removing...")
+        self.prepare_for_action("remove")
+
+    def prepare_for_action(self, action):
+        self.spinner.set_spinning(True)
+        self.installing_box.set_visible(True)
+        self.file_button.set_sensitive(False)
+        self.install_button.set_sensitive(False)
+        self.remove_button.set_sensitive(False)
+        action_thread = threading.Thread(target=self.do_action, args=(action,))
+        action_thread.start()
+
+    def do_action(self, action):
+        if verbose:
+            print(f"ACTION: {action}")
+        if self.pkg_type == "deb":
+            if action == "remove":
+                process = subprocess.Popen([f"pkexec apt remove -y {self.package_name}"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            else:
+                process = subprocess.Popen([f"pkexec apt {action} -y {self.file}"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            for line in process.stdout:
+                match = re.search(r'(\d+)%', line)
+                if match:
+                    percent = int(match.group(1)) / 100
+                    GLib.idle_add(self.update_progress_bar, percent)
+            process.stdout.close()
+            process.wait()
+            # Update the progress bar to 100% when done
+            GLib.idle_add(self.update_progress_bar, 1.0)
+            GLib.idle_add(self.refresh_page)
+        if self.pkg_type == "apk":
+            if action == "install":
+                process = subprocess.Popen(["waydroid", "app", "install", self.file])
+            elif action == "reinstall":
+                process = subprocess.Popen([f"waydroid app remove {self.package_name} && waydroid app install {self.file}"], shell=True)
+            elif action == "remove":
+                process = subprocess.Popen(["waydroid", "app", "remove", self.package_name])
+            else:
+                print(f"ERROR: Action '{action}' not recognized.")
+            process.wait()
+            GLib.idle_add(self.refresh_page)
+
+    def update_progress_bar(self, fraction):
+        # Update the GtkProgressBar's fraction
+        self.progress_bar.set_fraction(fraction)
+        self.progress_bar.set_text(f"{int(fraction * 100)}%")
+        return False  # Stop idle_add loop
+
+app = PackageInstaller(application_id="net.ShockOS.PackageInstaller")
+app.run()

@@ -1,1 +1,1 @@
-SHOCK_BUILD_DATE = "Monday, August 26th, 2024"
+SHOCK_BUILD_DATE = "Sunday, November 10th, 2024"

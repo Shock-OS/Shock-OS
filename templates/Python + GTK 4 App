@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+import sys
+import gi
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk
+import argparse
+
+parser = argparse.ArgumentParser(description="APP DESCRIPTION HERE")
+
+parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+
+args = parser.parse_args()
+
+class APPNAME(Gtk.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
+
+    def on_activate(self, app):
+        # Create a Builder
+        builder = Gtk.Builder()
+        builder.add_from_file("PUT UI FILE HERE.ui")
+
+        # Obtain the widgets
+        button = builder.get_object("button1")
+        button.connect("clicked", self.hello)
+
+        # Obtain and show the main window
+        self.main_window = builder.get_object("main_window")
+        self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        self.main_window.present()
+
+app = APPNAME(application_id="net.ShockOS.APPNAME")
+app.run()
+
