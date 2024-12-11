@@ -1,8 +1,0 @@
-{
-    "uuid": "hide-parental-controls@yourdomain",
-    "name": "Hide Parental Controls",
-    "description": "An extension to hide parental control options in the control center",
-    "shell-version": ["43"],
-    "version": 1
-}
-

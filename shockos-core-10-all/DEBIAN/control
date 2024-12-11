@@ -1,0 +1,10 @@
+Package: shockos-core
+Version: 10
+Architecture: all
+Essential: no
+Priority: optional
+Depends: fonts-ubuntu, gnupg, imagemagick, libgtk3-perl, libnotify-bin, ntpdate, pv, python3-watchdog, unp, wget, wmctrl, xz-utils, yad, yaru-theme-gtk, yaru-theme-icon, zenity
+Recommends: btrfs-progs, cups, dosfstools, ffmpeg, flatpak, libfuse2, libreoffice, libreoffice-gnome, mtools, ntp, plymouth, plymouth-themes, rpi-chromium-mods, system-config-printer, unrar
+Maintainer: Carson Grover
+Homepage: https://www.shockos.net
+Description: Core apps and system files for Shock OS. This package contains critical Shock OS software. Removing or tampering with this package will break your system.

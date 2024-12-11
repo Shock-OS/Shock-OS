@@ -1,0 +1,54 @@
+#!/bin/bash
+
+echo "WAYDROID REPAIR SCRIPT"
+echo ""
+reboot_needed=false
+
+function read_yes {
+echo "$yes" | awk '{print tolower($0)}'
+if [[ "$yes" == "y" ]] || [[ "$yes" == "yes" ]]
+then
+    yes=true
+else
+    yes=false
+fi
+}
+
+if ! dpkg -l | grep -q waydroid
+then
+    echo "Waydroid is not installed. To install Waydroid, enable experimental Android app support by running the following command in a terminal:
+
+shockos-enable-waydroid"
+    exit
+fi
+
+echo "This script can detect and fix common problems with Waydroid. Would you like to run the diagnostic checkup?"
+echo ""
+read -p "Detect and fix problems? [y/N]:" -a yes
+read_yes
+if $yes
+    if [[ "$(getconf PAGESIZE)" != "4096" ]] # If kernel page size not set to 4K (it's usually set to 16K on Pi 5 systems)
+    then
+        echo "Kernel page size is not 4K. Setting to 4K..."
+        sudo sed -i '1i kernel=kernel8.img' /boot/firmware/config.txt
+        reboot_needed=true
+    fi
+    if [[ " $(cat /boot/firmware/cmdline.txt) " != *" psi=1 "* ]]
+    then
+        echo "Kernel PSI is not enabled, enabling..." 
+        sudo sed -i '$ s/$/ psi=1/' /boot/firmware/cmdline.txt
+        reboot_needed=true
+    fi
+    if $reboot_needed
+    then
+        echo "Reboot required."
+        echo ""
+        read -p "Reboot now? [y/N]:" -a yes
+        read_yes
+        if $yes
+            sudo reboot
+        fi
+else
+    echo "Aborted"
+    exit
+fi

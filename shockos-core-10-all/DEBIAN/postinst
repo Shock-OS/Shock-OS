@@ -1,0 +1,64 @@
+#!/bin/bash
+
+cd /
+sed -i '1s/.*/PRETTY_NAME="Shock OS X Jasmine"/' /usr/lib/os-release
+python3 /usr/libexec/shockos/edit-dist-info.py --full-name="Shock OS X Jasmine" --version-number=10
+
+echo "0" | tee /usr/share/shockos/initsetup/setupvalue
+
+#the home directory building begins
+mkdir -p /etc/skel/Desktop
+mkdir -p /etc/skel/Documents
+mkdir -p /etc/skel/Downloads
+mkdir -p /etc/skel/Music
+mkdir -p /etc/skel/Pictures
+mkdir -p /etc/skel/Public
+mkdir -p /etc/skel/Templates
+mkdir -p /etc/skel/Videos
+ln -s /usr/share/shockos/face.svg /etc/skel/.face
+mkdir -p /etc/skel/.config/menus
+mkdir -p /etc/skel/.cache/shockos-tmp
+mkdir -p /etc/skel/.config/shockos/
+touch /etc/skel/.config/shockos/first-run-indicator
+echo 'XDG_DESKTOP_DIR="$HOME/Desktop"
+XDG_DOWNLOAD_DIR="$HOME/Downloads"
+XDG_TEMPLATES_DIR="$HOME/Templates"
+XDG_PUBLICSHARE_DIR="$HOME/Public"
+XDG_DOCUMENTS_DIR="$HOME/Documents"
+XDG_MUSIC_DIR="$HOME/Music"
+XDG_PICTURES_DIR="$HOME/Pictures"
+XDG_VIDEOS_DIR="$HOME/Videos"' | tee /etc/skel/.config/user-dirs.dirs
+mkdir -p /etc/skel/.cache
+mkdir -p /etc/skel/.local/share/applications
+mkdir -p /etc/skel/.config/shockos/themes
+echo 'user_lod=dark
+user_color=purple' | tee /etc/skel/.config/shockos/themes/yaru
+#the home directory building ends
+
+echo "Hidden=true" | tee -a /usr/share/applications/htop.desktop
+echo "Hidden=true" | tee -a /usr/share/applications/yad-icon-browser.desktop
+
+systemctl set-default multi-user
+mkdir -p /etc/systemd/system/getty@tty1.service.d
+echo '[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin shockos --noclear %I $TERM' | sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf
+# sets the 'shock' user to autologin, allowing the initial setup process to function correctly
+
+sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/firmware/config.txt #this command enables the two front USB ports on the DeskPi Lite
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo #adds the FlatHub repository
+flatpak update #refreshes the flatpak cache and downloads the icons for the Shockware Center
+
+#the systemd services patch begins
+systemctl daemon-reload
+systemctl enable --global shockos-startup
+#the systemd services patch ends
+
+#the splash screen patch begins
+newcmdline="$(cat /boot/firmware/cmdline.txt) quiet splash plymouth.ignore-serial-consoles"
+echo "$newcmdline" | tee /boot/firmware/cmdline.txt
+plymouth-set-default-theme -R shockdots
+#the splash screen patch ends
+
+
+

@@ -1,0 +1,219 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.94.0 -->
+<interface>
+  <!-- interface-name shockos-package-installer.ui -->
+  <requires lib="gtk" version="4.8"/>
+  <object class="GtkApplicationWindow" id="main_window">
+    <property name="child">
+      <object class="GtkBox">
+        <property name="margin-bottom">5</property>
+        <property name="margin-end">5</property>
+        <property name="margin-start">5</property>
+        <property name="margin-top">5</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkBox">
+            <property name="margin-bottom">10</property>
+            <property name="margin-top">10</property>
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">5</property>
+                <property name="valign">center</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="halign">center</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">&lt;b&gt;Package:&lt;/b&gt;</property>
+                        <property name="use-markup">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="package_info_label">
+                        <property name="halign">center</property>
+                        <property name="hexpand">True</property>
+                        <property name="hexpand-set">True</property>
+                        <property name="use-markup">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="halign">center</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">&lt;b&gt;Type:&lt;/b&gt;</property>
+                        <property name="use-markup">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="package_type_label"/>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="installing_box">
+                <property name="halign">center</property>
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">5</property>
+                <property name="valign">center</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="halign">center</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkLabel" id="installing_label">
+                        <property name="use-markup">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSpinner" id="spinner"/>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="progress_bar">
+                    <property name="show-text">True</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="child">
+              <object class="GtkTextView">
+                <property name="buffer">
+                  <object class="GtkTextBuffer" id="package_info_text"/>
+                </property>
+                <property name="cursor-visible">False</property>
+                <property name="editable">False</property>
+                <property name="wrap-mode">word</property>
+              </object>
+            </property>
+            <property name="vexpand">True</property>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="default-height">400</property>
+    <property name="icon-name">package</property>
+    <property name="title">Package Installer</property>
+    <property name="titlebar">
+      <object class="GtkHeaderBar">
+        <property name="title-widget">
+          <object class="GtkBox">
+            <property name="hexpand">True</property>
+            <property name="homogeneous">True</property>
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkButton" id="file_button">
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="halign">center</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">fileopen</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Open</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="halign">center</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="halign">center</property>
+                <property name="label">&lt;b&gt;Package Installer&lt;/b&gt;</property>
+                <property name="use-markup">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="install_button">
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="halign">center</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage" id="install_button_icon">
+                        <property name="icon-name">add</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="install_button_label">
+                        <property name="label">Install</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="halign">center</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="reinstall_button">
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">view-refresh</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Reinstall</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="halign">center</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="remove_button">
+                <property name="halign">center</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="halign">center</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">remove</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Uninstall</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </property>
+  </object>
+  <object class="GtkFileChooserNative" id="file_chooser">
+    <property name="create-folders">False</property>
+    <property name="transient-for">main_window</property>
+  </object>
+</interface>

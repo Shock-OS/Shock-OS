@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1
+Name=Startup Sound
+GenericName=Startup Sound
+Comment=Change the startup sound
+Exec=shockos-startup-sound-chooser
+Icon=gnome-music
+Terminal=false
+Type=Application
+Categories=Settings;DesktopSettings;
+Keywords=startup;sound;
+Name[en_US]=shockos-startup-sound-chooser.desktop

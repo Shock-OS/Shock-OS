@@ -26,9 +26,9 @@ then
 
     fi
 
-    echo "SHOCK_BUILD_DATE=\"$(date "+%A, %B %e$suffix, %Y")\"" | tee shock-os-core-10-all/usr/share/shock/dist-info
+    echo "SHOCKOS_BUILD_DATE=\"$(date "+%A, %B %e$suffix, %Y")\"" | tee shockos-core-10-all/usr/lib/shockos/dist-info.sh
 
-    echo "SHOCK_BUILD_DATE = \"$(date "+%A, %B %e$suffix, %Y")\"" | tee shock-os-core-10-all/usr/share/shock/dist_info.py
+    echo "SHOCKOS_BUILD_DATE = \"$(date "+%A, %B %e$suffix, %Y")\"" | tee shockos-core-10-all/usr/lib/shockos/dist_info.py
 
     rm -r BUILD-OUT
 
@@ -36,9 +36,9 @@ then
 
     cp auto-inst BUILD-OUT
 
-    dpkg-deb --build shock-os-core-10-all BUILD-OUT
+    dpkg-deb --build shockos-core-10-all BUILD-OUT
 
-    dpkg-deb --build shock-os-"$1"-desktop-10-all BUILD-OUT
+    dpkg-deb --build shockos-"$1"-desktop-10-all BUILD-OUT
 
 else
 

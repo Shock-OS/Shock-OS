@@ -1,0 +1,28 @@
+#!/bin/bash
+
+#This script saves the automatic update, update scan interval, and notify of new versions of Shock OS settings (the GUI is in the shockos-update-manager script, this script just saves the settings once 'Apply' is hit)
+
+if [[ "$1" == "TRUE" ]] && [[ ! -f /etc/sudoers.d/shockos_automatic_updates ]] #enable automatic updates
+then
+    echo "ALL ALL=NOPASSWD:/usr/bin/shockos-auto-updates" | tee /etc/sudoers.d/shockos_automatic_updates
+elif [[ "$1" == "FALSE" ]] && [[ -f /etc/sudoers.d/shockos_automatic_updates ]] #disable automatic updates
+then
+    rm /etc/sudoers.d/shockos_automatic_updates
+fi
+
+if [[ "$2" == "TRUE" ]] && [[ -f /usr/share/shockos-update-manager/disable-release-upgrader-indicator ]] #enable notification of new versions of Shock OS
+then
+    rm /usr/share/shockos-update-manager/disable-release-upgrader-indicator
+elif [[ "$2" == "FALSE" ]] && [[ ! -f /usr/share/shockos-update-manager/disable-release-upgrader-indicator ]] #disable notification of new versions of Shock OS
+then
+    if (($(ps aux | awk '{print $11,$12}' | grep -c "/bin/bash /usr/bin/shockos-release-upgrader")==0)) #kills shockos-release-scanner, unless shockos-release-upgrader is running.
+    then
+        killall shockos-release-scanner
+    fi
+    touch /usr/share/shockos-update-manager/disable-release-upgrader-indicator
+fi
+
+if (($(cat /usr/share/shockos-update-manager/update-scan-interval)!=$3))
+then
+    echo "$3" | tee /usr/share/shockos-update-manager/update-scan-interval
+fi

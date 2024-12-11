@@ -1,0 +1,237 @@
+#!/bin/bash
+
+IFS=$'\n'
+
+function yad() {
+GDK_BACKEND=x11 /usr/bin/yad "$@"
+}
+
+runuser="$(whoami)"
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
+installed_browsers=()
+
+if [[ " ${installed_packages[@]} " == *" chromium "* ]] || [[ " ${installed_packages[@]} " == *" chromium-browser "* ]]
+then
+    installed_browsers+=("Chromium")
+fi
+
+if [[ " ${installed_flatpaks[@]} " == *" org.chromium.Chromium "* ]]
+then
+    installed_browsers+=("Chromium (Flatpak)")
+fi
+
+if [[ " ${installed_flatpaks[@]} " == *" com.github.Eloston.UngoogledChromium "* ]]
+then
+    installed_browsers+=("Ungoogled Chromium (Flatpak)")
+fi
+
+if [[ " ${installed_packages[@]} " == *" thorium-browser "* ]]
+then
+    installed_browsers+=("Thorium")
+fi
+
+if [[ " ${installed_packages[@]} " == *" vivaldi-stable "* ]]
+then
+    installed_browsers+=("Vivaldi")
+fi
+
+if [[ " ${installed_packages[@]} " == *" brave-browser "* ]]
+then
+    installed_browsers+=("Brave")
+fi
+
+if [[ " ${installed_flatpaks[@]} " == *" com.brave.Browser "* ]]
+then
+    installed_browsers+=("Brave (Flatpak)")
+fi
+
+while true
+do
+    webapp_list=()
+    if (($(ls ~/.local/share/applications/shockos-webapps | wc -l)>0))
+    then
+        for webapp in ~/.local/share/applications/shockos-webapps/*
+        do
+            source "$webapp"
+            webapp_list+=("/home/${runuser}/.local/share/shockos/webapps/icons/${shockos_webapp_name}.png" "$shockos_webapp_name" "$webapp")
+        done
+    fi
+    output="$(yad --window-icon=shockos-webapps --width=400 --height=300 --title="Web Apps" --text="Create, edit and delete web apps." --list \
+                    --always-print-result \
+                    --column="Icon":IMG \
+                    --column="Name" \
+                    --column="FILEPATH":HD \
+                    "${webapp_list[@]}" \
+                    --buttons-layout=spread \
+                    --button="Add"\!add --button="Remove"\!remove --button="Edit"\!gtk-edit)"
+    action=$?
+    webapp="$(echo "$output" | awk -F'|' '{print $3}')"
+    eval "$(grep '^shockos_webapp' "$webapp")"
+    if [[ "$action" == "0" ]] #add
+    then
+        focus_field=1
+        shockos_webapp_name=""
+        shockos_webapp_address=""
+        shockos_webapp_icon=""
+        shockos_webapp_category="Internet"
+        shockos_webapp_browser="Chromium"
+        shockos_webapp_parameters=""
+        shockos_webapp_isolated='TRUE'
+        shockos_webapp_private='FALSE'
+    elif [[ "$action" == "1" ]] #remove
+    then
+        yad --window-icon=shockos-webapps --title="Web Apps" --image=gtk-delete --text="Are you sure you want to delete ${shockos_webapp_name}?" --button="Cancel"\!gtk-cancel:1 --button="Delete"\!gtk-delete:0
+        ex=$?
+        if [[ "$ex" == "0" ]]
+        then
+            rm ~/.local/share/shockos/webapps/icons/${shockos_webapp_name}.png
+            rm -r ~/.local/share/shockos/webapps/profiles/${shockos_webapp_name}
+            rm "$webapp"
+        fi
+    elif [[ "$action" == "2" ]] #edit
+    then
+        focus_field=1
+        old_name="$shockos_webapp_name"
+        old_icon="$shockos_webapp_icon"
+    else
+        exit
+    fi
+    if [[ "$action" == "0" ]] || [[ "$action" == "2" ]] #if add or edit selected
+    then
+        installed_packages="$(apt list --installed | awk -F/ '{print $1}' | uniq)" #ChatGPT
+        success="FALSE"
+        until [[ "$success" == "TRUE" ]]
+        do
+            browser_selection=""
+            for browser in "${installed_browsers[@]}"
+            do
+                if [[ "$shockos_webapp_browser" == "$browser" ]]
+                then
+                    browser_selection+="!^${browser}"
+                else
+                    browser_selection+="!${browser}"
+                fi
+            done
+            browser_selection="${browser_selection:1}"
+            categories_selection='Accessories!Administration!Education!Games!Graphics!Internet!Office!Preferences!Programming!Sound & Video!System Tools!Universal Access'
+            categories_selection="${categories_selection//"${shockos_webapp_category}"/"^${shockos_webapp_category}"}"
+            output="$(yad --window-icon=shockos-webapps --title="Web Apps" --form \
+                            --focus-field="$focus_field" \
+                            --field="Name:" "$shockos_webapp_name" \
+                            --field="Address:" "$shockos_webapp_address" \
+                            --field="Icon:":FL "$shockos_webapp_icon" \
+                            --field="Category:":CB "$categories_selection" \
+                            --field="Browser:":CB "$browser_selection" \
+                            --field="Parameters:" "$shockos_webapp_parameters" \
+                            --field="Isolated Profile":CHK "$shockos_webapp_isolated" \
+                            --field="Private/Incognito Window":CHK "$shockos_webapp_private" \
+                            --button="Save"\!media-floppy)"
+            ex=$?
+            if [[ "$ex" == "0" ]]
+            then
+                shockos_webapp_name="$(echo "$output" | awk -F'|' '{print $1}')"
+                shockos_webapp_address="$(echo "$output" | awk -F'|' '{print $2}')"
+                shockos_webapp_icon="$(echo "$output" | awk -F'|' '{print $3}')"
+                shockos_webapp_category="$(echo "$output" | awk -F'|' '{print $4}')"
+                shockos_webapp_browser="$(echo "$output" | awk -F'|' '{print $5}')"
+                shockos_webapp_parameters="$(echo "$output" | awk -F'|' '{print $6}')"
+                shockos_webapp_isolated="$(echo "$output" | awk -F'|' '{print $7}')"
+                shockos_webapp_private="$(echo "$output" | awk -F'|' '{print $8}')"
+                if [[ "$shockos_webapp_address" != "http://"* ]] && [[ "$shockos_webapp_address" != "https://"* ]] && [[ -n "$shockos_webapp_address" ]]
+                then
+                    shockos_webapp_address="https://${shockos_webapp_address}"
+                fi
+                if [[ -z "$shockos_webapp_name" ]]
+                then
+                    yad --window-icon=shockos-webapps --image=emblem-important --title="Web Apps" --text="The name cannot be blank. Please choose a name for your web app." --button="Retry"\!edit-undo
+                    focus_field=1
+                elif [[ -f ~/.local/share/applications/shockos-webapps/"${shockos_webapp_name}.desktop" ]] && [[ "$action" == "0" ]]
+                then
+                    yad --window-icon=shockos-webapps --image=emblem-important --title="Web Apps" --text="There is already a web app named '$shockos_webapp_name'. Please choose a different name." --button="Retry"\!edit-undo
+                    focus_field=1
+                elif [[ -z "$shockos_webapp_address" ]]
+                then
+                    yad --window-icon=shockos-webapps --image=emblem-important --title="Web Apps" --text="The web address (URL) cannot be blank. Please enter the URL of the website you want to use as a web app." --button="Retry"\!edit-undo
+                    focus_field=2
+                elif ! curl --output /dev/null --silent --head --fail "$shockos_webapp_address"
+                then
+                    yad --window-icon=shockos-webapps --image=emblem-important --title="Web Apps" --text="'$shockos_webapp_address' is not a vaild website URL. Please enter a vaild URL. If your computer is not connected to the internet, please connect to the internet before retrying." --button="Retry"\!edit-undo
+                    focus_field=2
+                elif [[ -z "$shockos_webapp_icon" ]]
+                then
+                    yad --window-icon=shockos-webapps --image=emblem-important --title="Web Apps" --text="No icon was provided. Please select an image to use for the icon." --button="Retry"\!edit-undo
+                    focus_field=3
+                elif [[ "$(file -b --mime-type "$shockos_webapp_icon")" != "image/"* ]]
+                then
+                    yad --window-icon=shockos-webapps --image=emblem-important --title="Web Apps" --text="'$shockos_webapp_icon' is not a vaild image file. Please select an image to use for the icon." --button="Retry"\!edit-undo
+                    focus_field=3
+                else
+                    success="TRUE"
+                fi
+            else
+                exit
+            fi
+        done
+        if [[ "$shockos_webapp_category" == "Accessories" ]]
+        then
+            category="Utility;"
+        elif [[ "$shockos_webapp_category" == "Administration" ]]
+        then
+            category="System;Settings;"
+        elif [[ "$shockos_webapp_category" == "Games" ]]
+        then
+            category="Game;"
+        elif [[ "$shockos_webapp_category" == "Internet" ]]
+        then
+            category="Network;"
+        elif [[ "$shockos_webapp_category" == "Preferences" ]]
+        then
+            category="Settings;"
+        elif [[ "$shockos_webapp_category" == "Programming" ]]
+        then
+            category="Development;"
+        elif [[ "$shockos_webapp_category" == "Sound & Video" ]]
+        then
+            category="AudioVideo;"
+        elif [[ "$shockos_webapp_category" == "System Tools" ]]
+        then
+            category="System;"
+        elif [[ "$shockos_webapp_category" == "Universal Access" ]]
+        then
+            category="Accessibility;"
+        else
+            category="${shockos_webapp_category};"
+        fi
+        mkdir -p ~/.local/share/applications/shockos-webapps
+        if [[ "$action" == "2" ]] && [[ "$old_name" != "$shockos_webapp_name" ]] #edit
+        then
+            rm "$webapp"
+            rm "$old_icon"
+        fi
+        mkdir -p ~/.local/share/shockos/webapps/icons
+        convert "$shockos_webapp_icon" -resize 64x64 -gravity center -background none -extent 64x64 ~/.local/share/shockos/webapps/icons/${shockos_webapp_name}.png || echo "Failed to convert the icon."
+        shockos_webapp_class="shockos-webapp-${shockos_webapp_name}-$(shuf -i 0-9 -n 10 | tr -d '\n')"
+        echo "[Desktop Entry]
+Name=$shockos_webapp_name
+Icon=/home/${runuser}/.local/share/shockos/webapps/icons/${shockos_webapp_name}.png
+Exec=shockos-webapp-launcher '/home/${runuser}/.local/share/applications/shockos-webapps/${shockos_webapp_name}.desktop'
+Terminal=false
+Type=Application
+Categories=$category
+StartupWMClass=$shockos_webapp_class
+StartupNotify=true
+
+shockos_webapp_name='$shockos_webapp_name'
+shockos_webapp_class='$shockos_webapp_class'
+shockos_webapp_address='$shockos_webapp_address'
+shockos_webapp_icon='$shockos_webapp_icon'
+shockos_webapp_category='$shockos_webapp_category'
+shockos_webapp_browser='$shockos_webapp_browser'
+shockos_webapp_parameters='$shockos_webapp_parameters'
+shockos_webapp_isolated='$shockos_webapp_isolated'
+shockos_webapp_private='$shockos_webapp_private'" | tee ~/.local/share/applications/shockos-webapps/"${shockos_webapp_name}.desktop"
+    fi
+done
+
+

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if (($(getconf LONG_BIT)==32))
+then
+    arch="arm"
+else
+    arch="aarch64"
+fi
+
+mkdir -p /usr/share/shockos/shockware-center/
+echo "apt_appstream_dir=/var/lib/app-info
+flatpak_appstream_dir=/var/lib/flatpak/appstream/flathub/${arch}/active" | tee /usr/share/shockos/shockware-center/appstream-dirs

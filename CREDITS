@@ -1,0 +1,32 @@
+Shock OS is created by Carson Grover, 2022-2024
+
+Shock OS is made possible thanks to the following projects/entities (and the projects/entities that make THEM possible):
+    - The Linux Kernel
+    - Debian
+    - Raspberry Pi OS
+    - The Raspberry Pi Foundation
+    - GNOME
+    - MATE Desktop Environment
+    - Bash
+    - Python
+    - GTK
+    - Flatpak
+    - Waydroid
+    - AOSP
+    - Lineage OS
+    - AppImage
+    - And many, many more...
+    
+Thank you to the thousands of contributors around the world who work on these projects (or a project that the above themselves are made possibly by)!
+
+The background music played during the initial setup of Shock OS is created by Alexander Nakarada. More information is listed below:
+
+    Title: Space Ambience
+    Author: Alexander Nakarada
+    License: CC BY 4.0, https://creativecommons.org/licenses/by/4.0/
+    Source: https://alexandernakarada.bandcamp.com/track/space-ambience-2
+    Modifications: This file was downloaded in WAV (.wav) format and converted to Opus (.opus, 160 kbps) for high quality and storage efficiency. Other than that, the soundtrack is unaltered.
+    
+    The above information is also available at `/usr/share/shockos/initsetup/CREDITS` on Shock OS systems running Shock OS X Jasmine or higher
+
+Thank you for using Shock OS!

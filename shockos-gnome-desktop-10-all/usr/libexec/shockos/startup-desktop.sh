@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [[ -f ~/.config/shockos/first-run-indicator ]]
+then
+    gsettings set org.gnome.desktop.background picture-uri "'file:///usr/share/shockos/backgrounds/shockos-background.xml'"
+    gsettings set org.gnome.desktop.background picture-uri-dark "'file:///usr/share/shockos/backgrounds/shockos-background.xml'"
+    gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple-dark"
+    gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple-dark"
+    gsettings set org.gnome.shell.extensions.user-theme name "Yaru-purple-dark"
+    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+    gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
+    gsettings set org.gnome.mutter center-new-windows "true"
+    gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
+    shockos-gnome-layouts-cli --defaults panel
+    #THE DEFAULT FONT PATCH BEGINS
+    gsettings set org.gnome.desktop.interface font-name "Ubuntu 11"
+    gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11"
+    gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13"
+    gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11"
+    #THE DEFAULT FONT PATCH ENDS
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color "true" #start setting defaults for Dock mode
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style "DOTS"
+    gsettings set org.gnome.shell.extensions.dash-to-dock isolate-workspaces "true"
+    gsettings set org.gnome.nautilus.preferences show-delete-permanently "true"
+    dconf reset /org/gnome/shell/extensions/hidetopbar/enable-intellihide #Using DConf because extension does not support GSettings, resets the Hide Top Bar extension to defaults now that the initial setup has been completed
+    gnome-extensions enable ubuntu-appindicators@ubuntu.com
+    gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/shockos-terminal-shortcut/']"
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/shockos-terminal-shortcut/ name 'Shock OS Terminal Shortcut'
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/shockos-terminal-shortcut/ command 'gnome-terminal'
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/shockos-terminal-shortcut/ binding '<Primary><Alt>t'
+else #NON-FIRST-RUN-SETUP-COMMANDS GO HERE
+    gsettings reset org.gnome.desktop.lockdown disable-log-out #ensures that the user can logout and shutdown (fixes the shutdown menu being locked if the system crashed during automatic updates)
+fi
+

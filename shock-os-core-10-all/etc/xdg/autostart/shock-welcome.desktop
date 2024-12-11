@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Welcome Screen
-Exec=/bin/bash /usr/bin/shock-welcome
-Icon=/usr/share/shock/gnome-logo-white.svg
-Comment=Shows the Shock OS welcome screen on first run (and until it is disabled)
-X-GNOME-Autostart-Phase=Application

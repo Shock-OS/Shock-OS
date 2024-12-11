@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+
+import sys
+import gi
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk, GLib
+import argparse
+import subprocess
+import threading
+
+parser = argparse.ArgumentParser(description="Easily configure Waydroid")
+
+parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+
+args = parser.parse_args()
+
+verbose = args.verbose
+
+class WaydroidSettings(Gtk.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
+
+    def on_activate(self, app):
+        # Create a Builder
+        builder = Gtk.Builder()
+        builder.add_from_file("/usr/share/shockos/waydroid/shockos-waydroid-settings/main.ui")
+
+        # Obtain the widgets
+        self.status_label = builder.get_object("status_label")
+        self.start_session_button = builder.get_object("start_session_button")
+        self.start_session_button.connect("clicked", self.start_session)
+        self.stop_and_restart_box = builder.get_object("stop_and_restart_box")
+        self.stop_session_button = builder.get_object("stop_session_button")
+        self.stop_session_button.connect("clicked", self.stop_session)
+        self.restart_session_button = builder.get_object("restart_session_button")
+        self.restart_session_button.connect("clicked", self.restart_session)
+        self.spinner = builder.get_object("spinner")
+
+        # Obtain and show the main window
+        self.get_status()
+        self.main_window = builder.get_object("main_window")
+        self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        self.main_window.present()
+
+    def get_status(self):
+        self.spinner.set_spinning(True)
+        status = subprocess.run([f"waydroid status | awk 'NR==1 {{print $2}}'"], shell=True, capture_output=True, text=True)
+        status = status.stdout.strip()
+        if status == "STOPPED":
+            self.status_label.set_label("Stopped")
+            self.start_session_button.set_sensitive(True)
+            self.start_session_button.set_visible(True)
+            self.stop_and_restart_box.set_visible(False)
+        else: # if running
+            self.status_label.set_label("Running")
+            self.start_session_button.set_visible(False)
+            self.stop_and_restart_box.set_sensitive(True)
+            self.stop_and_restart_box.set_visible(True)
+        self.spinner.set_spinning(False)
+        return False
+
+    
+    
+
+    def start_session(self, button):
+        self.start_session_button.set_sensitive(False)
+        self.status_label.set_label("Starting...")
+        self.spinner.set_spinning(True)
+        start_session_thread = threading.Thread(target=self.session_init)
+        start_session_thread.start() # start session
+
+    def session_init(self):
+        with subprocess.Popen(["waydroid", "--details-to-stdout", "session", "start"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) as process:
+            for line in process.stdout:
+                if verbose:
+                    print(line)
+                if "Android with user" in line:
+                    GLib.idle_add(self.get_status)
+                    break
+            else:
+                if verbose:
+                    print("SESSION INITIALIZATION INTERRUPTED")
+        
+                    
+                
+
+    def stop_session(self, button):
+        self.stop_and_restart_box.set_sensitive(False)
+        self.status_label.set_label("Stopping...")
+        self.spinner.set_spinning(True)
+        subprocess.run(["waydroid", "session", "stop"])
+        self.get_status()
+
+    def restart_session(self, button):
+        self.stop_and_restart_box.set_sensitive(False)
+        self.status_label.set_label("Restarting...")
+        self.spinner.set_spinning(True)
+        subprocess.run(["waydroid", "session", "stop"])
+        start_session_thread = threading.Thread(target=self.session_init)
+        start_session_thread.start() # start session
+
+app = WaydroidSettings(application_id="net.ShockOS.WaydroidSettings")
+app.run()
+

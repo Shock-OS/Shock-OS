@@ -1,0 +1,8 @@
+Package: shockos-waydroid
+Version: 1.0
+Architecture: all
+Essential: no
+Priority: optional
+Depends: python3
+Maintainer: Carson Grover
+Description: This package allows Waydroid to be installed and integrated into Shock OS, enabling Android app support.

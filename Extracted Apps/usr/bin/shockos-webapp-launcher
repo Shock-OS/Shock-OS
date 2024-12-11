@@ -1,0 +1,113 @@
+#!/bin/bash
+
+IFS=$'\n'
+
+function yad() {
+GDK_BACKEND=x11 /usr/bin/yad "$@"
+}
+
+eval "$(grep '^shockos_webapp' "$1")"
+
+if [[ "$shockos_webapp_isolated" == "TRUE" ]]
+then
+    shockos_webapp_parameters="--user-data-dir=/home/$(whoami)/.local/share/shockos/webapps/profiles/${shockos_webapp_name} ${shockos_webapp_parameters}"
+fi
+
+if [[ "$shockos_webapp_private" == "TRUE" ]]
+then
+    shockos_webapp_parameters="--incognito ${shockos_webapp_parameters}"
+fi
+
+#CHECK FOR INSTALLED BROWSERS
+installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
+installed_browsers=()
+if [[ " ${installed_packages[@]} " == *" chromium-browser "* ]] || [[ " ${installed_packages[@]} " == *" chromium "* ]]
+then
+    installed_browsers+=("Chromium")
+fi
+
+if [[ " ${installed_flatpaks[@]} " == *" org.chromium.Chromium "* ]]
+then
+    installed_browsers+=("Chromium (Flatpak)")
+fi
+
+if [[ " ${installed_flatpaks[@]} " == *" com.github.Eloston.UngoogledChromium "* ]]
+then
+    installed_browsers+=("Ungoogled Chromium (Flatpak)")
+fi
+
+if [[ " ${installed_packages[@]} " == *" thorium-browser "* ]]
+then
+    installed_browsers+=("Thorium")
+fi
+
+if [[ " ${installed_packages[@]} " == *" vivaldi-stable "* ]]
+then
+    installed_browsers+=("Vivaldi")
+fi
+
+if [[ " ${installed_packages[@]} " == *" brave-browser "* ]]
+then
+    installed_browsers+=("Brave")
+fi
+
+if [[ " ${installed_flatpaks[@]} " == *" com.brave.Browser "* ]]
+then
+    installed_browsers+=("Brave (Flatpak)")
+fi
+
+#END CHECKING FOR INSTALLED BROWSERS
+
+if [[ "${#installed_browsers[@]}" == "0" ]] #if no compatible browsers are installed
+then
+    yad --window-icon=shockos-webapps --image=emblem-important --title="No Compatible Browser Found" --text="No compatible browsers were found to launch your web app. 
+Please install one of the following supported browsers:
+
+Chromium (APT or Flatpak)
+Ungoogled Chromium (Flatpak)
+Thorium (APT)
+Vivaldi (APT)
+Brave (APT or Flatpak)
+
+Chromium, Ungoogled Chromium, and Brave can be installed from the Shockware Center. Thorium and Vivaldi can be downloaded online." --button="Dismiss"\!gtk-cancel:1
+    exit
+elif [[ " ${installed_browsers[@]} " != *" $shockos_webapp_browser "* ]] #if browser is not installed
+then
+    browser="${installed_browsers[0]}"
+    sed -i "/^shockos_webapp_browser/c shockos_webapp_browser='${browser}'" "$1" #update the .desktop file
+else
+    browser="$shockos_webapp_browser"
+fi
+
+if [[ "$browser" == "Chromium" ]]
+then
+    if [[ " ${installed_packages[@]} " == *" chromium-browser "* ]]
+    then
+        browser="chromium-browser"
+    else
+        browser="chromium"
+    fi
+elif [[ "$browser" == "Chromium (Flatpak)" ]]
+then
+    browser="flatpak run org.chromium.Chromium"
+elif [[ "$browser" == "Ungoogled Chromium" ]]
+then
+    browser="flatpak run com.github.Eloston.UngoogledChromium"
+elif [[ "$browser" == "Thorium" ]]
+then
+    browser="thorium-browser"
+elif [[ "$browser" == "Vivaldi" ]]
+then
+    browser="vivaldi-stable"
+elif [[ "$browser" == "Brave" ]]
+then
+    browser="brave-browser"
+elif [[ "$browser" == "Brave (Flatpak)" ]]
+then
+    browser="flatpak run com.brave.Browser"
+fi
+
+eval "$browser --app=$shockos_webapp_address --class=$shockos_webapp_class $shockos_webapp_parameters"
+
+

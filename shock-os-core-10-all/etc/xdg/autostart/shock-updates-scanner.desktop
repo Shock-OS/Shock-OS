@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Updates Manager
-Exec=/bin/bash /usr/bin/shock-updates-scanner
-Icon=software-update-available
-Comment=Scans for updates and notifies the user if any are available (or installs them automatically if automatic updates are enabled)
-X-GNOME-Autostart-Phase=Application
-Name[en_US]=shock-updates-scanner.desktop

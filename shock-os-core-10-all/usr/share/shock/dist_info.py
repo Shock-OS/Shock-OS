@@ -1,1 +1,0 @@
-SHOCK_BUILD_DATE = "Sunday, November 10th, 2024"

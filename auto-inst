@@ -9,16 +9,16 @@ do
 
     sudo apt install -y pipewire-audio
 
-    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq))
 
 done
 
-until [[ " ${installed_packages[@]} " == *" shock-os-core "* ]]
+until [[ " ${installed_packages[@]} " == *" shockos-core "* ]]
 do
 
-    sudo apt install -y ./shock-os-core_*
+    sudo apt install -y ./shockos-core_*
 
-    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq))
 
 done
 
@@ -33,34 +33,17 @@ else
 
 fi
 
-until [[ " ${installed_packages[@]} " == *" appimagelauncher "* ]]
+until [[ " ${installed_packages[@]} " == *" shockos-mate-desktop "* ]] || [[ " ${installed_packages[@]} " == *" shockos-gnome-desktop "* ]]
 do
 
-    sudo apt install -y /usr/share/shock/appimagelauncher/*_"$arch".deb
+    sudo apt install -y ./shockos-*-desktop_*
 
-    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
-
-done
-
-sudo rm -r /usr/share/shock/appimagelauncher
-
-sudo rm /usr/share/applications/appimagelaunchersettings.desktop
-
-until [[ " ${installed_packages[@]} " == *" shock-os-mate-desktop "* ]] || [[ " ${installed_packages[@]} " == *" shock-os-gnome-desktop "* ]]
-do
-
-    sudo apt install -y ./shock-os-*-desktop_*
-
-    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
+    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq))
 
 done
 
 sudo apt update
-
-sudo apt purge -y xterm zutty #gets rid of xterm
 
 sudo apt autopurge -y
 
 sudo apt update
-
-sudo shock-update-manager-refresh

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if [[ -f ~/.config/shockos/first-run-indicator ]]
+then
+    #gsettings set org.mate.background picture-filename "'/usr/share/shockos/backgrounds/shockos-background.xml'"
+    if [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
+    then
+        gsettings set org.mate.session.required-components windowmanager "marco-glx"
+    fi
+    #gsettings set org.mate.interface gtk-theme "Yaru-purple-dark"
+    #gsettings set org.mate.Marco.general theme "Yaru-dark"
+    #gsettings set org.mate.interface icon-theme "Yaru-purple-dark"
+    #gsettings set org.mate.peripherals-mouse cursor-theme "Yaru"
+    #gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
+    #gsettings set org.mate.interface enable-animations "false"
+    #gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
+    #gsettings set org.mate.Marco.general center-new-windows "true"
+    # marco --replace &
+    #gsettings set org.mate.background show-desktop-icons "true"
+    #gsettings set org.mate.caja.desktop computer-icon-visible "false"
+    #gsettings set org.mate.caja.desktop home-icon-visible "true"
+    #gsettings set org.mate.caja.desktop trash-icon-visible "true"
+    #gsettings set org.mate.caja.desktop network-icon-visible "false"
+    #gsettings set org.mate.caja.desktop volumes-visible "true"
+    #dconf write /org/mate/panel/objects/dockapplet/prefs/win-from-cur-workspace-only "'true'"
+    #dconf write /org/mate/panel/objects/dockapplet/prefs/pinned-apps "['chromium.desktop', 'caja.desktop', 'mate-terminal.desktop']"
+    #gsettings set org.mate.interface font-name "Ubuntu 11"
+    #gsettings set org.mate.caja.desktop font "Ubuntu 11"
+    #gsettings set org.mate.interface document-font-name "Ubuntu 11"
+    #gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
+    #gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+    #THE MUTTER SETTINGS PATCH BEGINS
+    #gsettings set org.gnome.desktop.interface font-name "Ubuntu 11" #MUTTER COMPATIBILITY
+    #gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11" #MUTTER COMPATIBILITY
+    #gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11" #MUTTER COMPATIBILITY
+    #gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
+    #gsettings set org.gnome.mutter center-new-windows "true"
+    #THE MUTTER SETTINGS PATCH ENDS
+    #gsettings set org.mate.session idle-delay 15 #sets the computer to regard the session as idle after 15 minutes (screensaver starts after 15 minutes)
+    #gsettings set org.mate.screensaver themes "['screensavers-gnomelogo-floaters']"
+    #gsettings set org.onboard theme "/usr/share/onboard/themes/Nightshade.theme"
+else #NON-FIRST-RUN-SETUP COMMANDS GO HERE
+    gsettings reset org.mate.lockdown disable-log-out #ensures that the user can logout and shutdown (fixes the shutdown menu being locked if the system crashed during automatic updates)
+fi
+

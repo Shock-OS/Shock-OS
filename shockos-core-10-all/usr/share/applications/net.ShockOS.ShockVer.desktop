@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=ShockVer
+Comment=View operating system and hardware information
+Exec=shockver
+Icon=/usr/share/shockos/gnome-logo-white.svg
+Terminal=false
+Type=Application
+StartupNotify=false
+NoDisplay=true

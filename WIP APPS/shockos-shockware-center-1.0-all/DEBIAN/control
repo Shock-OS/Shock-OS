@@ -1,0 +1,8 @@
+Package: shockos-shockware-center
+Version: 1.0
+Architecture: all
+Essential: no
+Priority: optional
+Depends: apt-config-icons, flatpak, libnotify-bin, yad
+Maintainer: Carson Grover
+Description: The software center application for Shock OS. This is a frontend for APT and Flatpak.

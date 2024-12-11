@@ -1,0 +1,9 @@
+[Unit]
+Description=Slideshow Background Daemon
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/shockos/mate/slideshow-background-daemon.sh
+
+[Install]
+WantedBy=graphical-session.target
