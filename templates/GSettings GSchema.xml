@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="net.shockos.APPNAMEHERE" path="/net/shockos/APPNAMEHERE/">
+    <key name="KEYNAME" type="TYPE">
+        <default>DEFAULT</default>
+        <summary>SUMMARY</summary>
+        <description>DESCRIPTION</description>
+    </key>
+  </schema>
+</schemalist>

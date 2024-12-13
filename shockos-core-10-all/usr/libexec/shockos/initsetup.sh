@@ -547,12 +547,11 @@ fi
 sed -i 's/#NAutoVTs=6/NAutoVTs=1/g' /etc/systemd/logind.conf
 echo "[Service]
 ExecStart=
-ExecStart=-/usr/sbin/agetty --autologin $username --noclear %I $TERM" | sudo tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
+ExecStart=-/usr/sbin/agetty --autologin $username --noclear %I \$TERM" | sudo tee -a /etc/systemd/system/getty@tty1.service.d/override.conf
 sudo systemctl is-enabled getty@tty1.service
 sudo systemctl enable getty@tty1.service
 sudo systemctl daemon-reload
 echo '/usr/libexec/shockos/finsetup.sh' | sudo tee -a "/home/$username/.bashrc"
-systemctl disable --global shockos-initsetup
 #the setup finalizer temporary autologin patch ends
 kill "$killpid"
 }
@@ -563,7 +562,7 @@ do
     echo "EX: $ex" #DEBUG
     echo "SETUP_TODO_ITEM: ${setup_todo_list[setup_todo_item]}" #DEBUG
     eval "${setup_todo_list[setup_todo_item]}"
-    if [[ "${setup_todo_list[setup_todo_item]}" == *"apply" ]]
+    if [[ "${setup_todo_list[setup_todo_item]}" == "apply"* ]]
     then
         setup_todo_item=$((setup_todo_item+1))
     else
@@ -573,7 +572,7 @@ do
         elif [[ "$ex" == "1" ]]
         then
             setup_todo_item=$((setup_todo_item-1))
-            until [[ "${setup_todo_list[setup_todo_item]}" != *"apply" ]]
+            until [[ "${setup_todo_list[setup_todo_item]}" != "apply"* ]]
             do
                 setup_todo_item=$((setup_todo_item-1))
             done

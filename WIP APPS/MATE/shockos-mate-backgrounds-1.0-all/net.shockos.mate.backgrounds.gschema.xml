@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="net.shockos.mate.backgrounds" path="/net/shockos/mate/backgrounds/">
+    <key name="picture-uri" type="s">
+        <default>"'file:///usr/share/shockos/backgrounds/shockos-background.xml'"</default>
+        <summary>Light mode background</summary>
+    </key>
+    <key name="picture-uri-dark" type="s">
+        <default>"'file:///usr/share/shockos/backgrounds/shockos-background.xml'"</default>
+        <summary>Dark mode background</summary>
+    </key>
+    <key name="enable-dynamic-backgrounds" type="b">
+        <default>false</default>
+        <summary>Enable dynamic backgrounds</summary>
+        <description>Enable support for switching between background variants when switching between light and dark mode</description>
+    </key>
+  </schema>
+</schemalist>

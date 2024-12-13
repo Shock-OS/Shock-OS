@@ -15,6 +15,13 @@ then
     #the default .bashrc file restoration patch ends
     sudo rm /usr/share/shockos/initsetup/setupvalue
     sudo rm /etc/sudoers.d/initsetup-rootpriv #this command removes elevated privilages as they are no longer required.
+    sudo rm /etc/dconf/db/local.d/01-shockos-initsetup-deskenv
+    sudo rm /etc/dconf/db/local.d/locks/00-shockos-initsetup-deskenv
+    if (($(ls /etc/dconf/db/local.d/locks/)==0))
+    then
+        sudo rm -r /etc/dconf/db/local.d/locks/
+    fi
+    sudo dconf update
     echo "Setup complete, rebooting..."
     reboot
 else

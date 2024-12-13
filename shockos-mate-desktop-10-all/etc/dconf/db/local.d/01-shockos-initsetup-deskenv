@@ -1,0 +1,8 @@
+[org/mate/desktop/background]
+picture-filename='/usr/share/shockos/initsetup/bg.png'
+show-desktop-icons=false
+
+[org/mate/desktop/session/required-components]
+dock=''
+filemanager=''
+panel=''

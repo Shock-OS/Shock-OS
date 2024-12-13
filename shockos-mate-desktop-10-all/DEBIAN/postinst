@@ -47,6 +47,7 @@ cp /usr/bin/mate-window-properties /usr/bin/mate-window-properties-old
 echo '#!/bin/bash
 
 shockos-backgrounds' | tee /usr/bin/mate-appearance-properties
+
 echo '#!/bin/bash
 
 shockos-wm-settings' | tee /usr/bin/mate-window-properties
@@ -59,17 +60,6 @@ rsync -rl --keep-dirlinks /usr/share/shockos/install-temp/* /
 cp -rf /usr/share/shockos/install-temp/usr/share/applications/* /etc/skel/.local/share/applications #this command eliminates the need to duplicate the .desktop files
 gtk-update-icon-cache -f /usr/share/icons/Yaru/
 rm -r /usr/share/shockos/install-temp
-
-echo '
-# Automatically start X server on login
-if [[ -z $DISPLAY ]] && [[ $(tty) == /dev/tty1 ]]
-then
-    gsettings set org.mate.peripherals-mouse cursor-theme "Yaru"
-    exec startx
-fi' | tee /home/shockos/.bashrc
-
-echo "marco & sleep 10
-/usr/libexec/shockos/initsetup.sh" | tee /home/shockos/.xinitrc
 
 dconf update
 

@@ -2,7 +2,7 @@
 
 if [[ -f ~/.config/shockos/first-run-indicator ]]
 then
-    /usr/libexec/shockos/startup-desktop.sh
+    /usr/libexec/shockos/startup-deskenv.sh
     /usr/libexec/shockos/set-audio-out-to-hdmi.sh
     rm ~/.config/shockos/first-run-indicator
 fi
