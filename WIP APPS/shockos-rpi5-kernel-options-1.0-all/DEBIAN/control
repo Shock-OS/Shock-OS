@@ -1,0 +1,11 @@
+Source: shockos-rpi5-kernel-options
+Section: admin
+Priority: optional
+Maintainer: Carson Grover
+Homepage: https://www.shockos.net
+Package: shockos-rpi5-kernel-options
+Version: 1.0
+Architecture: all
+Depends: python3
+Description: Toggle compatibility mode of RPi 5 kernel
+    The Raspberry Pi 5 kernel uses 16K page sizes by default, but many Pi programs still require 4K page sizes. Waydroid is another example of a software that requires 4K page sizes. To increase compatibility with these programs, the Pi 5 kernel can be run with 4K page sizes. This app provides a simple, easy way to enable/disable this compatibility feature.

@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+
+import sys
+import fnmatch
+
+with open("/proc/device-tree/model", "r") as file:
+    model = file.read()
+    if not fnmatch.fnmatch(model, "Raspberry Pi 5*"):
+        print(f"This device is a {model}, NOT a Raspberry Pi 5 or 500. Therefore, this tool has no purpose being run on this device. Exiting...")
+        sys.exit()
+
+import gi
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk
+import argparse
+import subprocess
+
+parser = argparse.ArgumentParser(description="Kernel options configurator for the Raspberry Pi 5 and 500.")
+
+parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+
+args = parser.parse_args()
+
+verbose = args.verbose
+
+class app(Gtk.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
+
+    def on_activate(self, app):
+        # Create a Builder
+        builder = Gtk.Builder()
+        builder.add_from_file("/usr/share/shockos/rpi5-kernel-options/main.ui")
+
+        # Obtain the widgets
+        self.compat_mode_switch = builder.get_object("compat_mode_switch")
+        self.apply_button = builder.get_object("apply_button")
+        self.apply_button.connect("clicked", self.apply)
+        self.close_button = builder.get_object("close_button")
+        self.close_button.connect("clicked", self.close)
+        self.reboot_message = builder.get_object("reboot_message")
+        self.reboot_message.connect("response", self.close_message)
+        self.reboot_message.connect("notify::visible", self.message_visibility_changed)
+        self.error_message = builder.get_object("error_message")
+        self.error_message.connect("response", self.close_message)
+        self.error_message.connect("notify::visible", self.message_visibility_changed)
+
+        # Determine whether or not compatibility mode is already enabled
+        self.check_compat_mode()
+
+        # Obtain and show the main window
+        self.main_window = builder.get_object("main_window")
+        self.main_window.connect("close-request", self.main_window_close_attempt)
+        self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        self.main_window.present()
+
+    def check_compat_mode(self):
+        page_size = subprocess.run(["getconf", "PAGESIZE"], capture_output=True, text=True)
+        page_size = page_size.stdout.strip()
+        if str(page_size) == "4096":
+            self.compat_mode_switch.set_active(True)
+            self.compat_mode_enabled = True
+            if verbose:
+                print("Compatibility mode is enabled.")
+        else:
+            self.compat_mode_switch.set_active(False)
+            self.compat_mode_enabled = False
+            if verbose:
+                print("Compatibility mode is disabled.")
+
+    def apply(self, button):
+        if self.compat_mode_switch.get_active() and not self.compat_mode_enabled:
+            if verbose:
+                print("Enabling compatibility mode, switching kernel page size to 4K...")
+            try:
+                subprocess.run(["pkexec", "sed", "-i", "'1i kernel=kernel8.img'", "/boot/firmware/config.txt"], check=True)
+                self.show_reboot_message()
+            except subprocess.CalledProcessError as err_code:
+                if err_code.returncode != "126" and err_code.returncode != "127": #if Pkexec didn't fail
+                    self.show_error_message()
+        elif not self.compat_mode_switch.get_active() and self.compat_mode_enabled:
+            if verbose:
+                print("Disabling compatibility mode, switching kernel page size to 16K...")
+            try:
+                subprocess.run(["pkexec", "sed", "-i", "'1d'", "/boot/firmware/config.txt"], check=True)
+                self.show_reboot_message()
+            except subprocess.CalledProcessError as err_code:
+                if err_code.returncode != "126" and err_code.returncode != "127": #if Pkexec didn't fail
+                    self.show_error_message()
+        self.check_compat_mode()
+
+    def show_reboot_message(self):
+        self.reboot_message.set_visible(True)
+
+    def show_error_message(self):
+        self.error_message.set_visible(True)
+
+    def close_message(self, widget, param):
+        widget.set_visible(False)
+
+    def message_visibility_changed(self, widget, param):
+        if not self.reboot_message.get_visible() and not self.error_message.get_visible():
+            self.main_window.set_sensitive(True)
+        else:
+            self.main_window.set_sensitive(False)
+
+    def main_window_close_attempt(self, widget):
+        if self.reboot_message.get_visible() or self.error_message.get_visible():
+            return True
+
+    def close(self, button):
+        sys.exit()
+
+app = app(application_id="net.ShockOS.RPi5KernelOptions")
+app.run()
+

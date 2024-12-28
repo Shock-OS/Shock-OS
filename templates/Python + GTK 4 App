@@ -12,7 +12,7 @@ parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose
 
 args = parser.parse_args()
 
-class APPNAME(Gtk.Application):
+class app(Gtk.Application):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.connect('activate', self.on_activate)
@@ -31,6 +31,6 @@ class APPNAME(Gtk.Application):
         self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
         self.main_window.present()
 
-app = APPNAME(application_id="net.ShockOS.APPNAME")
+app = app(application_id="net.ShockOS.APPNAME")
 app.run()
 

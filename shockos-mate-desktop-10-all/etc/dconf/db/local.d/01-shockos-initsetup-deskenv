@@ -1,5 +1,5 @@
 [org/mate/desktop/background]
-picture-filename='/usr/share/shockos/initsetup/bg.png'
+picture-filename='/usr/share/shockos/initsetup/backgrounds/initsetup-background.xml'
 show-desktop-icons=false
 
 [org/mate/desktop/session/required-components]

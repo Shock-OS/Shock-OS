@@ -81,5 +81,5 @@ class MyApp(Gtk.Application):
         self.main_window.set_application(self) # Application will close once it no longer has active windows
         self.main_window.present()
 
-app = MyApp(application_id="net.ShockOS.GNOMELayouts")
+app = MyApp(application_id="net.ShockOS.GNOME.Layouts")
 app.run()

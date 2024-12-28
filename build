@@ -2,46 +2,25 @@
 
 if [[ "$1" == "mate" ]] || [[ "$1" == "gnome" ]]
 then
-
     day=$(date '+%e')
-
     if [[ "$day" == "11" ]] || [[ "$day" == "12" ]] || [[ "$day" == "13" ]]
     then
-
       suffix="th"
-
     else
-
       case $((day % 10)) in
-
         1) suffix="st";;
-
         2) suffix="nd";;
-
         3) suffix="rd";;
-
         *) suffix="th";;
-
       esac
-
     fi
-
-    echo "SHOCKOS_BUILD_DATE=\"$(date "+%A, %B %e$suffix, %Y")\"" | tee shockos-core-10-all/usr/lib/shockos/dist-info.sh
-
-    echo "SHOCKOS_BUILD_DATE = \"$(date "+%A, %B %e$suffix, %Y")\"" | tee shockos-core-10-all/usr/lib/shockos/dist_info.py
-
+    echo "SHOCKOS_BUILD_DATE=\"$(date "+%A, %B %e$suffix, %Y")\"" | tee shockos-core-10-all/usr/lib/shockos/shockos-dist-info.sh
+    echo "build_date = \"$(date "+%A, %B %e$suffix, %Y")\"" | tee shockos-core-10-all/usr/lib/shockos/shockos_dist_info.py
     rm -r BUILD-OUT
-
     mkdir BUILD-OUT
-
     cp auto-inst BUILD-OUT
-
     dpkg-deb --build shockos-core-10-all BUILD-OUT
-
     dpkg-deb --build shockos-"$1"-desktop-10-all BUILD-OUT
-
 else
-
     echo "ERROR: Must use either 'gnome' or 'mate' as an argument."
-
 fi

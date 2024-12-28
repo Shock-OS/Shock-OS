@@ -47,6 +47,7 @@ pinned-apps="['chromium.desktop', 'caja.desktop', 'mate-terminal.desktop']"
 win-from-cur-workspace-only=true
 
 [org/mate/screensaver]
+picture-filename='/usr/share/shockos/backgrounds/shockos-background.xml'
 themes="['screensavers-gnomelogo-floaters']"
 
 [org/onboard]

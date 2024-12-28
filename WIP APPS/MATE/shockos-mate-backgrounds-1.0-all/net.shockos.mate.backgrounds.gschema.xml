@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="net.shockos.mate.backgrounds" path="/net/shockos/mate/backgrounds/">
+    <key name="enable-dynamic-backgrounds" type="b">
+        <default>false</default>
+        <summary>Enable dynamic backgrounds</summary>
+        <description>Enable support for switching between background variants when switching between light and dark mode</description>
+    </key>
     <key name="picture-uri" type="s">
         <default>"'file:///usr/share/shockos/backgrounds/shockos-background.xml'"</default>
         <summary>Light mode background</summary>
@@ -9,10 +14,23 @@
         <default>"'file:///usr/share/shockos/backgrounds/shockos-background.xml'"</default>
         <summary>Dark mode background</summary>
     </key>
-    <key name="enable-dynamic-backgrounds" type="b">
+  </schema>
+  <shema id="net.shockos.mate.backgrounds.slideshow" path="/net/shockos/mate/backgrounds/slideshow/">
+    <key name="enabled" type="b">
         <default>false</default>
-        <summary>Enable dynamic backgrounds</summary>
-        <description>Enable support for switching between background variants when switching between light and dark mode</description>
+        <summary>Enable slideshow background</summary>
+    </key>
+    <key name="folder" type="s">
+        <default>~/Pictures<default>
+        <description>Location of pictures to shuffle through when slideshow background is enabled</description>
+    <key>
+    <key name="interval" type="i">
+        <default>5<default>
+        <summary>Amount of time (in minutes) to wait before shuffling the background<summary>
+    </key>
+    <key name="order" type="s">
+        <default>true</default>
+        <description>Order in which to shuffle through backgrounds</description>
     </key>
   </schema>
 </schemalist>

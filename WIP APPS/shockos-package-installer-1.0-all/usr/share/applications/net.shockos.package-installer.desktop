@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=Package Installer
+Comment=Install/remove .deb packages, .flatpakref files or Android .apk packages
+Exec=shockos-package-installer
+Icon=package
+Terminal=false
+Type=Application
+Categories=System;
+StartupNotify=false
+Keywords=package;apt;dpkg;install;deb;flatpakref;apk;android

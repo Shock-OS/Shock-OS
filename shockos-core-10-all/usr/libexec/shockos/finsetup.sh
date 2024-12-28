@@ -8,20 +8,16 @@ then
     sudo rm -r /etc/systemd/system/getty@tty1.service.d # removes the 'shock' user from autologin as the setup is complete
     sudo deluser --remove-home shockos
     sudo systemctl set-default graphical
-    #the default .bashrc file restoration patch begins
-    sudo rm ~/.bashrc
-    sudo cp /etc/skel/.bashrc ~/
-    sudo chown "$(whoami)" ~/.bashrc
-    #the default .bashrc file restoration patch ends
+    sudo rm -f ~/.bash_profile
     sudo rm /usr/share/shockos/initsetup/setupvalue
-    sudo rm /etc/sudoers.d/initsetup-rootpriv #this command removes elevated privilages as they are no longer required.
     sudo rm /etc/dconf/db/local.d/01-shockos-initsetup-deskenv
     sudo rm /etc/dconf/db/local.d/locks/00-shockos-initsetup-deskenv
-    if (($(ls /etc/dconf/db/local.d/locks/)==0))
+    if (($(ls /etc/dconf/db/local.d/locks/ | wc -l)==0))
     then
         sudo rm -r /etc/dconf/db/local.d/locks/
     fi
     sudo dconf update
+    sudo rm /etc/sudoers.d/initsetup-rootpriv #this command removes elevated privilages as they are no longer required.
     echo "Setup complete, rebooting..."
     reboot
 else

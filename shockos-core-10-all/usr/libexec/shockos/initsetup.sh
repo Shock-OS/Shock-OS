@@ -8,7 +8,7 @@ fi
 
 IFS=$'\n'
 
-source /usr/lib/shockos/dist-info.sh
+source /usr/lib/shockos/shockos-dist-info.sh
 setup_todo_list=(choose_language \
                     choose_dialect \
                     apply_locale_settings \
@@ -24,26 +24,10 @@ full_name=""
 
 if [[ "$SHOCKOS_DE_EDITION" == "MATE" ]]
 then
-    #if [[ ! -f /home/shockos/.config/gtk-3.0/settings.ini ]]
-    #then
-        #mkdir -p /home/shockos/.config/gtk-3.0
-        #echo "[Settings]
-#gtk-theme-name=Yaru-purple-dark
-#gtk-icon-theme-name=Yaru-purple-dark
-#gtk-font-name=Ubuntu 11" | tee /home/shockos/.config/gtk-3.0/settings.ini
-    #fi
     if [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
     then
         gsettings set org.mate.session.required-components windowmanager "marco-glx"
     fi
-    #gsettings set org.mate.interface enable-animations "false"
-    #gsettings set org.mate.peripherals-mouse cursor-theme "Yaru"
-    #gsettings set org.mate.Marco.general button-layout ":minimize,maximize,close"
-    #gsettings set org.mate.Marco.general theme "Yaru-dark"
-    #gsettings set org.mate.Marco.general center-new-windows "true"
-    #gsettings set org.mate.interface monospace-font-name "Monospace 13"
-    #gsettings set org.mate.Marco.general titlebar-font "Ubuntu Bold 11"
-    feh --bg-fill /usr/share/shockos/initsetup/bg.png
 else #if GNOME Edition
     gsettings set org.gnome.mutter center-new-windows "true"
     gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple-dark"
@@ -58,7 +42,7 @@ else #if GNOME Edition
     gnome-extensions enable no-overview@fthx
     gsettings set org.gnome.desktop.notifications show-banners "false"
     gsettings set org.gnome.mutter overlay-key ""
-    gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/shockos/initsetup/bg.png"
+    gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/shockos/initsetup/backgrounds/initsetup-background.xml"
     dconf write /org/gnome/shell/extensions/hidetopbar/enable-intellihide "false" #Using DConf because extension does not support GSettings
     gnome-extensions enable hidetopbar@mathieu.bidon.ca
     gnome-shell --wayland & sleep 10
@@ -471,9 +455,9 @@ Password:":LBL '' \
             yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Your username cannot contain spaces." --button="Retry"\!edit-undo-symbolic
             focus_field=2
             success="FALSE"
-        elif [[ "$username" == "shock" ]]
+        elif [[ "$username" == "shockos" ]]
         then
-            yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Your username cannot be 'shock'." --button="Retry"\!edit-undo-symbolic
+            yad --undecorated --center --fixed --image=emblem-important-symbolic --text="Your username cannot be 'shockos'." --button="Retry"\!edit-undo-symbolic
             focus_field=2
             success="FALSE"
         elif (($(expr "$username" : "^[a-z][-a-z0-9_]*\$" )==0))
@@ -536,11 +520,10 @@ if [[ "$require_password" == "FALSE" ]]
 then
     if [[ "$SHOCKOS_DE_EDITION" == "GNOME" ]]
     then
-        sudo sed -i "s/#  AutomaticLoginEnable = true/  AutomaticLoginEnable = true/g" /etc/gdm3/daemon.conf
-        sudo sed -i "s/#  AutomaticLogin = user1/  AutomaticLogin = $username/g" /etc/gdm3/daemon.conf
+        sudo sed -i '/^#  AutomaticLoginEnable = true/c\  AutomaticLoginEnable = true' /etc/gdm3/daemon.conf
+        sudo sed -i "/^#  AutomaticLogin = user1/c\  AutomaticLogin = $username" /etc/gdm3/daemon.conf
     else #MATE
-        echo "autologin-user=$username" | tee -a /etc/lightdm/lightdm.conf #NEEDS TO BE REDONE
-        echo "autologin-user-timeout=0" | tee -a /etc/lightdm/lightdm.conf #NEEDS TO BE REDONE
+        sudo sed -i "/^#autologin-user=/c\autologin-user=$username" /etc/lightdm/lightdm.conf
     fi
 fi
 #the setup finalizer temporary autologin patch begins
@@ -551,7 +534,7 @@ ExecStart=-/usr/sbin/agetty --autologin $username --noclear %I \$TERM" | sudo te
 sudo systemctl is-enabled getty@tty1.service
 sudo systemctl enable getty@tty1.service
 sudo systemctl daemon-reload
-echo '/usr/libexec/shockos/finsetup.sh' | sudo tee -a "/home/$username/.bashrc"
+echo '/usr/libexec/shockos/finsetup.sh' | sudo tee -a "/home/$username/.bash_profile"
 #the setup finalizer temporary autologin patch ends
 kill "$killpid"
 }

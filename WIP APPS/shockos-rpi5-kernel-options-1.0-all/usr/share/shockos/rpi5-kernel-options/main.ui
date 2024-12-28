@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.94.1 -->
+<interface>
+  <!-- interface-name shockos-advanced-settings.ui -->
+  <requires lib="gtk" version="4.8"/>
+  <object class="GtkApplicationWindow" id="main_window">
+    <property name="child">
+      <object class="GtkBox">
+        <property name="margin-bottom">5</property>
+        <property name="margin-end">5</property>
+        <property name="margin-start">5</property>
+        <property name="margin-top">5</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkExpander">
+            <property name="label">More info</property>
+            <property name="label-widget">
+              <object class="GtkBox">
+                <property name="spacing">5</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Compatibility mode</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSwitch" id="compat_mode_switch"/>
+                </child>
+              </object>
+            </property>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">The Raspberry Pi 5 kernel uses a 16K page size by default, while older Pi boards use 4K page sizes by default. This increased page size can improve performance, but at a cost of compatibility. Many Pi programs require a 4K page size to function properly. Waydroid, the software used to power the experimental Android app support feature, also requires 4K page sizes. If you experience problems running software that works on older Pi boards, consider enabling this option.</property>
+                <property name="wrap">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="halign">end</property>
+            <property name="spacing">5</property>
+            <property name="valign">end</property>
+            <property name="vexpand">True</property>
+            <child>
+              <object class="GtkButton" id="apply_button">
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">gtk-ok</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Apply</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="close_button">
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">gtk-close</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Close</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="icon-name">preferences-system</property>
+    <property name="title">RPi 5 Kernel Options</property>
+  </object>
+  <object class="GtkMessageDialog" id="reboot_message">
+    <property name="buttons">ok</property>
+    <property name="secondary-text">Please reboot your system for kernel changes to take effect.</property>
+    <property name="text">Reboot Required</property>
+    <property name="title">RPi 5 Kernel Options</property>
+    <property name="transient-for">main_window</property>
+  </object>
+  <object class="GtkMessageDialog" id="error_message">
+    <property name="buttons">close</property>
+    <property name="message-type">error</property>
+    <property name="secondary-text">An unexpected error occurred. Please try again later.</property>
+    <property name="text">Error</property>
+    <property name="title">RPi 5 Kernel Options</property>
+    <property name="transient-for">main_window</property>
+  </object>
+</interface>

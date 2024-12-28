@@ -1,0 +1,12 @@
+Source: shockos-
+Section: misc
+Priority: optional
+Maintainer: Carson Grover
+Homepage: https://www.shockos.net
+Package: shockos-
+Version: 1.0
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, other-dependencies
+Description: A short description of your package
+ This is a longer description of your package.
+ It can span multiple lines and provide more detail.

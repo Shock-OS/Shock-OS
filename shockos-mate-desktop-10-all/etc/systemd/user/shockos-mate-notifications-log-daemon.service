@@ -1,9 +1,11 @@
 [Unit]
 Description=Notification Log Daemon
+After=default.target
 
 [Service]
 Type=simple
 ExecStart=/usr/libexec/shockos/mate/notifications-log-daemon.sh
+Restart=always
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=default.target

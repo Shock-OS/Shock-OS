@@ -6,6 +6,9 @@ python3 /usr/libexec/shockos/edit-dist-info.py --full-name="Shock OS X Jasmine" 
 
 echo "0" | tee /usr/share/shockos/initsetup/setupvalue
 
+cp -f /usr/share/shockos/start-here.svg /usr/share/icons/Yaru/scalable/places/
+cp -f /usr/share/shockos/start-here-symbolic.svg /usr/share/icons/Yaru/scalable/places/
+
 #the home directory building begins
 mkdir -p /etc/skel/Desktop
 mkdir -p /etc/skel/Documents

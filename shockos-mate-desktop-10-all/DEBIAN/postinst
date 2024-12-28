@@ -27,8 +27,9 @@ apps_to_hide=(
 '/usr/share/applications/mate-tweak.desktop' \
 '/usr/share/applications/mate-font-viewer.desktop' \
 '/usr/share/applications/mate-appearance-properties.desktop' \
-'/usr/share/applications/compton.desktop' \
 '/usr/share/applications/picom.desktop' \
+'/usr/share/applications/mpv.desktop' \
+'/usr/share/applications/zutty.desktop'
 )
 
 for app in ${apps_to_hide[@]}
@@ -53,6 +54,8 @@ echo '#!/bin/bash
 shockos-wm-settings' | tee /usr/bin/mate-window-properties
 #the above set of commands replaces the mate-appearance-properties program with a link to shockos-wallpapers (for the desktop context menu)
 
+systemctl daemon-reload
+systemctl enable --global shockos-mate-notification-applet
 systemctl enable --global shockos-mate-notifications-log-daemon
 systemctl enable --global shockos-mate-slideshow-background-daemon
 systemctl set-default multi-user #ensures the target is set to multi-user
@@ -62,4 +65,17 @@ gtk-update-icon-cache -f /usr/share/icons/Yaru/
 rm -r /usr/share/shockos/install-temp
 
 dconf update
+
+#X11 INITSETUP STUFF:
+echo 'startx' | tee /home/shockos/.bash_profile
+echo 'mate-session' | tee /home/shockos/.xinitrc
+mkdir -p /home/shockos/.config/autostart/
+echo '[Desktop Entry]
+Type=Application
+Exec=/usr/libexec/shockos/initsetup.sh
+Hidden=false
+Name=Shock OS Initial Setup Program
+Comment=This program runs on a fresh installation of Shock OS to allow system configuration and user creation.
+X-MATE-Autostart-Delay=0' | tee /home/shockos/.config/autostart/shockos-initsetup.desktop
+
 

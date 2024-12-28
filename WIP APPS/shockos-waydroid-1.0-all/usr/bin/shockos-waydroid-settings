@@ -100,6 +100,6 @@ class WaydroidSettings(Gtk.Application):
         start_session_thread = threading.Thread(target=self.session_init)
         start_session_thread.start() # start session
 
-app = WaydroidSettings(application_id="net.ShockOS.WaydroidSettings")
+app = WaydroidSettings(application_id="net.ShockOS.Waydroid.Settings")
 app.run()
 

@@ -1,0 +1,11 @@
+[Unit]
+Description=MATE Panel Notification Applet
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=yad --notification --image=preferences-system-notifications-symbolic --command=/usr/libexec/shockos/mate/notifications.sh --text="Notifications"
+Restart=always
+
+[Install]
+WantedBy=default.target

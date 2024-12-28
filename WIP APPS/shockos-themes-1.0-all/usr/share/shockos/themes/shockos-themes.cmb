@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
+<cambalache-project version="0.94.0" target_tk="gtk-4.0">
+  <ui>
+	(1,None,"shockos-themes.ui","main.ui",None,None,None,None,None,None,None)
+  </ui>
+  <ui_library>
+	(1,"gtk","4.8",None)
+  </ui_library>
+  <object>
+	(1,1,"GtkApplicationWindow","main_window",None,None,None,None,0,None,None),
+	(1,2,"GtkBox",None,1,None,None,None,0,None,None),
+	(1,3,"GtkLabel",None,2,None,None,None,0,None,None),
+	(1,4,"GtkBox",None,2,None,None,None,1,None,None),
+	(1,6,"GtkComboBoxText","color_cb",4,None,None,None,1,None,None),
+	(1,7,"GtkComboBoxText","lod_cb",4,None,None,None,0,None,None)
+  </object>
+  <object_property>
+	(1,1,"GtkWindow","child",None,None,None,None,None,2,None,None,None,None),
+	(1,1,"GtkWindow","icon-name","gnome-settings-theme",None,None,None,None,None,None,None,None,None),
+	(1,1,"GtkWindow","resizable","False",None,None,None,None,None,None,None,None,None),
+	(1,1,"GtkWindow","title","Themes",None,None,None,None,None,None,None,None,None),
+	(1,2,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),
+	(1,2,"GtkOrientable","orientation","vertical",None,None,None,None,None,None,None,None,None),
+	(1,2,"GtkWidget","margin-bottom","5",None,None,None,None,None,None,None,None,None),
+	(1,2,"GtkWidget","margin-end","5",None,None,None,None,None,None,None,None,None),
+	(1,2,"GtkWidget","margin-start","5",None,None,None,None,None,None,None,None,None),
+	(1,2,"GtkWidget","margin-top","5",None,None,None,None,None,None,None,None,None),
+	(1,3,"GtkLabel","label","Please choose a theme.",None,None,None,None,None,None,None,None,None),
+	(1,4,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),
+	(1,4,"GtkWidget","halign","center",None,None,None,None,None,None,None,None,None)
+  </object_property>
+  <object_data>
+	(1,6,"GtkComboBoxText",1,1,None,None,None,None,None,None),
+	(1,6,"GtkComboBoxText",2,2,"Bark",1,None,None,None,None),
+	(1,6,"GtkComboBoxText",2,3,"Blue",1,None,None,None,None),
+	(1,6,"GtkComboBoxText",2,4,"Magenta",1,None,None,None,None),
+	(1,6,"GtkComboBoxText",2,5,"Olive",1,None,None,None,None),
+	(1,6,"GtkComboBoxText",2,6,"Orange",1,None,None,None,None),
+	(1,6,"GtkComboBoxText",2,7,"PrussianGreen",1,None,None,None,None),
+	(1,6,"GtkComboBoxText",2,8,"Purple",1,None,None,None,None),
+	(1,6,"GtkComboBoxText",2,9,"Red",1,None,None,None,None),
+	(1,6,"GtkComboBoxText",2,10,"Sage",1,None,None,None,None),
+	(1,7,"GtkComboBoxText",1,1,None,None,None,None,None,None),
+	(1,7,"GtkComboBoxText",2,2,"Light",1,None,None,None,None),
+	(1,7,"GtkComboBoxText",2,3,"Dark",1,None,None,None,None),
+	(1,6,"GtkComboBoxText",2,11,"Viridian",1,None,None,None,None)
+  </object_data>
+  <object_data_arg>
+	(1,6,"GtkComboBoxText",2,2,"id","bark"),
+	(1,6,"GtkComboBoxText",2,3,"id","blue"),
+	(1,6,"GtkComboBoxText",2,4,"id","magenta"),
+	(1,6,"GtkComboBoxText",2,5,"id","olive"),
+	(1,6,"GtkComboBoxText",2,6,"id","orange"),
+	(1,6,"GtkComboBoxText",2,7,"id","prussiangreen"),
+	(1,6,"GtkComboBoxText",2,8,"id","purple"),
+	(1,6,"GtkComboBoxText",2,9,"id","red"),
+	(1,6,"GtkComboBoxText",2,10,"id","sage"),
+	(1,7,"GtkComboBoxText",2,3,"id","dark"),
+	(1,7,"GtkComboBoxText",2,2,"id","light"),
+	(1,6,"GtkComboBoxText",2,11,"id","viridian")
+  </object_data_arg>
+</cambalache-project>

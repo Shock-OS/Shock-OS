@@ -34,7 +34,7 @@ then
 
 fi
 
-source /usr/lib/shockos/dist-info.sh
+source /usr/lib/shockos/shockos-dist-info.sh
 
 #THE CHROMIUM BANDAID FIX BEGINS
 

@@ -1,54 +1,84 @@
-[Toplevel toplevel-0]
+[Toplevel toplevel-1]
 enable-buttons=false
-size=40
+size=36
 screen=0
 monitor=0
 expand=true
 orientation=bottom
 
-[Object briskmenu]
+[Object object-0]
 panel-right-stick=false
 position=0
 relative-to-edge=start
 applet-iid=BriskMenuFactory::BriskMenu
 locked=true
-toplevel-id=toplevel-0
+toplevel-id=toplevel-1
 object-type=applet
 
-[Object clockapplet]
-panel-right-stick=true
-position=72
-relative-to-edge=end
-applet-iid=ClockAppletFactory::ClockApplet
-locked=true
-toplevel-id=toplevel-0
-object-type=applet
-
-[Object notificationarea]
+[Object object-1]
 panel-right-stick=false
-position=76
-relative-to-edge=end
-applet-iid=NotificationAreaAppletFactory::NotificationArea
-locked=true
-toplevel-id=toplevel-0
-object-type=applet
-
-[Object showdesktopapplet]
-panel-right-stick=false
-position=96
+position=85
 relative-to-edge=start
 applet-iid=WnckletFactory::ShowDesktopApplet
 locked=true
-toplevel-id=toplevel-0
+toplevel-id=toplevel-1
 object-type=applet
 
-[Object dockapplet]
+[Object object-2]
 panel-right-stick=false
-position=138
+position=247
 relative-to-edge=start
-applet-iid=DockAppletFactory::DockApplet
+applet-iid=WnckletFactory::WindowListApplet
 locked=true
-toplevel-id=toplevel-0
+toplevel-id=toplevel-1
+object-type=applet
+
+[Object object-3]
+panel-right-stick=false
+menu-path=applications:/
+position=171
+launcher-location=/usr/share/applications/caja-browser.desktop
+relative-to-edge=start
+locked=true
+toplevel-id=toplevel-1
+object-type=launcher
+
+[Object object-4]
+panel-right-stick=false
+menu-path=applications:/
+position=212
+launcher-location=/usr/share/applications/mate-terminal.desktop
+relative-to-edge=start
+locked=true
+toplevel-id=toplevel-1
+object-type=launcher
+
+[Object object-5]
+panel-right-stick=false
+menu-path=applications:/
+position=130
+launcher-location=/usr/share/applications/chromium.desktop
+relative-to-edge=start
+locked=true
+toplevel-id=toplevel-1
+object-type=launcher
+
+[Object object-6]
+panel-right-stick=false
+position=87
+relative-to-edge=end
+applet-iid=NotificationAreaAppletFactory::NotificationArea
+locked=true
+toplevel-id=toplevel-1
+object-type=applet
+
+[Object object-7]
+panel-right-stick=false
+position=0
+relative-to-edge=end
+applet-iid=ClockAppletFactory::ClockApplet
+locked=true
+toplevel-id=toplevel-1
 object-type=applet
 
 [Customsetting maximusdecoration]
