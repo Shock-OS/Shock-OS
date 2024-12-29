@@ -1,0 +1,16 @@
+Source: shockos-shockver
+Section: misc
+Priority: optional
+Maintainer: Carson Grover
+Homepage: https://www.shockos.net
+Package: shockos-shockver
+Version: 1.0
+Architecture: all
+Depends: python3
+Description: View Shock OS distribution and system information
+    Shows the following information:
+    - Shock OS version
+    - Shock OS edition
+    - Shock OS build date
+    - RAM size
+    - Amount of total and free storage space

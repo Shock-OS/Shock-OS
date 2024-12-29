@@ -45,7 +45,8 @@
 	(1,44,"GtkLabel",None,42,None,None,None,1,None,None),
 	(1,45,"GtkBox",None,40,None,None,None,0,None,None),
 	(1,46,"GtkImage",None,45,None,None,None,0,None,None),
-	(1,47,"GtkLabel",None,45,None,None,None,1,None,None)
+	(1,47,"GtkLabel",None,45,None,None,None,1,None,None),
+	(1,48,"GtkMessageDialog","error_message",None,None,None,None,2,None,None)
   </object>
   <object_property>
 	(1,1,"GtkWindow","child",None,None,None,None,None,13,None,None,None,None),
@@ -123,6 +124,12 @@
 	(1,44,"GtkLabel","label","Uninstall",0,None,None,None,None,None,None,None,None),
 	(1,45,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),
 	(1,46,"GtkImage","icon-name","view-refresh",None,None,None,None,None,None,None,None,None),
-	(1,47,"GtkLabel","label","Reinstall",None,None,None,None,None,None,None,None,None)
+	(1,47,"GtkLabel","label","Reinstall",None,None,None,None,None,None,None,None,None),
+	(1,48,"GtkMessageDialog","buttons","close",None,None,None,None,None,None,None,None,None),
+	(1,48,"GtkMessageDialog","message-type","error",None,None,None,None,None,None,None,None,None),
+	(1,48,"GtkMessageDialog","secondary-text","An unexpected error occurred.",None,None,None,None,None,None,None,None,None),
+	(1,48,"GtkMessageDialog","text","Error",None,None,None,None,None,None,None,None,None),
+	(1,48,"GtkMessageDialog","title","Package Installer",None,None,None,None,None,None,None,None,None),
+	(1,48,"GtkWindow","icon-name","error",None,None,None,None,None,None,None,None,None)
   </object_property>
 </cambalache-project>

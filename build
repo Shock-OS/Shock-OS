@@ -21,6 +21,10 @@ then
     cp auto-inst BUILD-OUT
     dpkg-deb --build shockos-core-10-all BUILD-OUT
     dpkg-deb --build shockos-"$1"-desktop-10-all BUILD-OUT
+    for app in apps/*
+    do
+        dpkg-deb --build "$app" BUILD-OUT
+    done
 else
     echo "ERROR: Must use either 'gnome' or 'mate' as an argument."
 fi

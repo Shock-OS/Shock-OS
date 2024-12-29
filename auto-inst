@@ -2,48 +2,16 @@
 
 #this script installs the Shock OS .deb in the current directory
 
-until [[ " ${installed_packages[@]} " == *" pipewire-audio "* ]]
+sudo apt install -y pipewire-audio || { echo "ERROR: Failed to install package pipewire-audio. Exiting..."; exit 1; }
+
+for app in *
 do
-
-    sudo apt update
-
-    sudo apt install -y pipewire-audio
-
-    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq))
-
+    if [[ "$app" != "auto-inst" ]]
+    then
+        sudo apt install -y ./"$app" || { echo "ERROR: Failed to install ${app}. Exiting..."; exit 1; }
+    fi
 done
-
-until [[ " ${installed_packages[@]} " == *" shockos-core "* ]]
-do
-
-    sudo apt install -y ./shockos-core_*
-
-    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq))
-
-done
-
-if (($(getconf LONG_BIT)==32))
-then
-
-    arch="armhf"
-
-else
-
-    arch="arm64"
-
-fi
-
-until [[ " ${installed_packages[@]} " == *" shockos-mate-desktop "* ]] || [[ " ${installed_packages[@]} " == *" shockos-gnome-desktop "* ]]
-do
-
-    sudo apt install -y ./shockos-*-desktop_*
-
-    installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq))
-
-done
-
+    
 sudo apt update
-
 sudo apt autopurge -y
-
 sudo apt update

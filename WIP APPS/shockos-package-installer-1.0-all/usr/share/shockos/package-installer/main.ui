@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.94.0 -->
+<!-- Created with Cambalache 0.94.1 -->
 <interface>
   <!-- interface-name shockos-package-installer.ui -->
   <requires lib="gtk" version="4.8"/>
@@ -215,5 +215,13 @@
   <object class="GtkFileChooserNative" id="file_chooser">
     <property name="create-folders">False</property>
     <property name="transient-for">main_window</property>
+  </object>
+  <object class="GtkMessageDialog" id="error_message">
+    <property name="buttons">close</property>
+    <property name="icon-name">error</property>
+    <property name="message-type">error</property>
+    <property name="secondary-text">An unexpected error occurred.</property>
+    <property name="text">Error</property>
+    <property name="title">Package Installer</property>
   </object>
 </interface>

@@ -52,9 +52,12 @@ class PackageInstaller(Gtk.Application):
         self.spinner = builder.get_object("spinner")
         self.progress_bar = builder.get_object("progress_bar")
         self.installing_box.set_visible(False)
+        self.error_message = builder.get_object("error_message")
+        self.error_message.connect("response", self.close_error_message)
 
         # Obtain and show the main window
         self.main_window = builder.get_object("main_window")
+        self.main_window.connect("close-request", self.main_window_close_request)
         self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
         self.main_window.present()
         self.main_window.set_sensitive(True)
@@ -250,10 +253,14 @@ class PackageInstaller(Gtk.Application):
         if verbose:
             print(f"ACTION: {action}")
         if self.pkg_type == "deb":
-            if action == "remove":
-                process = subprocess.Popen([f"pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY DEBIAN_FRONTEND=gnome apt remove -y {self.package_name}"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-            else:
-                process = subprocess.Popen([f"pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY DEBIAN_FRONTEND=gnome apt {action} -y {self.file}"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            try:
+                if action == "remove":
+                    process = subprocess.Popen([f"pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY DEBIAN_FRONTEND=gnome apt remove -y {self.package_name}"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                else:
+                    process = subprocess.Popen([f"pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY DEBIAN_FRONTEND=gnome apt {action} -y {self.file}"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            except subprocess.CalledProcessError as err_code:
+                if err_code.returncode != "126" and err_code.returncode != "127":
+                    self.show_error_message()
             for line in process.stdout:
                 match = re.search(r'(\d+)%', line)
                 if match:
@@ -290,6 +297,18 @@ class PackageInstaller(Gtk.Application):
         self.progress_bar.set_fraction(fraction)
         self.progress_bar.set_text(f"{int(fraction * 100)}%")
         return False  # Stop idle_add loop
+
+    def show_error_message(self):
+        self.main_window.set_sensitive(False)
+        self.error_message.set_visible(True)
+
+    def close_error_message(self):
+        self.error_message.set_visible(False)
+        self.main_window.set_sensitive(True)
+
+    def main_window_close_request(self, widget):
+        if self.error_message.get_visible():
+            return True
 
 app = PackageInstaller(application_id="net.ShockOS.PackageInstaller")
 app.run()
