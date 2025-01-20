@@ -3,6 +3,6 @@ Version: 1.0
 Architecture: all
 Essential: no
 Priority: optional
-Depends: python3, python3-magic
+Depends: python3, python3-magic, shockos-core (>= 10)
 Maintainer: Carson Grover
 Description: An all-in-one package installer/remover for Shock OS, capable of handling Debian packages (.deb), Flatpak repository references (.flatpakref), and Android packages (.apk) if Android support is enabled.

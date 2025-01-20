@@ -1,0 +1,49 @@
+#!/bin/bash
+
+sudo python3 /usr/libexec/shockos/edit-dist-info.py --edition="GNOME"
+echo "Hidden=true" | tee -a /usr/share/applications/org.gnome.font-viewer.desktop
+systemctl enable --global shockos-gnome-desktop-icons-daemon
+systemctl enable --global shockos-gnome-theme-daemon
+systemctl set-default multi-user #ensures the target is set to multi-user
+rsync -rl --keep-dirlinks /usr/share/shockos/install-temp/* /
+rm -r /usr/share/shockos/install-temp
+dconf update
+
+/usr/libexec/shockos/brand.sh
+
+apps_to_hide=('/usr/share/applications/zutty.desktop')
+
+for app in ${apps_to_hide[@]}
+do
+    if grep -q '^NoDisplay=' "$app"
+    then
+        sed -i '/^NoDisplay=/c\NoDisplay=true' "$app"
+    else
+        echo 'NoDisplay=true' | tee -a "$app"
+    fi
+done
+
+# [BANDAID PATCH]: GDM THEME BANDAID PATCH BEGINS
+unzip /usr/share/shockos/gnome/bandaids/gdm/gdm-tools-1.2.zip -d /usr/share/shockos/gnome/bandaids/gdm/
+/usr/share/shockos/gnome/bandaids/gdm/gdm-tools-1.2/install.sh --no-ask
+set-gdm-theme -s Yaru-purple-dark
+rm -rf /usr/share/shockos/gnome/bandaids/gdm
+if (( $(ls /usr/share/shockos/gnome/bandaids/ | wc -l) < 1 ))
+then
+    rm /usr/share/shockos/gnome/bandaids
+fi
+# [BANDAID PATCH]: GDM THEME BANDAID PATCH ENDS
+
+# Initsetup stuff
+#dconf write /org/gnome/shell/extensions/hidetopbar/enable-intellihide "false" #Using DConf because extension does not support GSettings
+#echo 'gnome-extensions enable no-overview@fthx
+#gnome-extensions enable hidetopbar@mathieu.bidon.ca
+#gnome-shell --wayland' | tee /home/shockos/.bash_profile
+#mkdir -p /home/shockos/.config/autostart/
+#echo '[Desktop Entry]
+#Type=Application
+#Exec=/usr/libexec/shockos/initsetup.sh
+#Hidden=false
+#Name=Shock OS Initial Setup Program
+#Comment=This program runs on a fresh installation of Shock OS to allow system configuration and user creation.
+#X-GNOME-Autostart-Delay=0' | tee /home/shockos/.config/autostart/shockos-initsetup.desktop

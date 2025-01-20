@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="net.shockos.update-manager" path="/net/shockos/update-manager/">
+    <key name="enable-auto-updates" type="b">
+        <default>false</default>
+        <summary>Automatic Updates</summary>
+        <description>If enabled, updates will be installed automatically instead of the user being prompted to install them.</description>
+    </key>
+    <key name="initcheck-days" type="i">
+      <default>0</default>
+      <summary>The amount of days to wait before checking for updates upon system startup</summary>
+    </key>
+    <key name="initcheck-hrs" type="i">
+      <default>0</default>
+      <summary>The amount of hours to wait before checking for updates upon system startup</summary>
+    </key>
+    <key name="initcheck-mins" type="i">
+      <default>30</default>
+      <summary>The amount of minutes to wait before checking for updates upon system startup</summary>
+    </key>
+    <key name="repcheck-days" type="i">
+      <default>0</default>
+      <summary>The amount of days to wait checking for updates (after the initial check)</summary>
+    </key>
+    <key name="repcheck-hrs" type="i">
+      <default>2</default>
+      <summary>The amount of hours to wait checking for updates (after the initial check)</summary>
+    </key>
+    <key name="repcheck-mins" type="i">
+      <default>0</default>
+      <summary>The amount of minutes to wait checking for updates (after the initial check)</summary>
+    </key>
+  </schema>
+</schemalist>

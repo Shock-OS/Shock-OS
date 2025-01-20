@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.94.1 -->
+<interface>
+  <!-- interface-name shockos-gnome-layouts.ui -->
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkApplicationWindow" id="main_window">
+    <property name="default-height">200</property>
+    <property name="default-width">400</property>
+    <property name="icon-name">panel-bottom-symbolic</property>
+    <property name="resizable">False</property>
+    <property name="title">Layouts</property>
+    <child>
+      <object class="GtkBox">
+        <property name="margin-bottom">5</property>
+        <property name="margin-end">5</property>
+        <property name="margin-start">5</property>
+        <property name="margin-top">5</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Please choose a layout.</property>
+            <property name="margin-bottom">10</property>
+            <property name="margin-top">10</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="hexpand">True</property>
+            <property name="homogeneous">True</property>
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkToggleButton" id="panel_mode_button">
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="file">/usr/share/shockos/gnome/shockos-gnome-layouts/icons/panel-mode-symbolic.svg</property>
+                        <property name="icon-size">large</property>
+                        <property name="vexpand">True</property>
+                        <property name="vexpand-set">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">&lt;b&gt;Panel&lt;/b&gt;</property>
+                        <property name="use-markup">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="dock_mode_button">
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="file">/usr/share/shockos/gnome/shockos-gnome-layouts/icons/dock-mode-symbolic.svg</property>
+                        <property name="icon-size">large</property>
+                        <property name="vexpand">True</property>
+                        <property name="vexpand-set">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">&lt;b&gt;Dock&lt;/b&gt;</property>
+                        <property name="use-markup">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="vanilla_mode_button">
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="file">/usr/share/shockos/gnome/shockos-gnome-layouts/icons/vanilla-mode-symbolic.svg</property>
+                        <property name="icon-size">large</property>
+                        <property name="vexpand">True</property>
+                        <property name="vexpand-set">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">&lt;b&gt;Vanilla&lt;/b&gt;</property>
+                        <property name="use-markup">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">5</property>
+            <property name="valign">end</property>
+            <child>
+              <object class="GtkButton" id="reset_button">
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">edit-undo-symbolic</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Reset to Defaults</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="close_button">
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">window-close-symbolic</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Close</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

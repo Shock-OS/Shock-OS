@@ -7,11 +7,11 @@
         <description>Enable support for switching between background variants when switching between light and dark mode</description>
     </key>
     <key name="picture-uri" type="s">
-        <default>"'file:///usr/share/shockos/backgrounds/shockos-background.xml'"</default>
+        <default>"'file:///usr/share/shockos/branding/backgrounds/shockos-background.xml'"</default>
         <summary>Light mode background</summary>
     </key>
     <key name="picture-uri-dark" type="s">
-        <default>"'file:///usr/share/shockos/backgrounds/shockos-background.xml'"</default>
+        <default>"'file:///usr/share/shockos/branding/backgrounds/shockos-background.xml'"</default>
         <summary>Dark mode background</summary>
     </key>
   </schema>

@@ -22,31 +22,30 @@ setup_todo_list=(choose_language \
 username=""
 full_name=""
 
-if [[ "$SHOCKOS_DE_EDITION" == "MATE" ]]
+if [[ "$SHOCKOS_DE_EDITION" == "MATE" ]] && [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
 then
-    if [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
-    then
-        gsettings set org.mate.session.required-components windowmanager "marco-glx"
-    fi
-else #if GNOME Edition
-    gsettings set org.gnome.mutter center-new-windows "true"
-    gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple-dark"
-    gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple-dark"
-    gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
-    #THE DEFAULT FONT PATCH BEGINS
-    gsettings set org.gnome.desktop.interface font-name "Ubuntu 11"
-    gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11"
-    gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13"
-    gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11"
-    #THE DEFAULT FONT PATCH ENDS
-    gnome-extensions enable no-overview@fthx
-    gsettings set org.gnome.desktop.notifications show-banners "false"
-    gsettings set org.gnome.mutter overlay-key ""
-    gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/shockos/initsetup/backgrounds/initsetup-background.xml"
-    dconf write /org/gnome/shell/extensions/hidetopbar/enable-intellihide "false" #Using DConf because extension does not support GSettings
-    gnome-extensions enable hidetopbar@mathieu.bidon.ca
-    gnome-shell --wayland & sleep 10
+    gsettings set org.mate.session.required-components windowmanager "marco-glx"
+else
+    gsettings set org.mate.session.required-components windowmanager "marco"
 fi
+#else #if GNOME Edition
+    #gsettings set org.gnome.mutter center-new-windows "true"
+    #gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple-dark"
+    #gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple-dark"
+    #gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
+    #THE DEFAULT FONT PATCH BEGINS
+    #gsettings set org.gnome.desktop.interface font-name "Ubuntu 11"
+    #gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11"
+    #gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13"
+    #gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11"
+    #THE DEFAULT FONT PATCH ENDS
+    #gnome-extensions enable no-overview@fthx
+    #gsettings set org.gnome.desktop.notifications show-banners "false"
+    #gsettings set org.gnome.mutter overlay-key ""
+    #gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/shockos/initsetup/backgrounds/initsetup-background.xml"
+    #dconf write /org/gnome/shell/extensions/hidetopbar/enable-intellihide "false" #Using DConf because extension does not support GSettings
+    #gnome-extensions enable hidetopbar@mathieu.bidon.ca
+#fi
 
 /usr/libexec/shockos/set-audio-out-to-hdmi.sh
 amixer -D pulse sset Master 100% #sets volume to 100% so the setup music can be heard
@@ -92,7 +91,7 @@ done
 echo "LANG_ABS: ${lang_abs[@]}" #DEBUG
 #PRELOADING ENDS
 
-yad --undecorated --center --window-icon=/usr/share/shockos/shockos-logo.svg --width=400 --title="Welcome" --picture \
+yad --undecorated --center --window-icon=/usr/share/shockos/branding/shockos-logo.svg --width=400 --title="Welcome" --picture \
     --size=fit \
     --filename=/usr/share/shockos/initsetup/welcome-logo.png \
     --text="<span font_weight='bold' font_size='larger'>Welcome to Shock OS</span>\n\nLet's get your computer set up and ready to go. Click 'Next' to get started." \

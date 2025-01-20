@@ -20,8 +20,15 @@ then
     mkdir BUILD-OUT
     cp auto-inst BUILD-OUT
     dpkg-deb --build shockos-core-10-all BUILD-OUT
-    dpkg-deb --build shockos-"$1"-desktop-10-all BUILD-OUT
+    dpkg-deb --build shockos-deskenv-"$1"-10-all BUILD-OUT
     for app in apps/*
+    do
+        if [[ -f "$app"/DEBIAN/control ]]
+        then
+            dpkg-deb --build "$app" BUILD-OUT
+        fi
+    done
+    for app in apps/"${1^^}"/*
     do
         dpkg-deb --build "$app" BUILD-OUT
     done

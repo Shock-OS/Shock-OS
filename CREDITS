@@ -1,4 +1,4 @@
-Shock OS is created by Carson Grover, 2022-2024
+Shock OS is created by Carson Grover, 2022-2025
 
 Shock OS is made possible thanks to the following projects/entities (and the projects/entities that make THEM possible):
     - The Linux Kernel
@@ -28,5 +28,7 @@ The background music played during the initial setup of Shock OS is created by A
     Modifications: This file was downloaded in WAV (.wav) format and converted to Opus (.opus, 160 kbps) for high quality and storage efficiency. Other than that, the soundtrack is unaltered.
     
     The above information is also available at `/usr/share/shockos/initsetup/CREDITS` on Shock OS systems running Shock OS X Jasmine or higher
+
+gdm-tools by realmazharhussain, which is licensed under the GNU General Public License v3, is used to theme GDM (the login screen) on GNOME Edition. The source code for gdm-tools is available at https://github.com/realmazharhussain/gdm-tools. This information is also available at `/usr/share/shockos/gnome/CREDITS` on Shock OS GNOME Edition systems.
 
 Thank you for using Shock OS!

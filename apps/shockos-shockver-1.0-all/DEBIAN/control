@@ -6,7 +6,7 @@ Homepage: https://www.shockos.net
 Package: shockos-shockver
 Version: 1.0
 Architecture: all
-Depends: python3
+Depends: python3, shockos-core (>= 10)
 Description: View Shock OS distribution and system information
     Shows the following information:
     - Shock OS version

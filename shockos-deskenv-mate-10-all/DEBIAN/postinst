@@ -1,0 +1,82 @@
+#!/bin/bash
+
+sudo python3 /usr/libexec/shockos/edit-dist-info.py --edition="MATE"
+
+mkdir -p /etc/lightdm/
+echo '[Greeter]
+background=/usr/share/shockos/mate/lightdm-bg.svg
+theme-name=Yaru-purple-dark
+icon-theme-name=Yaru-purple-dark
+show-hostname=false
+show-power=false
+show-keyboard=false
+show-clock=false' | tee /etc/lightdm/slick-greeter.conf
+sed -i '/^#greeter-hide-users=/c\greeter-hide-users=false' /etc/lightdm/lightdm.conf
+# the above set of commands sets the slick-greeter settings
+
+rm /usr/share/applications/screensavers/gnomelogo-floaters.desktop
+rm /usr/share/applications/screensavers/footlogo-floaters.desktop
+# the above commands set the Lightning Bolt and Raspberry screensavers
+
+apps_to_hide=(
+'/usr/share/applications/display-im6.q16.desktop' \
+'/usr/share/applications/ca.desrt.dconf-editor.desktop' \
+'/usr/share/applications/caja-file-management-properties.desktop' \
+'/usr/share/applications/mate-volume-control.desktop' \
+'/usr/share/applications/mate-time-admin.desktop' \
+'/usr/share/applications/mate-tweak.desktop' \
+'/usr/share/applications/mate-font-viewer.desktop' \
+'/usr/share/applications/mate-appearance-properties.desktop' \
+'/usr/share/applications/picom.desktop' \
+'/usr/share/applications/mpv.desktop' \
+'/usr/share/applications/zutty.desktop'
+)
+
+for app in ${apps_to_hide[@]}
+do
+    if grep -q '^NoDisplay=' "$app"
+    then
+        sed -i '/^NoDisplay=/c\NoDisplay=true' "$app"
+    else
+        echo 'NoDisplay=true' | tee -a "$app"
+    fi
+done
+# removes the shortcuts for unwanted apps in the applications directory
+
+cp /usr/bin/mate-appearance-properties /usr/bin/mate-appearance-properties-old
+cp /usr/bin/mate-window-properties /usr/bin/mate-window-properties-old
+echo '#!/bin/bash
+
+shockos-backgrounds' | tee /usr/bin/mate-appearance-properties
+
+echo '#!/bin/bash
+
+shockos-wm-settings' | tee /usr/bin/mate-window-properties
+# the above set of commands replaces the mate-appearance-properties program with a link to shockos-wallpapers (for the desktop context menu)
+
+systemctl daemon-reload
+systemctl enable --global shockos-mate-notification-applet
+systemctl enable --global shockos-mate-notifications-log-daemon
+systemctl enable --global shockos-mate-slideshow-background-daemon
+systemctl set-default multi-user # ensures the target is set to multi-user
+rsync -rl --keep-dirlinks /usr/share/shockos/install-temp/* /
+cp -rf /usr/share/shockos/install-temp/usr/share/applications/* /etc/skel/.local/share/applications # this command eliminates the need to duplicate the .desktop files
+gtk-update-icon-cache -f /usr/share/icons/Yaru/
+rm -r /usr/share/shockos/install-temp
+dconf update
+
+/usr/libexec/shockos/brand.sh
+
+# X11 INITSETUP STUFF:
+echo 'startx' | tee /home/shockos/.bash_profile
+echo 'mate-session' | tee /home/shockos/.xinitrc
+mkdir -p /home/shockos/.config/autostart/
+echo '[Desktop Entry]
+Type=Application
+Exec=/usr/libexec/shockos/initsetup.sh
+Hidden=false
+Name=Shock OS Initial Setup Program
+Comment=This program runs on a fresh installation of Shock OS to allow system configuration and user creation.
+X-MATE-Autostart-Delay=0' | tee /home/shockos/.config/autostart/shockos-initsetup.desktop
+
+

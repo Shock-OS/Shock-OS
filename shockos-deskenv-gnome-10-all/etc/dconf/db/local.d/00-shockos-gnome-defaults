@@ -1,0 +1,51 @@
+[org/gnome/desktop/background]
+picture-uri='file:///usr/share/shockos/branding/backgrounds/shockos-background.xml'
+picture-uri-dark='file:///usr/share/shockos/branding/backgrounds/shockos-background.xml'
+
+[org/gnome/desktop/interface]
+color-scheme='prefer-dark'
+cursor-theme='Yaru'
+document-font-name='Ubuntu 11'
+font-name='Ubuntu 11'
+gtk-theme='Yaru-purple-dark'
+icon-theme='Yaru-purple-dark'
+
+[org/gnome/desktop/wm/preferences]
+button-layout=':minimize,maximize,close'
+titlebar-font='Ubuntu Bold 11'
+
+[org/gnome/mutter]
+center-new-windows=true
+
+[org/gnome/nautilus/preferences]
+show-delete-permanently=true
+
+[org/gnome/shell]
+favorite-apps=['chromium.desktop', 'org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'org.gnome.Terminal.desktop']
+
+[org/gnome/shell/extensions/arcmenu]
+custom-menu-button-icon='/usr/share/icons/Yaru/scalable/places/start-here-symbolic.svg'
+custom-menu-button-icon-size='32.0'
+custom-menu-button-text=' Menu'
+menu-button-appearance='Icon_Text'
+menu-button-icon='Custom_Icon'
+menu-layout='Elementary'
+
+[org/gnome/shell/extensions/dash-to-dock]
+isolate-workspaces=true
+running-indicator-dominant-color=true
+running-indicator-style='DOTS'
+
+[org/gnome/shell/extensions/dash-to-panel]
+dot-color-dominant=true
+dot-style-focused='CILIORA'
+dot-style-unfocused='DASHES'
+focus-highlight-dominant=true
+isolate-workspaces=true
+panel-element-positions='{"0":[{"element":"showAppsButton","visible":false,"position":"stackedTL"},{"element":"leftBox","visible":true,"position":"stackedTL"},{"element":"activitiesButton","visible":false,"position":"stackedTL"},{"element":"taskbar","visible":true,"position":"stackedTL"},{"element":"centerBox","visible":true,"position":"stackedBR"},{"element":"rightBox","visible":true,"position":"stackedBR"},{"element":"dateMenu","visible":true,"position":"stackedBR"},{"element":"systemMenu","visible":true,"position":"stackedBR"},{"element":"desktopButton","visible":true,"position":"stackedBR"}]}'
+
+[org/gnome/shell/extensions/panel-osd]
+x-pos=100.0
+
+[org/gnome/shell/extensions/user-theme]
+name='Yaru-purple-dark'

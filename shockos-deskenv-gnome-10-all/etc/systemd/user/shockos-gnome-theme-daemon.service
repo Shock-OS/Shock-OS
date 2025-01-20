@@ -1,0 +1,11 @@
+[Unit]
+Description=Background daemon to monitor when dark mode is enabled/disabled from the GNOME quick settings menu and adjust the GNOME Shell, icon, and legacy GTK+ themes accordingly
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/shockos/gnome/theme-daemon.sh
+Restart=always
+
+[Install]
+WantedBy=default.target

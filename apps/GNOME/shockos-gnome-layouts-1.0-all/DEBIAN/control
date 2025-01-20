@@ -1,0 +1,14 @@
+Source: shockos-gnome-layouts
+Section: misc
+Priority: optional
+Maintainer: Carson Grover
+Homepage: https://www.shockos.net
+Package: shockos-gnome-layouts
+Version: 1.0
+Architecture: all
+Depends: python3, shockos-deskenv-gnome (>= 10)
+Description: Change the desktop layout of Shock OS GNOME Edition
+    Available layouts include:
+     - Dock mode: Uses dash-to-dock to provide an autohiding dock.
+     - Panel mode: Uses dash-to-panel to provide an always-visible taskbar with a menu and window list.
+     - Vanilla mode: The default GNOME workflow, no panel or persistent dock.

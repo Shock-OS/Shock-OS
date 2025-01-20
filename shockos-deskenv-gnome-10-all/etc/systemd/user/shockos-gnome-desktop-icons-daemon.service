@@ -1,0 +1,11 @@
+[Unit]
+Description=Background daemon to monitor when new app shortcuts are added to the desktop and mark them as trusted automatically, eliminating the need for the user to do it manually
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/shockos/gnome/desktop-icons-daemon.sh
+Restart=always
+
+[Install]
+WantedBy=default.target

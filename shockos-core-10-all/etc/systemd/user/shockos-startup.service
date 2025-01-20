@@ -1,9 +1,10 @@
 [Unit]
 Description=Manages Shock OS startup procedures
+After=default.target
 
 [Service]
 Type=simple
 ExecStart=/usr/libexec/shockos/startup.sh
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=default.target

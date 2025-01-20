@@ -6,9 +6,6 @@ python3 /usr/libexec/shockos/edit-dist-info.py --full-name="Shock OS X Jasmine" 
 
 echo "0" | tee /usr/share/shockos/initsetup/setupvalue
 
-cp -f /usr/share/shockos/start-here.svg /usr/share/icons/Yaru/scalable/places/
-cp -f /usr/share/shockos/start-here-symbolic.svg /usr/share/icons/Yaru/scalable/places/
-
 #the home directory building begins
 mkdir -p /etc/skel/Desktop
 mkdir -p /etc/skel/Documents
@@ -18,7 +15,7 @@ mkdir -p /etc/skel/Pictures
 mkdir -p /etc/skel/Public
 mkdir -p /etc/skel/Templates
 mkdir -p /etc/skel/Videos
-ln -s /usr/share/shockos/face.svg /etc/skel/.face
+ln -s /usr/share/shockos/branding/face.svg /etc/skel/.face
 mkdir -p /etc/skel/.config/menus
 mkdir -p /etc/skel/.cache/shockos-tmp
 mkdir -p /etc/skel/.config/shockos/
@@ -33,9 +30,6 @@ XDG_PICTURES_DIR="$HOME/Pictures"
 XDG_VIDEOS_DIR="$HOME/Videos"' | tee /etc/skel/.config/user-dirs.dirs
 mkdir -p /etc/skel/.cache
 mkdir -p /etc/skel/.local/share/applications
-mkdir -p /etc/skel/.config/shockos/themes
-echo 'user_lod=dark
-user_color=purple' | tee /etc/skel/.config/shockos/themes/yaru
 #the home directory building ends
 
 echo "Hidden=true" | tee -a /usr/share/applications/htop.desktop
