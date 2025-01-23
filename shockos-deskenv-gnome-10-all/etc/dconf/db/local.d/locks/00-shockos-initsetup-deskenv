@@ -18,4 +18,8 @@
 
 /org/gnome/settings-daemon/plugins/media-leys/custom-keybinding
 
+/org/gnome/shell/disable-user-extensions
+/org/gnome/shell/enabled-extensions
+/org/gnome/shell/extensions/hidetopbar/enable-intellihide
 /org/gnome/shell/extensions/user-theme/name
+

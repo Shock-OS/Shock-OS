@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=ShockDots
+Description=A simple boot animation featuring the Shock OS lightning bolt on a black background with progress dots.
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/shockdots-old
+ScriptFile=/usr/share/plymouth/themes/shockdots-old/shockdots-old.script

@@ -238,7 +238,7 @@ then
     if [[ " ${installed_packages[@]} " != *" $package "* ]] #if removed successfully
     then
 
-        if [[ "$SHOCKOS_DE_EDITION" == "MATE" ]]
+        if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
         then
 
             notify-send --app-name="Shockware Center" --icon=shockware-center "App Removed Successfully" "$full_name$both was successfully removed."
@@ -275,7 +275,7 @@ update_apt_queue
 if [[ " ${installed_packages[@]} " == *" $package "* ]] #if installed successfully
 then
 
-    if [[ "$SHOCKOS_DE_EDITION" == "MATE" ]]
+    if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
     then
 
         notify-send --app-name="Shockware Center" --icon=shockware-center "App Installed Successfully" "$full_name$both was successfully installed."
@@ -371,7 +371,7 @@ then
     if [[ " ${installed_flatpaks[@]} " != *" $id "* ]] #if removed successfully
     then
 
-        if [[ "$SHOCKOS_DE_EDITION" == "MATE" ]]
+        if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
         then
 
             notify-send --app-name="Shockware Center" --icon=shockware-center "App Removed Successfully" "$full_name$both was successfully removed."
@@ -437,7 +437,7 @@ hide_indicator
 if [[ " ${installed_flatpaks[@]} " == *" $id "* ]] #if installed successfully
 then
 
-    if [[ "$SHOCKOS_DE_EDITION" == "MATE" ]]
+    if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
     then
 
         notify-send --app-name="Shockware Center" --icon=shockware-center "App Installed Successfully" "$full_name$both was successfully installed."

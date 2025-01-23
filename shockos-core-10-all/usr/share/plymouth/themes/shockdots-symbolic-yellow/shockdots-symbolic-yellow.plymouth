@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=ShockDots Symbolic Yellow
+Description=A simple boot animation featuring the symbolic yellow Shock OS lightning bolt on a black background with progress dots.
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/shockdots-symbolic-yellow
+ScriptFile=/usr/share/plymouth/themes/shockdots-symbolic-yellow/shockdots-symbolic-yellow.script

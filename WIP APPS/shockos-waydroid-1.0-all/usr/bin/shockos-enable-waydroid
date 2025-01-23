@@ -14,7 +14,7 @@ alias whiptail="whiptail --backtitle='EXPERIMENTAL WAYDROID SETUP'"
 whiptail --title="WELCOME" --msgbox "Welcome to the Waydroid setup wizard. Here you can enable support for running Android applications on your system. Please keep in mind that this feature is currently experimental, and you are likely to encounter issues.
 
 WARNING: Enabling Android app support may require modifying your kernel. Installing Android support also requires at least 5 GB of free space." $(get_win_size) --ok-button="Continue"
-if [[ "$SHOCKOS_DE_EDITION" == "MATE" ]]
+if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
 then
     whiptail --title="MATE EDITION DETECTED" --msbox "You are currently running the MATE Edition of Shock OS, which still uses X11. You will still be able to run Waydroid, but only in a nested Wayland compositor. The desktop integration feature is unavailable for the MATE Edition, but you can still run an Android session in its own window." $(get_win_size) --ok-button="I Understand"
 fi

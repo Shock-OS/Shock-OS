@@ -21,6 +21,8 @@ center-new-windows=true
 show-delete-permanently=true
 
 [org/gnome/shell]
+disable-user-extensions=false
+enabled-extensions=['arcmenu@arcmenu.com', 'dash-to-panel@jderose9.github.com', 'ding@rastersoft.com', 'panel-osd@berend.de.schouwer.gmail.com', 'ubuntu-appindicators@ubuntu.com', 'user-theme@gnome-shell-extensions.gcampax.github.com']
 favorite-apps=['chromium.desktop', 'org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'org.gnome.Terminal.desktop']
 
 [org/gnome/shell/extensions/arcmenu]

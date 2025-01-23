@@ -35,7 +35,7 @@ class MyApp(Gtk.Application):
         # Set the labels
         full_name = getattr(shockos_dist_info, 'full_name', "ERROR: FULL NAME UNAVAILABLE")
         full_name_label.set_label(f"<b>{full_name}</b>")
-        edition = getattr(shockos_dist_info, 'edition', "ERROR: EDITION NOT AVAILABLE")
+        edition = getattr(shockos_dist_info, 'deskenv', "ERROR: EDITION NOT AVAILABLE")
         edition_label.set_label(f"{edition} Edition")
         arch = subprocess.run(["getconf", "LONG_BIT"], capture_output=True, text=True)
         arch = arch.stdout.strip()

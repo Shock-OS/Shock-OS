@@ -4,8 +4,6 @@ cd /
 sed -i '1s/.*/PRETTY_NAME="Shock OS X Jasmine"/' /usr/lib/os-release
 python3 /usr/libexec/shockos/edit-dist-info.py --full-name="Shock OS X Jasmine" --version-number=10
 
-echo "0" | tee /usr/share/shockos/initsetup/setupvalue
-
 #the home directory building begins
 mkdir -p /etc/skel/Desktop
 mkdir -p /etc/skel/Documents
@@ -54,8 +52,12 @@ systemctl enable --global shockos-startup
 #the splash screen patch begins
 newcmdline="$(cat /boot/firmware/cmdline.txt) quiet splash plymouth.ignore-serial-consoles"
 echo "$newcmdline" | tee /boot/firmware/cmdline.txt
-plymouth-set-default-theme -R shockdots
+plymouth-set-default-theme -R shockdots-symbolic-white
 #the splash screen patch ends
+
+# Initsetup stuff
+mkdir -p /usr/lib/shockos/initsetup
+echo 'init' | tee /usr/lib/shockos/initsetup/step
 
 
 

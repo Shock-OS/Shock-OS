@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$(cat /usr/share/shockos/initsetup/setupvalue)" != "0" ]]
+if [[ "$(cat /usr/lib/shockos/initsetup/step)" != "init" ]]
 then
     echo "Your system has already been set up."
     exit
@@ -22,7 +22,7 @@ setup_todo_list=(choose_language \
 username=""
 full_name=""
 
-if [[ "$SHOCKOS_DE_EDITION" == "MATE" ]] && [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
+if [[ "$SHOCKOS_DESKENV" == "MATE" ]] && [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
 then
     gsettings set org.mate.session.required-components windowmanager "marco-glx"
 else
@@ -517,7 +517,7 @@ sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,
 echo "%$username ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/initsetup-rootpriv #enables the user to run all commands without a password (temporarily)
 if [[ "$require_password" == "FALSE" ]]
 then
-    if [[ "$SHOCKOS_DE_EDITION" == "GNOME" ]]
+    if [[ "$SHOCKOS_DESKENV" == "GNOME" ]]
     then
         sudo sed -i '/^#  AutomaticLoginEnable = true/c\  AutomaticLoginEnable = true' /etc/gdm3/daemon.conf
         sudo sed -i "/^#  AutomaticLogin = user1/c\  AutomaticLogin = $username" /etc/gdm3/daemon.conf
@@ -562,7 +562,7 @@ do
     fi
 done
 
-echo "1" | sudo tee /usr/share/shockos/initsetup/setupvalue
+echo 'fin' | sudo tee /usr/lib/shockos/initsetup/step
 yad --undecorated --center --fixed --text-align=center --text="<span font_weight='bold' font_size='larger'>All Done\!</span>\n\nYour Raspberry Pi is set up and ready to go. Please reboot to begin using your system.\n" --buttons-layout=center --button="Reboot Now"\!gtk-refresh-symbolic
 sudo reboot
 

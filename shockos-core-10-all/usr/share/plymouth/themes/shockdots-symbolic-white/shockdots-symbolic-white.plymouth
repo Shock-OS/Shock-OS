@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=ShockDots Symbolic White
+Description=A simple boot animation featuring the white symbolic Shock OS lightning bolt on a black background with progress dots.
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/shockdots-symbolic-white
+ScriptFile=/usr/share/plymouth/themes/shockdots-symbolic-white/shockdots-symbolic-white.script

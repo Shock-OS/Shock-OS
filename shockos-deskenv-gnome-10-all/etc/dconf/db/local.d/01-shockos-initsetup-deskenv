@@ -8,5 +8,9 @@ show-banners=false
 [org/gnome/mutter]
 overlay-key=''
 
+[org/gnome/shell]
+disable-user-extensions=false
+enabled-extensions=['no-overview@fthx', 'hidetopbar@mathieu.bidon.ca']
+
 [org/gnome/shell/extensions/hidetopbar]
 enable-intellihide=false
