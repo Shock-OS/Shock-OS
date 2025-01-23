@@ -58,10 +58,10 @@ First, clone the Shock OS GitHub repository to your computer (or download the .z
 `$ cd Shock-OS`
 
 To build GNOME Edition:
-`$ ./build gnome`
+`$ ./build.sh gnome`
 
 Or, to build MATE Edition:
-`$ ./build mate`
+`$ ./build.sh mate`
 
 A new directory called `BUILD-OUT` will be created, containing all the files necessary to build Shock OS. Hold on to these, you will need them later in the build process. Using Raspberry Pi Imager, install the latest version of Raspberry Pi OS Lite to a storage device for use with your Raspberry Pi. When finished, insert your newly formatted storage device into your Raspberry Pi and start it up. 
 

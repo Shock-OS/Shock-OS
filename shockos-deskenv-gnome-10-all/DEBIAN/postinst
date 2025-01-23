@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo python3 /usr/libexec/shockos/edit-dist-info.py --edition="GNOME"
+sudo python3 /usr/libexec/shockos/edit-dist-info.py --deskenv="GNOME"
 echo "Hidden=true" | tee -a /usr/share/applications/org.gnome.font-viewer.desktop
 systemctl enable --global shockos-gnome-desktop-icons-daemon
 systemctl enable --global shockos-gnome-theme-daemon
@@ -23,13 +23,3 @@ do
     fi
 done
 
-# Initsetup stuff
-echo "dbus-run-session -- bash -c 'export XDG_VTNR=\$(fgconsole) && XDG_SESSION_TYPE=wayland gnome-session'" | tee /home/shockos/.bash_profile
-mkdir -p /home/shockos/.config/autostart/
-echo '[Desktop Entry]
-Type=Application
-Exec=/usr/libexec/shockos/initsetup.sh
-Hidden=false
-Name=Shock OS Initial Setup Program
-Comment=This program runs on a fresh installation of Shock OS to allow system configuration and user creation.
-X-GNOME-Autostart-Delay=0' | tee /home/shockos/.config/autostart/shockos-initsetup.desktop

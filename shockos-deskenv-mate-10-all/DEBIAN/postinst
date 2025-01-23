@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo python3 /usr/libexec/shockos/edit-dist-info.py --edition="MATE"
+sudo python3 /usr/libexec/shockos/edit-dist-info.py --deskenv="MATE"
 
 mkdir -p /etc/lightdm/
 echo '[Greeter]
@@ -66,17 +66,5 @@ rm -r /usr/share/shockos/install-temp
 dconf update
 
 /usr/libexec/shockos/brand.sh
-
-# X11 INITSETUP STUFF:
-echo 'startx' | tee /home/shockos/.bash_profile
-echo 'mate-session' | tee /home/shockos/.xinitrc
-mkdir -p /home/shockos/.config/autostart/
-echo '[Desktop Entry]
-Type=Application
-Exec=/usr/libexec/shockos/initsetup.sh
-Hidden=false
-Name=Shock OS Initial Setup Program
-Comment=This program runs on a fresh installation of Shock OS to allow system configuration and user creation.
-X-MATE-Autostart-Delay=0' | tee /home/shockos/.config/autostart/shockos-initsetup.desktop
 
 
