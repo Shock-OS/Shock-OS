@@ -17,7 +17,7 @@ Here are some ideas to get you started:
 - ⚡ Fun fact: ...
 -->
 
-Shock OS is a desktop Linux distribution designed specifically for the Raspberry Pi 4, 400, & 5 (although it can very easily be ported to x86 if those who are interested would like to contribute towards that). This GitHub repository contains the source code for Shock OS, including prototypes for the next release. The development branch always has the latest prototype, and other branches, with the exception of the `upgrades` branch, are frozen in the state they were when their correspondingly codenamed version of Shock OS was released. For example, branch `finlay` contains the source code for Shock OS 6.0 Finlay.
+Shock OS is a desktop Linux distribution designed specifically for the Raspberry Pi 4, 400, & 5 (although it can very easily be ported to x86 if those who are interested would like to contribute towards that). This GitHub repository contains the source code for Shock OS, including prototypes for the next release. The development branch always has the latest prototype, and other branches, with the exception of the `upgrades` branch, are frozen in the state they were when their correspondingly codenamed version of Shock OS was released. For example, branch `release-finlay` contains the source code for Shock OS 6.0 Finlay (which is ancient by the way don't use it).
 
 ### Information
 Shock OS aims to provide a full-fledged desktop experience for the Raspberry Pi 4+. It is based on Raspberry Pi OS Lite and designed from the ground up with the Raspberry Pi hardware in mind.
