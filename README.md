@@ -52,7 +52,9 @@ Visit [the Shock OS website](https://www.shockos.net/) for more information abou
 Shock OS builds are made by installing a series .deb packages on top of a fresh install of Raspberry Pi OS Lite. To test-run the latest prototype, follow the instructions below to build Shock OS:
 
 First, clone the Shock OS GitHub repository to your computer (or download the .zip file and extract it):
+
 `$ git clone https://github.com/Shock-OS/Shock-OS.git`
+
 `$ cd Shock-OS`
 
 To build GNOME Edition:
@@ -72,13 +74,17 @@ Now you'll need the files in the `BUILD-OUT` directory that was created earlier.
 To mount the drive, use `sudo mount /dev/sdXN /media` (replace the `X` in `/dev/sdXN` with the drive letter of your USB drive, and `N` with the partition number (likely `1`). If Raspberry Pi OS Lite is installed on an SD card, the USB drive is likely `/dev/sda1`. If Raspberry Pi OS Lite is installed on a USB device, the USB drive containing the necessary files may be `/dev/sdb1`, `/dev/sdc`, etc. When it doubt, just keep going down the alphabet until it works.) 
 
 Once the drive is mounted, run the following commands:
+
 `$ cp /media/* .` --> Copies the build files to the current directory
+
 `$ sudo umount /dev/sdXN` (use the same drive name as before) --> Unmounts the USB drive as it is no longer needed
+
 `$ ./auto-inst.sh` --> Begins the building process. This should take around 20-100 minutes, depending on your internet connection speed.
 
 Now all that's left is to wait for the building process to finish. This will take a while, so feel to grab a snack, watch a movie, run some errands, play Mario Kart, or finally catch up on that homework we all know you've been procrastinating (jk xD).
 
 Once the build process is complete, run the following command to reboot the system and begin the initial setup process (hopefully, unless it's broken in the development build for some reason):
+
 `$ reboot`
 
 That's it, enjoy!
