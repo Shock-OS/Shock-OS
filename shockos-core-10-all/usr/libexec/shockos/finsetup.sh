@@ -18,13 +18,6 @@ then
             sudo rm -r /etc/dconf/db/local.d/locks/
         fi
         sudo dconf update
-        # [BANDAID PATCH]: GDM THEME PATCH BEGINS
-        source /usr/lib/shockos/shockos-dist-info.sh
-        if [[ "$SHOCKOS_DESKENV" == "GNOME" ]]
-        then
-            sudo /usr/libexec/shockos/gnome/bandaids/gdm-theme-patch.sh
-        fi
-        # [BANDAID PATCH]: GDM THEME PATCH ENDS
         sudo rm /usr/lib/shockos/initsetup/step
         sudo rm /etc/sudoers.d/initsetup-rootpriv #this command removes elevated privilages as they are no longer required.
         echo "Setup complete, rebooting..."

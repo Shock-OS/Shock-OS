@@ -19,11 +19,24 @@ sudo apt update
 sudo apt autopurge -y
 sudo apt update
 
-# Initial Setup stuff
 source /usr/lib/shockos/shockos-dist-info.sh
+
+# [BANDAID PATCH]: GDM THEME PATCH BEGINS
 if [[ "$SHOCKOS_DESKENV" == "GNOME" ]]
 then
-    echo "dbus-run-session -- bash -c 'export XDG_VTNR=\$(fgconsole) && XDG_SESSION_TYPE=wayland gnome-session'" | tee /home/shockos/.bash_profile
+    sudo /usr/libexec/shockos/gnome/bandaids/gdm-theme-patch.sh
+fi
+# [BANDAID PATCH]: GDM THEME PATCH ENDS
+
+# Initial Setup stuff
+if [[ "$SHOCKOS_DESKENV" == "GNOME" ]]
+then
+    echo "if [[ ! -f /tmp/shockos-initsetup/started.indicator ]]
+then
+    mkdir -p /tmp/shockos-initsetup
+    touch /tmp/shockos-initsetup/started.indicator
+    dbus-run-session -- bash -c 'export XDG_VTNR=\$(fgconsole) && XDG_SESSION_TYPE=wayland gnome-session'
+fi" | tee /home/shockos/.bashrc
 elif [[ "$SHOCKOS_DESKENV" == "MATE" ]]
 then
     echo 'startx' | tee /home/shockos/.bash_profile #should probably be replaced with dbus cmd like GNOME edition
