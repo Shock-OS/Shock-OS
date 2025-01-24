@@ -9,7 +9,7 @@ sudo apt install -y ./"shockos-deskenv-"* || { echo "ERROR: Failed to install sh
 
 for app in *
 do
-    if [[ "$app" != "auto-inst" ]]
+    if [[ "$app" == *'.deb' ]]
     then
         sudo apt install -y ./"$app" || { echo "ERROR: Failed to install ${app}. Exiting..."; exit 1; }
     fi
