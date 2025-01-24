@@ -79,7 +79,7 @@ Once the drive is mounted, run the following commands:
 
 `$ sudo umount /dev/sdXN` (use the same drive name as before) --> Unmounts the USB drive as it is no longer needed
 
-`$ ./auto-inst.sh` --> Begins the building process. This should take around 20-100 minutes, depending on your internet connection speed.
+`$ ./auto-install.sh` --> Begins the building process. This should take around 20-100 minutes, depending on your internet connection speed.
 
 Now all that's left is to wait for the building process to finish. This will take a while, so feel to grab a snack, watch a movie, run some errands, play Mario Kart, or finally catch up on that homework we all know you've been procrastinating (jk xD).
 
