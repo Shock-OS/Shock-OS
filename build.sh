@@ -18,7 +18,7 @@ then
     echo "build_date = \"$(date "+%A, %B %e$suffix, %Y")\"" | tee shockos-core-10-all/usr/lib/shockos/shockos_dist_info.py
     rm -r BUILD-OUT
     mkdir BUILD-OUT
-    cp auto-inst.sh BUILD-OUT
+    cp auto-install.sh BUILD-OUT
     dpkg-deb --build shockos-core-10-all BUILD-OUT
     dpkg-deb --build shockos-deskenv-"$1"-10-all BUILD-OUT
     for app in apps/*

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import sys
+sys.path.append('/usr/lib/shockos/')
+import shockos_dist_info
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, GLib
@@ -36,6 +38,13 @@ class WaydroidSettings(Gtk.Application):
         self.restart_session_button = builder.get_object("restart_session_button")
         self.restart_session_button.connect("clicked", self.restart_session)
         self.spinner = builder.get_object("spinner")
+        self.multi_windows_box = builder.get_object("multi_windows_box")
+        self.multi_windows_switch = builder.get_object("multi_windows_switch")
+        self.multi_windows_switch.connect("notify", self.toggle_multi_windows)
+        self.multi_windows_switch_label = builder.get_object("multi_windows_switch_label")
+        if shockos_dist_info.deskenv == "MATE":
+            self.multi_windows_switch_label.set_text("Integrate Android app windows with desktop (GNOME only)")
+            self.multi_windows_box.set_sensitive(False)
 
         # Obtain and show the main window
         self.get_status()
@@ -52,11 +61,22 @@ class WaydroidSettings(Gtk.Application):
             self.start_session_button.set_sensitive(True)
             self.start_session_button.set_visible(True)
             self.stop_and_restart_box.set_visible(False)
+            self.multi_windows_box.set_sensitive(False)
         else: # if running
             self.status_label.set_label("Running")
             self.start_session_button.set_visible(False)
             self.stop_and_restart_box.set_sensitive(True)
             self.stop_and_restart_box.set_visible(True)
+            if shockos_dist_info.deskenv == "GNOME":
+                propval = subprocess.run(['waydroid', 'prop', 'get', 'persist.waydroid.multi_windows'], capture_output=True, text=True)
+                propval = propval.stdout.strip()
+                if propval == "true":
+                    self.multi_windows_switch.set_active(True)
+                else:
+                    self.multi_windows_switch.set_active(False)
+                self.multi_windows_box.set_sensitive(True)
+            else:
+                self.multi_windows_box.set_sensitive(False)
         self.spinner.set_spinning(False)
         return False
 
@@ -99,6 +119,12 @@ class WaydroidSettings(Gtk.Application):
         subprocess.run(["waydroid", "session", "stop"])
         start_session_thread = threading.Thread(target=self.session_init)
         start_session_thread.start() # start session
+
+    def toggle_multi_windows(self, switch, state):
+        if self.multi_windows_switch.get_active():
+            subprocess.run(['waydroid', 'prop', 'set', 'persist.waydroid.multi_windows', 'true'])
+        else:
+            subprocess.run(['waydroid', 'prop', 'set', 'persist.waydroid.multi_windows', 'false'])
 
 app = WaydroidSettings(application_id="net.ShockOS.Waydroid.Settings")
 app.run()

@@ -8,5 +8,5 @@ set-gdm-theme -s Yaru-purple-dark
 rm -rf /usr/share/shockos/gnome/bandaids/gdm
 if (( $(ls /usr/share/shockos/gnome/bandaids/ | wc -l) < 1 ))
 then
-    rm /usr/share/shockos/gnome/bandaids
+    rm -rf /usr/share/shockos/gnome/bandaids
 fi

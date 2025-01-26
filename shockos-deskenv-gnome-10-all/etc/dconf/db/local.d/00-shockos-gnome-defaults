@@ -1,3 +1,6 @@
+[org/gnome/desktop/a11y/applications]
+screen-reader-enabled=false
+
 [org/gnome/desktop/background]
 picture-uri='file:///usr/share/shockos/branding/backgrounds/shockos-background.xml'
 picture-uri-dark='file:///usr/share/shockos/branding/backgrounds/shockos-background.xml'
@@ -51,3 +54,4 @@ x-pos=100.0
 
 [org/gnome/shell/extensions/user-theme]
 name='Yaru-purple-dark'
+

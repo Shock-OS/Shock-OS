@@ -53,7 +53,7 @@ function start_loading() {
 
 #the following line uses '/usr/bin/yad' to avoid calling the yad function
 
-/usr/bin/yad --window-icon=shockware-center --title="Shockware Center" --progress-text="Loading app info..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
+/usr/bin/yad --window-icon='/usr/share/shockos/shockware-center/icon.png' --title="Shockware Center" --progress-text="Loading app info..." --center --progress --pulsate --auto-close --undecorated --no-buttons --skip-taskbar & killpid=$!
 
 }
 
@@ -80,7 +80,7 @@ then
 
 else
 
-    GDK_BACKEND=x11 /usr/bin/yad --notification --image=shockware-center --icon-size=30 --text="The Shockware Center is running. Please do not turn off your computer." --command='' & echo "$!" | tee ~/.cache/shockos-tmp/shockware-center/indicator_killpid
+    GDK_BACKEND=x11 /usr/bin/yad --notification --image='/usr/share/shockos/shockware-center/icon.png' --icon-size=30 --text="The Shockware Center is running. Please do not turn off your computer." --command='' & echo "$!" | tee ~/.cache/shockos-tmp/shockware-center/indicator_killpid
 
     echo "1" | tee ~/.cache/shockos-tmp/shockware-center/indicator_instances
 
@@ -123,7 +123,7 @@ then
 
         end_loading
 
-        yad --window-icon=shockware-center --image=emblem-important --title="Shockware Center" --text="$full_name is not available." --button="Dismiss"\!gtk-cancel
+        yad --window-icon='/usr/share/shockos/shockware-center/icon.png' --image=emblem-important --title="Shockware Center" --text="$full_name is not available." --button="Dismiss"\!gtk-cancel
 
         exit
 
@@ -218,7 +218,7 @@ fi
 
 function apt_remove() {
 
-yad --window-icon=shockware-center --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!gtk-delete --button="No, keep"\!gtk-cancel
+yad --window-icon='/usr/share/shockos/shockware-center/icon.png' --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!gtk-delete --button="No, keep"\!gtk-cancel
 
 ex=$?
 
@@ -227,7 +227,7 @@ then
 
     show_indicator
 
-	{ wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt remove -y $package; } | yad --no-buttons --no-escape --fixed --width=400 --window-icon=shockware-center --image="$icon" --title="Shockware Center" --text="Removing $full_name$both..." --text-align=center --progress-text="" --auto-close --progress --pulsate
+	{ wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt remove -y $package; } | yad --no-buttons --no-escape --fixed --width=400 --window-icon='/usr/share/shockos/shockware-center/icon.png' --image="$icon" --title="Shockware Center" --text="Removing $full_name$both..." --text-align=center --progress-text="" --auto-close --progress --pulsate
 
     installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
@@ -241,7 +241,7 @@ then
         if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
         then
 
-            notify-send --app-name="Shockware Center" --icon=shockware-center "App Removed Successfully" "$full_name$both was successfully removed."
+            notify-send --app-name="Shockware Center" --icon='/usr/share/shockos/shockware-center/icon.png' "App Removed Successfully" "$full_name$both was successfully removed."
 
         else
 
@@ -263,7 +263,7 @@ function apt_install() {
 
 show_indicator
 
-{ wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt-get install --show-progress -y $package | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Pending..."; stdbuf -o0 sed 's/.*/&\n#&%/g'); } | yad --no-buttons --no-escape --fixed --width=400 --window-icon=shockware-center --title="Shockware Center" --image="$icon" --text="Installing $full_name$both...
+{ wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt-get install --show-progress -y $package | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Pending..."; stdbuf -o0 sed 's/.*/&\n#&%/g'); } | yad --no-buttons --no-escape --fixed --width=400 --window-icon='/usr/share/shockos/shockware-center/icon.png' --title="Shockware Center" --image="$icon" --text="Installing $full_name$both...
 <small>The installation will continue in the background if this window is closed.</small>" --text-align=center --auto-close --progress
 
 installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
@@ -278,7 +278,7 @@ then
     if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
     then
 
-        notify-send --app-name="Shockware Center" --icon=shockware-center "App Installed Successfully" "$full_name$both was successfully installed."
+        notify-send --app-name="Shockware Center" --icon='/usr/share/shockos/shockware-center/icon.png' "App Installed Successfully" "$full_name$both was successfully installed."
 
     else
 
@@ -353,7 +353,7 @@ fi
 
 function flatpak_remove() {
 
-yad --window-icon=shockware-center --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!gtk-delete --button="No, keep"\!gtk-cancel
+yad --window-icon='/usr/share/shockos/shockware-center/icon.png' --title="Shockware Center" --text="Are you sure you would like to remove $full_name$both?" --button="Yes, remove"\!gtk-delete --button="No, keep"\!gtk-cancel
 
 ex=$?
 
@@ -362,7 +362,7 @@ then
 
     show_indicator
 
-	flatpak uninstall -y "$id" | yad --no-buttons --no-escape --fixed --width=400 --window-icon=shockware-center --title="Shockware Center" --image="$icon" --text="Removing $full_name$both..." --text-align=center --progress-text="" --auto-close --progress --pulsate
+	flatpak uninstall -y "$id" | yad --no-buttons --no-escape --fixed --width=400 --window-icon='/usr/share/shockos/shockware-center/icon.png' --title="Shockware Center" --image="$icon" --text="Removing $full_name$both..." --text-align=center --progress-text="" --auto-close --progress --pulsate
 
     installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
 
@@ -374,7 +374,7 @@ then
         if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
         then
 
-            notify-send --app-name="Shockware Center" --icon=shockware-center "App Removed Successfully" "$full_name$both was successfully removed."
+            notify-send --app-name="Shockware Center" --icon='/usr/share/shockos/shockware-center/icon.png' "App Removed Successfully" "$full_name$both was successfully removed."
 
         else
 
@@ -427,7 +427,7 @@ do
 
     fi
 
-done | yad --no-buttons --no-escape --fixed --width=400 --window-icon=shockware-center --title="Shockware Center" --image="$icon" --text="Installing $full_name$both...
+done | yad --no-buttons --no-escape --fixed --width=400 --window-icon='/usr/share/shockos/shockware-center/icon.png' --title="Shockware Center" --image="$icon" --text="Installing $full_name$both...
 <small>The installation will continue in the background if this window is closed.</small>" --text-align=center --auto-close --progress
 
 installed_flatpaks=($(flatpak list --columns=app | uniq)) #ChatGPT
@@ -440,7 +440,7 @@ then
     if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
     then
 
-        notify-send --app-name="Shockware Center" --icon=shockware-center "App Installed Successfully" "$full_name$both was successfully installed."
+        notify-send --app-name="Shockware Center" --icon='/usr/share/shockos/shockware-center/icon.png' "App Installed Successfully" "$full_name$both was successfully installed."
 
     else
 
@@ -484,7 +484,7 @@ fi
 
 end_loading
 
-yad --window-icon=shockware-center --title="Details of $full_name" --text="$types_text" --width=830 --height=300 --image="$icon" --text-info --filename="$tmpfile" "${irbuttons[@]}"
+yad --window-icon='/usr/share/shockos/shockware-center/icon.png' --title="Details of $full_name" --text="$types_text" --width=830 --height=300 --image="$icon" --text-info --filename="$tmpfile" "${irbuttons[@]}"
 
 ex=$?
 

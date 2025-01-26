@@ -39,8 +39,7 @@ then
 fi" | tee /home/shockos/.bashrc
 elif [[ "$SHOCKOS_DESKENV" == "MATE" ]]
 then
-    echo 'startx' | tee /home/shockos/.bash_profile #should probably be replaced with dbus cmd like GNOME edition
-    echo 'mate-session' | tee /home/shockos/.xinitrc #should probably be replaced with dbus cmd like GNOME edition
+    echo "PUT STUFF HERE :)"
 else
     echo 'ERROR: Could not get deskenv information from /usr/lib/shockos/shockos-dist-info.sh. Exiting...'
     exit 1

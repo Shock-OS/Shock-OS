@@ -26,7 +26,11 @@
 	(1,16,"GtkImage",None,15,None,None,None,0,None,None),
 	(1,17,"GtkLabel",None,15,None,None,None,1,None,None),
 	(1,18,"GtkBox",None,3,None,None,None,0,None,None),
-	(1,19,"GtkSpinner","spinner",18,None,None,None,1,None,None)
+	(1,19,"GtkSpinner","spinner",18,None,None,None,1,None,None),
+	(1,20,"GtkSeparator",None,2,None,None,None,1,None,None),
+	(1,21,"GtkBox","multi_windows_box",2,None,None,None,2,None,None),
+	(1,22,"GtkLabel","multi_windows_switch_label",21,None,None,None,0,None,None),
+	(1,23,"GtkSwitch","multi_windows_switch",21,None,None,None,1,None,None)
   </object>
   <object_property>
 	(1,1,"GtkWindow","title","Waydroid Settings",None,None,None,None,None,None,None,None,None),
@@ -47,6 +51,8 @@
 	(1,13,"GtkLabel","label","Stop",0,None,None,None,None,None,None,None,None),
 	(1,15,"GtkBox","spacing","5",0,None,None,None,None,None,None,None,None),
 	(1,16,"GtkImage","icon-name","system-reboot",0,None,None,None,None,None,None,None,None),
-	(1,17,"GtkLabel","label","Restart",0,None,None,None,None,None,None,None,None)
+	(1,17,"GtkLabel","label","Restart",0,None,None,None,None,None,None,None,None),
+	(1,21,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),
+	(1,22,"GtkLabel","label","Integrate Android app windows with desktop",None,None,None,None,None,None,None,None,None)
   </object_property>
 </cambalache-project>
