@@ -28,24 +28,6 @@ then
 else
     gsettings set org.mate.session.required-components windowmanager "marco"
 fi
-#else #if GNOME Edition
-    #gsettings set org.gnome.mutter center-new-windows "true"
-    #gsettings set org.gnome.desktop.interface gtk-theme "Yaru-purple-dark"
-    #gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple-dark"
-    #gsettings set org.gnome.desktop.interface cursor-theme "Yaru"
-    #THE DEFAULT FONT PATCH BEGINS
-    #gsettings set org.gnome.desktop.interface font-name "Ubuntu 11"
-    #gsettings set org.gnome.desktop.interface document-font-name "Ubuntu 11"
-    #gsettings set org.gnome.desktop.interface monospace-font-name "Monospace 13"
-    #gsettings set org.gnome.desktop.wm.preferences titlebar-font "Ubuntu Bold 11"
-    #THE DEFAULT FONT PATCH ENDS
-    #gnome-extensions enable no-overview@fthx
-    #gsettings set org.gnome.desktop.notifications show-banners "false"
-    #gsettings set org.gnome.mutter overlay-key ""
-    #gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/shockos/initsetup/backgrounds/initsetup-background.xml"
-    #dconf write /org/gnome/shell/extensions/hidetopbar/enable-intellihide "false" #Using DConf because extension does not support GSettings
-    #gnome-extensions enable hidetopbar@mathieu.bidon.ca
-#fi
 
 /usr/libexec/shockos/set-audio-out-to-hdmi.sh
 amixer -D pulse sset Master 100% #sets volume to 100% so the setup music can be heard
@@ -519,8 +501,8 @@ if [[ "$require_password" == "FALSE" ]]
 then
     if [[ "$SHOCKOS_DESKENV" == "GNOME" ]]
     then
-        sed -i '/^#  AutomaticLoginEnable/c\AutomaticLoginEnable = true' /etc/gdm3/daemon.conf
-        sed -i "/^#  AutomaticLogin/c\AutomaticLogin = $username" /etc/gdm3/daemon.conf
+        sudo sed -i '/^#  AutomaticLoginEnable/c\AutomaticLoginEnable = true' /etc/gdm3/daemon.conf
+        sudo sed -i "/^#  AutomaticLogin/c\AutomaticLogin = $username" /etc/gdm3/daemon.conf
     elif [[ "$SHOCKOS_DESKENV" == "MATE" ]]
     then
         sudo sed -i "/^#autologin-user=/c\autologin-user=$username" /etc/lightdm/lightdm.conf
