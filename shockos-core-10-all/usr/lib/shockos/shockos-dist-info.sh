@@ -1,1 +1,1 @@
-SHOCKOS_BUILD_DATE="Saturday, January 25th, 2025"
+SHOCKOS_BUILD_DATE="Sunday, January 26th, 2025"

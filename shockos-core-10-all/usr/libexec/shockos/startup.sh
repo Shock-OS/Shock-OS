@@ -4,6 +4,7 @@ if [[ -f ~/.config/shockos/first-run-indicator ]]
 then
     /usr/libexec/shockos/startup-deskenv.sh
     /usr/libexec/shockos/set-audio-out-to-hdmi.sh
+    sudo /usr/libexec/shockos/shockware-center/refresh-catalog.sh
     rm ~/.config/shockos/first-run-indicator
 fi
 

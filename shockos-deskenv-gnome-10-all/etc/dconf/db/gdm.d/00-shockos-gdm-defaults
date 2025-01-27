@@ -6,3 +6,6 @@ cursor-theme='Yaru'
 font-name='Ubuntu 11'
 icon-theme='Yaru-purple-dark'
 
+[org/gnome/login-screen]
+logo='/usr/share/shockos/gnome/branding/gdm-logo.svg'
+

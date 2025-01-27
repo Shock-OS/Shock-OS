@@ -4,7 +4,7 @@ sudo python3 /usr/libexec/shockos/edit-dist-info.py --deskenv="MATE"
 
 mkdir -p /etc/lightdm/
 echo '[Greeter]
-background=/usr/share/shockos/mate/lightdm-bg.svg
+background=/usr/share/shockos/mate/branding/lightdm-bg.svg
 theme-name=Yaru-purple-dark
 icon-theme-name=Yaru-purple-dark
 show-hostname=false

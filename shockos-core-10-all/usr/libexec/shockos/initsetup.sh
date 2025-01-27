@@ -519,9 +519,10 @@ if [[ "$require_password" == "FALSE" ]]
 then
     if [[ "$SHOCKOS_DESKENV" == "GNOME" ]]
     then
-        sudo sed -i '/^#  AutomaticLoginEnable = true/c\  AutomaticLoginEnable = true' /etc/gdm3/daemon.conf
-        sudo sed -i "/^#  AutomaticLogin = user1/c\  AutomaticLogin = $username" /etc/gdm3/daemon.conf
-    else #MATE
+        sed -i '/^#  AutomaticLoginEnable/c\AutomaticLoginEnable = true' /etc/gdm3/daemon.conf
+        sed -i "/^#  AutomaticLogin/c\AutomaticLogin = $username" /etc/gdm3/daemon.conf
+    elif [[ "$SHOCKOS_DESKENV" == "MATE" ]]
+    then
         sudo sed -i "/^#autologin-user=/c\autologin-user=$username" /etc/lightdm/lightdm.conf
     fi
 fi

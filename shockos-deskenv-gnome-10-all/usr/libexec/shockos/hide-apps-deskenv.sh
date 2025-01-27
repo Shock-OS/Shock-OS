@@ -11,13 +11,13 @@ session_files=(
 
 for session in "${session_files[@]}"
 do
-    if ! grep -Fxq "Hidden=true" "$app"
+    if ! grep -Fxq "Hidden=true" "$session"
     then
-        if grep -q '^Hidden=' "$app"
+        if grep -q '^Hidden=' "$session"
         then
-            sed -i '/^Hidden=/c\Hidden=true' "$app"
+            sed -i '/^Hidden=/c\Hidden=true' "$session"
         else
-            echo 'Hidden=true' | tee -a "$app"
+            echo 'Hidden=true' | tee -a "$session"
         fi
     fi
 done
