@@ -24,12 +24,13 @@ gtk-update-icon-cache -f /usr/share/icons/Yaru/
 mkdir -p /etc/lightdm/
 echo '[Greeter]
 background=/usr/share/shockos/mate/branding/lightdm-bg.svg
-theme-name=Yaru-purple-dark
+cursor-theme-name=Yaru
 icon-theme-name=Yaru-purple-dark
 show-hostname=true
 show-power=false
 show-keyboard=true
-show-clock=false' | tee /etc/lightdm/slick-greeter.conf
+show-clock=false
+theme-name=Yaru-purple-dark' | tee /etc/lightdm/slick-greeter.conf
 sed -i '/^#greeter-hide-users=/c\greeter-hide-users=false' /etc/lightdm/lightdm.conf
 
 # Redirect mate-appearance-properties to shockos-mate-backgrounds (for desktop context menu)

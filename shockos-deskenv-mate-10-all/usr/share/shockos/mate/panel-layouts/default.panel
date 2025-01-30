@@ -28,7 +28,7 @@ position=130
 toplevel-id='toplevel-1'
 
 [objects/object-3]
-launcher-location='/home/carson/.local/share/applications/caja-browser.desktop'
+launcher-location='/usr/share/applications/caja-browser.desktop'
 locked=true
 object-type='launcher'
 position=165
@@ -42,7 +42,7 @@ position=200
 toplevel-id='toplevel-1'
 
 [objects/object-5]
-launcher-location='/home/carson/.local/share/applications/mate-terminal.desktop'
+launcher-location='/usr/share/applications/mate-terminal.desktop'
 locked=true
 object-type='launcher'
 position=235
