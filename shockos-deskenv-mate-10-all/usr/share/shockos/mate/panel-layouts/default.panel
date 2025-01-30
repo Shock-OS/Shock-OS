@@ -1,93 +1,81 @@
 [general]
-object-id-list=['object-0', 'object-1', 'object-2', 'object-3', 'object-4', 'object-5', 'object-6', 'object-7']
+object-id-list=['object-0', 'object-1', 'object-2', 'object-3', 'object-4', 'object-5', 'object-6', 'object-7', 'object-8']
 toplevel-id-list=['toplevel-1']
 
 [objects/dockapplet/prefs]
-pinned-apps="['chromium.desktop', 'caja.desktop', 'mate-terminal.desktop']"
+pinned-apps=['chromium.desktop', 'caja.desktop', 'libreoffice-writer.desktop', 'mate-terminal.desktop']
 win-from-cur-workspace-only=true
 
 [objects/object-0]
 applet-iid='BriskMenuFactory::BriskMenu'
 locked=true
 object-type='applet'
-panel-right-stick=false
 position=0
-relative-to-edge='start'
 toplevel-id='toplevel-1'
 
 [objects/object-1]
 applet-iid='WnckletFactory::ShowDesktopApplet'
 locked=true
 object-type='applet'
-panel-right-stick=false
 position=85
-relative-to-edge='start'
 toplevel-id='toplevel-1'
 
 [objects/object-2]
-applet-iid='WnckletFactory::WindowListApplet'
+launcher-location='/usr/share/applications/chromium.desktop'
 locked=true
-object-type='applet'
-panel-right-stick=false
-position=247
-relative-to-edge='start'
+object-type='launcher'
+position=130
 toplevel-id='toplevel-1'
 
 [objects/object-3]
-launcher-location='/usr/share/applications/caja-browser.desktop'
+launcher-location='/home/carson/.local/share/applications/caja-browser.desktop'
 locked=true
-menu-path='applications:/'
 object-type='launcher'
-panel-right-stick=false
-position=171
-relative-to-edge='start'
+position=165
 toplevel-id='toplevel-1'
 
 [objects/object-4]
-launcher-location='/usr/share/applications/mate-terminal.desktop'
+launcher-location='/usr/share/applications/libreoffice-writer.desktop'
 locked=true
-menu-path='applications:/'
 object-type='launcher'
-panel-right-stick=false
-position=212
-relative-to-edge='start'
+position=200
 toplevel-id='toplevel-1'
 
 [objects/object-5]
-launcher-location='/usr/share/applications/chromium.desktop'
+launcher-location='/home/carson/.local/share/applications/mate-terminal.desktop'
 locked=true
-menu-path='applications:/'
 object-type='launcher'
-panel-right-stick=false
-position=130
-relative-to-edge='start'
+position=235
 toplevel-id='toplevel-1'
 
 [objects/object-6]
-applet-iid='NotificationAreaAppletFactory::NotificationArea'
+applet-iid='WnckletFactory::WindowListApplet'
 locked=true
 object-type='applet'
-panel-right-stick=false
-position=87
-relative-to-edge='end'
+position=272
 toplevel-id='toplevel-1'
 
 [objects/object-7]
+applet-iid='NotificationAreaAppletFactory::NotificationArea'
+locked=true
+object-type='applet'
+position=85
+relative-to-edge='end'
+toplevel-id='toplevel-1'
+
+[objects/object-8]
 applet-iid='ClockAppletFactory::ClockApplet'
 locked=true
 object-type='applet'
-panel-right-stick=false
 position=0
 relative-to-edge='end'
 toplevel-id='toplevel-1'
 
-[objects/object-7/prefs]
+[objects/object-8/prefs]
 custom-format=''
 format='24-hour'
 
 [toplevels/toplevel-1]
-enable-buttons=false
-expand=true
 monitor=0
 orientation='bottom'
 screen=0

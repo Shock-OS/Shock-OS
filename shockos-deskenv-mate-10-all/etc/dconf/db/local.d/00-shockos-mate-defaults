@@ -1,8 +1,13 @@
+[org/gnome/desktop/a11y/applications]
+screen-reader-enabled=false
+
 [org/gnome/desktop/interface]
 color-scheme='prefer-dark'
 cursor-theme='Yaru'
 document-font-name='Ubuntu 11'
 font-name='Ubuntu 11'
+gtk-theme='Yaru-purple-dark'
+icon-theme='Yaru-purple-dark'
 
 [org/gnome/desktop/wm/preferences]
 button-layout=':minimize,maximize,close'

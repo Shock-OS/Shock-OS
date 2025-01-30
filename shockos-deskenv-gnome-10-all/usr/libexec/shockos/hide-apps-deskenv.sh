@@ -2,6 +2,13 @@
 
 # This script hides unwanted apps from the applications menu
 
+# Ensure script is running as root, exit otherwise
+if [[ $(id -u) -ne 0 ]]
+then
+    echo "ERROR: Script must be run as root. Exiting..."
+    exit 1
+fi
+
 session_files=(
 '/usr/share/xsessions/gnome-classic.desktop'
 '/usr/share/xsessions/gnome-classic-xorg.desktop'

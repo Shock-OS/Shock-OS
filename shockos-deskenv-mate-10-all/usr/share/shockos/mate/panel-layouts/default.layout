@@ -26,35 +26,6 @@ object-type=applet
 
 [Object object-2]
 panel-right-stick=false
-position=247
-relative-to-edge=start
-applet-iid=WnckletFactory::WindowListApplet
-locked=true
-toplevel-id=toplevel-1
-object-type=applet
-
-[Object object-3]
-panel-right-stick=false
-menu-path=applications:/
-position=171
-launcher-location=/usr/share/applications/caja-browser.desktop
-relative-to-edge=start
-locked=true
-toplevel-id=toplevel-1
-object-type=launcher
-
-[Object object-4]
-panel-right-stick=false
-menu-path=applications:/
-position=212
-launcher-location=/usr/share/applications/mate-terminal.desktop
-relative-to-edge=start
-locked=true
-toplevel-id=toplevel-1
-object-type=launcher
-
-[Object object-5]
-panel-right-stick=false
 menu-path=applications:/
 position=130
 launcher-location=/usr/share/applications/chromium.desktop
@@ -63,16 +34,55 @@ locked=true
 toplevel-id=toplevel-1
 object-type=launcher
 
+[Object object-3]
+panel-right-stick=false
+menu-path=applications:/
+position=165
+launcher-location=/home/carson/.local/share/applications/caja-browser.desktop
+relative-to-edge=start
+locked=true
+toplevel-id=toplevel-1
+object-type=launcher
+
+[Object object-4]
+panel-right-stick=false
+menu-path=applications:/
+position=200
+launcher-location=/usr/share/applications/libreoffice-writer.desktop
+relative-to-edge=start
+locked=true
+toplevel-id=toplevel-1
+object-type=launcher
+
+[Object object-5]
+panel-right-stick=false
+menu-path=applications:/
+position=235
+launcher-location=/home/carson/.local/share/applications/mate-terminal.desktop
+relative-to-edge=start
+locked=true
+toplevel-id=toplevel-1
+object-type=launcher
+
 [Object object-6]
 panel-right-stick=false
-position=87
+position=272
+relative-to-edge=start
+applet-iid=WnckletFactory::WindowListApplet
+locked=true
+toplevel-id=toplevel-1
+object-type=applet
+
+[Object object-7]
+panel-right-stick=false
+position=85
 relative-to-edge=end
 applet-iid=NotificationAreaAppletFactory::NotificationArea
 locked=true
 toplevel-id=toplevel-1
 object-type=applet
 
-[Object object-7]
+[Object object-8]
 panel-right-stick=false
 position=0
 relative-to-edge=end

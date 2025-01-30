@@ -2,6 +2,13 @@
 
 # This script takes .desktop file arguments and appends 'Hidden=True' and 'NoDisplay=true' if those lines don't already exist in the file, effectively hiding the app shortcuts from the application menu
 
+# Ensure script is running as root, exit otherwise
+if [[ $(id -u) -ne 0 ]]
+then
+    echo "ERROR: Script must be run as root. Exiting..."
+    exit 1
+fi
+
 apps_to_hide=("$@")
 
 for app in "${apps_to_hide[@]}"

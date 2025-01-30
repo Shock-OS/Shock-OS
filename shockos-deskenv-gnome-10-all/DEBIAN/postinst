@@ -3,9 +3,7 @@
 sudo python3 /usr/libexec/shockos/edit-dist-info.py --deskenv="GNOME"
 systemctl enable --global shockos-gnome-desktop-icons-daemon
 systemctl enable --global shockos-gnome-theme-daemon
-systemctl set-default multi-user #ensures the target is set to multi-user
-rsync -rl --keep-dirlinks /usr/share/shockos/install-temp/* /
-rm -r /usr/share/shockos/install-temp
+systemctl set-default multi-user # Ensures the target is set to multi-user
 dconf update
 
 /usr/libexec/shockos/hide-apps.sh

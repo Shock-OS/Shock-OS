@@ -2,44 +2,18 @@
 
 sudo python3 /usr/libexec/shockos/edit-dist-info.py --deskenv="MATE"
 
-mkdir -p /etc/lightdm/
-echo '[Greeter]
-background=/usr/share/shockos/mate/branding/lightdm-bg.svg
-theme-name=Yaru-purple-dark
-icon-theme-name=Yaru-purple-dark
-show-hostname=false
-show-power=false
-show-keyboard=false
-show-clock=false' | tee /etc/lightdm/slick-greeter.conf
-sed -i '/^#greeter-hide-users=/c\greeter-hide-users=false' /etc/lightdm/lightdm.conf
-# the above set of commands sets the slick-greeter settings
-
-rm /usr/share/applications/screensavers/gnomelogo-floaters.desktop
-rm /usr/share/applications/screensavers/footlogo-floaters.desktop
+#rm /usr/share/applications/screensavers/gnomelogo-floaters.desktop
+#rm /usr/share/applications/screensavers/footlogo-floaters.desktop
 # the above commands set the Lightning Bolt and Raspberry screensavers
-
-cp /usr/bin/mate-appearance-properties /usr/bin/mate-appearance-properties-old
-cp /usr/bin/mate-window-properties /usr/bin/mate-window-properties-old
-echo '#!/bin/bash
-
-shockos-backgrounds' | tee /usr/bin/mate-appearance-properties
-
-echo '#!/bin/bash
-
-shockos-wm-settings' | tee /usr/bin/mate-window-properties
-# the above set of commands replaces the mate-appearance-properties program with a link to shockos-wallpapers (for the desktop context menu)
 
 systemctl daemon-reload
 systemctl enable --global shockos-mate-notification-applet
 systemctl enable --global shockos-mate-notifications-log-daemon
 systemctl enable --global shockos-mate-slideshow-background-daemon
 systemctl set-default multi-user # ensures the target is set to multi-user
-rsync -rl --keep-dirlinks /usr/share/shockos/install-temp/* /
-cp -rf /usr/share/shockos/install-temp/usr/share/applications/* /etc/skel/.local/share/applications # this command eliminates the need to duplicate the .desktop files
-gtk-update-icon-cache -f /usr/share/icons/Yaru/
-rm -r /usr/share/shockos/install-temp
 dconf update
 
 /usr/libexec/shockos/hide-apps.sh
 /usr/libexec/shockos/brand.sh
+/usr/libexec/shockos/mate/mod-mate.sh
 

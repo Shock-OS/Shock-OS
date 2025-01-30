@@ -39,7 +39,12 @@ then
 fi" | tee /home/shockos/.bashrc
 elif [[ "$SHOCKOS_DESKENV" == "MATE" ]]
 then
-    echo "PUT STUFF HERE :)"
+    echo "if [[ ! -f /tmp/shockos-initsetup/started.indicator ]]
+then
+    mkdir -p /tmp/shockos-initsetup
+    touch /tmp/shockos-initsetup/started.indicator
+    dbus-run-session -- bash -c 'export XDG_VTNR=\$(fgconsole) && XDG_SESSION_TYPE=x11 startx'
+fi" | tee /home/shockos/.bashrc
 else
     echo 'ERROR: Could not get deskenv information from /usr/lib/shockos/shockos-dist-info.sh. Exiting...'
     exit 1
