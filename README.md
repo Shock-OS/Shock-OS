@@ -38,8 +38,10 @@ Features:
 Shock OS is somewhat inspired by Linux Mint's philosophy, and was created out of an absence of a Pi-compatible version Linux Mint (or an equivalent distro). It is NOT, however, based on or affiliated with Linux Mint.
 
 Recommended Pi models:
- - Raspberry Pi 5/500
- - Raspberry Pi 4/400
+ - Raspberry Pi 5 (4 GB of RAM or more for comfortable usage)
+ - Raspberry Pi 500
+ - Raspberry Pi 4 (4 GB of RAM or more for comfortable usage)
+ - Raspberry Pi 400
 
 Shock OS theoretically runs on all Pi models. However, because it is designed to be a general-purpose, everyday desktop OS, many older and lower-end Pi models are not fit for such usage, and performance is not guaranteed.
 
