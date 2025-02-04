@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Fonts
+Comment=Change system fonts
+Exec=shockos-fonts
+Icon=gnome-settings-font
+Terminal=false
+Type=Application
+Categories=Settings;
+StartupNotify=false

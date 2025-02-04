@@ -17,7 +17,7 @@ toplevel-id='toplevel-1'
 applet-iid='WnckletFactory::ShowDesktopApplet'
 locked=true
 object-type='applet'
-position=85
+position=87
 toplevel-id='toplevel-1'
 
 [objects/object-2]
@@ -31,28 +31,28 @@ toplevel-id='toplevel-1'
 launcher-location='/usr/share/applications/caja-browser.desktop'
 locked=true
 object-type='launcher'
-position=165
+position=170
 toplevel-id='toplevel-1'
 
 [objects/object-4]
 launcher-location='/usr/share/applications/libreoffice-writer.desktop'
 locked=true
 object-type='launcher'
-position=200
+position=205
 toplevel-id='toplevel-1'
 
 [objects/object-5]
 launcher-location='/usr/share/applications/mate-terminal.desktop'
 locked=true
 object-type='launcher'
-position=235
+position=240
 toplevel-id='toplevel-1'
 
 [objects/object-6]
 applet-iid='WnckletFactory::WindowListApplet'
 locked=true
 object-type='applet'
-position=272
+position=280
 toplevel-id='toplevel-1'
 
 [objects/object-7]

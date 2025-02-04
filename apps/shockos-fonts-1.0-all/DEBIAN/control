@@ -1,0 +1,11 @@
+Source: shockos-fonts
+Section: misc
+Priority: optional
+Maintainer: Carson Grover
+Homepage: https://www.shockos.net
+Package: shockos-fonts
+Version: 1.0
+Architecture: all
+Depends: python3, shockos-core (>= 10)
+Description: Font selection application for Shock OS
+    Change the general, document, window title, monospace, and desktop fonts.

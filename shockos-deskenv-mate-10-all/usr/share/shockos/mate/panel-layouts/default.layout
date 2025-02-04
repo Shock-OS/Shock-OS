@@ -17,7 +17,7 @@ object-type=applet
 
 [Object object-1]
 panel-right-stick=false
-position=85
+position=87
 relative-to-edge=start
 applet-iid=WnckletFactory::ShowDesktopApplet
 locked=true
@@ -37,7 +37,7 @@ object-type=launcher
 [Object object-3]
 panel-right-stick=false
 menu-path=applications:/
-position=165
+position=170
 launcher-location=/usr/share/applications/caja-browser.desktop
 relative-to-edge=start
 locked=true
@@ -47,7 +47,7 @@ object-type=launcher
 [Object object-4]
 panel-right-stick=false
 menu-path=applications:/
-position=200
+position=205
 launcher-location=/usr/share/applications/libreoffice-writer.desktop
 relative-to-edge=start
 locked=true
@@ -57,7 +57,7 @@ object-type=launcher
 [Object object-5]
 panel-right-stick=false
 menu-path=applications:/
-position=235
+position=240
 launcher-location=/usr/share/applications/mate-terminal.desktop
 relative-to-edge=start
 locked=true
@@ -66,7 +66,7 @@ object-type=launcher
 
 [Object object-6]
 panel-right-stick=false
-position=272
+position=280
 relative-to-edge=start
 applet-iid=WnckletFactory::WindowListApplet
 locked=true

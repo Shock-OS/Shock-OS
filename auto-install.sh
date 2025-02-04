@@ -19,7 +19,7 @@ sudo apt update
 sudo apt autopurge -y
 sudo apt update
 
-source /usr/lib/shockos/shockos-dist-info.sh
+source /usr/lib/shockos/dist-info
 
 # [BANDAID PATCH]: GDM THEME PATCH BEGINS
 if [[ "$SHOCKOS_DESKENV" == "GNOME" ]]
@@ -46,7 +46,7 @@ then
     dbus-run-session -- bash -c 'export XDG_VTNR=\$(fgconsole) && XDG_SESSION_TYPE=x11 startx'
 fi" | tee /home/shockos/.bashrc
 else
-    echo 'ERROR: Could not get deskenv information from /usr/lib/shockos/shockos-dist-info.sh. Exiting...'
+    echo 'ERROR: Could not get deskenv information from /usr/lib/shockos/dist-info. Exiting...'
     exit 1
 fi
 mkdir -p /home/shockos/.config/autostart/

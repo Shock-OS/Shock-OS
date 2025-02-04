@@ -15,25 +15,24 @@ then
         *) suffix="th";;
       esac
     fi
-    echo "SHOCKOS_BUILD_DATE=\"$(date "+%A, %B %e$suffix, %Y")\"" | tee ./shockos-core-10-all/usr/lib/shockos/shockos-dist-info.sh
-    echo "build_date = \"$(date "+%A, %B %e$suffix, %Y")\"" | tee ./shockos-core-10-all/usr/lib/shockos/shockos_dist_info.py
+    echo "SHOCKOS_BUILD_DATE=\"$(date "+%A, %B %e$suffix, %Y")\"" | tee ./shockos-core-10-all/usr/lib/shockos/dist-info
     rm -r ./BUILD-OUT
     mkdir ./BUILD-OUT
     cp ./auto-install.sh ./BUILD-OUT/
-    dpkg-deb --build ./shockos-core-10-all ./BUILD-OUT/
-    dpkg-deb --build ./shockos-deskenv-"$1"-10-all ./BUILD-OUT/
+    dpkg-deb --build ./shockos-core-10-all ./BUILD-OUT
+    dpkg-deb --build ./shockos-deskenv-"$1"-10-all ./BUILD-OUT
     for app in ./apps/*
     do
         if [[ -f "$app"/DEBIAN/control ]]
         then
-            dpkg-deb --build "$app" BUILD-OUT
+            dpkg-deb --build "$app" ./BUILD-OUT
         fi
     done
     if [[ -d ./apps/"$DESKENV" ]]
     then
         for app in ./apps/"$DESKENV"/*
         do
-            dpkg-deb --build "$app" BUILD-OUT
+            dpkg-deb --build "$app" ./BUILD-OUT
         done
     fi
 else

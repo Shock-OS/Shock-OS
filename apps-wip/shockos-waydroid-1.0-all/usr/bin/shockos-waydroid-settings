@@ -2,7 +2,7 @@
 
 import sys
 sys.path.append('/usr/lib/shockos/')
-import shockos_dist_info
+import shockos
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, GLib
@@ -42,7 +42,7 @@ class WaydroidSettings(Gtk.Application):
         self.multi_windows_switch = builder.get_object("multi_windows_switch")
         self.multi_windows_switch.connect("notify", self.toggle_multi_windows)
         self.multi_windows_switch_label = builder.get_object("multi_windows_switch_label")
-        if shockos_dist_info.deskenv == "MATE":
+        if shockos.deskenv == "MATE":
             self.multi_windows_switch_label.set_text("Integrate Android app windows with desktop (GNOME only)")
             self.multi_windows_box.set_sensitive(False)
 
@@ -67,7 +67,7 @@ class WaydroidSettings(Gtk.Application):
             self.start_session_button.set_visible(False)
             self.stop_and_restart_box.set_sensitive(True)
             self.stop_and_restart_box.set_visible(True)
-            if shockos_dist_info.deskenv == "GNOME":
+            if shockos.deskenv == "GNOME":
                 propval = subprocess.run(['waydroid', 'prop', 'get', 'persist.waydroid.multi_windows'], capture_output=True, text=True)
                 propval = propval.stdout.strip()
                 if propval == "true":

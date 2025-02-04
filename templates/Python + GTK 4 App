@@ -11,6 +11,9 @@ parser = argparse.ArgumentParser(description="APP DESCRIPTION HERE")
 parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
 
 args = parser.parse_args()
+def log(message):
+    if args.verbose:
+        print(message)
 
 class app(Gtk.Application):
     def __init__(self, **kwargs):

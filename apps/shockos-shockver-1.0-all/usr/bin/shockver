@@ -6,7 +6,7 @@ import subprocess
 import sys
 try:
     sys.path.append('/usr/lib/shockos/')
-    import shockos_dist_info
+    import shockos
 except:
     print("ERROR: Could not retreive distribution information. Below are possible reasons for this error:")
     print("1. You are not running Shock OS.")
@@ -33,9 +33,9 @@ class MyApp(Gtk.Application):
         build_date_label = builder.get_object("build_date_label")
 
         # Set the labels
-        full_name = getattr(shockos_dist_info, 'full_name', "ERROR: FULL NAME UNAVAILABLE")
+        full_name = getattr(shockos, 'full_name', "ERROR: FULL NAME UNAVAILABLE")
         full_name_label.set_label(f"<b>{full_name}</b>")
-        edition = getattr(shockos_dist_info, 'deskenv', "ERROR: EDITION NOT AVAILABLE")
+        edition = getattr(shockos, 'deskenv', "ERROR: EDITION NOT AVAILABLE")
         edition_label.set_label(f"{edition} Edition")
         arch = subprocess.run(["getconf", "LONG_BIT"], capture_output=True, text=True)
         arch = arch.stdout.strip()
@@ -44,7 +44,7 @@ class MyApp(Gtk.Application):
         else:
             arch = "32-bit"
         arch_label.set_label(arch)
-        build_date = getattr(shockos_dist_info, 'build_date', "ERROR: BUILD DATE NOT AVAILABLE")
+        build_date = getattr(shockos, 'build_date', "ERROR: BUILD DATE NOT AVAILABLE")
         build_date_label.set_label(f"Built on {build_date}")
         if "ERROR" in full_name or "ERROR" in edition or "ERROR" in build_date:
             print("ERROR: Could not retrieve system metadata. Your operating system appears to be corrupted.")

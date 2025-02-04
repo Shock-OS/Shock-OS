@@ -1,7 +1,6 @@
 #!/bin/bash
 
 cd /
-sed -i '1s/.*/PRETTY_NAME="Shock OS X Jasmine"/' /usr/lib/os-release
 python3 /usr/libexec/shockos/edit-dist-info.py --full-name="Shock OS X Jasmine" --version-number=10
 
 #the home directory building begins

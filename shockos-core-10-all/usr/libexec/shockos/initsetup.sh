@@ -8,7 +8,7 @@ fi
 
 IFS=$'\n'
 
-source /usr/lib/shockos/shockos-dist-info.sh
+source /usr/lib/shockos/dist-info
 setup_todo_list=(choose_language \
                     choose_dialect \
                     apply_locale_settings \

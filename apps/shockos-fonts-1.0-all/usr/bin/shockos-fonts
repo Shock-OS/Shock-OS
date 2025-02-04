@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+
+import sys
+sys.path.append('/usr/lib/shockos/')
+import shockos
+import gi
+gi.require_version('Gtk', '4.0')
+gi.require_version('Gio', '2.0')
+from gi.repository import Gtk, Gio
+import argparse
+
+parser = argparse.ArgumentParser(description="Font changer application for Shock OS")
+
+parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+
+args = parser.parse_args()
+def log(message):
+    if args.verbose:
+        print(message)
+
+class app(Gtk.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
+
+    def on_activate(self, app):
+        # Create a Builder
+        builder = Gtk.Builder()
+        builder.add_from_file("/usr/share/shockos/shockos-fonts/main.ui")
+
+        self.gnome_settings = Gio.Settings.new("org.gnome.desktop.interface")
+        if shockos.deskenv == "GNOME":
+            self.gnome_legacy_wm_settings = Gio.Settings.new("org.gnome.desktop.wm.preferences")
+        elif shockos.deskenv == "MATE":
+            self.mate_settings = Gio.Settings.new("org.mate.interface")
+            self.marco_settings = Gio.Settings.new("org.mate.Marco.general")
+            self.caja_settings = Gio.Settings.new("org.mate.caja.desktop")
+
+        # Get font buttons
+        self.general_font_button = builder.get_object("general_font_button")
+        self.document_font_button = builder.get_object("document_font_button")
+        self.desktop_font_button = builder.get_object("desktop_font_button")
+        self.titlebar_font_button = builder.get_object("titlebar_font_button")
+        self.monospace_font_button = builder.get_object("monospace_font_button")
+        if shockos.deskenv == "GNOME":
+            self.gnome_settings.bind("document-font-name", self.document_font_button, "font", Gio.SettingsBindFlags.DEFAULT)
+            self.gnome_settings.bind("font-name", self.general_font_button, "font", Gio.SettingsBindFlags.DEFAULT)
+            self.gnome_settings.bind("monospace-font-name", self.monospace_font_button, "font", Gio.SettingsBindFlags.DEFAULT)
+            self.desktop_font_label = builder.get_object("desktop_font_label")
+            self.desktop_font_label.set_visible(False)
+            self.desktop_font_button.set_visible(False)
+            self.titlebar_font_label = builder.get_object("titlebar_font_label")
+            self.titlebar_font_label.set_label("Legacy window titlebar font:")
+            self.gnome_legacy_wm_settings.bind("titlebar-font", self.titlebar_font_button, "font", Gio.SettingsBindFlags.DEFAULT)
+        elif shockos.deskenv == "MATE":
+            self.mate_settings.bind("document-font-name", self.document_font_button, "font", Gio.SettingsBindFlags.DEFAULT)
+            self.mate_settings.bind("font-name", self.general_font_button, "font", Gio.SettingsBindFlags.DEFAULT)
+            self.mate_settings.bind("monospace-font-name", self.monospace_font_button, "font", Gio.SettingsBindFlags.DEFAULT)
+            self.marco_settings.bind("titlebar-font", self.titlebar_font_button, "font", Gio.SettingsBindFlags.DEFAULT)
+            self.caja_settings.bind("font", self.desktop_font_button, "font", Gio.SettingsBindFlags.DEFAULT)
+
+        # Get reset buttons
+        self.reset_general_font_button = builder.get_object("reset_general_font_button")
+        self.reset_general_font_button.connect("clicked", lambda widget: self.reset_key(widget, "font-name"))
+        self.reset_document_font_button = builder.get_object("reset_document_font_button")
+        self.reset_document_font_button.connect("clicked", lambda widget: self.reset_key(widget, "document-font-name"))
+        self.reset_desktop_font_button = builder.get_object("reset_desktop_font_button")
+        if shockos.deskenv == "MATE":
+            self.reset_desktop_font_button.connect("clicked", lambda widget: self.reset_key(widget, "desktop-font"))
+        else:
+            self.reset_desktop_font_button.set_visible(False)
+        self.reset_titlebar_font_button = builder.get_object("reset_titlebar_font_button")
+        self.reset_titlebar_font_button.connect("clicked", lambda widget: self.reset_key(widget, "titlebar-font"))
+        self.reset_monospace_font_button = builder.get_object("reset_monospace_font_button")
+        self.reset_monospace_font_button.connect("clicked", lambda widget: self.reset_key(widget, "monospace-font-name"))
+
+        # Connect buttons and check for defaults
+        self.general_font_button.connect("notify", self.check_defaults)
+        self.document_font_button.connect("notify", self.check_defaults)
+        self.desktop_font_button.connect("notify", self.check_defaults)
+        self.titlebar_font_button.connect("notify", self.check_defaults)
+        self.monospace_font_button.connect("notify", self.check_defaults)
+        self.check_defaults(None, None)
+
+        # Get close button
+        self.close_button = builder.get_object("close_button")
+        self.close_button.connect("clicked", self.close)
+
+        # Obtain and show the main window
+        self.main_window = builder.get_object("main_window")
+        self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        self.main_window.present()
+
+    def close(self, button):
+        sys.exit()
+
+    def reset_key(self, button, key):
+        if key == "desktop-font":
+            self.caja_settings.reset("font")
+        elif key == "titlebar-font":
+            if shockos.deskenv == "GNOME":
+                self.gnome_legacy_wm_settings.reset("titlebar-font")
+            elif shockos.deskenv == "MATE":
+                self.marco_settings.reset("titlebar-font")
+        else:
+            self.gnome_settings.reset(key)
+            if shockos.deskenv == "MATE":
+                self.mate_settings.reset(key)
+        button.set_visible(False)
+
+    def check_defaults(self, widget, param):
+        if shockos.deskenv == "GNOME":
+            def check_gnome_setting(button, key):
+                if self.gnome_settings.get_string(key) == str(self.gnome_settings.get_default_value(key)).strip("'"):
+                    button.set_visible(False)
+                else:
+                    button.set_visible(True)
+            check_gnome_setting(self.reset_document_font_button, "document-font-name")
+            check_gnome_setting(self.reset_general_font_button, "font-name")
+            check_gnome_setting(self.reset_monospace_font_button, "monospace-font-name")
+            if self.gnome_legacy_wm_settings.get_string("titlebar-font") == str(self.gnome_legacy_wm_settings.get_default_value("titlebar-font")).strip("'"):
+                self.reset_titlebar_font_button.set_visible(False)
+            else:
+                self.reset_titlebar_font_button.set_visible(True)
+        elif shockos.deskenv == "MATE":
+            def check_mate_setting(button, key):
+                if self.mate_settings.get_string(key) == str(self.mate_settings.get_default_value(key)).strip("'"):
+                    button.set_visible(False)
+                else:
+                    button.set_visible(True)
+            check_mate_setting(self.reset_document_font_button, "document-font-name")
+            check_mate_setting(self.reset_general_font_button, "font-name")
+            check_mate_setting(self.reset_monospace_font_button, "monospace-font-name")
+            if self.marco_settings.get_string("titlebar-font") == str(self.marco_settings.get_default_value("titlebar-font")).strip("'"):
+                self.reset_titlebar_font_button.set_visible(False)
+            else:
+                self.reset_titlebar_font_button.set_visible(True)
+            if self.caja_settings.get_string("font") == str(self.caja_settings.get_default_value("font")).strip("'"):
+                self.reset_desktop_font_button.set_visible(False)
+            else:
+                self.reset_desktop_font_button.set_visible(True)
+
+app = app(application_id="net.ShockOS.Fonts")
+app.run()
+
