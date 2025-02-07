@@ -22,13 +22,6 @@ setup_todo_list=(choose_language \
 username=""
 full_name=""
 
-if [[ "$SHOCKOS_DESKENV" == "MATE" ]] && [[ "$(cat /proc/device-tree/model)" == "Raspberry Pi 4"* ]]
-then
-    gsettings set org.mate.session.required-components windowmanager "marco-glx"
-else
-    gsettings set org.mate.session.required-components windowmanager "marco"
-fi
-
 /usr/libexec/shockos/set-audio-out-to-hdmi.sh
 amixer -D pulse sset Master 100% #sets volume to 100% so the setup music can be heard
 while true

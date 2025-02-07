@@ -54,7 +54,7 @@
 	(1,9,"GtkWidget","valign","end",None,None,None,None,None,None,None,None,None),
 	(1,9,"GtkWidget","vexpand","True",None,None,None,None,None,None,None,None,None),
 	(1,10,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),
-	(1,11,"GtkImage","icon-name","gtk-close",None,None,None,None,None,None,None,None,None),
+	(1,11,"GtkImage","icon-name","window-close-symbolic",None,None,None,None,None,None,None,None,None),
 	(1,11,"GtkImage","icon-size","normal",None,None,None,None,None,None,None,None,None),
 	(1,12,"GtkLabel","label","Close",None,None,None,None,None,None,None,None,None),
 	(1,13,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),

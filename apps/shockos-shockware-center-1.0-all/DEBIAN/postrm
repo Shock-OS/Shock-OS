@@ -1,3 +1,9 @@
 #!/bin/bash
 
 rm -r /usr/share/shockos/shockware-center
+if [[ "$(cat /etc/sudoers)" =~ 'ALL ALL=NOPASSWD: /usr/libexec/shockos/shockware-center/refresh-catalog.sh' ]]
+then
+    cp /etc/sudoers /etc/sudoers.bak
+    sed -i '/^ALL ALL=NOPASSWD: /usr/libexec/shockos/shockware-center/refresh-catalog.sh/d' /etc/sudoers
+fi
+

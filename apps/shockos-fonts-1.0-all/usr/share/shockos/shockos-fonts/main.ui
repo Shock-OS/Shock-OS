@@ -13,13 +13,12 @@
         <property name="orientation">vertical</property>
         <property name="spacing">10</property>
         <child>
-          <object class="GtkGrid">
+          <object class="GtkGrid" id="grid">
             <property name="column-spacing">5</property>
             <property name="row-spacing">5</property>
             <child>
               <object class="GtkLabel">
                 <property name="halign">start</property>
-                <property name="hexpand">True</property>
                 <property name="label">General font:</property>
                 <layout>
                   <property name="column">0</property>

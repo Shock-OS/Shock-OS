@@ -41,6 +41,9 @@ cursor-theme='Yaru'
 [org/mate/desktop/session]
 idle-delay=15
 
+[org/mate/desktop/session/required-components]
+windowmanager='marco-glx'
+
 [org/mate/marco/general]
 button-layout=':minimize,maximize,close'
 center-new-windows=true

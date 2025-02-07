@@ -6,5 +6,5 @@ Exec=shockos-fonts
 Icon=gnome-settings-font
 Terminal=false
 Type=Application
-Categories=Settings;
+Categories=Settings;DesktopSettings;
 StartupNotify=false

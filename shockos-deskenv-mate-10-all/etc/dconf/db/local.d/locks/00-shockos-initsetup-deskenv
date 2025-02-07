@@ -17,7 +17,6 @@
 /org/mate/desktop/session/required-components/dock
 /org/mate/desktop/session/required-components/filemanager
 /org/mate/desktop/session/required-components/panel
-/org/mate/desktop/session/required-components/windowmanager
 
 /org/mate/marco/general/button-layout
 /org/mate/marco/general/center-new-windows

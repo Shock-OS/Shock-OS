@@ -1,12 +1,22 @@
 #!/bin/bash
 
-if (($(getconf LONG_BIT)==32))
+if [[ ! -f /usr/share/shockos/shockware-center/appstream-dirs ]]
 then
-    arch="arm"
-else
-    arch="aarch64"
+    if (($(getconf LONG_BIT)==32))
+    then
+        arch="arm"
+    else
+        arch="aarch64"
+    fi
+    mkdir -p /usr/share/shockos/shockware-center/
+    echo "apt_appstream_dir=/var/lib/app-info
+    flatpak_appstream_dir=/var/lib/flatpak/appstream/flathub/${arch}/active" | tee /usr/share/shockos/shockware-center/appstream-dirs
+fi
+if ! grep -Fxq "ALL ALL=NOPASSWD: /usr/libexec/shockos/shockware-center/refresh-catalog.sh" /etc/sudoers
+then
+    cp /etc/sudoers/ /etc/sudoers.bak
+    echo '
+# Allow any user to update the software selection catalog for the Shockware Center without a password
+ALL ALL=NOPASSWD: /usr/libexec/shockos/shockware-center/refresh-catalog.sh' | sudo tee -a /etc/sudoers
 fi
 
-mkdir -p /usr/share/shockos/shockware-center/
-echo "apt_appstream_dir=/var/lib/app-info
-flatpak_appstream_dir=/var/lib/flatpak/appstream/flathub/${arch}/active" | tee /usr/share/shockos/shockware-center/appstream-dirs
