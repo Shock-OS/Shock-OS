@@ -1,0 +1,43 @@
+[Toplevel toplevel-0]
+enable-buttons=false
+size=24
+screen=0
+monitor=0
+expand=true
+orientation=top
+
+[Object object-0]
+panel-right-stick=false
+position=0
+relative-to-edge=start
+applet-iid=BriskMenuFactory::BriskMenu
+locked=true
+toplevel-id=toplevel-0
+object-type=applet
+
+[Object object-1]
+panel-right-stick=false
+position=0
+relative-to-edge=end
+applet-iid=ClockAppletFactory::ClockApplet
+locked=true
+toplevel-id=toplevel-0
+object-type=applet
+
+[Object object-2]
+panel-right-stick=false
+position=112
+relative-to-edge=end
+applet-iid=NotificationAreaAppletFactory::NotificationArea
+locked=true
+toplevel-id=toplevel-0
+object-type=applet
+
+[Customsetting maximusdecoration]
+mate-maximus-recorded=False
+
+[Customsetting windowcontrollayout]
+mate-general=:minimize,maximize,close
+mate-interface=menu:minimize,maximize,close
+gnome-wm-preferences=:minimize,maximize,close
+

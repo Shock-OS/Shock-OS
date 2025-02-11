@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <shema id="net.shockos.mate.backgrounds.slideshow" path="/net/shockos/mate/backgrounds/slideshow/">
+  <schema id="net.shockos.mate.backgrounds.slideshow" path="/net/shockos/mate/backgrounds/slideshow/">
     <key name="enabled" type="b">
         <default>false</default>
         <summary>Enable slideshow background</summary>
     </key>
     <key name="folder" type="s">
-        <default>~/Pictures<default>
+        <default>'~/Pictures'</default>
         <description>Location of pictures to shuffle through when slideshow background is enabled</description>
-    <key>
-    <key name="interval" type="i">
-        <default>5<default>
-        <summary>Amount of time (in minutes) to wait before shuffling the background<summary>
+    </key>
+    <key name="interval" type="u">
+        <default>5</default>
+        <summary>Amount of time (in minutes) to wait before shuffling the background</summary>
     </key>
     <key name="order" type="s">
-        <default>alpha</default>
+        <default>'alpha'</default>
         <description>Order in which to shuffle through backgrounds</description>
     </key>
   </schema>
 </schemalist>
+

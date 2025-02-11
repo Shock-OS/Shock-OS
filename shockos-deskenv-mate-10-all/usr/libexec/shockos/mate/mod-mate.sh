@@ -9,9 +9,8 @@ then
     exit 1
 fi
 
-# Install default Shock OS panel layout
-cp -rf /usr/share/shockos/mate/panel-layouts/default.layout /usr/share/mate-panel/layouts/
-cp -rf /usr/share/shockos/mate/panel-layouts/default.panel /usr/share/mate-panel/layouts/
+# Install Shock OS panel layouts
+cp /usr/share/shockos/mate/panel-layouts/* /usr/share/mate-panel/layouts/
 
 # Have applications use generic names
 cp -rf /usr/share/shockos/mate/applications-generic-names/* /usr/share/applications/

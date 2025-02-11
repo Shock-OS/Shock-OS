@@ -27,8 +27,21 @@ class app(Gtk.Application):
         # Obtain the GSettings objects
         self.background_settings = Gio.Settings.new("org.mate.background")
         self.desktop_icon_settings = Gio.Settings.new("org.mate.caja.desktop")
+        self.slideshow_bg_settings = Gio.Settings.new("net.shockos.mate.backgrounds.slideshow")
 
         # Obtain the widgets
+        self.slideshow_bg_switch = builder.get_object("slideshow_bg_switch")
+        self.slideshow_bg_settings.bind("enabled", self.slideshow_bg_switch, "active", Gio.SettingsBindFlags.DEFAULT)
+        self.slideshow_bg_mins_entry = builder.get_object("slideshow_bg_mins_entry")
+        self.slideshow_bg_mins_entry.connect("changed", self.update_interval)
+        self.slideshow_bg_mins_entry.set_text(str(self.slideshow_bg_settings.get_value("interval")))
+        self.slideshow_bg_mins_add_button = builder.get_object("slideshow_bg_mins_add_button")
+        self.slideshow_bg_mins_add_button.connect("clicked", self.mins_math)
+        self.slideshow_bg_mins_sub_button = builder.get_object("slideshow_bg_mins_sub_button")
+        self.slideshow_bg_mins_sub_button.connect("clicked", self.mins_math)
+        self.slideshow_bg_order_cb = builder.get_object("slideshow_bg_order_cb")
+        self.slideshow_bg_settings.bind("order", self.slideshow_bg_order_cb, "active-id", Gio.SettingsBindFlags.DEFAULT)
+        
         self.picture_filename_label = builder.get_object("picture_filename_label")
         self.background_settings.bind("picture-filename", self.picture_filename_label, "label", Gio.SettingsBindFlags.DEFAULT)
         self.style_cb = builder.get_object("style_cb")
@@ -120,6 +133,22 @@ class app(Gtk.Application):
             self.desktop_icons_checkboxes_box.set_sensitive(True)
         else:
             self.desktop_icons_checkboxes_box.set_sensitive(False)
+
+    def mins_math(self, widget):
+        mins = int(self.slideshow_bg_mins_entry.get_text())
+        if widget == self.slideshow_bg_mins_add_button:
+            mins = mins + 1
+        elif widget == self.slideshow_bg_mins_sub_button:
+            if (mins > 1):
+                mins = mins - 1
+        self.slideshow_bg_mins_entry.set_text(str(mins))
+
+    def update_interval(self, entry):
+        mins = int(self.slideshow_bg_mins_entry.get_text())
+        if (int(mins) < 1):
+            mins = 1
+            self.slideshow_bg_mins_entry.set_text("1")
+        self.slideshow_bg_settings.set_uint("interval", mins)
 
 app = app(application_id="net.ShockOS.MATE.Backgrounds")
 app.run()

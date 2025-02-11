@@ -1,0 +1,136 @@
+[Toplevel top]
+enable-buttons=false
+size=24
+screen=0
+monitor=0
+expand=true
+orientation=top
+
+[Toplevel bottom]
+enable-buttons=false
+size=24
+screen=0
+monitor=0
+expand=true
+orientation=bottom
+
+[Object menu-bar]
+panel-right-stick=false
+position=0
+relative-to-edge=start
+applet-iid=
+locked=true
+toplevel-id=top
+object-type=menu-bar
+
+[Object notification-area]
+panel-right-stick=false
+position=20
+relative-to-edge=end
+applet-iid=NotificationAreaAppletFactory::NotificationArea
+locked=true
+toplevel-id=top
+object-type=applet
+
+[Object clock]
+panel-right-stick=false
+position=10
+relative-to-edge=end
+applet-iid=ClockAppletFactory::ClockApplet
+locked=true
+toplevel-id=top
+object-type=applet
+
+[Object shutdown]
+panel-right-stick=false
+position=0
+relative-to-edge=end
+locked=true
+toplevel-id=top
+object-type=action
+action-type=shutdown
+
+[Object show-desktop]
+panel-right-stick=false
+position=0
+relative-to-edge=start
+applet-iid=WnckletFactory::ShowDesktopApplet
+locked=true
+toplevel-id=bottom
+object-type=applet
+
+[Object window-list]
+panel-right-stick=false
+position=20
+relative-to-edge=start
+applet-iid=WnckletFactory::WindowListApplet
+locked=true
+toplevel-id=bottom
+object-type=applet
+
+[Object workspace-switcher]
+panel-right-stick=false
+position=10
+relative-to-edge=end
+applet-iid=WnckletFactory::WorkspaceSwitcherApplet
+locked=true
+toplevel-id=bottom
+object-type=applet
+
+[Object trashapplet]
+panel-right-stick=false
+position=0
+relative-to-edge=end
+applet-iid=TrashAppletFactory::TrashApplet
+locked=false
+toplevel-id=bottom
+object-type=applet
+
+[Object object-1]
+panel-right-stick=false
+menu-path=applications:/
+position=258
+launcher-location=/usr/share/applications/chromium.desktop
+relative-to-edge=start
+locked=false
+toplevel-id=top
+object-type=launcher
+
+[Object object-2]
+panel-right-stick=false
+menu-path=applications:/
+position=288
+launcher-location=/usr/share/applications/caja-browser.desktop
+relative-to-edge=start
+locked=false
+toplevel-id=top
+object-type=launcher
+
+[Object object-3]
+panel-right-stick=false
+menu-path=applications:/
+position=348
+launcher-location=/usr/share/applications/mate-terminal.desktop
+relative-to-edge=start
+locked=false
+toplevel-id=top
+object-type=launcher
+
+[Object object-4]
+panel-right-stick=false
+menu-path=applications:/
+position=318
+launcher-location=/usr/share/applications/libreoffice-writer.desktop
+relative-to-edge=start
+locked=false
+toplevel-id=top
+object-type=launcher
+
+[Customsetting maximusdecoration]
+mate-maximus-recorded=False
+
+[Customsetting windowcontrollayout]
+mate-general=:minimize,maximize,close
+mate-interface=menu:minimize,maximize,close
+gnome-wm-preferences=:minimize,maximize,close
+

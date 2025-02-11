@@ -61,7 +61,12 @@ fi
 
 # Calculate the position
 posx=$((screen_width-window_width))
-posy=$((screen_height-window_height))
+if [[ "$(gsettings get org.mate.panel default-layout)" == "'shockos-panel'" ]]
+then
+    posy=$((screen_height-window_height))
+else
+    posy=0
+fi
 
 # Launch YAD with the specified position
 eval "yad --window-icon=preferences-system-notifications-symbolic --geometry=${window_width}x${window_height}+${posx}+${posy} --fixed --undecorated --skip-taskbar --close-on-unfocus --list \

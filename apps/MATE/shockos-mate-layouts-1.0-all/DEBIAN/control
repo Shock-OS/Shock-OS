@@ -1,0 +1,14 @@
+Source: shockos-mate-layouts
+Section: misc
+Priority: optional
+Maintainer: Carson Grover
+Homepage: https://www.shockos.net
+Package: shockos-mate-layouts
+Version: 1.0
+Architecture: all
+Depends: shockos-core (>= 10), python3, plank
+Description: Change the desktop layout
+    Desktop layout selection app for Shock OS MATE Edition. The following desktop layouts are supported:
+    - Panel: A single-panel layout common on modern computers
+    - Dock: A minimal top panel and a dock at the bottom
+    - Traditional: A dual-panel layout with menus, notifications, and system trays on the top and the window list and workspace switcher on the bottom.

@@ -42,6 +42,7 @@ cursor-theme='Yaru'
 idle-delay=15
 
 [org/mate/desktop/session/required-components]
+dock=''
 windowmanager='marco-glx'
 
 [org/mate/marco/general]
@@ -49,6 +50,9 @@ button-layout=':minimize,maximize,close'
 center-new-windows=true
 theme='Yaru-dark'
 titlebar-font='Ubuntu Bold 11'
+
+[org/mate/panel/general]
+default-layout='shockos-panel'
 
 [org/mate/panel/objects/dockapplet/prefs]
 pinned-apps=['chromium.desktop', 'caja.desktop', 'libreoffice-writer.desktop', 'mate-terminal.desktop']

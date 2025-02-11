@@ -1,17 +1,16 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.94.1 -->
 <interface>
-  <!-- interface-name shockos-gnome-layouts.ui -->
-  <requires lib="gtk" version="4.0"/>
+  <!-- interface-name shockos-mate-layouts.ui -->
+  <requires lib="gtk" version="4.8"/>
   <object class="GtkApplicationWindow" id="main_window">
-    <property name="icon-name">panel-bottom-symbolic</property>
     <property name="title">Layouts</property>
     <child>
       <object class="GtkBox">
-        <property name="margin-bottom">5</property>
-        <property name="margin-end">5</property>
-        <property name="margin-start">5</property>
-        <property name="margin-top">5</property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
         <property name="orientation">vertical</property>
         <property name="spacing">5</property>
         <child>
@@ -23,17 +22,17 @@
         </child>
         <child>
           <object class="GtkBox">
-            <property name="hexpand">True</property>
             <property name="homogeneous">True</property>
             <property name="spacing">5</property>
             <child>
               <object class="GtkToggleButton" id="panel_mode_button">
-                <child>
+                <property name="child">
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
+                    <property name="spacing">5</property>
                     <child>
                       <object class="GtkImage">
-                        <property name="file">/usr/share/shockos/gnome/shockos-gnome-layouts/icons/panel-mode-symbolic.svg</property>
+                        <property name="file">/usr/share/shockos/mate/shockos-mate-layouts/icons/panel-mode-symbolic.svg</property>
                         <property name="icon-size">large</property>
                         <property name="vexpand">True</property>
                         <property name="vexpand-set">True</property>
@@ -41,22 +40,22 @@
                     </child>
                     <child>
                       <object class="GtkLabel">
-                        <property name="label">&lt;b&gt;Panel&lt;/b&gt;</property>
-                        <property name="use-markup">True</property>
+                        <property name="label">Panel</property>
                       </object>
                     </child>
                   </object>
-                </child>
+                </property>
               </object>
             </child>
             <child>
               <object class="GtkToggleButton" id="dock_mode_button">
-                <child>
+                <property name="child">
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
+                    <property name="spacing">5</property>
                     <child>
                       <object class="GtkImage">
-                        <property name="file">/usr/share/shockos/gnome/shockos-gnome-layouts/icons/dock-mode-symbolic.svg</property>
+                        <property name="file">/usr/share/shockos/mate/shockos-mate-layouts/icons/dock-mode-symbolic.svg</property>
                         <property name="icon-size">large</property>
                         <property name="vexpand">True</property>
                         <property name="vexpand-set">True</property>
@@ -64,22 +63,22 @@
                     </child>
                     <child>
                       <object class="GtkLabel">
-                        <property name="label">&lt;b&gt;Dock&lt;/b&gt;</property>
-                        <property name="use-markup">True</property>
+                        <property name="label">Dock</property>
                       </object>
                     </child>
                   </object>
-                </child>
+                </property>
               </object>
             </child>
             <child>
-              <object class="GtkToggleButton" id="vanilla_mode_button">
-                <child>
+              <object class="GtkToggleButton" id="trad_mode_button">
+                <property name="child">
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
+                    <property name="spacing">5</property>
                     <child>
                       <object class="GtkImage">
-                        <property name="file">/usr/share/shockos/gnome/shockos-gnome-layouts/icons/vanilla-mode-symbolic.svg</property>
+                        <property name="file">/usr/share/shockos/mate/shockos-mate-layouts/icons/traditional-mode-symbolic.svg</property>
                         <property name="icon-size">large</property>
                         <property name="vexpand">True</property>
                         <property name="vexpand-set">True</property>
@@ -87,12 +86,11 @@
                     </child>
                     <child>
                       <object class="GtkLabel">
-                        <property name="label">&lt;b&gt;Vanilla&lt;/b&gt;</property>
-                        <property name="use-markup">True</property>
+                        <property name="label">Traditional</property>
                       </object>
                     </child>
                   </object>
-                </child>
+                </property>
               </object>
             </child>
           </object>
@@ -101,9 +99,10 @@
           <object class="GtkBox">
             <property name="spacing">5</property>
             <property name="valign">end</property>
+            <property name="vexpand">True</property>
             <child>
               <object class="GtkButton" id="reset_button">
-                <child>
+                <property name="child">
                   <object class="GtkBox">
                     <property name="spacing">5</property>
                     <child>
@@ -117,14 +116,13 @@
                       </object>
                     </child>
                   </object>
-                </child>
+                </property>
+                <property name="halign">start</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="close_button">
-                <property name="halign">end</property>
-                <property name="hexpand">True</property>
-                <child>
+                <property name="child">
                   <object class="GtkBox">
                     <property name="spacing">5</property>
                     <child>
@@ -138,7 +136,9 @@
                       </object>
                     </child>
                   </object>
-                </child>
+                </property>
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
               </object>
             </child>
           </object>

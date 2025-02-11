@@ -18,6 +18,7 @@ apps_to_hide=(
 '/usr/share/applications/mate-font-viewer.desktop'
 '/usr/share/applications/mate-appearance-properties.desktop'
 '/usr/share/applications/picom.desktop'
+'/usr/share/applications/plank.desktop'
 '/usr/share/applications/mpv.desktop'
 '/usr/share/applications/zutty.desktop'
 )

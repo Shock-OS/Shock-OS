@@ -6,7 +6,7 @@ Homepage: https://www.shockos.net
 Package: shockos-gnome-layouts
 Version: 1.0
 Architecture: all
-Depends: python3, shockos-deskenv-gnome (>= 10)
+Depends: shockos-deskenv-gnome (>= 10), python3, gnome-shell-extension-arc-menu, gnome-shell-extension-dashtodock, gnome-shell-extension-dash-to-panel, gnome-shell-extension-desktop-icons-ng
 Description: Change the desktop layout of Shock OS GNOME Edition
     Available layouts include:
      - Dock mode: Uses dash-to-dock to provide an autohiding dock.

@@ -1,0 +1,20 @@
+[net/launchpad/plank]
+enabled-docks=['shockos-dock']
+
+[net/launchpad/plank/docks/shockos-dock]
+alignment='center'
+current-workspace-only=true
+dock-items=['chromium.dockitem', 'caja-browser.dockitem', 'libreoffice-writer.dockitem', 'mate-terminal.dockitem']
+hide-delay=0
+hide-mode='intelligent'
+lock-items=false
+monitor=''
+offset=0
+pinned-only=false
+position='bottom'
+theme='Default'
+tooltips-enabled=true
+unhide-delay=0
+zoom-enabled=true
+zoom-percent=150
+
