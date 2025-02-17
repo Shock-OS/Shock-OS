@@ -6,7 +6,7 @@ IFS=$'\n'
 
 if [[ -f ~/.config/shockos/slideshow-background ]]
 then
-    source ~/.config/shockos/slideshow-background
+    directory="$(gsettings get net.shockos.mate.backgrounds.slideshow folder)"
     current_background="$(gsettings get org.mate.background picture-filename)"
     backgrounds=("$directory"/*)
     if [[ "$random_boolean" == "FALSE" ]] #if in order, set the counter to the current backdrop
