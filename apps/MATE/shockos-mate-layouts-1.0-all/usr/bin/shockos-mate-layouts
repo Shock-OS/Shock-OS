@@ -83,7 +83,7 @@ class app(Gtk.Application):
 
     def reset(self, button):
         subprocess.run(['mate-panel', '--reset'])
-        subprocess.run(['dconf', 'reset', '-f', '/net/launchpad/plank/docks/shockos-dock/'])
+        subprocess.run(['/usr/libexec/shockos/mate/reset-plank.sh'])
 
     def close(self, button):
         sys.exit()

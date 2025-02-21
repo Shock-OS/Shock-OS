@@ -2,10 +2,6 @@
 
 sudo python3 /usr/libexec/shockos/edit-dist-info.py --deskenv="MATE"
 
-#rm /usr/share/applications/screensavers/gnomelogo-floaters.desktop
-#rm /usr/share/applications/screensavers/footlogo-floaters.desktop
-# the above commands set the Lightning Bolt and Raspberry screensavers
-
 systemctl daemon-reload
 systemctl enable --global shockos-mate-notification-applet
 systemctl enable --global shockos-mate-notifications-log-daemon

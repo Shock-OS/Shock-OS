@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Redirect mate-appearance-properties to shockos-mate-backgrounds (for desktop context menu)
+if ! grep -x 'shockos-mate-backgrounds' /usr/bin/mate-appearance-properties
+then
+    mv /usr/bin/mate-appearance-properties /usr/bin/mate-appearance-properties-vanilla
+    echo '#!/bin/bash
+shockos-mate-backgrounds' | sudo tee /usr/bin/mate-appearance-properties
+    chmod +x /usr/bin/mate-appearance-properties
+fi
+glib-compile-schemas /usr/share/glib-2.0/schemas
+systemctl daemon-reload
+systemctl --global disable shockos-mate-slideshow-background-daemon
+

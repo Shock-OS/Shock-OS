@@ -2,8 +2,7 @@
 
 if [[ -f ~/.config/shockos/first-run-indicator ]]
 then
-    rm -rf ~/.config/plank/shockos-dock/launchers/*
-    cp /usr/share/shockos/mate/plank-launchers/* ~/.config/plank/shockos-dock/launchers/
+    /usr/libexec/shockos/mate/reset-plank.sh
 fi
 
 #NON-FIRST-RUN-SETUP COMMANDS GO HERE

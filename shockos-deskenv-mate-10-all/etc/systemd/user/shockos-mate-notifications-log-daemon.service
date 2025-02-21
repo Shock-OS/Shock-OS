@@ -1,5 +1,5 @@
 [Unit]
-Description=Notification Log Daemon
+Description=Notification log daemon
 After=default.target
 
 [Service]
@@ -9,3 +9,4 @@ Restart=always
 
 [Install]
 WantedBy=default.target
+

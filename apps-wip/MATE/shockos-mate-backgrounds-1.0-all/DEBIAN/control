@@ -6,6 +6,6 @@ Homepage: https://www.shockos.net
 Package: shockos-mate-backgrounds
 Version: 1.0
 Architecture: all
-Depends: shockos-core (>= 10), python3, python3-magic
+Depends: shockos-core (>= 10), shockos-deskenv-mate, python3, python3-magic
 Description: Change desktop backgrounds, icons, and other options
     This package is only designed to work with Shock OS MATE Edition

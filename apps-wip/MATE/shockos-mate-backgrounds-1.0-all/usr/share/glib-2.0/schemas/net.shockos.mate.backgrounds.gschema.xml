@@ -9,7 +9,7 @@
         <default>'~/Pictures'</default>
         <description>Location of pictures to shuffle through when slideshow background is enabled</description>
     </key>
-    <key name="interval" type="u">
+    <key name="delay" type="u">
         <default>5</default>
         <summary>Amount of time (in minutes) to wait before shuffling the background</summary>
     </key>

@@ -241,7 +241,7 @@ then
         if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
         then
 
-            notify-send --app-name="Shockware Center" --icon='/usr/share/shockos/shockware-center/icon.png' "App Removed Successfully" "$full_name$both was successfully removed."
+            notify-send --app-name="Shockware Center" --icon='/usr/share/shockos/shockware-center/icon-16.png' "App Removed Successfully" "$full_name$both was successfully removed."
 
         else
 
@@ -278,7 +278,7 @@ then
     if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
     then
 
-        notify-send --app-name="Shockware Center" --icon='/usr/share/shockos/shockware-center/icon.png' "App Installed Successfully" "$full_name$both was successfully installed."
+        notify-send --app-name="Shockware Center" --icon='/usr/share/shockos/shockware-center/icon-16.png' "App Installed Successfully" "$full_name$both was successfully installed."
 
     else
 
@@ -374,7 +374,7 @@ then
         if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
         then
 
-            notify-send --app-name="Shockware Center" --icon='/usr/share/shockos/shockware-center/icon.png' "App Removed Successfully" "$full_name$both was successfully removed."
+            notify-send --app-name="Shockware Center" --icon='/usr/share/shockos/shockware-center/icon-16.png' "App Removed Successfully" "$full_name$both was successfully removed."
 
         else
 
@@ -440,7 +440,7 @@ then
     if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
     then
 
-        notify-send --app-name="Shockware Center" --icon='/usr/share/shockos/shockware-center/icon.png' "App Installed Successfully" "$full_name$both was successfully installed."
+        notify-send --app-name="Shockware Center" --icon='/usr/share/shockos/shockware-center/icon-16.png' "App Installed Successfully" "$full_name$both was successfully installed."
 
     else
 

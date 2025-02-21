@@ -13,11 +13,11 @@
         <property name="orientation">vertical</property>
         <property name="spacing">5</property>
         <child>
-          <object class="GtkNotebook">
+          <object class="GtkNotebook" id="notebook">
             <property name="margin-bottom">5</property>
             <property name="vexpand">True</property>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="picture_tab_box">
                 <property name="margin-bottom">5</property>
                 <property name="margin-end">5</property>
                 <property name="margin-start">5</property>
@@ -25,7 +25,7 @@
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkGrid">
+                  <object class="GtkGrid" id="single_image_grid">
                     <property name="column-homogeneous">True</property>
                     <property name="column-spacing">5</property>
                     <property name="row-spacing">5</property>
@@ -42,19 +42,94 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkButton" id="file_chooser_button">
+                      <object class="GtkButton" id="single_img_file_chooser_button">
                         <property name="child">
                           <object class="GtkBox">
                             <property name="halign">center</property>
                             <property name="spacing">5</property>
                             <child>
-                              <object class="GtkImage" id="file_chooser_icon">
+                              <object class="GtkImage">
                                 <property name="icon-name">image-x-generic-symbolic</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="picture_filename_label">
+                              <object class="GtkLabel" id="single_img_filename_label">
                                 <property name="label">Choose an Image</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="column-span">1</property>
+                          <property name="row">0</property>
+                          <property name="row-span">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkGrid">
+                    <property name="column-homogeneous">True</property>
+                    <property name="column-spacing">5</property>
+                    <property name="row-spacing">5</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="label">Play background as a slideshow</property>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="column-span">1</property>
+                          <property name="row">0</property>
+                          <property name="row-span">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="slideshow_bg_switch">
+                        <property name="halign">end</property>
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="column-span">1</property>
+                          <property name="row">0</property>
+                          <property name="row-span">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkGrid" id="slideshow_bg_grid">
+                    <property name="column-homogeneous">True</property>
+                    <property name="column-spacing">5</property>
+                    <property name="row-spacing">5</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="label">Folder containing pictures:</property>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="column-span">1</property>
+                          <property name="row">0</property>
+                          <property name="row-span">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="slideshow_bg_folder_chooser_button">
+                        <property name="child">
+                          <object class="GtkBox">
+                            <property name="halign">center</property>
+                            <property name="spacing">5</property>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="icon-name">folder-symbolic</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="slideshow_bg_dirname_label">
+                                <property name="label">Choose a Folder</property>
                               </object>
                             </child>
                           </object>
@@ -70,41 +145,11 @@
                     <child>
                       <object class="GtkLabel">
                         <property name="halign">start</property>
-                        <property name="label">Play background as a slideshow</property>
+                        <property name="label">Change background every</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">1</property>
                           <property name="row">1</property>
-                          <property name="row-span">1</property>
-                        </layout>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSwitch" id="slideshow_bg_switch">
-                        <property name="halign">end</property>
-                        <layout>
-                          <property name="column">1</property>
-                          <property name="column-span">1</property>
-                          <property name="row">1</property>
-                          <property name="row-span">1</property>
-                        </layout>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkGrid" id="slideshow_bg_grid">
-                    <property name="column-homogeneous">True</property>
-                    <property name="column-spacing">5</property>
-                    <property name="row-spacing">5</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="halign">start</property>
-                        <property name="label">Change the background every</property>
-                        <layout>
-                          <property name="column">0</property>
-                          <property name="column-span">1</property>
-                          <property name="row">0</property>
                           <property name="row-span">1</property>
                         </layout>
                       </object>
@@ -117,13 +162,13 @@
                           <object class="GtkEntry" id="slideshow_bg_mins_entry"/>
                         </child>
                         <child>
-                          <object class="GtkButton" id="slideshow_bg_mins_add_button">
-                            <property name="icon-name">list-add-symbolic</property>
+                          <object class="GtkButton" id="slideshow_bg_mins_sub_button">
+                            <property name="icon-name">list-remove-symbolic</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="slideshow_bg_mins_sub_button">
-                            <property name="icon-name">list-remove-symbolic</property>
+                          <object class="GtkButton" id="slideshow_bg_mins_add_button">
+                            <property name="icon-name">list-add-symbolic</property>
                           </object>
                         </child>
                         <child>
@@ -134,7 +179,7 @@
                         <layout>
                           <property name="column">1</property>
                           <property name="column-span">1</property>
-                          <property name="row">0</property>
+                          <property name="row">1</property>
                           <property name="row-span">1</property>
                         </layout>
                       </object>
@@ -146,7 +191,7 @@
                         <layout>
                           <property name="column">0</property>
                           <property name="column-span">1</property>
-                          <property name="row">1</property>
+                          <property name="row">2</property>
                           <property name="row-span">1</property>
                         </layout>
                       </object>
@@ -154,13 +199,13 @@
                     <child>
                       <object class="GtkComboBoxText" id="slideshow_bg_order_cb">
                         <items>
-                          <item id="alpha">Alphabetical Order</item>
+                          <item id="alpha">Alphabetical</item>
                           <item id="random">Random</item>
                         </items>
                         <layout>
                           <property name="column">1</property>
                           <property name="column-span">1</property>
-                          <property name="row">1</property>
+                          <property name="row">2</property>
                           <property name="row-span">1</property>
                         </layout>
                       </object>
@@ -190,7 +235,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkGrid">
+              <object class="GtkGrid" id="style_tab_grid">
                 <property name="column-homogeneous">True</property>
                 <property name="column-spacing">5</property>
                 <property name="margin-bottom">5</property>
@@ -272,7 +317,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="reset_options_button">
+                  <object class="GtkButton" id="reset_style_button">
                     <property name="child">
                       <object class="GtkBox">
                         <property name="spacing">5</property>
@@ -300,7 +345,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="icons_tab_box">
                 <property name="margin-bottom">5</property>
                 <property name="margin-end">5</property>
                 <property name="margin-start">5</property>
@@ -426,6 +471,7 @@
         </child>
       </object>
     </property>
+    <property name="icon-name">preferences-desktop-wallpaper</property>
     <property name="title">Desktop Background Settings</property>
   </object>
   <object class="GtkFileChooserNative" id="file_chooser">

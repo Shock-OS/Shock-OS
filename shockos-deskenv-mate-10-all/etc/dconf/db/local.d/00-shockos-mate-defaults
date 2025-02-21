@@ -60,7 +60,7 @@ win-from-cur-workspace-only=true
 
 [org/mate/screensaver]
 picture-filename='/usr/share/shockos/branding/backgrounds/shockos-background.xml'
-themes=['screensavers-gnomelogo-floaters']
+themes=['screensavers-shocklogo-floaters']
 
 [org/onboard]
 theme='/usr/share/onboard/themes/Nightshade.theme'

@@ -1,0 +1,308 @@
+#!/usr/bin/env python3
+
+import sys
+import gi
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk, GObject, Gio, Gdk
+import argparse
+import magic
+mime = magic.Magic(mime=True)
+import subprocess
+from pathlib import Path
+from PIL import Image
+import os
+
+parser = argparse.ArgumentParser(description="Desktop background selection tool for Shock OS MATE Edition")
+
+parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+
+args = parser.parse_args()
+
+def log(message):
+    if args.verbose:
+        print(message)
+
+class app(Gtk.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
+
+    def on_activate(self, app):
+        # Create a Builder
+        builder = Gtk.Builder()
+        builder.add_from_file("/usr/share/shockos/mate/shockos-mate-backgrounds/main.ui")
+
+        # Obtain the GSettings objects
+        self.bg_settings = Gio.Settings.new("org.mate.background")
+        self.desktop_icon_settings = Gio.Settings.new("org.mate.caja.desktop")
+        self.slideshow_bg_settings = Gio.Settings.new("net.shockos.mate.backgrounds.slideshow")
+        self.bg_settings.connect("changed::picture-filename", self.set_filename_label)
+        self.slideshow_bg_settings.connect("changed::folder", self.set_filename_label)
+        self.slideshow_bg_settings.connect("changed::enabled", self.toggle_systemd_service)
+        self.slideshow_bg_settings.connect("changed::delay", self.restart_systemd_service)
+        self.slideshow_bg_settings.connect("changed::order", self.restart_systemd_service)
+        self.slideshow_bg_settings.connect("changed::folder", lambda params: self.restart_systemd_service(params, changenow=True))
+        self.slideshow_bg_settings.connect("changed", self.refresh_ui)
+
+        # Obtain the widgets
+        self.notebook = builder.get_object("notebook")
+        self.picture_tab_box = builder.get_object("picture_tab_box")
+        self.style_tab_grid = builder.get_object("style_tab_grid")
+        self.icons_tab_box = builder.get_object("icons_tab_box")
+        self.notebook.set_tab_label(self.picture_tab_box, Gtk.Label(label="Picture"))
+        self.notebook.set_tab_label(self.style_tab_grid, Gtk.Label(label="Style & Colors"))
+        self.notebook.set_tab_label(self.icons_tab_box, Gtk.Label(label="Desktop Icons"))
+
+        self.slideshow_bg_switch = builder.get_object("slideshow_bg_switch")
+        self.slideshow_bg_settings.bind("enabled", self.slideshow_bg_switch, "active", Gio.SettingsBindFlags.DEFAULT)
+        self.slideshow_bg_grid = builder.get_object("slideshow_bg_grid")
+        self.slideshow_bg_folder_chooser_button = builder.get_object("slideshow_bg_folder_chooser_button")
+        self.slideshow_bg_folder_chooser_button.connect("clicked", self.choose_file)
+        self.slideshow_bg_dirname_label = builder.get_object("slideshow_bg_dirname_label")
+        self.slideshow_bg_mins_entry = builder.get_object("slideshow_bg_mins_entry")
+        self.slideshow_bg_mins_entry.set_text(str(self.slideshow_bg_settings.get_uint("delay")))
+        self.slideshow_bg_mins_entry.connect("changed", self.update_delay)
+        self.slideshow_bg_mins_add_button = builder.get_object("slideshow_bg_mins_add_button")
+        self.slideshow_bg_mins_add_button.connect("clicked", self.mins_math)
+        self.slideshow_bg_mins_sub_button = builder.get_object("slideshow_bg_mins_sub_button")
+        self.slideshow_bg_mins_sub_button.connect("clicked", self.mins_math)
+        self.slideshow_bg_order_cb = builder.get_object("slideshow_bg_order_cb")
+        self.slideshow_bg_settings.bind("order", self.slideshow_bg_order_cb, "active-id", Gio.SettingsBindFlags.DEFAULT)
+
+        self.single_image_grid = builder.get_object("single_image_grid")
+        self.single_img_file_chooser_button = builder.get_object("single_img_file_chooser_button")
+        self.single_img_file_chooser_button.connect("clicked", self.choose_file)
+        self.file_chooser = builder.get_object("file_chooser")
+        self.file_chooser.connect("response", self.parse_file)
+        self.single_img_filename_label = builder.get_object("single_img_filename_label")
+        self.style_cb = builder.get_object("style_cb")
+        self.bg_settings.bind("picture-options", self.style_cb, "active-id", Gio.SettingsBindFlags.DEFAULT)
+        self.bg_color_shading_cb = builder.get_object("bg_color_shading_cb")
+        self.bg_color_shading_cb.connect("notify", self.bg_color_shading_changed)
+        self.bg_settings.bind("color-shading-type", self.bg_color_shading_cb, "active-id", Gio.SettingsBindFlags.DEFAULT)
+        self.primary_color_button = builder.get_object("primary_color_button")
+        self.secondary_color_button = builder.get_object("secondary_color_button")
+        self.reset_picture_button = builder.get_object("reset_picture_button")
+        self.reset_picture_button.connect("clicked", self.reset)
+        self.reset_style_button = builder.get_object("reset_style_button")
+        self.reset_style_button.connect("clicked", self.reset)
+        self.reset_icons_button = builder.get_object("reset_icons_button")
+        self.reset_icons_button.connect("clicked", self.reset)
+        self.reset_all_button = builder.get_object("reset_all_button")
+        self.reset_all_button.connect("clicked", self.reset)
+        self.error_message = builder.get_object("error_message")
+        self.error_message.connect("response", self.close_error_message)
+
+        # Order is important here
+        self.get_bg_colors()
+        self.primary_color_button.connect("notify", self.bg_colors_changed)
+        self.secondary_color_button.connect("notify", self.bg_colors_changed)
+        
+        self.desktop_icons_checkboxes_box = builder.get_object("desktop_icons_checkboxes_box")
+        self.show_desktop_icons_switch = builder.get_object("show_desktop_icons_switch")
+        self.show_desktop_icons_switch.connect("notify", self.desktop_icons_switched)
+        self.bg_settings.bind("show-desktop-icons", self.show_desktop_icons_switch, "active", Gio.SettingsBindFlags.DEFAULT)
+        self.computer_checkbox = builder.get_object("computer_checkbox")
+        self.desktop_icon_settings.bind("computer-icon-visible", self.computer_checkbox, "active", Gio.SettingsBindFlags.DEFAULT)
+        self.home_checkbox = builder.get_object("home_checkbox")
+        self.desktop_icon_settings.bind("home-icon-visible", self.home_checkbox, "active", Gio.SettingsBindFlags.DEFAULT)
+        self.trash_checkbox = builder.get_object("trash_checkbox")
+        self.desktop_icon_settings.bind("trash-icon-visible", self.trash_checkbox, "active", Gio.SettingsBindFlags.DEFAULT)
+        self.network_checkbox = builder.get_object("network_checkbox")
+        self.desktop_icon_settings.bind("network-icon-visible", self.network_checkbox, "active", Gio.SettingsBindFlags.DEFAULT)
+        self.mounted_volumes_checkbox = builder.get_object("mounted_volumes_checkbox")
+        self.desktop_icon_settings.bind("volumes-visible", self.mounted_volumes_checkbox, "active", Gio.SettingsBindFlags.DEFAULT)
+        self.close_button = builder.get_object("close_button")
+        self.close_button.connect("clicked", self.close)
+
+        self.bg_color_shading_changed(None, None)
+        self.desktop_icons_switched(None, None)
+
+        # Obtain and show the main window
+        self.set_filename_label(self.bg_settings, "picture-filename")
+        self.set_filename_label(self.slideshow_bg_settings, "folder")
+        self.refresh_ui(None, None)
+        self.main_window = builder.get_object("main_window")
+        self.file_chooser.set_transient_for(self.main_window)
+        self.error_message.set_transient_for(self.main_window)
+        self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        self.main_window.present()
+
+    def choose_file(self, button):
+        if button == self.single_img_file_chooser_button:
+            self.file_chooser.set_action(Gtk.FileChooserAction.OPEN)
+        else:
+            self.file_chooser.set_action(Gtk.FileChooserAction.SELECT_FOLDER)
+        file = self.file_chooser.show()
+
+    def parse_file(self, file, response):
+        if response == Gtk.ResponseType.ACCEPT:
+            file = file.get_file().get_path()
+            if self.slideshow_bg_settings.get_boolean("enabled"):
+                file = Path(file)
+                def checkdir():
+                    for item in file.iterdir():
+                        if item.is_file():
+                            try:
+                                with Image.open(item) as img:
+                                    return True # If PIL can open it, it's an image
+                            except Exception:
+                                pass # Not an image, continue checking
+                    return False
+                if Path.is_dir(file):
+                    if checkdir():
+                        self.slideshow_bg_settings.set_string("folder", str(file))
+                    else:
+                        self.error_message.set_visible(True)
+                else:
+                    self.error_message.set_visible(True)
+            else:
+                file_type = mime.from_file(file)
+                if file_type.startswith('image/'):
+                    self.bg_settings.set_string("picture-filename", str(file))
+                else:
+                    self.error_message.set_visible(True)
+                    log(f"ERROR: {file} is not an image.")
+
+    def set_filename_label(self, settings, key):
+        if settings == self.bg_settings and key == "picture-filename":
+            filename = self.bg_settings.get_string("picture-filename")
+            filename = Path(filename).name
+            self.single_img_filename_label.set_text(filename)
+        elif settings == self.slideshow_bg_settings and key == "folder":
+            filename = self.slideshow_bg_settings.get_string("folder")
+            filename = Path(filename).name
+            self.slideshow_bg_dirname_label.set_text(filename)
+
+    def get_bg_colors(self):
+        def get_rgba(string):
+            color = Gdk.RGBA()
+            hexcode = self.bg_settings.get_string(string)
+            r = int(hexcode[1:3], 16) / 255.0
+            color.red = r
+            g = int(hexcode[3:5], 16) / 255.0
+            color.green = g
+            b = int(hexcode[5:7], 16) / 255.0
+            color.blue = b
+            color.alpha = 1
+            return color
+        primary_color = get_rgba("primary-color")
+        secondary_color = get_rgba("secondary-color")
+        self.primary_color_button.set_rgba(primary_color)
+        self.secondary_color_button.set_rgba(secondary_color)
+        log(f"PRIMARY_COLOR: {primary_color}")
+        log(f"SECONDARY_COLOR: {secondary_color}")
+
+    def bg_colors_changed(self, button, state):
+        def parse_color(widget):
+            color = widget.get_rgba()
+            r = int(color.red * 255)
+            g = int(color.green * 255)
+            b = int(color.blue * 255)
+            return f"#{r:02X}{g:02X}{b:02X}"
+        primary_color = parse_color(self.primary_color_button)
+        secondary_color = parse_color(self.secondary_color_button)
+        self.bg_settings.set_string("primary-color", primary_color)
+        self.bg_settings.set_string("secondary-color", secondary_color)
+        log(f"PRIMARY_COLOR: {primary_color}")
+        log(f"SECONDARY_COLOR: {secondary_color}")
+
+    def bg_color_shading_changed(self, cb, active):
+        if self.bg_color_shading_cb.get_active_id() == "solid":
+            self.secondary_color_button.set_visible(False)
+        else:
+            self.secondary_color_button.set_visible(True)
+
+    def desktop_icons_switched(self, switch, state):
+        if self.show_desktop_icons_switch.get_active():
+            self.desktop_icons_checkboxes_box.set_sensitive(True)
+        else:
+            self.desktop_icons_checkboxes_box.set_sensitive(False)
+
+    def mins_math(self, widget):
+        mins = int(self.slideshow_bg_mins_entry.get_text())
+        if widget == self.slideshow_bg_mins_add_button:
+            mins = mins + 1
+        elif widget == self.slideshow_bg_mins_sub_button:
+            if (mins > 1):
+                mins = mins - 1
+        self.slideshow_bg_mins_entry.set_text(str(mins))
+
+    def update_delay(self, entry):
+        mins = self.slideshow_bg_mins_entry.get_text()
+        if not mins.isdigit():
+            mins = ''.join([char for char in mins if char.isdigit()])
+            self.slideshow_bg_mins_entry.set_text(mins)
+        mins = int(mins)
+        if (mins < 1):
+            mins = 1
+            self.slideshow_bg_mins_entry.set_text("1")
+        elif (mins > 1440):
+            mins = 1440
+            self.slideshow_bg_mins_entry.set_text("1440")
+        self.slideshow_bg_settings.set_uint("delay", mins)
+
+    def refresh_ui(self, widget, param):
+        self.slideshow_bg_mins_entry.set_text(str(self.slideshow_bg_settings.get_uint("delay")))
+        if self.slideshow_bg_settings.get_boolean("enabled"):
+            self.slideshow_bg_grid.set_sensitive(True)
+            self.single_image_grid.set_sensitive(False)
+        else:
+            self.slideshow_bg_grid.set_sensitive(False)
+            self.single_image_grid.set_sensitive(True)
+        self.get_bg_colors()
+
+    def toggle_systemd_service(self, settings, key):
+        if settings.get_boolean("enabled"):
+            subprocess.run(['systemctl', '--user', 'enable', 'shockos-mate-slideshow-background-daemon'])
+            subprocess.run(['systemctl', '--user', 'restart', 'shockos-mate-slideshow-background-daemon'])
+        else:
+            subprocess.run(['systemctl', '--user', 'stop', 'shockos-mate-slideshow-background-daemon'])
+            subprocess.run(['systemctl', '--user', 'disable', 'shockos-mate-slideshow-background-daemon'])
+
+    def restart_systemd_service(self, settings, key, changenow=False):
+        if settings.get_boolean("enabled"):
+            if changenow:
+                file = os.path.expanduser('~/.cache/shockos-tmp/shockos-mate-backgrounds/slideshow-changenow-indicator')
+                os.makedirs(os.path.dirname(file), exist_ok=True)
+                with open(file, 'w'):
+                    pass
+            subprocess.run(['systemctl', '--user', 'restart', 'shockos-mate-slideshow-background-daemon'])
+
+    def reset(self, button):
+        def reset_picture_settings():
+            self.bg_settings.reset("picture-filename")
+            subprocess.run(['gsettings', 'reset-recursively', 'net.shockos.mate.backgrounds.slideshow'])
+        def reset_style_settings():
+            self.bg_settings.reset("color-shading-type")
+            self.bg_settings.reset("picture-options")
+            self.bg_settings.reset("primary-color")
+            self.bg_settings.reset("secondary-color")
+        def reset_icons_settings():
+            self.bg_settings.reset("show-desktop-icons")
+            self.desktop_icon_settings.reset("computer-icon-visible")
+            self.desktop_icon_settings.reset("home-icon-visible")
+            self.desktop_icon_settings.reset("network-icon-visible")
+            self.desktop_icon_settings.reset("trash-icon-visible")
+            self.desktop_icon_settings.reset("volumes-visible")
+        if button == self.reset_picture_button:
+            reset_picture_settings()
+        elif button == self.reset_style_button:
+            reset_style_settings()
+        elif button == self.reset_icons_button:
+            reset_icons_settings()
+        elif button == self.reset_all_button:
+            reset_picture_settings()
+            reset_style_settings()
+            reset_icons_settings()
+        self.refresh_ui(None, None)
+
+    def close_error_message(self, widget, param):
+        widget.set_visible("False")
+
+    def close(self, button):
+        sys.exit()
+
+app = app(application_id="net.ShockOS.MATE.Backgrounds")
+app.run()
+

@@ -32,7 +32,3 @@ show-clock=false
 theme-name=Yaru-purple-dark' | tee /etc/lightdm/slick-greeter.conf
 sed -i '/^#greeter-hide-users=/c\greeter-hide-users=false' /etc/lightdm/lightdm.conf
 
-# Redirect mate-appearance-properties to shockos-mate-backgrounds (for desktop context menu)
-mv /usr/bin/mate-appearance-properties /usr/bin/mate-appearance-properties-vanilla
-ln -s /usr/bin/shockos-mate-backgrounds /usr/bin/mate-appearance-properties
-
