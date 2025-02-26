@@ -35,6 +35,8 @@
 	(1,25,"GtkLabel",None,2,None,None,None,0,None,None)
   </object>
   <object_property>
+	(1,1,"GtkWindow","default-height","325",None,None,None,None,None,None,None,None,None),
+	(1,1,"GtkWindow","default-width","550",None,None,None,None,None,None,None,None,None),
 	(1,1,"GtkWindow","title","Layouts",None,None,None,None,None,None,None,None,None),
 	(1,2,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),
 	(1,2,"GtkOrientable","orientation","vertical",None,None,None,None,None,None,None,None,None),

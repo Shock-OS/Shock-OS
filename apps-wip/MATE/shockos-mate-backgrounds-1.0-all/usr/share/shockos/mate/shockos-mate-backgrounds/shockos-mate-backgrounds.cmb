@@ -130,6 +130,7 @@
 	(1,44,"GtkCheckButton","label","Removable Drives",None,None,None,None,None,None,None,None,None),
 	(1,45,"GtkFileChooserNative","accept-label","Select",None,None,None,None,None,None,None,None,None),
 	(1,45,"GtkFileChooserNative","cancel-label","Cancel",None,None,None,None,None,None,None,None,None),
+	(1,45,"GtkNativeDialog","title","Choose a File",None,None,None,None,None,None,None,None,None),
 	(1,46,"GtkMessageDialog","buttons","ok",None,None,None,None,None,None,None,None,None),
 	(1,46,"GtkMessageDialog","message-type","error",None,None,None,None,None,None,None,None,None),
 	(1,46,"GtkMessageDialog","secondary-text","The selected file is not an image file. Please choose an image file.",None,None,None,None,None,None,None,None,None),

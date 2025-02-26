@@ -4,6 +4,8 @@
   <!-- interface-name shockos-mate-layouts.ui -->
   <requires lib="gtk" version="4.8"/>
   <object class="GtkApplicationWindow" id="main_window">
+    <property name="default-height">325</property>
+    <property name="default-width">550</property>
     <property name="title">Layouts</property>
     <child>
       <object class="GtkBox">

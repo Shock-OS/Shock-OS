@@ -2,6 +2,12 @@
 
 #this script installs the Shock OS .deb packages in the current directory and prepares the system for initial setup
 
+if [[ "$(whoami)" != 'shockos' ]]
+then
+    echo 'This script is ONLY meant to be run on a fresh install of Raspberry Pi OS Lite to install Shock OS. DO NOT run this script elsewhere! (Hint: Use `./build.sh [gnome/mate]` to create a build of Shock OS for installation.)'
+    exit
+fi
+
 sudo apt install -y pipewire-audio || { echo "ERROR: Failed to install package pipewire-audio. Exiting..."; exit 1; }
 
 sudo apt install -y ./"shockos-core_"* || { echo "ERROR: Failed to install shockos-core package. Exiting..."; exit 1; }

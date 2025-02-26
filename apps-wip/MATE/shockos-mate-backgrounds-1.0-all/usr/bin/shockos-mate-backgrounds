@@ -41,7 +41,7 @@ class app(Gtk.Application):
         self.slideshow_bg_settings.connect("changed::enabled", self.toggle_systemd_service)
         self.slideshow_bg_settings.connect("changed::delay", self.restart_systemd_service)
         self.slideshow_bg_settings.connect("changed::order", self.restart_systemd_service)
-        self.slideshow_bg_settings.connect("changed::folder", lambda params: self.restart_systemd_service(params, changenow=True))
+        self.slideshow_bg_settings.connect("changed::folder", lambda settings, key: self.restart_systemd_service(settings, key, changenow=True))
         self.slideshow_bg_settings.connect("changed", self.refresh_ui)
 
         # Obtain the widgets
@@ -130,8 +130,10 @@ class app(Gtk.Application):
 
     def choose_file(self, button):
         if button == self.single_img_file_chooser_button:
+            self.file_chooser.set_title("Choose an Image")
             self.file_chooser.set_action(Gtk.FileChooserAction.OPEN)
         else:
+            self.file_chooser.set_title("Choose a Folder")
             self.file_chooser.set_action(Gtk.FileChooserAction.SELECT_FOLDER)
         file = self.file_chooser.show()
 
@@ -221,25 +223,28 @@ class app(Gtk.Application):
 
     def mins_math(self, widget):
         mins = int(self.slideshow_bg_mins_entry.get_text())
-        if widget == self.slideshow_bg_mins_add_button:
+        if widget == self.slideshow_bg_mins_add_button and (mins < 1440):
             mins = mins + 1
-        elif widget == self.slideshow_bg_mins_sub_button:
-            if (mins > 1):
-                mins = mins - 1
+        elif widget == self.slideshow_bg_mins_sub_button and (mins > 1):
+            mins = mins - 1
         self.slideshow_bg_mins_entry.set_text(str(mins))
 
     def update_delay(self, entry):
+        def update_entry(string):
+            handler_id = entry.handler_block_by_func(self.update_delay)
+            entry.set_text(string)
+            entry.handler_unblock(handler_id)
         mins = self.slideshow_bg_mins_entry.get_text()
         if not mins.isdigit():
             mins = ''.join([char for char in mins if char.isdigit()])
-            self.slideshow_bg_mins_entry.set_text(mins)
+            update_entry(mins)
         mins = int(mins)
         if (mins < 1):
             mins = 1
-            self.slideshow_bg_mins_entry.set_text("1")
+            update_entry("1")
         elif (mins > 1440):
             mins = 1440
-            self.slideshow_bg_mins_entry.set_text("1440")
+            update_entry("1440")
         self.slideshow_bg_settings.set_uint("delay", mins)
 
     def refresh_ui(self, widget, param):

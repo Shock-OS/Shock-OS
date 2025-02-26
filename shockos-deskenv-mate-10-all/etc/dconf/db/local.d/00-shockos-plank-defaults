@@ -4,7 +4,7 @@ enabled-docks=['shockos-dock']
 [net/launchpad/plank/docks/shockos-dock]
 alignment='center'
 current-workspace-only=true
-dock-items=['1-chromium.dockitem', '2-caja.dockitem', '3-libreoffice-writer.dockitem', '4-mate-terminal.dockitem']
+dock-items=['0-chromium.dockitem', '1-caja.dockitem', '2-libreoffice-writer.dockitem', '3-mate-terminal.dockitem']
 hide-delay=0
 hide-mode='intelligent'
 lock-items=false

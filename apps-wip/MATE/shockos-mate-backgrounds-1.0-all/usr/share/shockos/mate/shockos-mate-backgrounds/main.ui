@@ -477,6 +477,7 @@
   <object class="GtkFileChooserNative" id="file_chooser">
     <property name="accept-label">Select</property>
     <property name="cancel-label">Cancel</property>
+    <property name="title">Choose a File</property>
   </object>
   <object class="GtkMessageDialog" id="error_message">
     <property name="buttons">ok</property>
