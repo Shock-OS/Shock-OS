@@ -76,12 +76,12 @@ class app(Gtk.Application):
         self.file_chooser.connect("response", self.parse_file)
         self.single_img_filename_label = builder.get_object("single_img_filename_label")
         self.style_cb = builder.get_object("style_cb")
+        self.primary_color_button = builder.get_object("primary_color_button")
+        self.secondary_color_button = builder.get_object("secondary_color_button")
         self.bg_settings.bind("picture-options", self.style_cb, "active-id", Gio.SettingsBindFlags.DEFAULT)
         self.bg_color_shading_cb = builder.get_object("bg_color_shading_cb")
         self.bg_color_shading_cb.connect("notify", self.bg_color_shading_changed)
         self.bg_settings.bind("color-shading-type", self.bg_color_shading_cb, "active-id", Gio.SettingsBindFlags.DEFAULT)
-        self.primary_color_button = builder.get_object("primary_color_button")
-        self.secondary_color_button = builder.get_object("secondary_color_button")
         self.reset_picture_button = builder.get_object("reset_picture_button")
         self.reset_picture_button.connect("clicked", self.reset)
         self.reset_style_button = builder.get_object("reset_style_button")
@@ -222,7 +222,10 @@ class app(Gtk.Application):
             self.desktop_icons_checkboxes_box.set_sensitive(False)
 
     def mins_math(self, widget):
-        mins = int(self.slideshow_bg_mins_entry.get_text())
+        mins = self.slideshow_bg_mins_entry.get_text()
+        if not mins.isdigit():
+            mins = ''.join([char for char in mins if char.isdigit()])
+        mins = int(mins)
         if widget == self.slideshow_bg_mins_add_button and (mins < 1440):
             mins = mins + 1
         elif widget == self.slideshow_bg_mins_sub_button and (mins > 1):
@@ -231,7 +234,7 @@ class app(Gtk.Application):
 
     def update_delay(self, entry):
         def update_entry(string):
-            handler_id = entry.handler_block_by_func(self.update_delay)
+            handler_id = entry.handler_block_by_func(self.refresh_ui)
             entry.set_text(string)
             entry.handler_unblock(handler_id)
         mins = self.slideshow_bg_mins_entry.get_text()
@@ -257,8 +260,15 @@ class app(Gtk.Application):
             self.single_image_grid.set_sensitive(True)
         self.get_bg_colors()
 
+    def make_changenow_file(self):
+        file = os.path.expanduser('~/.cache/shockos-tmp/shockos-mate-backgrounds/slideshow-changenow-indicator')
+        os.makedirs(os.path.dirname(file), exist_ok=True)
+        with open(file, 'w'):
+            pass
+
     def toggle_systemd_service(self, settings, key):
         if settings.get_boolean("enabled"):
+            self.make_changenow_file()
             subprocess.run(['systemctl', '--user', 'enable', 'shockos-mate-slideshow-background-daemon'])
             subprocess.run(['systemctl', '--user', 'restart', 'shockos-mate-slideshow-background-daemon'])
         else:
@@ -268,10 +278,7 @@ class app(Gtk.Application):
     def restart_systemd_service(self, settings, key, changenow=False):
         if settings.get_boolean("enabled"):
             if changenow:
-                file = os.path.expanduser('~/.cache/shockos-tmp/shockos-mate-backgrounds/slideshow-changenow-indicator')
-                os.makedirs(os.path.dirname(file), exist_ok=True)
-                with open(file, 'w'):
-                    pass
+                self.make_changenow_file()
             subprocess.run(['systemctl', '--user', 'restart', 'shockos-mate-slideshow-background-daemon'])
 
     def reset(self, button):

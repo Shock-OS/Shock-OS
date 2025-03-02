@@ -45,6 +45,15 @@ fi
 if "$(gsettings get net.shockos.mate.backgrounds.slideshow enabled)"
 then
     imgdir="$(gsettings get net.shockos.mate.backgrounds.slideshow folder | sed -E 's/^["\x27]+|["\x27]+$//g')"
+    if [[ "$imgdir" == '~'* ]]
+    then
+        until [[ "$imgdir" != '~'* ]] && [[ "$imgdir" != '/'* ]]
+        do
+            imgdir="${imgdir:1}"
+        done
+        imgdir="/home/$(whoami)/${imgdir}"
+        gsettings set net.shockos.mate.backgrounds.slideshow folder "$imgdir"
+    fi
     delay="$(gsettings get net.shockos.mate.backgrounds.slideshow delay)"
     delay="${delay#* }"
     delay=$((delay*60))
