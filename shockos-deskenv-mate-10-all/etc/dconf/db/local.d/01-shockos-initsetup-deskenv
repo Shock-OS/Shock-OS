@@ -6,3 +6,7 @@ show-desktop-icons=false
 dock=''
 filemanager=''
 panel=''
+
+[org/mate/screensaver]
+lock-enabled=false
+
