@@ -30,7 +30,12 @@
 	(1,20,"GtkSeparator",None,2,None,None,None,1,None,None),
 	(1,21,"GtkBox","multi_windows_box",2,None,None,None,2,None,None),
 	(1,22,"GtkLabel","multi_windows_switch_label",21,None,None,None,0,None,None),
-	(1,23,"GtkSwitch","multi_windows_switch",21,None,None,None,1,None,None)
+	(1,23,"GtkSwitch","multi_windows_switch",21,None,None,None,1,None,None),
+	(1,24,"GtkLabel",None,2,None,None,None,3,None,None),
+	(1,25,"GtkLabel",None,2,None,None,None,4,None,None),
+	(1,26,"GtkBox",None,2,None,None,None,5,None,None),
+	(1,27,"GtkEntry","gplay_id_entry",26,None,None,None,0,None,None),
+	(1,28,"GtkButton","get_gplay_id_button",26,None,None,None,1,None,None)
   </object>
   <object_property>
 	(1,1,"GtkWindow","title","Waydroid Settings",None,None,None,None,None,None,None,None,None),
@@ -53,6 +58,17 @@
 	(1,16,"GtkImage","icon-name","system-reboot",0,None,None,None,None,None,None,None,None),
 	(1,17,"GtkLabel","label","Restart",0,None,None,None,None,None,None,None,None),
 	(1,21,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),
-	(1,22,"GtkLabel","label","Integrate Android app windows with desktop",None,None,None,None,None,None,None,None,None)
+	(1,22,"GtkLabel","label","Integrate Android app windows with desktop",None,None,None,None,None,None,None,None,None),
+	(1,24,"GtkLabel","label","&lt;b&gt;Google Play Certification&lt;/b&gt;",None,None,None,None,None,None,None,None,None),
+	(1,24,"GtkLabel","use-markup","True",None,None,None,None,None,None,None,None,None),
+	(1,24,"GtkWidget","halign","start",None,None,None,None,None,None,None,None,None),
+	(1,25,"GtkLabel","label","In order to use the Google Play Store, you must certify your device with Play Protect. To do this, simply retreive your device ID below and paste it into &lt;a href=\"https://www.google.com/android/uncertified\"&gt;Google Services Framework Device Registration&lt;/a&gt;.",None,None,None,None,None,None,None,None,None),
+	(1,25,"GtkLabel","use-markup","True",None,None,None,None,None,None,None,None,None),
+	(1,25,"GtkLabel","wrap","True",None,None,None,None,None,None,None,None,None),
+	(1,26,"GtkBox","spacing","5",None,None,None,None,None,None,None,None,None),
+	(1,27,"GtkEditable","editable","False",None,None,None,None,None,None,None,None,None),
+	(1,27,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),
+	(1,28,"GtkButton","label","Get Google Services Framework Android ID",None,None,None,None,None,None,None,None,None),
+	(1,28,"GtkWidget","halign","end",None,None,None,None,None,None,None,None,None)
   </object_property>
 </cambalache-project>

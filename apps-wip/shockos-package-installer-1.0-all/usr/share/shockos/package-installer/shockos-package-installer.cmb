@@ -25,7 +25,7 @@
 	(1,19,"GtkTextView",None,18,None,None,None,0,None,None),
 	(1,20,"GtkTextBuffer","package_info_text",19,None,None,None,0,None,None),
 	(1,21,"GtkBox",None,13,None,None,None,0,None,None),
-	(1,22,"GtkBox","installing_box",21,None,None,None,1,None,None),
+	(1,22,"GtkBox","progress_box",21,None,None,None,1,None,None),
 	(1,23,"GtkLabel","installing_label",25,None,None,None,0,None,None),
 	(1,24,"GtkProgressBar","progress_bar",22,None,None,None,1,None,None),
 	(1,25,"GtkBox",None,22,None,None,None,0,None,None),

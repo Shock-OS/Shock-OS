@@ -12,7 +12,7 @@ import threading
 import re
 
 parser = argparse.ArgumentParser(description="Install or remove .deb files (or .apk files if Android app support is enabled).")
-
+parser.add_argument("file", nargs="?", help="Path to package file", default=None)
 parser.add_argument('--verbose', action='store_true')
 
 args = parser.parse_args()
@@ -47,11 +47,11 @@ class PackageInstaller(Gtk.Application):
         self.package_info_label = builder.get_object("package_info_label")
         self.package_type_label = builder.get_object("package_type_label")
         self.package_info_text = builder.get_object("package_info_text")
-        self.installing_box = builder.get_object("installing_box")
+        self.progress_box = builder.get_object("progress_box")
         self.installing_label = builder.get_object("installing_label")
         self.spinner = builder.get_object("spinner")
         self.progress_bar = builder.get_object("progress_bar")
-        self.installing_box.set_visible(False)
+        self.progress_box.set_visible(False)
         self.error_message = builder.get_object("error_message")
         self.error_message.connect("response", self.close_error_message)
 
@@ -59,6 +59,10 @@ class PackageInstaller(Gtk.Application):
         self.main_window = builder.get_object("main_window")
         self.main_window.connect("close-request", self.main_window_close_request)
         self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        # Load file if app was opened through context menu
+        if args.file:
+            self.file = args.file
+            self.refresh_page()
         self.main_window.present()
         self.main_window.set_sensitive(True)
 
@@ -189,7 +193,7 @@ class PackageInstaller(Gtk.Application):
                     waydroid_running = waydroid_running.stdout.strip()
                     if waydroid_running != "RUNNING":
                         print("Waydroid is not running, starting session...")
-                        subprocess.run(["/usr/bin/shockos-waydroid-start-session.sh"]) # wait for process to finish
+                        subprocess.run(["/usr/libexec/shockos/waydroid/start-session.sh"]) # wait for process to finish
                     installed_apps = subprocess.run([f"waydroid app list | grep 'packageName:' | awk '{{print $2}}'"], shell=True, capture_output=True, text=True)
                     installed_apps = installed_apps.stdout.strip()
                     if self.package_name in installed_apps.split(): # if app is installed
@@ -241,7 +245,7 @@ class PackageInstaller(Gtk.Application):
             self.progress_bar.set_visible(False)
         else:
             self.progress_bar.set_visible(True)
-        self.installing_box.set_visible(True)
+        self.progress_box.set_visible(True)
         self.file_button.set_sensitive(False)
         self.install_button.set_sensitive(False)
         self.reinstall_button.set_sensitive(False)
@@ -270,6 +274,7 @@ class PackageInstaller(Gtk.Application):
             process.wait()
             # Update the progress bar to 100% when done
             GLib.idle_add(self.update_progress_bar, 1.0)
+            GLib.idle_add(self.reset_progress)
             GLib.idle_add(self.refresh_page)
         if self.pkg_type == "flatpakref":
             if action == "install":
@@ -279,6 +284,7 @@ class PackageInstaller(Gtk.Application):
             elif action == "remove":
                 process = subprocess.Popen(["flatpak", "remove", "-y", self.package_name])
             process.wait()
+            GLib.idle_add(self.reset_progress)
             GLib.idle_add(self.refresh_page)
         if self.pkg_type == "apk":
             if action == "install":
@@ -290,6 +296,7 @@ class PackageInstaller(Gtk.Application):
             else:
                 print(f"ERROR: Action '{action}' not recognized.")
             process.wait()
+            GLib.idle_add(self.reset_progress)
             GLib.idle_add(self.refresh_page)
 
     def update_progress_bar(self, fraction):
@@ -297,6 +304,10 @@ class PackageInstaller(Gtk.Application):
         self.progress_bar.set_fraction(fraction)
         self.progress_bar.set_text(f"{int(fraction * 100)}%")
         return False  # Stop idle_add loop
+
+    def reset_progress(self):
+        self.update_progress_bar(0)
+        self.progress_box.set_visible(False)
 
     def show_error_message(self):
         self.main_window.set_sensitive(False)

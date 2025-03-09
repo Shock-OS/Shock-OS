@@ -1,2 +1,0 @@
- - subprocess.Popen can't handle errors properly, likely needs to be switched to subprocess.run, but of course that causes a ton of new issues
- - needs overall polishing; unfinished

@@ -60,7 +60,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="installing_box">
+              <object class="GtkBox" id="progress_box">
                 <property name="halign">center</property>
                 <property name="hexpand">True</property>
                 <property name="hexpand-set">True</property>

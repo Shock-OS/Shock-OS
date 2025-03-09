@@ -27,6 +27,10 @@ ex=$?
 if [[ "$ex" == "0" ]]
 then
     # BEGINNING INSTALLATION OF WAYDROID
+    if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
+    then
+        sudo apt install weston
+    fi
     sudo apt update
     sudo apt upgrade -y
     sudo apt install -y curl lsb-release apkinfo # apkinfo used by Package Manager

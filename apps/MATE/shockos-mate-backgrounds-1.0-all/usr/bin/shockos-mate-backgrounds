@@ -309,8 +309,8 @@ class app(Gtk.Application):
             reset_icons_settings()
         self.refresh_ui(None, None)
 
-    def close_error_message(self, widget, param):
-        widget.set_visible("False")
+    def close_error_message(self, dialog, param):
+        dialog.hide()
 
     def close(self, button):
         sys.exit()

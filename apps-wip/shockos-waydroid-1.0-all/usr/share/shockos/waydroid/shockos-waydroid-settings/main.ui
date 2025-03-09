@@ -107,6 +107,37 @@
             </child>
           </object>
         </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="halign">start</property>
+            <property name="label">&lt;b&gt;Google Play Certification&lt;/b&gt;</property>
+            <property name="use-markup">True</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">In order to use the Google Play Store, you must certify your device with Play Protect. To do this, simply retreive your device ID below and paste it into &lt;a href="https://www.google.com/android/uncertified"&gt;Google Services Framework Device Registration&lt;/a&gt;.</property>
+            <property name="use-markup">True</property>
+            <property name="wrap">True</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkEntry" id="gplay_id_entry">
+                <property name="editable">False</property>
+                <property name="hexpand">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="get_gplay_id_button">
+                <property name="halign">end</property>
+                <property name="label">Get Google Services Framework Android ID</property>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
   </object>

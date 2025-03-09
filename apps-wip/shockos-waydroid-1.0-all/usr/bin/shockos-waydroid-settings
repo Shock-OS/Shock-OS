@@ -16,7 +16,9 @@ parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose
 
 args = parser.parse_args()
 
-verbose = args.verbose
+def log(message):
+    if args.verbose:
+        print(message)
 
 class WaydroidSettings(Gtk.Application):
     def __init__(self, **kwargs):
@@ -45,6 +47,9 @@ class WaydroidSettings(Gtk.Application):
         if shockos.deskenv == "MATE":
             self.multi_windows_switch_label.set_text("Integrate Android app windows with desktop (GNOME only)")
             self.multi_windows_box.set_sensitive(False)
+        self.gplay_id_entry = builder.get_object("gplay_id_entry")
+        self.get_gplay_id_button = builder.get_object("get_gplay_id_button")
+        self.get_gplay_id_button.connect("clicked", self.get_gplay_id)
 
         # Obtain and show the main window
         self.get_status()
@@ -80,31 +85,13 @@ class WaydroidSettings(Gtk.Application):
         self.spinner.set_spinning(False)
         return False
 
-    
-    
-
     def start_session(self, button):
         self.start_session_button.set_sensitive(False)
         self.status_label.set_label("Starting...")
         self.spinner.set_spinning(True)
-        start_session_thread = threading.Thread(target=self.session_init)
-        start_session_thread.start() # start session
-
-    def session_init(self):
-        with subprocess.Popen(["waydroid", "--details-to-stdout", "session", "start"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) as process:
-            for line in process.stdout:
-                if verbose:
-                    print(line)
-                if "Android with user" in line:
-                    GLib.idle_add(self.get_status)
-                    break
-            else:
-                if verbose:
-                    print("SESSION INITIALIZATION INTERRUPTED")
+        subprocess.run(['/usr/libexec/shockos/waydroid/start-session.sh'])
+        self.get_status()
         
-                    
-                
-
     def stop_session(self, button):
         self.stop_and_restart_box.set_sensitive(False)
         self.status_label.set_label("Stopping...")
@@ -117,14 +104,24 @@ class WaydroidSettings(Gtk.Application):
         self.status_label.set_label("Restarting...")
         self.spinner.set_spinning(True)
         subprocess.run(["waydroid", "session", "stop"])
-        start_session_thread = threading.Thread(target=self.session_init)
-        start_session_thread.start() # start session
+        subprocess.run(['/usr/libexec/shockos/waydroid/start-session.sh'])
+        self.get_status()
 
     def toggle_multi_windows(self, switch, state):
         if self.multi_windows_switch.get_active():
             subprocess.run(['waydroid', 'prop', 'set', 'persist.waydroid.multi_windows', 'true'])
         else:
             subprocess.run(['waydroid', 'prop', 'set', 'persist.waydroid.multi_windows', 'false'])
+
+    def get_gplay_id(self, button):
+        try:
+            gplay_id = subprocess.run(['pkexec', '/usr/libexec/shockos/waydroid/get-gplay-id.sh'], capture_output=True, check=True, text=True)
+            gplay_id = gplay_id.stdout.strip()
+            button.set_sensitive(False)
+            self.gplay_id_entry.set_text(gplay_id)
+        except subprocess.CalledProcessError as err_code:
+            if err_code.returncode != "126" and err_code.returncode != "127": #if Pkexec didn't fail
+                log("ERROR: Failed to get Google Services Framework Android ID")
 
 app = WaydroidSettings(application_id="net.ShockOS.Waydroid.Settings")
 app.run()
