@@ -116,6 +116,7 @@
         </child>
         <child>
           <object class="GtkLabel">
+            <property name="halign">start</property>
             <property name="label">In order to use the Google Play Store, you must certify your device with Play Protect. To do this, simply retreive your device ID below and paste it into &lt;a href="https://www.google.com/android/uncertified"&gt;Google Services Framework Device Registration&lt;/a&gt;.</property>
             <property name="use-markup">True</property>
             <property name="wrap">True</property>

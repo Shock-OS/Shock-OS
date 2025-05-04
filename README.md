@@ -35,7 +35,7 @@ Features:
  - Built-in Flatpak support
  - Debian-based, so Snap free (yay!)
 
-Shock OS is somewhat inspired by Linux Mint's philosophy, and was created out of an absence of a Pi-compatible version Linux Mint (or an equivalent distro). It is NOT, however, based on or affiliated with Linux Mint.
+Shock OS is somewhat inspired by Linux Mint's philosophy, and was created out of an absence of a Pi-compatible version of Linux Mint (or an equivalent distro). It is NOT, however, based on or affiliated with Linux Mint.
 
 Recommended Pi models:
  - Raspberry Pi 5 (4 GB of RAM or more for comfortable usage)

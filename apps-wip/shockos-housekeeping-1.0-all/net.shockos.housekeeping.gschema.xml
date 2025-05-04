@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="net.shockos.housekeeping" path="/net/shockos/housekeeping/">
+    <key name="deltrash-days" type="u">
+        <default>30</default>
+        <summary>Number of days to wait before permanently deleting trashed files</summary>
+    </key>
+  </schema>
+</schemalist>

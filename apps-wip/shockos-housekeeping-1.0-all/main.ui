@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.94.1 -->
+<interface>
+  <!-- interface-name shockos-housekeeping.ui -->
+  <requires lib="gtk" version="4.8"/>
+  <object class="GtkApplicationWindow" id="main_window">
+    <property name="child">
+      <object class="GtkBox">
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Enable Housekeeping</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSwitch" id="enable_housekeeping_switch">
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkExpander">
+            <property name="child">
+              <object class="GtkLabel">
+                <property name="halign">start</property>
+                <property name="label">Housekeeping can automatically purge files from the Trash folder once they have been in there for a specified amount of time.</property>
+                <property name="wrap">True</property>
+              </object>
+            </property>
+            <property name="label">More Info</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSeparator"/>
+        </child>
+        <child>
+          <object class="GtkBox" id="settings_box">
+            <property name="margin-top">5</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="halign">start</property>
+                <property name="label">&lt;b&gt;Trash Management&lt;/b&gt;</property>
+                <property name="use-markup">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">5</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Permanently delete files in Trash folder after</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry">
+                    <property name="halign">end</property>
+                    <property name="hexpand">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="trash_days_add_button">
+                    <property name="icon-name">list-add-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="trash_days_sub_button">
+                    <property name="icon-name">list-remove-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">days</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="close_button">
+            <property name="child">
+              <object class="GtkBox">
+                <property name="spacing">5</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">window-close-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Close</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+            <property name="halign">end</property>
+            <property name="hexpand">True</property>
+            <property name="margin-top">10</property>
+            <property name="valign">end</property>
+            <property name="vexpand">True</property>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="title">Housekeeping</property>
+  </object>
+</interface>
