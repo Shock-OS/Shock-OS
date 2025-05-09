@@ -1,15 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.94.1 -->
+<!-- Created with Cambalache 0.96.0 -->
 <interface>
   <!-- interface-name shockos-package-installer.ui -->
   <requires lib="gtk" version="4.8"/>
   <object class="GtkApplicationWindow" id="main_window">
     <property name="child">
       <object class="GtkBox">
-        <property name="margin-bottom">5</property>
-        <property name="margin-end">5</property>
-        <property name="margin-start">5</property>
-        <property name="margin-top">5</property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
         <property name="orientation">vertical</property>
         <property name="spacing">5</property>
         <child>
@@ -18,13 +18,19 @@
             <property name="margin-top">10</property>
             <property name="spacing">5</property>
             <child>
+              <object class="GtkImage" id="package_type_icon">
+                <property name="icon-name">package</property>
+                <property name="pixel-size">64</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <property name="valign">center</property>
                 <child>
                   <object class="GtkBox">
-                    <property name="halign">center</property>
+                    <property name="halign">start</property>
                     <property name="spacing">5</property>
                     <child>
                       <object class="GtkLabel">
@@ -44,7 +50,7 @@
                 </child>
                 <child>
                   <object class="GtkBox">
-                    <property name="halign">center</property>
+                    <property name="halign">start</property>
                     <property name="spacing">5</property>
                     <child>
                       <object class="GtkLabel">
@@ -61,7 +67,7 @@
             </child>
             <child>
               <object class="GtkBox" id="progress_box">
-                <property name="halign">center</property>
+                <property name="halign">end</property>
                 <property name="hexpand">True</property>
                 <property name="hexpand-set">True</property>
                 <property name="orientation">vertical</property>
@@ -214,6 +220,7 @@
   </object>
   <object class="GtkFileChooserNative" id="file_chooser">
     <property name="create-folders">False</property>
+    <property name="title">Select a Package</property>
     <property name="transient-for">main_window</property>
   </object>
   <object class="GtkMessageDialog" id="error_message">

@@ -10,6 +10,7 @@ from pathlib import Path
 import subprocess
 import threading
 import re
+from fractions import Fraction
 
 parser = argparse.ArgumentParser(description="Install or remove .deb files (or .apk files if Android app support is enabled).")
 parser.add_argument("file", nargs="?", help="Path to package file", default=None)
@@ -44,6 +45,7 @@ class PackageInstaller(Gtk.Application):
         self.remove_button = builder.get_object("remove_button")
         self.remove_button.connect("clicked", self.remove_button_clicked)
         self.remove_button.set_visible(False)
+        self.package_type_icon = builder.get_object("package_type_icon")
         self.package_info_label = builder.get_object("package_info_label")
         self.package_type_label = builder.get_object("package_type_label")
         self.package_info_text = builder.get_object("package_info_text")
@@ -54,6 +56,8 @@ class PackageInstaller(Gtk.Application):
         self.progress_box.set_visible(False)
         self.error_message = builder.get_object("error_message")
         self.error_message.connect("response", self.close_error_message)
+
+        self.prevent_close = False
 
         # Obtain and show the main window
         self.main_window = builder.get_object("main_window")
@@ -138,6 +142,7 @@ class PackageInstaller(Gtk.Application):
                 self.remove_button.set_visible(False)
                 self.install_button.set_sensitive(True)
                 self.install_button.set_visible(True)
+            self.package_type_icon.set_from_icon_name("application-vnd.debian.binary-package")
             self.package_info_label.set_label(self.package_name)
             self.package_type_label.set_label("Debian .deb package")
             self.package_info_text.set_text(package_info)
@@ -146,13 +151,13 @@ class PackageInstaller(Gtk.Application):
             self.pkg_type = "flatpakref"
             if verbose:
                 print("Flatpak repository reference")
-            self.package_name = subprocess.run([f"cat {self.file} | grep '^Name=' | cut -d'=' -f2-"], shell=True, capture_output=True, text=True)
+            self.package_name = subprocess.run([f"cat '{self.file}' | grep '^Name=' | cut -d'=' -f2-"], shell=True, capture_output=True, text=True)
             self.package_name = self.package_name.stdout.strip()
-            remote = subprocess.run([f"cat {self.file} | grep '^SuggestRemoteName=' | cut -d'=' -f2-"], shell=True, capture_output=True, text=True)
+            remote = subprocess.run([f"cat '{self.file}' | grep '^SuggestRemoteName=' | cut -d'=' -f2-"], shell=True, capture_output=True, text=True)
             remote = remote.stdout.strip()
             app_name = subprocess.run([f"flatpak remote-info {remote} {self.package_name} | sed -n '/./{{p; q}}'"], shell=True, capture_output=True, text=True)
             app_name = app_name.stdout.strip()
-            package_info = subprocess.run([f"cat {self.file} | awk '!/^GPGKey=/'"], shell=True, capture_output=True, text=True)
+            package_info = subprocess.run([f"cat '{self.file}' | awk '!/^GPGKey=/'"], shell=True, capture_output=True, text=True)
             package_info = package_info.stdout.strip()
             installed_flatpaks = subprocess.run([f"flatpak list --columns=app | awk 'NR > 0'"], shell=True, capture_output=True, text=True)
             installed_flatpaks = installed_flatpaks.stdout.strip()
@@ -169,6 +174,7 @@ class PackageInstaller(Gtk.Application):
                 self.remove_button.set_visible(False)
                 self.install_button.set_sensitive(True)
                 self.install_button.set_visible(True)
+            self.package_type_icon.set_from_icon_name("application-vnd.flatpak")
             self.package_info_label.set_label(app_name)
             self.package_type_label.set_label("Flatpak repository reference")
             self.package_info_text.set_text(package_info)
@@ -211,6 +217,7 @@ class PackageInstaller(Gtk.Application):
                         self.installing_label.set_label("Installing...")
                         self.install_button.set_sensitive(True)
                         self.install_button.set_visible(True)
+                    self.package_type_icon.set_from_icon_name("application-vnd.android.package-archive")
                     self.package_info_label.set_label(app_name)
                     self.package_type_label.set_label("Android .apk package")
                     self.package_info_text.set_text(package_info)
@@ -222,24 +229,26 @@ class PackageInstaller(Gtk.Application):
         if verbose:
                 print(f"PACKAGE NAME: {self.package_name}")
                 print(f"PACKAGE INFO: {package_info}")
+        self.file_button.set_sensitive(True)
         self.main_window.set_sensitive(True)
 
     def install_button_clicked(self, button):
         self.installing_label.set_label("Installing...")
-        self.progress_bar.set_text("Downloading...")
+        self.progress_bar.set_text('')
         self.prepare_for_action("install")
 
     def reinstall_button_clicked(self, button):
         self.installing_label.set_label("Reinstalling...")
-        self.progress_bar.set_text("Downloading...")
+        self.progress_bar.set_text('')
         self.prepare_for_action("reinstall")
 
     def remove_button_clicked(self, button):
         self.installing_label.set_label("Removing...")
-        self.progress_bar.set_text("Removing...")
+        self.progress_bar.set_text('')
         self.prepare_for_action("remove")
 
     def prepare_for_action(self, action):
+        self.prevent_close = True
         self.spinner.set_spinning(True)
         if self.pkg_type == "apk":
             self.progress_bar.set_visible(False)
@@ -268,7 +277,7 @@ class PackageInstaller(Gtk.Application):
             for line in process.stdout:
                 match = re.search(r'(\d+)%', line)
                 if match:
-                    percent = int(match.group(1)) / 100
+                    percent = int(match.group(1))
                     GLib.idle_add(self.update_progress_bar, percent)
             process.stdout.close()
             process.wait()
@@ -278,12 +287,21 @@ class PackageInstaller(Gtk.Application):
             GLib.idle_add(self.refresh_page)
         if self.pkg_type == "flatpakref":
             if action == "install":
-                process = subprocess.Popen(["flatpak", "install", "-y", self.file])
+                process = subprocess.Popen(["flatpak", "install", "-y", self.file], stdout=subprocess.PIPE, text=True)
             elif action == "reinstall":
-                process = subprocess.Popen(["flatpak", "install", "--reinstall", "-y", self.file])
+                process = subprocess.Popen(["flatpak", "install", "--reinstall", "-y", self.file], stdout=subprocess.PIPE, text=True)
             elif action == "remove":
-                process = subprocess.Popen(["flatpak", "remove", "-y", self.package_name])
-            process.wait()
+                process = subprocess.Popen(["flatpak", "remove", "-y", self.package_name], stdout=subprocess.PIPE, text=True)
+            for line in process.stdout:
+                if '%' in line:
+                    fraction = re.search(r'\b\d+/\d+\b', line).group()
+                    step, total_steps = fraction.split('/')
+                    step = int(step)
+                    total_steps = int(total_steps)
+                    step_percent = int(re.search(r'\b\d+(?:\.\d+)?%', line).group().strip('%'))
+                    percent = (step - 1 + step_percent / 100) / total_steps * 100
+                    percent = round(percent)
+                    GLib.idle_add(self.update_progress_bar, percent)
             GLib.idle_add(self.reset_progress)
             GLib.idle_add(self.refresh_page)
         if self.pkg_type == "apk":
@@ -298,11 +316,12 @@ class PackageInstaller(Gtk.Application):
             process.wait()
             GLib.idle_add(self.reset_progress)
             GLib.idle_add(self.refresh_page)
+        self.prevent_close = False
 
-    def update_progress_bar(self, fraction):
+    def update_progress_bar(self, percent):
         # Update the GtkProgressBar's fraction
-        self.progress_bar.set_fraction(fraction)
-        self.progress_bar.set_text(f"{int(fraction * 100)}%")
+        self.progress_bar.set_fraction(round(percent / 100, 2))
+        self.progress_bar.set_text(f"{int(percent)}%")
         return False  # Stop idle_add loop
 
     def reset_progress(self):
@@ -318,7 +337,7 @@ class PackageInstaller(Gtk.Application):
         self.main_window.set_sensitive(True)
 
     def main_window_close_request(self, widget):
-        if self.error_message.get_visible():
+        if self.prevent_close or self.error_message.get_visible():
             return True
 
 app = PackageInstaller(application_id="net.ShockOS.PackageInstaller")
