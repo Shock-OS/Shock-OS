@@ -14,7 +14,7 @@ except:
     sys.exit()
 import gi
 gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, Gio
 
 class MyApp(Gtk.Application):
     def __init__(self, **kwargs):
@@ -103,6 +103,6 @@ class MyApp(Gtk.Application):
     def close(self, button):
         self.main_window.destroy()
 
-app = MyApp(application_id="net.ShockOS.ShockVer")
+app = MyApp(application_id="net.ShockOS.ShockVer", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()
 

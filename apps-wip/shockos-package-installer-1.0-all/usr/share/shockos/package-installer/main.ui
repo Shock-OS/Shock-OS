@@ -13,6 +13,18 @@
         <property name="orientation">vertical</property>
         <property name="spacing">5</property>
         <child>
+          <object class="GtkInfoBar" id="info_bar">
+            <property name="show-close-button">True</property>
+            <child>
+              <object class="GtkLabel" id="info_bar_message">
+                <property name="hexpand">True</property>
+                <property name="justify">center</property>
+                <property name="wrap">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
           <object class="GtkBox">
             <property name="margin-bottom">10</property>
             <property name="margin-top">10</property>
@@ -222,13 +234,5 @@
     <property name="create-folders">False</property>
     <property name="title">Select a Package</property>
     <property name="transient-for">main_window</property>
-  </object>
-  <object class="GtkMessageDialog" id="error_message">
-    <property name="buttons">close</property>
-    <property name="icon-name">error</property>
-    <property name="message-type">error</property>
-    <property name="secondary-text">An unexpected error occurred.</property>
-    <property name="text">Error</property>
-    <property name="title">Package Installer</property>
   </object>
 </interface>

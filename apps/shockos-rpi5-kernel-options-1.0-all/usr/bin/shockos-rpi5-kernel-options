@@ -11,7 +11,7 @@ with open("/proc/device-tree/model", "r") as file:
 
 import gi
 gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, Gio
 import argparse
 import subprocess
 
@@ -112,6 +112,6 @@ class app(Gtk.Application):
     def close(self, button):
         sys.exit()
 
-app = app(application_id="net.ShockOS.RPi5KernelOptions")
+app = app(application_id="net.ShockOS.RPi5KernelOptions", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()
 

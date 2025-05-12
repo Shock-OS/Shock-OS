@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.94.1 -->
+<!-- Created with Cambalache 0.96.0 -->
 <interface>
   <!-- interface-name shockos-waydroid-settings.ui -->
   <requires lib="gtk" version="4.8"/>
@@ -95,46 +95,52 @@
           <object class="GtkSeparator"/>
         </child>
         <child>
-          <object class="GtkBox" id="multi_windows_box">
+          <object class="GtkBox" id="requires_active_session_box">
+            <property name="orientation">vertical</property>
             <property name="spacing">5</property>
             <child>
-              <object class="GtkLabel" id="multi_windows_switch_label">
-                <property name="label">Integrate Android app windows with desktop</property>
+              <object class="GtkBox" id="multi_windows_box">
+                <property name="spacing">5</property>
+                <child>
+                  <object class="GtkLabel" id="multi_windows_switch_label">
+                    <property name="label">Integrate Android app windows with desktop</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSwitch" id="multi_windows_switch"/>
+                </child>
               </object>
             </child>
             <child>
-              <object class="GtkSwitch" id="multi_windows_switch"/>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="halign">start</property>
-            <property name="label">&lt;b&gt;Google Play Certification&lt;/b&gt;</property>
-            <property name="use-markup">True</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="halign">start</property>
-            <property name="label">In order to use the Google Play Store, you must certify your device with Play Protect. To do this, simply retreive your device ID below and paste it into &lt;a href="https://www.google.com/android/uncertified"&gt;Google Services Framework Device Registration&lt;/a&gt;.</property>
-            <property name="use-markup">True</property>
-            <property name="wrap">True</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="spacing">5</property>
-            <child>
-              <object class="GtkEntry" id="gplay_id_entry">
-                <property name="editable">False</property>
-                <property name="hexpand">True</property>
+              <object class="GtkLabel">
+                <property name="halign">start</property>
+                <property name="label">&lt;b&gt;Google Play Certification&lt;/b&gt;</property>
+                <property name="use-markup">True</property>
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="get_gplay_id_button">
-                <property name="halign">end</property>
-                <property name="label">Get Google Services Framework Android ID</property>
+              <object class="GtkLabel">
+                <property name="halign">start</property>
+                <property name="label">In order to use the Google Play Store, you must certify your device with Play Protect. To do this, simply retreive your device ID below and paste it into &lt;a href="https://www.google.com/android/uncertified"&gt;Google Services Framework Device Registration&lt;/a&gt;.</property>
+                <property name="use-markup">True</property>
+                <property name="wrap">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">5</property>
+                <child>
+                  <object class="GtkEntry" id="gplay_id_entry">
+                    <property name="editable">False</property>
+                    <property name="hexpand">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="get_gplay_id_button">
+                    <property name="halign">end</property>
+                    <property name="label">Get Google Services Framework Android ID</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

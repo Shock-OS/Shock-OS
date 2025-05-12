@@ -5,7 +5,7 @@ import subprocess
 import sys
 import gi
 gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, Gio
 
 parser = argparse.ArgumentParser(description="Change the GNOME layout")
 parser.add_argument("--verbose", action="store_true", help="Increase output verbosity (print variables)")
@@ -106,5 +106,5 @@ class MyApp(Gtk.Application):
     def quit(self, button):
         sys.exit()
 
-app = MyApp(application_id="net.ShockOS.GNOME.Layouts")
+app = MyApp(application_id="net.ShockOS.GNOME.Layouts", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()

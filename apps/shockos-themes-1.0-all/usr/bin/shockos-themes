@@ -5,9 +5,8 @@ sys.path.append('/usr/lib/shockos/')
 import shockos
 import gi
 gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk
 gi.require_version('Gio', '2.0')
-from gi.repository import Gio
+from gi.repository import Gtk, Gio
 import argparse
 
 parser = argparse.ArgumentParser(description="Simple theme selector for Shock OS")
@@ -107,6 +106,6 @@ class app(Gtk.Application):
             self.gnome_interface_settings.set_string("color-scheme", "prefer-light")
         log(f"THEME: {theme}")
 
-app = app(application_id="net.ShockOS.Themes")
+app = app(application_id="net.ShockOS.Themes", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()
 

@@ -3,7 +3,7 @@
 import sys
 import gi
 gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk, Gio, GLib
 import argparse
 import magic
 from pathlib import Path
@@ -45,6 +45,9 @@ class PackageInstaller(Gtk.Application):
         self.remove_button = builder.get_object("remove_button")
         self.remove_button.connect("clicked", self.remove_button_clicked)
         self.remove_button.set_visible(False)
+        self.info_bar = builder.get_object("info_bar")
+        self.info_bar.set_revealed(False)
+        self.info_bar_message = builder.get_object("info_bar_message")
         self.package_type_icon = builder.get_object("package_type_icon")
         self.package_info_label = builder.get_object("package_info_label")
         self.package_type_label = builder.get_object("package_type_label")
@@ -54,8 +57,6 @@ class PackageInstaller(Gtk.Application):
         self.spinner = builder.get_object("spinner")
         self.progress_bar = builder.get_object("progress_bar")
         self.progress_box.set_visible(False)
-        self.error_message = builder.get_object("error_message")
-        self.error_message.connect("response", self.close_error_message)
 
         self.prevent_close = False
 
@@ -74,13 +75,14 @@ class PackageInstaller(Gtk.Application):
         self.main_window.set_sensitive(False)
         self.file_chooser.show() # DEPRECATED IN GTK 4.10+, WILL NEED TO BE REDONE IN THE FUTURE
 
-    def parse_file(self, file, file_chooser): # Get file info
-        try:
+    def parse_file(self, file, response): # Get file info
+        if response == Gtk.ResponseType.ACCEPT:
+            self.info_bar.set_revealed(False)
             self.file = file.get_file().get_path() # DEPRECATED IN GTK 4.10+, WILL NEED TO BE REDONE IN THE FUTURE
             if verbose:
                 print(f"self.file: {self.file}")
             self.refresh_page()
-        except:
+        else:
             self.main_window.set_sensitive(True)
 
     def refresh_page(self):
@@ -96,9 +98,9 @@ class PackageInstaller(Gtk.Application):
             self.pkg_type = "deb"
             if verbose:
                 print("Debian .deb package")
-            self.package_name = subprocess.run([f"dpkg-deb --info {self.file} | grep 'Package:' | awk '{{print $2}}' | awk '{{print tolower($0)}}'"], shell=True, capture_output=True, text=True)
+            self.package_name = subprocess.run([f"dpkg-deb --info '{self.file}' | grep 'Package:' | awk '{{print $2}}' | awk '{{print tolower($0)}}'"], shell=True, capture_output=True, text=True)
             self.package_name = self.package_name.stdout.strip()
-            package_info = subprocess.run([f"dpkg-deb --info {self.file} control"], shell=True, capture_output=True, text=True)
+            package_info = subprocess.run([f"dpkg-deb --info '{self.file}' control"], shell=True, capture_output=True, text=True)
             package_info = package_info.stdout.strip()
             installed = subprocess.run([f"dpkg -l | grep '^ii' | awk '{{print $2}}' | awk -F: '{{print $1}}' | grep -x {self.package_name}"], shell=True, capture_output=True, text=True)
             installed_version = installed.stdout.strip()
@@ -189,9 +191,9 @@ class PackageInstaller(Gtk.Application):
                 apkinfo_installed = subprocess.run([f"dpkg-query --show apkinfo | awk '{{print $2}}'"], shell=True, capture_output=True, text=True)
                 apkinfo_installed = apkinfo_installed.stdout.strip()
                 if apkinfo_installed:
-                    app_name = subprocess.run([f"apkinfo {self.file} | grep 'App name:' | cut -d' ' -f3-"], shell=True, capture_output=True, text=True)
+                    app_name = subprocess.run([f"apkinfo '{self.file}' | grep 'App name:' | cut -d' ' -f3-"], shell=True, capture_output=True, text=True)
                     app_name = app_name.stdout.strip()
-                    self.package_name = subprocess.run([f"apkinfo {self.file} | grep 'Package:' | cut -d' ' -f2-"], shell=True, capture_output=True, text=True)
+                    self.package_name = subprocess.run([f"apkinfo '{self.file}' | grep 'Package:' | cut -d' ' -f2-"], shell=True, capture_output=True, text=True)
                     self.package_name = self.package_name.stdout.strip()
                     package_info = subprocess.run(["apkinfo", self.file], capture_output=True, text=True)
                     package_info = package_info.stdout.strip()
@@ -270,10 +272,10 @@ class PackageInstaller(Gtk.Application):
                 if action == "remove":
                     process = subprocess.Popen([f"pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY DEBIAN_FRONTEND=gnome apt remove -y {self.package_name}"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
                 else:
-                    process = subprocess.Popen([f"pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY DEBIAN_FRONTEND=gnome apt {action} -y {self.file}"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                    process = subprocess.Popen([f"pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY DEBIAN_FRONTEND=gnome apt {action} -y '{self.file}'"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
             except subprocess.CalledProcessError as err_code:
                 if err_code.returncode != "126" and err_code.returncode != "127":
-                    self.show_error_message()
+                    self.show_info_bar(Gtk.MessageType.ERROR, process.stderr)
             for line in process.stdout:
                 match = re.search(r'(\d+)%', line)
                 if match:
@@ -306,14 +308,13 @@ class PackageInstaller(Gtk.Application):
             GLib.idle_add(self.refresh_page)
         if self.pkg_type == "apk":
             if action == "install":
-                process = subprocess.Popen(["waydroid", "app", "install", self.file])
+                process = subprocess.run(["waydroid", "app", "install", self.file])
             elif action == "reinstall":
-                process = subprocess.Popen([f"waydroid app remove {self.package_name} && waydroid app install {self.file}"], shell=True)
+                process = subprocess.run([f"waydroid app remove {self.package_name} && waydroid app install '{self.file}'"], shell=True)
             elif action == "remove":
-                process = subprocess.Popen(["waydroid", "app", "remove", self.package_name])
+                process = subprocess.run(["waydroid", "app", "remove", self.package_name])
             else:
                 print(f"ERROR: Action '{action}' not recognized.")
-            process.wait()
             GLib.idle_add(self.reset_progress)
             GLib.idle_add(self.refresh_page)
         self.prevent_close = False
@@ -328,17 +329,15 @@ class PackageInstaller(Gtk.Application):
         self.update_progress_bar(0)
         self.progress_box.set_visible(False)
 
-    def show_error_message(self):
-        self.main_window.set_sensitive(False)
-        self.error_message.set_visible(True)
-
-    def close_error_message(self):
-        self.error_message.set_visible(False)
-        self.main_window.set_sensitive(True)
+    def show_info_bar(self, message_type, message):
+        self.info_bar.set_message_type(message_type)
+        self.info_bar_message.set_label(message)
+        self.info_bar.set_revealed(True)
 
     def main_window_close_request(self, widget):
-        if self.prevent_close or self.error_message.get_visible():
+        if self.prevent_close or self.file_chooser.get_visible():
+            self.show_info_bar(Gtk.MessageType.INFO, "Cannot exit while a package operation is in progress. Please wait until the operation has completed to close this window.")
             return True
 
-app = PackageInstaller(application_id="net.ShockOS.PackageInstaller")
+app = PackageInstaller(application_id="net.ShockOS.PackageInstaller", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()

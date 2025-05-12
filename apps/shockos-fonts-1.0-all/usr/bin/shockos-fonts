@@ -141,6 +141,6 @@ class app(Gtk.Application):
             else:
                 self.reset_desktop_font_button.set_visible(True)
 
-app = app(application_id="net.ShockOS.Fonts")
+app = app(application_id="net.ShockOS.Fonts", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()
 

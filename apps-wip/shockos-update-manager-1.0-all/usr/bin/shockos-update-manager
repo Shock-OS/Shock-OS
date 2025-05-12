@@ -116,6 +116,6 @@ class app(Gtk.Application):
         num = str(num)
         exec(f"self.{stage}_{time}_entry.set_text(num)")
 
-app = app(application_id="net.ShockOS.UpdateManager")
+app = app(application_id="net.ShockOS.UpdateManager", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()
 

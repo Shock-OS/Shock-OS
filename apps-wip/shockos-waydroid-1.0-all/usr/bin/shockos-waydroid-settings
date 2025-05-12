@@ -5,7 +5,7 @@ sys.path.append('/usr/lib/shockos/')
 import shockos
 import gi
 gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk, Gio, GLib
 import argparse
 import subprocess
 import threading
@@ -33,13 +33,14 @@ class WaydroidSettings(Gtk.Application):
         # Obtain the widgets
         self.status_label = builder.get_object("status_label")
         self.start_session_button = builder.get_object("start_session_button")
-        self.start_session_button.connect("clicked", self.start_session)
+        self.start_session_button.connect("clicked", self.session_manager, "start")
         self.stop_and_restart_box = builder.get_object("stop_and_restart_box")
         self.stop_session_button = builder.get_object("stop_session_button")
-        self.stop_session_button.connect("clicked", self.stop_session)
+        self.stop_session_button.connect("clicked", self.session_manager, "stop")
         self.restart_session_button = builder.get_object("restart_session_button")
-        self.restart_session_button.connect("clicked", self.restart_session)
+        self.restart_session_button.connect("clicked", self.session_manager, "restart")
         self.spinner = builder.get_object("spinner")
+        self.requires_active_session_box = builder.get_object("requires_active_session_box")
         self.multi_windows_box = builder.get_object("multi_windows_box")
         self.multi_windows_switch = builder.get_object("multi_windows_switch")
         self.multi_windows_switch.connect("notify", self.toggle_multi_windows)
@@ -66,7 +67,7 @@ class WaydroidSettings(Gtk.Application):
             self.start_session_button.set_sensitive(True)
             self.start_session_button.set_visible(True)
             self.stop_and_restart_box.set_visible(False)
-            self.multi_windows_box.set_sensitive(False)
+            self.requires_active_session_box.set_sensitive(False)
         else: # if running
             self.status_label.set_label("Running")
             self.start_session_button.set_visible(False)
@@ -79,33 +80,35 @@ class WaydroidSettings(Gtk.Application):
                     self.multi_windows_switch.set_active(True)
                 else:
                     self.multi_windows_switch.set_active(False)
-                self.multi_windows_box.set_sensitive(True)
-            else:
-                self.multi_windows_box.set_sensitive(False)
+            self.requires_active_session_box.set_sensitive(True)
         self.spinner.set_spinning(False)
         return False
 
-    def start_session(self, button):
-        self.start_session_button.set_sensitive(False)
-        self.status_label.set_label("Starting...")
-        self.spinner.set_spinning(True)
-        subprocess.run(['/usr/libexec/shockos/waydroid/start-session.sh'])
-        self.get_status()
-        
-    def stop_session(self, button):
-        self.stop_and_restart_box.set_sensitive(False)
-        self.status_label.set_label("Stopping...")
-        self.spinner.set_spinning(True)
-        subprocess.run(["waydroid", "session", "stop"])
-        self.get_status()
-
-    def restart_session(self, button):
-        self.stop_and_restart_box.set_sensitive(False)
-        self.status_label.set_label("Restarting...")
-        self.spinner.set_spinning(True)
-        subprocess.run(["waydroid", "session", "stop"])
-        subprocess.run(['/usr/libexec/shockos/waydroid/start-session.sh'])
-        self.get_status()
+    def session_manager(self, widget, action):
+        def do_action():
+            if action == "start":
+                subprocess.run(['/usr/libexec/shockos/waydroid/start-session.sh'])
+            elif action == "stop":
+                subprocess.run(["waydroid", "session", "stop"])
+            elif action == "restart":
+                subprocess.run(["waydroid", "session", "stop"])
+                subprocess.run(['/usr/libexec/shockos/waydroid/start-session.sh'])
+            GLib.idle_add(self.get_status)
+        if action == "start":
+            self.start_session_button.set_sensitive(False)
+            self.status_label.set_label("Starting...")
+            self.spinner.set_spinning(True)
+        elif action == "stop":
+            self.stop_and_restart_box.set_sensitive(False)
+            self.status_label.set_label("Stopping...")
+            self.spinner.set_spinning(True)
+        elif action == "restart":
+            self.stop_and_restart_box.set_sensitive(False)
+            self.status_label.set_label("Restarting...")
+            self.spinner.set_spinning(True)
+        thread = threading.Thread(target=do_action)
+        thread.daemon = True
+        thread.start()
 
     def toggle_multi_windows(self, switch, state):
         if self.multi_windows_switch.get_active():
@@ -123,6 +126,6 @@ class WaydroidSettings(Gtk.Application):
             if err_code.returncode != "126" and err_code.returncode != "127": #if Pkexec didn't fail
                 log("ERROR: Failed to get Google Services Framework Android ID")
 
-app = WaydroidSettings(application_id="net.ShockOS.Waydroid.Settings")
+app = WaydroidSettings(application_id="net.ShockOS.Waydroid.Settings", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()
 

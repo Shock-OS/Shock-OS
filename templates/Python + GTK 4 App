@@ -4,7 +4,7 @@ import os
 import sys
 import gi
 gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, Gio
 import argparse
 
 parser = argparse.ArgumentParser(description="APP DESCRIPTION HERE")
