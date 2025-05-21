@@ -1,3 +1,4 @@
+ -  shockos-package-installer: Set Android app operations to not run if a Waydroid session is not running
  - `gi.require_version('Gio', '2.0') is *probably* not required when Gio is imported (can likely be removed from scripts that have that line)
  - shockos-package-installer: Revamp `refresh_page` function to use threading
  - [DONE] Add threading to shockos-waydroid-settings session management to avoid "Not responding" messages

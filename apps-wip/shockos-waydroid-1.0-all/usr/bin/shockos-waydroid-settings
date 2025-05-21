@@ -94,6 +94,7 @@ class WaydroidSettings(Gtk.Application):
                 subprocess.run(["waydroid", "session", "stop"])
                 subprocess.run(['/usr/libexec/shockos/waydroid/start-session.sh'])
             GLib.idle_add(self.get_status)
+        self.requires_active_session_box.set_sensitive(False)
         if action == "start":
             self.start_session_button.set_sensitive(False)
             self.status_label.set_label("Starting...")
