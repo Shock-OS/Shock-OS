@@ -26,14 +26,13 @@ Things to know:
 ex=$?
 if [[ "$ex" == "0" ]]
 then
-    # BEGINNING INSTALLATION OF WAYDROID
+    sudo apt update
+    sudo apt upgrade -y
+    sudo apt install -y curl lsb-release apkinfo # apkinfo used by Package Manager
     if [[ "$SHOCKOS_DESKENV" == "MATE" ]]
     then
         sudo apt install weston
     fi
-    sudo apt update
-    sudo apt upgrade -y
-    sudo apt install -y curl lsb-release apkinfo # apkinfo used by Package Manager
     if [[ "$(getconf PAGESIZE)" != "4096" ]] # If kernel page size not set to 4K (it's usually set to 16K on Pi 5 systems)
     then
         echo "Setting kernel page size to 4K..."

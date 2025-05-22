@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="net.shockos.Waydroid" path="/net/shockos/Waydroid/">
+    <key name="session-type" type="s">
+        <default>integrated</default>
+        <summary>Session type</summary>
+        <description>Determines whether to integrate Waydroid with desktop or to run it in a nested window. Currently only applicable to Shock OS GNOME Edition; MATE Edition must use nested.</description>
+    </key>
+  </schema>
+</schemalist>

@@ -43,7 +43,6 @@ idle-delay=15
 
 [org/mate/desktop/session/required-components]
 dock=''
-windowmanager='marco-glx'
 
 [org/mate/marco/general]
 button-layout=':minimize,maximize,close'

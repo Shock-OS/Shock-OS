@@ -1,4 +1,6 @@
- -  shockos-package-installer: Set Android app operations to not run if a Waydroid session is not running
+ - shockos-package-installer: Fix/properly implemenet "open with" context menu option
+ - shockos-package-installer: Set Android app operations to not run if a Waydroid session is not running
  - `gi.require_version('Gio', '2.0') is *probably* not required when Gio is imported (can likely be removed from scripts that have that line)
  - shockos-package-installer: Revamp `refresh_page` function to use threading
  - [DONE] Add threading to shockos-waydroid-settings session management to avoid "Not responding" messages
+ - shockos-waydroid: with nested sessions, wait for weston pid to exit and kill waydroid session when it does to avoid shockos-waydroid-settings stalling on startup issues (or find another way to fix it)
