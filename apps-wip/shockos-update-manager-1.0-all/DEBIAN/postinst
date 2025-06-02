@@ -1,0 +1,5 @@
+#!/bin/bash
+
+sudo chown root:root /usr/libexec/shockos/update-manager/apt-update.sh
+sudo chmod 755 /usr/libexec/shockos/update-manager/apt-update.sh
+

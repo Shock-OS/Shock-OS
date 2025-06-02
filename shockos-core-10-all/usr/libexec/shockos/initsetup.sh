@@ -23,7 +23,12 @@ username=""
 full_name=""
 
 /usr/libexec/shockos/set-audio-out-to-hdmi.sh
-amixer -D pulse sset Master 100% #sets volume to 100% so the setup music can be heard
+if [[ "$SHOCKOS_DESKENV" == 'GNOME' ]]
+then
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 1.0
+else
+    amixer -D pulse sset Master 100%
+fi #sets volume to 100% so the setup music can be heard
 while true
 do
     ffplay -nodisp -autoexit -loglevel panic /usr/share/shockos/initsetup/bgm.opus

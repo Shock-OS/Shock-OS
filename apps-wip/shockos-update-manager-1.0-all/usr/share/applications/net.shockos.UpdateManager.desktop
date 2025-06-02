@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Update Manager
+Comment=Keep APT packages and Flatpak apps up to date
+Exec=shockos-update-manager
+Icon=software-update-available
+Terminal=false
+Type=Application
+Categories=System;Settings;
+StartupWMClass=net.shockos.UpdateManager
+StartupNotify=false
+X-GNOME-Application-ID=net.shockos.UpdateManager
+

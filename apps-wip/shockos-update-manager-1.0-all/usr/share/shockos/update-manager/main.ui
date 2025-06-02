@@ -1,0 +1,192 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.96.1 -->
+<interface>
+  <!-- interface-name shockos-update-manager.ui -->
+  <requires lib="gtk" version="4.8"/>
+  <object class="GtkApplicationWindow" id="main_window">
+    <property name="child">
+      <object class="GtkStack" id="stack">
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
+        <property name="transition-type">crossfade</property>
+        <child>
+          <object class="GtkStackPage" id="refresh">
+            <property name="child">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">&lt;big&gt;&lt;b&gt;Checking for Updates...&lt;/b&gt;&lt;/big&gt;</property>
+                    <property name="use-markup">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSpinner" id="refresh_spinner">
+                    <property name="halign">center</property>
+                    <property name="height-request">32</property>
+                    <property name="hexpand">True</property>
+                    <property name="valign">center</property>
+                    <property name="vexpand">True</property>
+                    <property name="width-request">32</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+            <property name="name">refresh</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStackPage" id="main_page">
+            <property name="child">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkLabel" id="main_page_title">
+                    <property name="label">&lt;big&gt;&lt;b&gt;Updates are Available&lt;/b&gt;&lt;/big&gt;</property>
+                    <property name="use-markup">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">software-update-available</property>
+                    <property name="pixel-size">128</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="install_updates_button">
+                    <property name="halign">center</property>
+                    <property name="label">Install Updates</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="progress_bar_box">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">10</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="halign">center</property>
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkLabel" id="progress_bar_label"/>
+                        </child>
+                        <child>
+                          <object class="GtkSpinner" id="progress_bar_spinner"/>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkProgressBar" id="progress_bar"/>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </property>
+            <property name="name">main_page</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStackPage" id="done">
+            <property name="child">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">&lt;big&gt;&lt;b&gt;All Done&lt;/b&gt;&lt;/big&gt;</property>
+                    <property name="use-markup">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">emblem-default-symbolic</property>
+                    <property name="pixel-size">128</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Your system is up-to-date.</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="check_for_updates_button">
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="icon-name">view-refresh-symbolic</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Check for Updates</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                    <property name="halign">center</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+            <property name="name">done</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStackPage" id="error">
+            <property name="child">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">&lt;big&gt;&lt;b&gt;Error&lt;/b&gt;&lt;/big&gt;</property>
+                    <property name="use-markup">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">dialog-error</property>
+                    <property name="pixel-size">128</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="error_message"/>
+                </child>
+                <child>
+                  <object class="GtkButton" id="dismiss_error_button">
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="icon-name">window-close-symbolic</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Dismiss</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                    <property name="halign">center</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+            <property name="name">error</property>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="default-height">300</property>
+    <property name="default-width">400</property>
+    <property name="icon-name">software-update-available</property>
+    <property name="title">Update Manager</property>
+  </object>
+</interface>

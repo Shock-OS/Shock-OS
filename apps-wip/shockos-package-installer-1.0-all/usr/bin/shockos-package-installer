@@ -284,7 +284,7 @@ class PackageInstaller(Gtk.Application):
             process.stdout.close()
             process.wait()
             # Update the progress bar to 100% when done
-            GLib.idle_add(self.update_progress_bar, 1.0)
+            GLib.idle_add(self.update_progress_bar, 100)
             GLib.idle_add(self.reset_progress)
             GLib.idle_add(self.refresh_page)
         if self.pkg_type == "flatpakref":

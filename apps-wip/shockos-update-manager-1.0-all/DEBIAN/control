@@ -1,0 +1,10 @@
+Source: shockos-update-manager
+Section: misc
+Priority: optional
+Maintainer: Carson Grover
+Homepage: https://www.shockos.net
+Package: shockos-update-manager
+Version: 1.0
+Architecture: all
+Depends: shockos-core (>= 10), python3
+Description: Keep APT packages and Flatpak apps up to date

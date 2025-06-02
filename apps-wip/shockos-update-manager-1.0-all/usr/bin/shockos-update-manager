@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import gi
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk, Gio, GLib
+import argparse
+import subprocess
+import threading
+import re
+
+parser = argparse.ArgumentParser(description="Keep your system and apps up to date")
+
+parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+
+args = parser.parse_args()
+def log(message):
+    if args.verbose:
+        print(message)
+
+class App(Gtk.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
+
+    def on_activate(self, app):
+        # Create a Builder
+        builder = Gtk.Builder()
+        builder.add_from_file("/usr/share/shockos/update-manager/main.ui")
+
+        self.stack = builder.get_object("stack")
+        self.refresh_spinner = builder.get_object("refresh_spinner")
+        self.main_page_title = builder.get_object("main_page_title")
+        self.install_updates_button = builder.get_object("install_updates_button")
+        self.install_updates_button.connect("clicked", self.install_updates)
+        self.progress_bar_box = builder.get_object("progress_bar_box")
+        self.progress_bar_label = builder.get_object("progress_bar_label")
+        self.progress_bar_spinner = builder.get_object("progress_bar_spinner")
+        self.progress_bar = builder.get_object("progress_bar")
+        self.error_message = builder.get_object("error_message")
+        self.dismiss_error_button = builder.get_object("dismiss_error_button")
+        self.dismiss_error_button.connect("clicked", self.check_for_updates)
+        self.check_for_updates_button = builder.get_object("check_for_updates_button")
+        self.check_for_updates_button.connect("clicked", self.check_for_updates)
+
+        self.loop = GLib.MainLoop()
+
+        # Obtain and show the main window
+        self.main_window = builder.get_object("main_window")
+        self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        self.main_window.present()
+        GLib.idle_add(self.check_for_updates)
+        
+    def check_for_updates(self, button=None):
+        def run_cmd(cmd, count=False, pkgman=None):
+            try:
+                process = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+                if count:
+                    num = int(process.stdout.strip())
+                    if pkgman == 'apt':
+                        self.apt_updates = num
+                    elif pkgman == 'flatpak':
+                        self.flatpak_updates = num
+            except subprocess.CalledProcessError as error:
+                GLib.idle_add(self.error, error)
+                raise Exception
+            self.loop.quit()
+        self.refresh_spinner.set_spinning(True)
+        self.stack.set_visible_child_name("refresh")
+        try:
+            threading.Thread(target=run_cmd, args=(['/usr/libexec/shockos/update-manager/refresh.sh']), daemon=True).start()
+            self.loop.run()
+            threading.Thread(target=run_cmd, args=(['apt list --upgradable | tail -n +2 | wc -l']), kwargs={"count": True, "pkgman": "apt"}, daemon=True).start()
+            self.loop.run()
+            threading.Thread(target=run_cmd, args=(['flatpak remote-ls --updates | wc -l']), kwargs={"count": True, "pkgman": "flatpak"}, daemon=True).start()
+            self.loop.run()
+        except Exception:
+            return
+        self.total_updates = self.apt_updates + self.flatpak_updates
+        if self.total_updates > 0:
+            if self.apt_updates > 0 and self.flatpak_updates > 0:
+                self.apt_and_flatpak_updates = True
+            else:
+                self.apt_and_flatpak_updates = False
+            self.main_page_title.set_label(f"<big><b>{self.total_updates} Updates are Available</b></big>")
+            self.progress_bar_box.set_visible(False)
+            self.stack.set_visible_child_name("main_page")
+        else:
+            self.stack.set_visible_child_name("done")
+
+    def install_updates(self, button):
+        self.install_updates_button.set_visible(False)
+        self.progress_bar_label.set_label('Pending...')
+        def install_apt_updates():
+            try:
+                process = subprocess.Popen(['pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY DEBIAN_FRONTEND=gnome apt upgrade -y'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            except subprocess.CalledProcessError as error:
+                self.error(error)
+                raise Exception
+            for line in process.stdout:
+                match = re.search(r'(\d+)%', line)
+                if match:
+                    percent = int(match.group(1))
+                    GLib.idle_add(self.update_progress_bar, percent, 'apt')
+            process.stdout.close()
+            process.wait()
+            GLib.idle_add(self.update_progress_bar, 100, 'apt')
+            self.loop.quit()
+        def install_flatpak_updates():
+            try:
+                process = subprocess.Popen(['flatpak update -y'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            except subprocess.CalledProcessError as error:
+                self.error(error)
+                raise Exception
+            for line in process.stdout:
+                if '%' in line:
+                    fraction = re.search(r'\b\d+/\d+\b', line).group()
+                    step, total_steps = fraction.split('/')
+                    step = int(step)
+                    total_steps = int(total_steps)
+                    step_percent = int(re.search(r'\b\d+(?:\.\d+)?%', line).group().strip('%'))
+                    percent = (step - 1 + step_percent / 100) / total_steps * 100
+                    percent = round(percent)
+                    GLib.idle_add(self.update_progress_bar, percent, 'flatpak')
+            GLib.idle_add(self.update_progress_bar, 100, 'flatpak')
+            self.loop.quit()
+        self.progress_bar_spinner.set_spinning(True)
+        self.progress_bar_box.set_visible(True)
+        if self.apt_updates > 0:
+            thread = threading.Thread(target=install_apt_updates, daemon=True)
+            thread.start()
+            self.loop.run()
+        if self.flatpak_updates > 0:
+            thread = threading.Thread(target=install_flatpak_updates, daemon=True)
+            thread.start()
+            self.loop.run()
+        self.progress_bar_spinner.set_spinning(False)
+        self.stack.set_visible_child_name("done")
+        self.install_updates_button.set_visible(True)
+
+    def update_progress_bar(self, percent, package_manager):
+        if self.apt_and_flatpak_updates:
+            if package_manager == 'apt':
+                step = 1
+            elif package_manager == 'flatpak':
+                step = 2
+            percent = (step - 1 + percent / 100) / 2 / 100
+        fraction = percent / 100
+        self.progress_bar.set_fraction(fraction)
+        self.progress_bar_label.set_label(f"Installing updates... ({percent}%)")
+
+    def error(self, message):
+        message = str(message)
+        log(message)
+        self.error_message.set_label(message)
+        self.stack.set_visible_child_name("error")
+        return False
+
+app = App(application_id=f"net.shockos.UpdateManager", flags=Gio.ApplicationFlags.NON_UNIQUE)
+app.run()

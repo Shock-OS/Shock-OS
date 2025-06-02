@@ -35,5 +35,5 @@ class App(Gtk.Application):
         self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
         self.main_window.present()
 
-app = App(application_id=f"net.ShockOS.APPNAME", flags=Gio.ApplicationFlags.NON_UNIQUE)
+app = App(application_id=f"net.shockos.APPNAME", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()

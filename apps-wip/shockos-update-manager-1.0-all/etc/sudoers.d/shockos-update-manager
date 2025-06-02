@@ -1,0 +1,2 @@
+ALL ALL=(ALL) NOPASSWD: /usr/libexec/shockos/update-manager/apt-update.sh
+
