@@ -83,7 +83,12 @@ class App(Gtk.Application):
                 self.apt_and_flatpak_updates = True
             else:
                 self.apt_and_flatpak_updates = False
-            self.main_page_title.set_label(f"<big><b>{self.total_updates} Updates are Available</b></big>")
+            if self.total_updates == 1:
+                self.main_page_title.set_label(f"<big><b>1 Update is Available</b></big>")
+                self.install_updates_button.set_label('Install Update')
+            else:
+                self.main_page_title.set_label(f"<big><b>{self.total_updates} Updates are Available</b></big>")
+                self.install_updates_button.set_label('Install Updates')
             self.progress_bar_box.set_visible(False)
             self.stack.set_visible_child_name("main_page")
         else:

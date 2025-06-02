@@ -7,8 +7,10 @@
  - Create Shock OS Python library to load widgets into script (automate the `self.widget = builder.get_object("widget")` stuff with `setattr`
  - [DONE, NEEDS TESTING] shockos-update-manager: update progress bar to properly show progress when both APT and Flatpak have updates
  - shockos-update-manager: add support for waiting for APT lock
- - shockos-update-manager: add systemd update checker service
+ - [DONE, NEEDS TESTING] shockos-update-manager: add systemd update checker service
  - shockos-update-manager: add support for automatic updates
- - shockos-update-manager: add progress bar text
+ - [DONE, NEEDS TESTING] shockos-update-manager: add progress bar text
  - Add notification library that automatically adapts to GNOME/MATE to Shock OS Python library
  - shockos-update-manager: add banner that shows when an action has completed (e.g. for reinstalling)
+ - Ensure Bluetooth file transfer is working properly and fast, test on both GNOME and MATE Edition
+ - shockos-update-manager: make sure program does not go to done screen when pkexec is cancelled
