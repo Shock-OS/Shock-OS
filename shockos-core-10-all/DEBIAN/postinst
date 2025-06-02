@@ -37,6 +37,7 @@ ExecStart=-/sbin/agetty --autologin shockos --noclear %I $TERM' | sudo tee /etc/
 # sets the 'shock' user to autologin, allowing the initial setup process to function correctly
 
 sed -i '$a\dtoverlay=dwc2,dr_mode=host' /boot/firmware/config.txt #this command enables the two front USB ports on the DeskPi Lite
+sed -i 's/^#Class = .*/Class = 0x1C0104/' /etc/bluetooth/main.conf # sets the bluetooth device class to Computer/Desktop Workstation
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo #adds the FlatHub repository
 flatpak update #refreshes the flatpak cache and downloads the icons for the Shockware Center
 
