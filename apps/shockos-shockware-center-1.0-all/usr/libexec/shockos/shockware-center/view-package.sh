@@ -227,7 +227,7 @@ then
 
     show_indicator
 
-	{ wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt remove -y $package; } | yad --no-buttons --no-escape --fixed --width=400 --window-icon='/usr/share/shockos/shockware-center/icon.png' --image="$icon" --title="Shockware Center" --text="Removing $full_name$both..." --text-align=center --progress-text="" --auto-close --progress --pulsate
+	{ wait_apt_lock; echo '#Pending...'; pkexec /usr/libexec/shockos/pyapt.py remove "$package" --percentage --yad-percentage --combine; } | yad --no-buttons --no-escape --fixed --width=400 --window-icon='/usr/share/shockos/shockware-center/icon.png' --image="$icon" --title="Shockware Center" --text="Removing $full_name$both..." --text-align=center --progress-text="" --auto-close --progress
 
     installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT
 
@@ -263,7 +263,7 @@ function apt_install() {
 
 show_indicator
 
-{ wait_apt_lock; pkexec env DEBIAN_FRONTEND=gnome apt-get install --show-progress -y $package | stdbuf -o0 grep 'Progress:' | stdbuf -o0 grep -oP '\d+(?=%)' | (echo "#Pending..."; stdbuf -o0 sed 's/.*/&\n#&%/g'); } | yad --no-buttons --no-escape --fixed --width=400 --window-icon='/usr/share/shockos/shockware-center/icon.png' --title="Shockware Center" --image="$icon" --text="Installing $full_name$both...
+{ wait_apt_lock; echo '#Pending...'; pkexec /usr/libexec/shockos/pyapt.py install "$package" --percentage --yad-percentage --combine; } | yad --no-buttons --no-escape --fixed --width=400 --window-icon='/usr/share/shockos/shockware-center/icon.png' --title="Shockware Center" --image="$icon" --text="Installing $full_name$both...
 <small>The installation will continue in the background if this window is closed.</small>" --text-align=center --auto-close --progress
 
 installed_packages=($(apt list --installed | awk -F/ '{print $1}' | uniq)) #ChatGPT

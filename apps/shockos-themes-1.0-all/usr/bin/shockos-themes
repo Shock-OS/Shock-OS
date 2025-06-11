@@ -106,6 +106,6 @@ class app(Gtk.Application):
             self.gnome_interface_settings.set_string("color-scheme", "prefer-light")
         log(f"THEME: {theme}")
 
-app = app(application_id="net.ShockOS.Themes", flags=Gio.ApplicationFlags.NON_UNIQUE)
+app = app(application_id="net.shockos.Themes", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()
 

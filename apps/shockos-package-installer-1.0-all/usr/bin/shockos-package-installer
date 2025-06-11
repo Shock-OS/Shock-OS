@@ -12,14 +12,6 @@ import threading
 import re
 from fractions import Fraction
 
-parser = argparse.ArgumentParser(description="Install or remove .deb files (or .apk files if Android app support is enabled).")
-parser.add_argument("file", nargs="?", help="Path to package file", default=None)
-parser.add_argument('--verbose', action='store_true')
-
-args = parser.parse_args()
-
-verbose = args.verbose
-
 class PackageInstaller(Gtk.Application):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -47,6 +39,7 @@ class PackageInstaller(Gtk.Application):
         self.remove_button.set_visible(False)
         self.info_bar = builder.get_object("info_bar")
         self.info_bar.set_revealed(False)
+        self.info_bar.connect("response", self.close_info_bar)
         self.info_bar_message = builder.get_object("info_bar_message")
         self.package_type_icon = builder.get_object("package_type_icon")
         self.package_info_label = builder.get_object("package_info_label")
@@ -64,12 +57,24 @@ class PackageInstaller(Gtk.Application):
         self.main_window = builder.get_object("main_window")
         self.main_window.connect("close-request", self.main_window_close_request)
         self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
-        # Load file if app was opened through context menu
-        if args.file:
-            self.file = args.file
-            self.refresh_page()
         self.main_window.present()
         self.main_window.set_sensitive(True)
+
+    def do_command_line(self, cmd_line: Gio.ApplicationCommandLine): # May need revamping along with do_open
+        args = cmd_line.get_arguments()[1:]
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--verbose', action='store_true', help='Enable verbose output')
+        parser.add_argument('files', nargs='*', help='Files to open')
+        args = parser.parse_args(args)
+        self.verbose = args.verbose
+        self.on_activate(app)
+        if args.files:
+            gfiles = [Gio.File.new_for_path(f) for f in args.files]
+            self.parse_file(gfiles[0], Gtk.ResponseType.ACCEPT)
+
+    def do_open(self, files, n_files, hint): # Handles opening files, this is a hotfix and needs polishing later
+        self.on_activate(app)
+        self.parse_file(files[0], Gtk.ResponseType.ACCEPT)
 
     def open_file(self, button):
         self.main_window.set_sensitive(False)
@@ -78,8 +83,11 @@ class PackageInstaller(Gtk.Application):
     def parse_file(self, file, response): # Get file info
         if response == Gtk.ResponseType.ACCEPT:
             self.info_bar.set_revealed(False)
-            self.file = file.get_file().get_path() # DEPRECATED IN GTK 4.10+, WILL NEED TO BE REDONE IN THE FUTURE
-            if verbose:
+            if isinstance(file, Gtk.FileChooserNative):
+                self.file = file.get_file().get_path() # DEPRECATED IN GTK 4.10+, WILL NEED TO BE REDONE IN THE FUTURE
+            else:
+                self.file = file.get_path()
+            if self.verbose:
                 print(f"self.file: {self.file}")
             self.refresh_page()
         else:
@@ -90,13 +98,13 @@ class PackageInstaller(Gtk.Application):
         file_type = magic.from_file(self.file)
         file_ext = Path(self.file)
         file_ext = f"{file_ext.suffix}"
-        if verbose:
+        if self.verbose:
             print(f"FILE_TYPE: {file_type}")
             print(f"FILE_EXT: {file_ext}")
 
         if "Debian binary package" in file_type and file_ext == ".deb": # DEBIAN .DEB PACKAGES
             self.pkg_type = "deb"
-            if verbose:
+            if self.verbose:
                 print("Debian .deb package")
             self.package_name = subprocess.run([f"dpkg-deb --info '{self.file}' | grep 'Package:' | awk '{{print $2}}' | awk '{{print tolower($0)}}'"], shell=True, capture_output=True, text=True)
             self.package_name = self.package_name.stdout.strip()
@@ -109,7 +117,7 @@ class PackageInstaller(Gtk.Application):
                 package_version = package_version.stdout.strip()
                 installed_version = subprocess.run([f"dpkg-query --show {self.package_name} | awk '{{print $2}}'"], shell=True, capture_output=True, text=True)
                 installed_version = installed_version.stdout.strip()
-                if verbose:
+                if self.verbose:
                     print("PACKAGE IS ALREADY INSTALLED")
                     print(f"DEB VERSION: {package_version}")
                     print(f"INSTALLED VERSION: {installed_version}")
@@ -117,7 +125,7 @@ class PackageInstaller(Gtk.Application):
                     self.install_button.set_visible(False)
                     self.reinstall_button.set_sensitive(True)
                     self.reinstall_button.set_visible(True)
-                    if verbose:
+                    if self.verbose:
                         print("Package is already installed, same version")
                 else:
                     compvers = subprocess.run([f"dpkg --compare-versions {package_version} gt {installed_version}"], shell=True, capture_output=True) # Check if .deb is newer
@@ -125,12 +133,12 @@ class PackageInstaller(Gtk.Application):
                     if compvers == "0": # if .deb is newer
                         self.install_button_label.set_label("Upgrade")
                         self.installing_label.set_label("Upgrading...")
-                        if verbose:
+                        if self.verbose:
                             print("DEB IS NEWER, UPGRADE AVAILABLE")
                     else: # if .deb is older
                         self.install_button_label.set_label("Downgrade")
                         self.installing_label.set_label("Downgrading...")
-                        if verbose:
+                        if self.verbose:
                             print("DEB IS OLDER, DOWNGRADE")
                     self.reinstall_button.set_visible(False)
                     self.install_button.set_sensitive(True)
@@ -151,7 +159,7 @@ class PackageInstaller(Gtk.Application):
                 
         elif file_ext == ".flatpakref": # FLATPAK REPOSITORY REFERENCES
             self.pkg_type = "flatpakref"
-            if verbose:
+            if self.verbose:
                 print("Flatpak repository reference")
             self.package_name = subprocess.run([f"cat '{self.file}' | grep '^Name=' | cut -d'=' -f2-"], shell=True, capture_output=True, text=True)
             self.package_name = self.package_name.stdout.strip()
@@ -183,7 +191,7 @@ class PackageInstaller(Gtk.Application):
     
         elif "Android package (APK)" in file_type and file_ext == ".apk": # ANDROID .APK PACKAGES
             self.pkg_type = "apk"
-            if verbose:
+            if self.verbose:
                 print("Android .apk package")
             waydroid_installed = subprocess.run([f"dpkg-query --show waydroid | awk '{{print $2}}'"], shell=True, capture_output=True, text=True)
             waydroid_installed = waydroid_installed.stdout.strip()
@@ -210,7 +218,7 @@ class PackageInstaller(Gtk.Application):
                         self.reinstall_button.set_visible(True)
                         self.remove_button.set_sensitive(True)
                         self.remove_button.set_visible(True)
-                        if verbose:
+                        if self.verbose:
                             print("App is already installed.")
                     else: # if app is not installed
                         self.reinstall_button.set_visible(False)
@@ -228,7 +236,7 @@ class PackageInstaller(Gtk.Application):
             else:
                 print("ERROR: Android app support is not installed.")
 
-        if verbose:
+        if self.verbose:
                 print(f"PACKAGE NAME: {self.package_name}")
                 print(f"PACKAGE INFO: {package_info}")
         self.file_button.set_sensitive(True)
@@ -265,7 +273,7 @@ class PackageInstaller(Gtk.Application):
         action_thread.start()
 
     def do_action(self, action):
-        if verbose:
+        if self.verbose:
             print(f"ACTION: {action}")
         if self.pkg_type == "deb":
             try:
@@ -278,6 +286,7 @@ class PackageInstaller(Gtk.Application):
                     self.show_info_bar(Gtk.MessageType.ERROR, process.stderr)
             for line in process.stdout:
                 match = re.search(r'(\d+)%', line)
+                #match = re.search(r'Progress: \[\s*(\d{1,3})\s*%\]', line)
                 if match:
                     percent = int(match.group(1))
                     GLib.idle_add(self.update_progress_bar, percent)
@@ -334,10 +343,13 @@ class PackageInstaller(Gtk.Application):
         self.info_bar_message.set_label(message)
         self.info_bar.set_revealed(True)
 
+    def close_info_bar(self, *args):
+        self.info_bar.set_revealed(False)
+
     def main_window_close_request(self, widget):
         if self.prevent_close or self.file_chooser.get_visible():
             self.show_info_bar(Gtk.MessageType.INFO, "Cannot exit while a package operation is in progress. Please wait until the operation has completed to close this window.")
             return True
 
-app = PackageInstaller(application_id="net.ShockOS.PackageInstaller", flags=Gio.ApplicationFlags.NON_UNIQUE)
-app.run()
+app = PackageInstaller(application_id="net.shockos.PackageInstaller", flags=Gio.ApplicationFlags.HANDLES_OPEN | Gio.ApplicationFlags.HANDLES_COMMAND_LINE | Gio.ApplicationFlags.NON_UNIQUE)
+app.run(sys.argv)

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+chown root:root /etc/sudoers.d/shockos-update-manager
+chmod 440 /etc/sudoers.d/shockos-update-manager
+systemctl enable --global shockos-update-manager
+

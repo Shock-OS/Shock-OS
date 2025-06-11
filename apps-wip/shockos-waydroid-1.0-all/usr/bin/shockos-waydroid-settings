@@ -140,6 +140,6 @@ class WaydroidSettings(Gtk.Application):
             if err_code.returncode != "126" and err_code.returncode != "127": #if Pkexec didn't fail
                 log("ERROR: Failed to get Google Services Framework Android ID")
 
-app = WaydroidSettings(application_id="net.ShockOS.Waydroid.Settings", flags=Gio.ApplicationFlags.NON_UNIQUE)
+app = WaydroidSettings(application_id="net.shockos.Waydroid.Settings", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()
 

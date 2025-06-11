@@ -315,6 +315,6 @@ class app(Gtk.Application):
     def close(self, button):
         sys.exit()
 
-app = app(application_id="net.ShockOS.MATE.Backgrounds", flags=Gio.ApplicationFlags.NON_UNIQUE)
+app = app(application_id="net.shockos.MATE.Backgrounds", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()
 

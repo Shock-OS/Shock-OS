@@ -106,5 +106,5 @@ class MyApp(Gtk.Application):
     def quit(self, button):
         sys.exit()
 
-app = MyApp(application_id="net.ShockOS.GNOME.Layouts", flags=Gio.ApplicationFlags.NON_UNIQUE)
+app = MyApp(application_id="net.shockos.GNOME.Layouts", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()

@@ -1,4 +1,4 @@
- - shockos-package-installer: Fix/properly implemenet "open with" context menu option
+ - [DONE] shockos-package-installer: Fix/properly implemenet "open with" context menu option
  - shockos-package-installer: Set Android app operations to not run if a Waydroid session is not running
  - `gi.require_version('Gio', '2.0') is *probably* not required when Gio is imported (can likely be removed from scripts that have that line)
  - shockos-package-installer: Revamp `refresh_page` function to use threading
@@ -7,10 +7,27 @@
  - Create Shock OS Python library to load widgets into script (automate the `self.widget = builder.get_object("widget")` stuff with `setattr`
  - [DONE, NEEDS TESTING] shockos-update-manager: update progress bar to properly show progress when both APT and Flatpak have updates
  - shockos-update-manager: add support for waiting for APT lock
+ - shockos-package-installer: add support for waiting for APT lock
  - [DONE, NEEDS TESTING] shockos-update-manager: add systemd update checker service
  - shockos-update-manager: add support for automatic updates
  - [DONE, NEEDS TESTING] shockos-update-manager: add progress bar text
  - Add notification library that automatically adapts to GNOME/MATE to Shock OS Python library
- - shockos-update-manager: add banner that shows when an action has completed (e.g. for reinstalling)
+ - shockos-package-installer: add banner that shows when an action has completed (e.g. for reinstalling)
  - Ensure Bluetooth file transfer is working properly and fast, test on both GNOME and MATE Edition
  - shockos-update-manager: make sure program does not go to done screen when pkexec is cancelled
+ - shockos-update-manager: fix progress bar (it does not display progress correctly)
+ - properly implement `do_activate`, `do_open`, `do_shutdown`, etc. methods in Python scripts
+ - shockos-package-installer: add support for opening multiple files (which will spawn multiple windows)
+ - shockos-package-installer: add support for drag-and-dropping files to window
+ - shockos-package-installer: fix weird `TypeError: Must be number, not NoneType` thing
+ - shockos-update-manager: revamp and optimize /usr/libexec/shockos/update-manager/check-for-updates.py
+ - shockos-update-manager: /usr/libexec/shockos/update-manager/check-for-updates.py: Revamp GLib.timeout_add_seconds to wait until notification is gone instead of just waiting 10 seconds
+ - shockos-package-installer: add error message for when package is wrong architecture
+ - shockos-package-installer & shockos-update-manager: use python3-apt library for getting APT progress
+ - shockos-package-installer: show when a package can be upgraded or downgraded
+ - /usr/libexec/shockos/pyapt.py: add .deb package support, so shockos-package-installer's pydeb.py can be removed
+ - create /usr/libexec/shockos/pyflatpak.py library to get same progress report thing that APT has with pyapt.py
+ - shockos-update-manager: add infobar to notify user why they can't close window while updates are in progress
+ - Check out Python library ThreadPoolExecutor (it may be better than `threading`)
+ - Remove `sudo` from `postinst` scripts, it's not needed
+ - shockos-update-manager: fix showing 'Up to Date' screen after failing because another APT operation was in progress.

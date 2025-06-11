@@ -1,0 +1,24 @@
+#!/bin/bash
+
+mimeapps='application/vnd.debian.binary-package=net.shockos.PackageInstaller.desktop
+application/vnd.flatpak.ref=net.shockos.PackageInstaller.desktop
+application/vnd.android.package-archive=net.shockos.PackageInstaller.desktop'
+
+if [[ ! -f /etc/xdg/mimeapps.list ]]
+then
+    echo '[Default Applications]' | tee /etc/xdg/mimeapps.list
+    echo "$mimeapps" | tee -a /etc/xdg/mimeapps.list
+elif [[ ! "$(cat /etc/xdg/mimeapps.list)" =~ "$mimetypes" ]]
+then
+    headerline="$(grep -n "^\[Default Applications\]" /etc/xdg/mimeapps.list | cut -d: -f1)"
+    if [[ -z "$headerline" ]]
+    then
+        echo '[Default Applications]' | tee -a /etc/xdg/mimeapps.list
+        echo "$mimeapps" | tee -a /etc/xdg/mimeapps.list
+    else
+        sed -i "${headerline}a${mimeapps}" /etc/xdg/mimeapps.list
+    fi
+fi
+
+update-desktop-database
+

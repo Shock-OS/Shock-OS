@@ -155,7 +155,10 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="error_message"/>
+                  <object class="GtkLabel" id="error_message">
+                    <property name="justify">center</property>
+                    <property name="wrap">True</property>
+                  </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="dismiss_error_button">

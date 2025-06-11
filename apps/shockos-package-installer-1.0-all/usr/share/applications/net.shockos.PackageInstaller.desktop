@@ -2,11 +2,12 @@
 Version=1.0
 Name=Package Installer
 Comment=Install/remove .deb packages, .flatpakref files or Android .apk packages
-Exec=shockos-package-installer "%f"
+Exec=shockos-package-installer %f
 Icon=package
 Terminal=false
 Type=Application
 Categories=System;
-StartupNotify=false
+NoDisplay=false
+StartupNotify=true
 Keywords=package;apt;dpkg;install;deb;flatpakref;apk;android
 MimeType=application/vnd.debian.binary-package;application/vnd.flatpak.ref;application/vnd.android.package-archive

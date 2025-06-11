@@ -45,14 +45,16 @@ class App(Gtk.Application):
         self.check_for_updates_button.connect("clicked", self.check_for_updates)
 
         self.loop = GLib.MainLoop()
+        self.prevent_close = False
 
         # Obtain and show the main window
         self.main_window = builder.get_object("main_window")
         self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        self.main_window.connect("close-request", self.main_window_close_request)
         self.main_window.present()
         GLib.idle_add(self.check_for_updates)
         
-    def check_for_updates(self, button=None):
+    def check_for_updates(self, *args, **kwargs):
         def run_cmd(cmd, count=False, pkgman=None):
             try:
                 process = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
@@ -98,21 +100,35 @@ class App(Gtk.Application):
         self.install_updates_button.set_visible(False)
         self.progress_bar_label.set_label('Pending...')
         def install_apt_updates():
+            self.prevent_close = True
             try:
-                process = subprocess.Popen(['pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY DEBIAN_FRONTEND=gnome apt upgrade -y'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                process = subprocess.Popen(['pkexec /usr/libexec/shockos/pyapt.py upgrade --percentage --combine'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
             except subprocess.CalledProcessError as error:
                 self.error(error)
                 raise Exception
             for line in process.stdout:
-                match = re.search(r'(\d+)%', line)
-                if match:
-                    percent = int(match.group(1))
+                line = line.strip()
+                if line.endswith('%') and not 'Reading database' in line: # The 'Reading database' part here is a bit janky
+                    percent = line.strip('%')
                     GLib.idle_add(self.update_progress_bar, percent, 'apt')
             process.stdout.close()
-            process.wait()
+            returncode = process.wait()
+            self.prevent_close = False
+            if returncode == 126:
+                self.install_updates_button.set_visible(True)
+                self.progress_bar_box.set_visible(False)
+                self.progress_bar_spinner.set_spinning(False)
+                return False
+            elif returncode == 1: # This is a bit janky
+                self.error('There appears to already be an APT package operation in progress. Please wait for it to finish before updating.')
+                return False
+            elif returncode != 0:
+                self.error('Unknown error, exited with status {returncode}')
+                return False
             GLib.idle_add(self.update_progress_bar, 100, 'apt')
             self.loop.quit()
         def install_flatpak_updates():
+            self.prevent_close = True
             try:
                 process = subprocess.Popen(['flatpak update -y'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
             except subprocess.CalledProcessError as error:
@@ -129,6 +145,8 @@ class App(Gtk.Application):
                     percent = round(percent)
                     GLib.idle_add(self.update_progress_bar, percent, 'flatpak')
             GLib.idle_add(self.update_progress_bar, 100, 'flatpak')
+            process.wait()
+            self.prevent_close = False
             self.loop.quit()
         self.progress_bar_spinner.set_spinning(True)
         self.progress_bar_box.set_visible(True)
@@ -145,6 +163,7 @@ class App(Gtk.Application):
         self.install_updates_button.set_visible(True)
 
     def update_progress_bar(self, percent, package_manager):
+        percent = int(percent)
         if self.apt_and_flatpak_updates:
             if package_manager == 'apt':
                 step = 1
@@ -160,7 +179,15 @@ class App(Gtk.Application):
         log(message)
         self.error_message.set_label(message)
         self.stack.set_visible_child_name("error")
-        return False
+        self.loop.run()
+
+    def close_error(self, *args, **kwargs):
+        self.loop.quit()
+        self.check_for_updates()
+
+    def main_window_close_request(self, *args, **kwargs):
+        if self.prevent_close:
+            return True
 
 app = App(application_id=f"net.shockos.UpdateManager", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()
