@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import gi
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk, Gio
+import argparse
+import psutil
+import subprocess
+
+parser = argparse.ArgumentParser(description="Optimizations for Shock OS")
+
+parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+
+args = parser.parse_args()
+def log(message):
+    if args.verbose:
+        print(message)
+
+class App(Gtk.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
+
+    def on_activate(self, app):
+        # Create a Builder
+        builder = Gtk.Builder()
+        builder.add_from_file("main.ui")
+
+        # Obtain the widgets
+        self.total_ram_label = builder.get_object("total_ram_label")
+        self.free_space_label = builder.get_object("free_space_label")
+        self.current_swap_label = builder.get_object("current_swap_label")
+        self.recommended_swap_label = builder.get_object("recommended_swap_label")
+        self.swap_scale = builder.get_object("swap_scale")
+        self.swap_scale.connect("value-changed", self.swap_scale_updated)
+        self.swap_scale_adj = builder.get_object("swap_scale_adj")
+        self.swap_apply_button = builder.get_object("swap_apply_button")
+        self.swap_apply_button.connect("clicked", self.apply_swap)
+
+        # Preloading swap page
+        # Get total RAM
+        possible_ram_configs = [0.512, 1, 2, 4, 8, 16]
+        total_ram = psutil.virtual_memory().total
+        total_ram = total_ram / (1024 ** 3)
+        self.total_ram_gb = min(possible_ram_configs, key=lambda x: abs(x - total_ram))
+        # Get recommended swap
+        recommended_swap = {
+            0.512: 1,
+            1: 2,
+            2: 4,
+            4: 4,
+            8: 8,
+            16: 8
+        }
+        self.recommended_swap_gb = recommended_swap[self.total_ram_gb]
+        # Update UI accordingly
+        self.swap_scale.add_mark(self.recommended_swap_gb, Gtk.PositionType.BOTTOM, "Recommended")
+        self.total_ram_label.set_text(f"Total RAM: {self.total_ram_gb} GB")
+        self.recommended_swap_label.set_text(f"Recommended swap space: {self.recommended_swap_gb} GB")
+        self.on_swap_page()
+
+        # Obtain and show the main window
+        self.main_window = builder.get_object("main_window")
+        self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        self.main_window.present()
+
+    def swap_scale_updated(self, *args):
+        swap_gb = f"{self.swap_scale_adj.get_value():.0f}"
+        if swap_gb == f"{self.current_swap_gb:.0f}":
+            self.swap_apply_button.set_sensitive(False)
+        else:
+            self.swap_apply_button.set_sensitive(True)
+
+    def on_swap_page(self): # put in with bigger function connected to page change notify
+        # Get free space
+        disk = psutil.disk_usage('/')
+        self.free_space_gb = int(f"{disk.free / (1024 ** 3):.0f}")
+        # Ger current swap space
+        swap = psutil.swap_memory()
+        self.current_swap_gb = float(f"{swap.total / (1024 ** 3):.2f}")
+        # Update UI accordingly
+        self.free_space_label.set_text(f"Free disk space: {self.free_space_gb} GB")
+        self.current_swap_label.set_text(f"Current swap space: {self.current_swap_gb} GB")
+        self.swap_scale_adj.set_value(int(f"{self.current_swap_gb:.0f}"))
+
+    def apply_swap(self, _):
+        swap_gb = f"{self.swap_scale_adj.get_value():.0f}"
+        subprocess.run(['pkexec', '/usr/libexec/shockos/optimizations/apply-swap.sh', swap_gb])
+
+app = App(application_id=f"net.shockos.Optimizations", flags=Gio.ApplicationFlags.NON_UNIQUE)
+app.run()

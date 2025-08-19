@@ -53,6 +53,7 @@ class App(Gtk.Application):
         self.main_window.connect("close-request", self.main_window_close_request)
         self.main_window.present()
         GLib.idle_add(self.check_for_updates)
+        subprocess.Popen(['/usr/libexec/shockos/update-manager/kill-notify.sh'])
         
     def check_for_updates(self, *args, **kwargs):
         def run_cmd(cmd, count=False, pkgman=None):
@@ -102,7 +103,7 @@ class App(Gtk.Application):
         def install_apt_updates():
             self.prevent_close = True
             try:
-                process = subprocess.Popen(['pkexec /usr/libexec/shockos/pyapt.py upgrade --percentage --combine'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                process = subprocess.Popen(['pkexec /usr/libexec/shockos/pyapt.py upgrade --percentage --combine'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
             except subprocess.CalledProcessError as error:
                 self.error(error)
                 raise Exception
@@ -119,7 +120,7 @@ class App(Gtk.Application):
                 self.progress_bar_box.set_visible(False)
                 self.progress_bar_spinner.set_spinning(False)
                 return False
-            elif returncode == 1: # This is a bit janky
+            elif returncode == 1: # This is a bit janky, could handle more errors (such as needing "dpkg --configure -a")
                 self.error('There appears to already be an APT package operation in progress. Please wait for it to finish before updating.')
                 return False
             elif returncode != 0:
@@ -130,20 +131,22 @@ class App(Gtk.Application):
         def install_flatpak_updates():
             self.prevent_close = True
             try:
-                process = subprocess.Popen(['flatpak update -y'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                process = subprocess.Popen(['flatpak update -y'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
             except subprocess.CalledProcessError as error:
                 self.error(error)
                 raise Exception
             for line in process.stdout:
                 if '%' in line:
-                    fraction = re.search(r'\b\d+/\d+\b', line).group()
-                    step, total_steps = fraction.split('/')
-                    step = int(step)
-                    total_steps = int(total_steps)
-                    step_percent = int(re.search(r'\b\d+(?:\.\d+)?%', line).group().strip('%'))
-                    percent = (step - 1 + step_percent / 100) / total_steps * 100
-                    percent = round(percent)
-                    GLib.idle_add(self.update_progress_bar, percent, 'flatpak')
+                    fraction = re.search(r'\b\d+/\d+\b', line)
+                    if fraction:
+                        fraction = fraction.group()
+                        step, total_steps = fraction.split('/')
+                        step = int(step)
+                        total_steps = int(total_steps)
+                        step_percent = int(re.search(r'\b\d+(?:\.\d+)?%', line).group().strip('%'))
+                        percent = (step - 1 + step_percent / 100) / total_steps #* 100 (remove after testing if not needed)
+                        percent = round(percent)
+                        GLib.idle_add(self.update_progress_bar, percent, 'flatpak')
             GLib.idle_add(self.update_progress_bar, 100, 'flatpak')
             process.wait()
             self.prevent_close = False
@@ -162,15 +165,15 @@ class App(Gtk.Application):
         self.stack.set_visible_child_name("done")
         self.install_updates_button.set_visible(True)
 
-    def update_progress_bar(self, percent, package_manager):
-        percent = int(percent)
+    def update_progress_bar(self, fraction, package_manager):
+        fraction = int(fraction)
         if self.apt_and_flatpak_updates:
             if package_manager == 'apt':
                 step = 1
             elif package_manager == 'flatpak':
                 step = 2
-            percent = (step - 1 + percent / 100) / 2 / 100
-        fraction = percent / 100
+            fraction = (step - 1 + fraction / 100) / 2
+        percent = round(fraction * 100)
         self.progress_bar.set_fraction(fraction)
         self.progress_bar_label.set_label(f"Installing updates... ({percent}%)")
 

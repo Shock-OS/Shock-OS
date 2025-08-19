@@ -5,6 +5,8 @@ After=default.target
 [Service]
 Type=simple
 ExecStart=/usr/libexec/shockos/update-manager/check-for-updates.py
+Restart=always
+RestartSec=43200s
 
 [Install]
 WantedBy=default.target

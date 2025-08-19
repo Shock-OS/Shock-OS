@@ -31,3 +31,14 @@
  - Check out Python library ThreadPoolExecutor (it may be better than `threading`)
  - Remove `sudo` from `postinst` scripts, it's not needed
  - shockos-update-manager: fix showing 'Up to Date' screen after failing because another APT operation was in progress.
+ - Layouts Apps: Find a way to make the symbolic icons change color according to light/dark theme
+ - Layouts Apps: Make a better icon for them, please
+ - [DONE, NEEDS TESTING]: shockos-update-manager: add restart delay of 12 hrs to systemd service (to rescan for updates every 12 hrs instead of just on login)
+ - Experiment with adding `init=/usr/libexec/shockos/initsetup.sh` or something to `cmdline.txt` see a fresh install of Pi OS Lite `/boot/cmdline.txt` file for reference
+ - Consider adding a Cinnamon Edition, the Pi 5 might be powerful enough for it
+ - Improve ~/.cache/shockos-tmp (link it to an actual folder in /tmp)
+ - shockos-mate-backgrounds: use function lock variable to avoid recursive GtkEntry updates triggering the function indefinitely (see Lidhibitor self.timer_math_lock for more info)
+ - Make a shared Python library for updating GtkEntry widgets (the code is complicated and redundant)
+ - shockos-shockver: use psutil Python library for getting RAM info (see shockos-optimizations)
+ - Add Python library running subprocess with pkexec and using error handling
+ - Add Python library for writing to a file by creating it if it doesn't exist, and creating its parent directories if they don't exist (similar to `mkdir -p`)

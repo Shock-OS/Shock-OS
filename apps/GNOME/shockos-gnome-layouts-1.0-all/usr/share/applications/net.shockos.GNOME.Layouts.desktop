@@ -2,7 +2,7 @@
 Name=Layouts
 Comment=Change desktop layout
 Exec=shockos-gnome-layouts
-Icon=panel-bottom-symbolic
+Icon=/usr/share/shockos/gnome/shockos-gnome-layouts/icons/appicon.svg
 Terminal=false
 Type=Application
 Categories=Settings;Application;
