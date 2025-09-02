@@ -103,7 +103,7 @@ class App(Gtk.Application):
         def install_apt_updates():
             self.prevent_close = True
             try:
-                process = subprocess.Popen(['pkexec /usr/libexec/shockos/pyapt.py upgrade --percentage --combine'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+                process = subprocess.Popen(['pkexec /usr/libexec/shockos/pyapt.py upgrade --percentage --combine'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)#, bufsize=1)
             except subprocess.CalledProcessError as error:
                 self.error(error)
                 raise Exception
@@ -131,7 +131,7 @@ class App(Gtk.Application):
         def install_flatpak_updates():
             self.prevent_close = True
             try:
-                process = subprocess.Popen(['flatpak update -y'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+                process = subprocess.Popen(['flatpak update -y'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)#, bufsize=1)
             except subprocess.CalledProcessError as error:
                 self.error(error)
                 raise Exception

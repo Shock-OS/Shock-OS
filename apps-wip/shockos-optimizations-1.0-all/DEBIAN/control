@@ -1,0 +1,11 @@
+Source: shockos-optimizations
+Section: misc
+Priority: optional
+Maintainer: Carson Grover
+Homepage: https://www.shockos.net
+Package: shockos-optimizations
+Version: 1.0
+Architecture: all
+Depends: shockos-core (>= 10), python3, python3-psutil
+Description: Optimizations for Shock OS
+    Manage swap space, storage, kernel options, and more.

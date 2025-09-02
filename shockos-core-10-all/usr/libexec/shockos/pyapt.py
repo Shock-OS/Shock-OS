@@ -82,7 +82,7 @@ def commit():
     else:
         cache.commit(
             apt.progress.text.AcquireProgress(),
-            apt.progress.base.InstallProgress()
+            apt.progress.text.InstallProgress()
         )
 
 refresh_cache()

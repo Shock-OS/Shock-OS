@@ -26,7 +26,7 @@ class App(Gtk.Application):
     def on_activate(self, app):
         # Create a Builder
         builder = Gtk.Builder()
-        builder.add_from_file("main.ui")
+        builder.add_from_file("/usr/share/shockos/optimizations/main.ui")
 
         # Obtain the widgets
         self.total_ram_label = builder.get_object("total_ram_label")
@@ -34,10 +34,37 @@ class App(Gtk.Application):
         self.current_swap_label = builder.get_object("current_swap_label")
         self.recommended_swap_label = builder.get_object("recommended_swap_label")
         self.swap_scale = builder.get_object("swap_scale")
-        self.swap_scale.connect("value-changed", self.swap_scale_updated)
         self.swap_scale_adj = builder.get_object("swap_scale_adj")
         self.swap_apply_button = builder.get_object("swap_apply_button")
         self.swap_apply_button.connect("clicked", self.apply_swap)
+        self.swappiness_scale_adj = builder.get_object("swappiness_scale_adj")
+        self.ram_overcommit_cb = builder.get_object("ram_overcommit_cb")
+        self.ram_overcommit_cb.connect("changed", self.ram_overcommit_mode_changed)
+        self.ram_overcommit_ratio_box = builder.get_object("ram_overcommit_ratio_box")
+        self.ram_overcommit_ratio_scale_adj = builder.get_object("ram_overcommit_ratio_scale_adj")
+        self.ram_dirty_ratio_scale_adj = builder.get_object("ram_dirty_ratio_scale_adj")
+        self.ram_dirty_background_ratio_scale_adj = builder.get_object("ram_dirty_background_ratio_scale_adj")
+        self.ram_vfs_cache_pressure_scale_adj = builder.get_object("ram_vfs_cache_pressure_scale_adj")
+
+        self.adjs = [
+            self.swap_scale_adj,
+            self.swappiness_scale_adj,
+            self.ram_overcommit_ratio_scale_adj,
+            self.ram_dirty_ratio_scale_adj,
+            self.ram_dirty_background_ratio_scale_adj,
+            self.ram_vfs_cache_pressure_scale_adj
+        ]
+        for adj in self.adjs:
+            adj.connect("value-changed", self.swap_opts_changed)
+
+        self.swap_opts = {
+            "swap_gb": 0,
+            "swappiness": 0,
+            "ram_overcommit_ratio": 0,
+            "ram_dirty_ratio": 0,
+            "ram_dirty_background_ratio": 0,
+            "ram_vfs_cache_pressure": 0
+        }
 
         # Preloading swap page
         # Get total RAM
@@ -60,18 +87,27 @@ class App(Gtk.Application):
         self.total_ram_label.set_text(f"Total RAM: {self.total_ram_gb} GB")
         self.recommended_swap_label.set_text(f"Recommended swap space: {self.recommended_swap_gb} GB")
         self.on_swap_page()
+        self.ram_overcommit_mode_changed()
 
         # Obtain and show the main window
         self.main_window = builder.get_object("main_window")
         self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
         self.main_window.present()
+        
 
-    def swap_scale_updated(self, *args):
-        swap_gb = f"{self.swap_scale_adj.get_value():.0f}"
-        if swap_gb == f"{self.current_swap_gb:.0f}":
-            self.swap_apply_button.set_sensitive(False)
-        else:
-            self.swap_apply_button.set_sensitive(True)
+    def swap_opts_changed(self, widget=None):
+        if widget is None:
+            conditions = []
+            for index, var in enumerate(self.swap_opts):
+                adj = self.adjs[index]
+                self.swap_opts[var] = adj.get_value()
+                if adj != self.swap_scale_adj:
+                    conditions.append(self.swap_opts[var] != self.adv_swap_scales[var])
+            ram_overcommit_mode = self.ram_overcommit_cb.get_active_id()
+            if ram_overcommit_mode != self.adv_swap_scales["ram_overcommit_mode"] or self.swap_opts["swap_gb"] != self.current_swap_gb or any(conditions):
+                self.swap_apply_button.set_sensitive(True)
+            else:
+                self.swap_apply_button.set_sensitive(False)
 
     def on_swap_page(self): # put in with bigger function connected to page change notify
         # Get free space
@@ -79,15 +115,53 @@ class App(Gtk.Application):
         self.free_space_gb = int(f"{disk.free / (1024 ** 3):.0f}")
         # Ger current swap space
         swap = psutil.swap_memory()
-        self.current_swap_gb = float(f"{swap.total / (1024 ** 3):.2f}")
-        # Update UI accordingly
+        if (swap.total / (1024 ** 2)) < 512:
+            self.current_swap_gb = float(f"{swap.total / (1000 ** 2):.1f}")
+            self.current_swap_label.set_text(f"Current swap space: {self.current_swap_gb} MB")
+            self.swap_scale_adj.set_value(1)
+        else:
+            self.current_swap_gb = int(f"{swap.total / (1000 ** 3):.0f}")
+            self.current_swap_label.set_text(f"Current swap space: {self.current_swap_gb} GB")
+            self.swap_scale_adj.set_value(int(f"{self.current_swap_gb:.0f}"))
         self.free_space_label.set_text(f"Free disk space: {self.free_space_gb} GB")
-        self.current_swap_label.set_text(f"Current swap space: {self.current_swap_gb} GB")
-        self.swap_scale_adj.set_value(int(f"{self.current_swap_gb:.0f}"))
+        # Advanced SWAP options
+        self.adv_swap_scales = {}
+        def set_scale(file, var, adj):
+            with open (f"/proc/sys/vm/{file}", "r") as f:
+                self.adv_swap_scales[var] = int(f.read().strip())
+            adj.set_value(self.adv_swap_scales[var])
+        set_scale("swappiness", "swappiness", self.swappiness_scale_adj)
+        set_scale("overcommit_ratio", "ram_overcommit_ratio", self.ram_overcommit_ratio_scale_adj)
+        set_scale("dirty_ratio", "ram_dirty_ratio", self.ram_dirty_ratio_scale_adj)
+        set_scale("dirty_background_ratio", "ram_dirty_background_ratio", self.ram_dirty_background_ratio_scale_adj)
+        set_scale("vfs_cache_pressure", "ram_vfs_cache_pressure", self.ram_vfs_cache_pressure_scale_adj)
+        with open ("/proc/sys/vm/overcommit_memory", "r") as f:
+            ram_overcommit_mode = f.read().strip()
+        self.adv_swap_scales["ram_overcommit_mode"] = ram_overcommit_mode
+        self.ram_overcommit_cb.set_active_id(ram_overcommit_mode)
+
+    def ram_overcommit_mode_changed(self, *args):
+        mode = self.ram_overcommit_cb.get_active_id()
+        if mode == "2":
+            self.ram_overcommit_ratio_box.set_sensitive(True)
+        else:
+            self.ram_overcommit_ratio_box.set_sensitive(False)
+        
 
     def apply_swap(self, _):
-        swap_gb = f"{self.swap_scale_adj.get_value():.0f}"
-        subprocess.run(['pkexec', '/usr/libexec/shockos/optimizations/apply-swap.sh', swap_gb])
+        for index, var in enumerate(self.swap_opts):
+                adj = self.adjs[index]
+                self.swap_opts[var] = f"{adj.get_value():.0f}"
+        ram_overcommit_mode = self.ram_overcommit_cb.get_active_id()
+        subprocess.run(['pkexec', '/usr/libexec/shockos/optimizations/apply-swap.sh',
+                        self.swap_opts["swap_gb"],
+                        self.swap_opts["swappiness"],
+                        ram_overcommit_mode,
+                        self.swap_opts["ram_overcommit_ratio"],
+                        self.swap_opts["ram_dirty_ratio"],
+                        self.swap_opts["ram_dirty_background_ratio"],
+                        self.swap_opts["ram_vfs_cache_pressure"]
+                        ])
 
 app = App(application_id=f"net.shockos.Optimizations", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()

@@ -2,8 +2,9 @@
 
 import os
 import sys
-import atexit
 sys.path.append('/usr/lib/shockos/')
+import signal
+import atexit
 import shockos
 import gi
 import argparse
@@ -32,13 +33,14 @@ class App(Gio.Application):
                 button_label = 'Install Updates'
             tmpdir = Path('~/.cache/shockos-tmp/update-manager').expanduser()
             tmpdir.mkdir(parents=True, exist_ok=True)
-            self.pidfile = Path('~/.cache/shockos-tmp/update-manager/notfiy-pid').expanduser()
-            self.pidfile.write_text(os.getpid())
+            self.pidfile = Path('~/.cache/shockos-tmp/update-manager/notify-pid').expanduser()
+            self.pidfile.write_text(str(os.getpid()))
             self.notification = Notify.Notification.new('Update Manager', message, 'software-update-available')
             self.notification.add_action('button_clicked', button_label, self.button_clicked, None)
             self.notification.set_hint("resident")#, GLib.Variant('b', True))
             self.notification.connect("closed", self.quit)
             self.notification.show()
+            signal.signal(signal.SIGTERM, self.on_exit)
             atexit.register(self.on_exit)
             self.loop = GLib.MainLoop()
             self.loop.run()
