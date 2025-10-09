@@ -3,7 +3,7 @@ Version: 10
 Architecture: all
 Essential: no
 Priority: optional
-Depends: fonts-ubuntu, gnupg, imagemagick, libgtk3-perl, libnotify-bin, ntpdate, pv, python3-watchdog, unp, wget, wmctrl, xz-utils, yad, yaru-theme-gtk, yaru-theme-icon, zenity
+Depends: fonts-ubuntu, gnupg, imagemagick, libgtk3-perl, libnotify-bin, pv, python3-watchdog, unp, wget, wmctrl, xz-utils, yad, yaru-theme-gtk, yaru-theme-icon, zenity
 Recommends: btrfs-progs, cups, dosfstools, ffmpeg, flatpak, libfuse2, libreoffice, libreoffice-gnome, mtools, ntp, plymouth, plymouth-themes, rpi-chromium-mods, system-config-printer, unrar
 Maintainer: Carson Grover
 Homepage: https://www.shockos.net

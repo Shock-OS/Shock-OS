@@ -1,0 +1,1 @@
+Just finished basic setup, the combo boxes work and adjust to /usr/share/shockos/imager/images.json (should be moved to a user directory to avoid needing pkexec just to refresh the catalog). Other than that nothing is done.

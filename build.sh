@@ -16,7 +16,10 @@ then
       esac
     fi
     echo "SHOCKOS_BUILD_DATE=\"$(date "+%A, %B %e$suffix, %Y")\"" | tee ./shockos-core-10-all/usr/lib/shockos/dist-info
-    rm -r ./BUILD-OUT
+    if [[ -e ./BUILD_OUT ]]
+    then
+        rm -r ./BUILD-OUT
+    fi
     mkdir ./BUILD-OUT
     cp ./auto-install.sh ./BUILD-OUT/
     dpkg-deb --build ./shockos-core-10-all ./BUILD-OUT

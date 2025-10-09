@@ -2,6 +2,8 @@
 
 import os
 import sys
+sys.path.append('/usr/lib/shockos/')
+import shockos
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, Gio, GLib
@@ -46,6 +48,19 @@ class App(Gtk.Application):
 
         self.loop = GLib.MainLoop()
         self.prevent_close = False
+
+        if shockos.deskenv_is_gnome:
+            settings = Gio.Settings.new("org.gnome.desktop.lockdown")
+        elif shockos.deskenv_is_mate:
+            settings = Gio.Settings.new("org.mate.lockdown")
+        key = "disable-log-out"
+        def set_lockdown(val):
+            if val:
+                settings.set_boolean(key, val)
+            else:
+                settings.reset(key)
+        self.set_lockdown = set_lockdown
+            
 
         # Obtain and show the main window
         self.main_window = builder.get_object("main_window")
@@ -98,12 +113,13 @@ class App(Gtk.Application):
             self.stack.set_visible_child_name("done")
 
     def install_updates(self, button):
+        self.set_lockdown(True)
         self.install_updates_button.set_visible(False)
         self.progress_bar_label.set_label('Pending...')
         def install_apt_updates():
             self.prevent_close = True
             try:
-                process = subprocess.Popen(['pkexec /usr/libexec/shockos/pyapt.py upgrade --percentage --combine'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)#, bufsize=1)
+                process = subprocess.Popen(['pkexec /usr/libexec/shockos/pyapt.py full-upgrade --percentage --combine'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)#, bufsize=1)
             except subprocess.CalledProcessError as error:
                 self.error(error)
                 raise Exception
@@ -111,6 +127,7 @@ class App(Gtk.Application):
                 line = line.strip()
                 if line.endswith('%') and not 'Reading database' in line: # The 'Reading database' part here is a bit janky
                     percent = line.strip('%')
+                    percent = float(int(percent) / 100) #TEST
                     GLib.idle_add(self.update_progress_bar, percent, 'apt')
             process.stdout.close()
             returncode = process.wait()
@@ -164,16 +181,17 @@ class App(Gtk.Application):
         self.progress_bar_spinner.set_spinning(False)
         self.stack.set_visible_child_name("done")
         self.install_updates_button.set_visible(True)
+        self.set_lockdown(False)
 
     def update_progress_bar(self, fraction, package_manager):
-        fraction = int(fraction)
+        fraction = float(fraction)
         if self.apt_and_flatpak_updates:
             if package_manager == 'apt':
                 step = 1
             elif package_manager == 'flatpak':
                 step = 2
             fraction = (step - 1 + fraction / 100) / 2
-        percent = round(fraction * 100)
+        percent = f"{round(fraction * 100):.0f}"
         self.progress_bar.set_fraction(fraction)
         self.progress_bar_label.set_label(f"Installing updates... ({percent}%)")
 

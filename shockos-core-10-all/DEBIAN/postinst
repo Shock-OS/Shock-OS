@@ -52,6 +52,8 @@ echo "$newcmdline" | tee /boot/firmware/cmdline.txt
 plymouth-set-default-theme -R shockdots-symbolic-white
 #the splash screen patch ends
 
+/usr/libexec/shockos/postinstall.sh
+
 # Initsetup stuff
 mkdir -p /usr/lib/shockos/initsetup
 echo 'init' | tee /usr/lib/shockos/initsetup/step

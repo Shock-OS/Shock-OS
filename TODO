@@ -42,3 +42,13 @@
  - shockos-shockver: use psutil Python library for getting RAM info (see shockos-optimizations)
  - Add Python library running subprocess with pkexec and using error handling
  - Add Python library for writing to a file by creating it if it doesn't exist, and creating its parent directories if they don't exist (similar to `mkdir -p`)
+ - Modify ShockVer to use Python-native libraries to get system info (may not even need subprocess)
+ - Move fresh-install-only actions from DEBIAN/postinst to /usr/libexec/shockos/postinstall.sh in the shockos-core package.
+ - Use python3-apt instead of subprocess to refresh Shock OS Update Manager
+ - Add these deps and the like to the apps' deps list: python3-gi, gir1.2-gtk-4.0, etc. (reference Simple USB Flasher)
+ - Maybe think about changing shockos-mate-slideshow-background daemon to log minutes in between changes, so that it can resume if the computer is restarted (for example, if the delay interval is 24 hrs, but the computer is restarted after 12 hours, resume as if 12 hours had already gone by).
+ - Make sure that a night light feature is available and working on both desktops (GNOME and MATE) and implement it if it doesn't exist
+ - Make sure Shock OS GTK 4 apps inherent system fonts (they currently don't)
+ - Consider simply using font-manager instead of homegrown Shock OS app (probably not the best, though, because it doesn't support all fonts on MATE and doesn't make it easy to remove fonts. maybe try fixing the fonts app? And adding the ability to install/remove fonts?)
+ - Add ZRAM to shockos-optimizations
+ - Program Update Manager to do combined APT and Flatpak progress by using the ratio of the total number of APT/Flatpak updates to total combined updates, instead of just 50% for APT and 50% for Flatpak (DO THIS NOW, IT CURRENTLY DOESN'T WORK ANYWAY)

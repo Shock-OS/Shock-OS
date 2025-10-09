@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
 
+import os
 import argparse
 import apt
+import apt_pkg
 import apt.debfile
 import apt.progress.base
 from apt.progress.base import InstallProgress
 import apt.progress.text
+
+# Make APT non-interactive
+os.environ["DEBIAN_FRONTEND"] = "noninteractive"
+os.environ["APT_LISTCHANGES_FRONTEND"] = "none"
+apt_pkg.config.set("DPkg::Options::1", "--force-confdef")
+apt_pkg.config.set("DPkg::Options::2", "--force-confold")
 
 parser = argparse.ArgumentParser(description='Python APT helper script')
 parser.add_argument('action', help='Install/remove/reinstall/update/upgrade')
@@ -20,7 +28,7 @@ percentage = args.percentage
 combine = args.combine
 yad_percentage = args.yad_percentage
 
-if package is None and not (action == 'update' or action == 'upgrade'):
+if package is None and not (action == 'update' or action == 'upgrade' or action == 'full-upgrade'):
     raise ValueError(f"Must supply package name or path with action '{action}'")
 
 cache = apt.Cache()
@@ -110,4 +118,7 @@ elif action == 'update':
     refresh_cache()
 elif action == 'upgrade':
     cache.upgrade()
+    commit()
+elif action == 'full-upgrade':
+    cache.upgrade(dist_upgrade=True)
     commit()

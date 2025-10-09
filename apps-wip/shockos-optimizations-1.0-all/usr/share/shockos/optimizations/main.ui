@@ -10,7 +10,7 @@
           <object class="GtkStack" id="stack">
             <property name="transition-type">slide-left-right</property>
             <child>
-              <object class="GtkStackPage" id="overview">
+              <object class="GtkStackPage" id="overview_page">
                 <property name="child">
                   <object class="GtkLabel">
                     <property name="label">Empty Page</property>
@@ -21,7 +21,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkStackPage">
+              <object class="GtkStackPage" id="storage_page">
                 <property name="child">
                   <object class="GtkLabel">
                     <property name="label">Empty Page</property>
@@ -31,7 +31,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkStackPage" id="swap">
+              <object class="GtkStackPage" id="swap_page">
                 <property name="child">
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
@@ -256,7 +256,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkStackPage" id="kernel_opts">
+              <object class="GtkStackPage" id="kernel_opts_page">
                 <property name="child">
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
@@ -285,6 +285,23 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkButton" id="kernel_opts_apply_button">
+                        <property name="child">
+                          <object class="GtkBox">
+                            <property name="spacing">5</property>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="icon-name">object-select-symbolic</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel"/>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
                   </object>
                 </property>
                 <property name="name">kernel-opts</property>
@@ -292,7 +309,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkStackPage" id="usb_quirks">
+              <object class="GtkStackPage" id="usb_quirks_page">
                 <property name="child">
                   <object class="GtkLabel">
                     <property name="label">Empty Page</property>
@@ -320,5 +337,335 @@
         </property>
       </object>
     </property>
+    <child>
+      <object class="GtkBox">
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="child">
+              <object class="GtkStack" id="stack">
+                <property name="transition-type">slide-left-right</property>
+                <child>
+                  <object class="GtkStackPage" id="overview_page">
+                    <property name="child">
+                      <object class="GtkLabel">
+                        <property name="label">Empty Page</property>
+                      </object>
+                    </property>
+                    <property name="name">overview</property>
+                    <property name="title">Overview</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStackPage" id="storage_page">
+                    <property name="child">
+                      <object class="GtkLabel">
+                        <property name="label">Empty Page</property>
+                      </object>
+                    </property>
+                    <property name="title">Storage</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStackPage" id="swap_page">
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="halign">start</property>
+                            <property name="label">&lt;b&gt;Info:&lt;/b&gt;</property>
+                            <property name="use-markup">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="total_ram_label">
+                            <property name="halign">start</property>
+                            <property name="label">Total RAM:</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="free_space_label">
+                            <property name="halign">start</property>
+                            <property name="label">Free disk space:</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="current_swap_label">
+                            <property name="halign">start</property>
+                            <property name="label">Current swap space:</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="recommended_swap_label">
+                            <property name="halign">start</property>
+                            <property name="label">Recommended swap space:</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="halign">start</property>
+                            <property name="label">&lt;b&gt;Adjust swap space:&lt;/b&gt;</property>
+                            <property name="use-markup">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="swap_scale">
+                            <property name="adjustment">
+                              <object class="GtkAdjustment" id="swap_scale_adj">
+                                <property name="lower">1.0</property>
+                                <property name="page-increment">1.0</property>
+                                <property name="step-increment">1.0</property>
+                                <property name="upper">20.0</property>
+                                <property name="value">8.0</property>
+                              </object>
+                            </property>
+                            <property name="digits">0</property>
+                            <property name="draw-value">True</property>
+                            <property name="margin-end">10</property>
+                            <property name="margin-start">10</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkExpander" id="swap_advanced_options_expander">
+                            <property name="child">
+                              <object class="GtkBox">
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="halign">start</property>
+                                    <property name="label">&lt;b&gt;Swappiness:&lt;/b&gt;</property>
+                                    <property name="use-markup">True</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkScale" id="swappiness_scale">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment" id="swappiness_scale_adj">
+                                        <property name="page-increment">5.0</property>
+                                        <property name="step-increment">5.0</property>
+                                        <property name="upper">100.0</property>
+                                        <property name="value">5.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="digits">0</property>
+                                    <property name="draw-value">True</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label">&lt;b&gt;RAM Overcommitment Mode:&lt;/b&gt;</property>
+                                        <property name="use-markup">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkComboBoxText" id="ram_overcommit_cb">
+                                        <items>
+                                          <item id="0">Automatic</item>
+                                          <item id="1">Always</item>
+                                          <item id="2">Never</item>
+                                        </items>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="ram_overcommit_ratio_box">
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="halign">start</property>
+                                        <property name="label">&lt;b&gt;Maximum Allowed RAM Usage (%):&lt;/b&gt;</property>
+                                        <property name="use-markup">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkScale" id="ram_overcommit_ratio_scale">
+                                        <property name="adjustment">
+                                          <object class="GtkAdjustment" id="ram_overcommit_ratio_scale_adj">
+                                            <property name="page-increment">1.0</property>
+                                            <property name="step-increment">1.0</property>
+                                            <property name="upper">100.0</property>
+                                          </object>
+                                        </property>
+                                        <property name="digits">0</property>
+                                        <property name="draw-value">True</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="halign">start</property>
+                                    <property name="label">&lt;b&gt;Dirty Ratio (%):&lt;/b&gt;</property>
+                                    <property name="use-markup">True</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkScale" id="ram_dirty_ratio_scale">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment" id="ram_dirty_ratio_scale_adj">
+                                        <property name="page-increment">1.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">100.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="digits">0</property>
+                                    <property name="draw-value">True</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="halign">start</property>
+                                    <property name="label">&lt;b&gt;Dirty Background Ratio (%):&lt;/b&gt;</property>
+                                    <property name="use-markup">True</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkScale" id="ram_dirty_background_ratio_scale">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment" id="ram_dirty_background_ratio_scale_adj">
+                                        <property name="page-increment">1.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">100.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="digits">0</property>
+                                    <property name="draw-value">True</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="halign">start</property>
+                                    <property name="label">&lt;b&gt;VFS Cache Pressure:&lt;/b&gt;</property>
+                                    <property name="use-markup">True</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkScale" id="ram_vfs_cache_pressure_scale">
+                                    <property name="adjustment">
+                                      <object class="GtkAdjustment" id="ram_vfs_cache_pressure_scale_adj">
+                                        <property name="page-increment">1.0</property>
+                                        <property name="step-increment">1.0</property>
+                                        <property name="upper">300.0</property>
+                                      </object>
+                                    </property>
+                                    <property name="digits">0</property>
+                                    <property name="draw-value">True</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </property>
+                            <property name="label">Advanced Options</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="swap_apply_button">
+                            <property name="child">
+                              <object class="GtkBox">
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">object-select-symbolic</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="label">Apply</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </property>
+                            <property name="halign">end</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                    <property name="name">swap</property>
+                    <property name="title">Swap</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStackPage" id="kernel_opts_page">
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="spacing">5</property>
+                            <child>
+                              <object class="GtkExpander">
+                                <property name="child">
+                                  <object class="GtkLabel">
+                                    <property name="label">The Raspberry Pi 5 kernel uses a 16K page size by default, while older Pi boards use 4K page sizes by default. This increased page size can improve performance, but at a cost of compatibility. Some Pi programs require a 4K page size to function properly. Waydroid, the software used to power the experimental Android app support feature, also requires 4K page sizes. If you experience problems running software that works on older Pi boards, consider enabling this option.</property>
+                                    <property name="wrap">True</property>
+                                  </object>
+                                </property>
+                                <property name="label">&lt;b&gt;Compatibility Mode&lt;/b&gt;</property>
+                                <property name="use-markup">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="kernel_compat_mode_switch">
+                                <property name="halign">end</property>
+                                <property name="hexpand">True</property>
+                                <property name="valign">start</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="kernel_opts_apply_button">
+                            <property name="child">
+                              <object class="GtkBox">
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">object-select-symbolic</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="label">Apply</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </property>
+                            <property name="halign">end</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                    <property name="name">kernel-opts</property>
+                    <property name="title">Kernel Options</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStackPage" id="usb_quirks_page">
+                    <property name="child">
+                      <object class="GtkLabel">
+                        <property name="label">Empty Page</property>
+                      </object>
+                    </property>
+                    <property name="name">usb-quirks</property>
+                    <property name="title">USB Quirks</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+            <property name="margin-bottom">10</property>
+            <property name="margin-end">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-top">10</property>
+          </object>
+        </child>
+      </object>
+    </child>
   </object>
 </interface>

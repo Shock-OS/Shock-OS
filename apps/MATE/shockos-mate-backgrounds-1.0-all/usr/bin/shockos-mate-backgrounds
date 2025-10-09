@@ -11,6 +11,7 @@ import subprocess
 from pathlib import Path
 from PIL import Image
 import os
+import re
 
 parser = argparse.ArgumentParser(description="Desktop background selection tool for Shock OS MATE Edition")
 
@@ -60,12 +61,11 @@ class app(Gtk.Application):
         self.slideshow_bg_folder_chooser_button.connect("clicked", self.choose_file)
         self.slideshow_bg_dirname_label = builder.get_object("slideshow_bg_dirname_label")
         self.slideshow_bg_mins_entry = builder.get_object("slideshow_bg_mins_entry")
-        self.slideshow_bg_mins_entry.set_text(str(self.slideshow_bg_settings.get_uint("delay")))
         self.slideshow_bg_mins_entry.connect("changed", self.update_delay)
         self.slideshow_bg_mins_add_button = builder.get_object("slideshow_bg_mins_add_button")
-        self.slideshow_bg_mins_add_button.connect("clicked", self.mins_math)
+        self.slideshow_bg_mins_add_button.connect("clicked", self.update_delay)
         self.slideshow_bg_mins_sub_button = builder.get_object("slideshow_bg_mins_sub_button")
-        self.slideshow_bg_mins_sub_button.connect("clicked", self.mins_math)
+        self.slideshow_bg_mins_sub_button.connect("clicked", self.update_delay)
         self.slideshow_bg_order_cb = builder.get_object("slideshow_bg_order_cb")
         self.slideshow_bg_settings.bind("order", self.slideshow_bg_order_cb, "active-id", Gio.SettingsBindFlags.DEFAULT)
 
@@ -117,6 +117,7 @@ class app(Gtk.Application):
 
         self.bg_color_shading_changed(None, None)
         self.desktop_icons_switched(None, None)
+        self.block_update_delay = False
 
         # Obtain and show the main window
         self.set_filename_label(self.bg_settings, "picture-filename")
@@ -221,34 +222,44 @@ class app(Gtk.Application):
         else:
             self.desktop_icons_checkboxes_box.set_sensitive(False)
 
-    def mins_math(self, widget):
-        mins = self.slideshow_bg_mins_entry.get_text()
-        if not mins.isdigit():
-            mins = ''.join([char for char in mins if char.isdigit()])
-        mins = int(mins)
-        if widget == self.slideshow_bg_mins_add_button and (mins < 1440):
-            mins = mins + 1
-        elif widget == self.slideshow_bg_mins_sub_button and (mins > 1):
-            mins = mins - 1
-        self.slideshow_bg_mins_entry.set_text(str(mins))
-
-    def update_delay(self, entry):
-        def update_entry(string):
-            handler_id = entry.handler_block_by_func(self.refresh_ui)
-            entry.set_text(string)
-            entry.handler_unblock(handler_id)
-        mins = self.slideshow_bg_mins_entry.get_text()
-        if not mins.isdigit():
-            mins = ''.join([char for char in mins if char.isdigit()])
-            update_entry(mins)
-        mins = int(mins)
-        if (mins < 1):
-            mins = 1
-            update_entry("1")
-        elif (mins > 1440):
-            mins = 1440
-            update_entry("1440")
-        self.slideshow_bg_settings.set_uint("delay", mins)
+    def update_delay(self, widget):
+        if not self.block_update_delay:
+            self.block_update_delay = True
+            mins = self.slideshow_bg_mins_entry.get_text()
+            if not mins == '':
+                if widget == self.slideshow_bg_mins_entry:
+                    cursor_pos = widget.get_position()
+                    match = re.findall(r"\d", mins)
+                    if match:
+                        mins = ''.join(match)
+                    else:
+                        mins = 5
+                    if cursor_pos > int(len(str(mins))):
+                        cursor_pos = len(mins)
+                    mins = int(mins)
+                else:
+                    mins = int(mins)
+                    if widget == self.slideshow_bg_mins_add_button and (mins < 1440):
+                        mins = mins + 1
+                    elif widget == self.slideshow_bg_mins_sub_button and (mins > 1):
+                        mins = mins - 1
+                if mins >= 1440:
+                    sens = False
+                    mins = 1440
+                else:
+                    sens = True
+                self.slideshow_bg_mins_add_button.set_sensitive(sens)
+                if mins <= 1:
+                    sens = False
+                    mins = 1
+                else:
+                    sens = True
+                self.slideshow_bg_mins_sub_button.set_sensitive(sens)
+                self.slideshow_bg_mins_entry.set_text(str(mins))
+                self.slideshow_bg_settings.set_uint('delay', mins)
+                if widget == self.slideshow_bg_mins_entry:
+                    widget.set_position(cursor_pos)
+            self.block_update_delay = False
 
     def refresh_ui(self, widget, param):
         self.slideshow_bg_mins_entry.set_text(str(self.slideshow_bg_settings.get_uint("delay")))

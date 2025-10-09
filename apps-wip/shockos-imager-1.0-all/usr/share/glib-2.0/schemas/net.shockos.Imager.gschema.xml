@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="net.shockos.Imager" path="/net/shockos/Imager/">
+    <key name="only-show-supported-versions" type="b">
+        <default>true</default>
+        <summary>If enabled, only versions of Shock OS that are still supported will show in the dropdown menu.</summary>
+    </key>
+  </schema>
+</schemalist>

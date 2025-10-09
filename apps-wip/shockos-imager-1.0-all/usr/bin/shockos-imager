@@ -1,0 +1,164 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import gi
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk, Gio, GLib
+import argparse
+import json
+from pathlib import Path
+import requests
+
+parser = argparse.ArgumentParser(description="Easily prepare SD cards and USB storage devices with installation of Shock OS.")
+
+parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+
+args = parser.parse_args()
+def log(message):
+    if args.verbose:
+        print(message)
+
+class App(Gtk.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
+
+    def on_activate(self, app):
+        # Create a Builder
+        builder = Gtk.Builder()
+        builder.add_from_file("/usr/share/shockos/imager/main.ui")
+
+        settings = Gio.Settings.new('net.shockos.Imager')
+
+        # Obtain the widgets
+        widgets = [
+            'main_window',
+            'menu_button',
+            'refresh_button',
+            'delete_images_button',
+            'only_supported_versions_checkbox',
+            'info_bar',
+            'stack',
+            'loading_spinner',
+            'loading_label',
+            'version_cb',
+            'edition_cb',
+            'arch_cb',
+            'flash_button',
+            'progress_bar_spinner',
+            'progress_bar',
+            'error_warning_img',
+            'error_warning_lbl',
+            'error_warning_msg'
+        ]
+        for widget in widgets:
+            setattr(self, widget, builder.get_object(widget))
+        settings.bind('only-show-supported-versions', self.only_supported_versions_checkbox, 'active', Gio.SettingsBindFlags.DEFAULT)
+        self.only_supported_versions_checkbox.connect('notify', self.parse_image_catalog)
+        self.version_cb.connect('changed', self.on_version_changed)
+        self.dbfile = Path('~/.local/share/shockos/imager/images.json').expanduser()
+        self.stack.set_visible_child_name('select_image')
+        
+        self.loop = GLib.MainLoop()
+
+        # Obtain and show the main window
+        self.main_window = builder.get_object("main_window")
+        self.main_window.set_application(self)  # Application will close once it no longer has active windows attached to it
+        try:
+            self.parse_image_catalog()
+        except:
+            self.show_error_warning('error', 'Failed to parse image catalog')
+            self.main_window.present()
+        self.on_version_changed()
+        self.main_window.present()
+
+    def fetch_image_catalog(self, *args):
+        dbdir = Path('~/.local/share/shockos/imager/').expanduser()
+        dbdir.mkdir(parents=True, exist_ok=True)
+        url = 'https://raw.githubusercontent.com/Shock-OS/shock-os-imager/refs/heads/main/images.json'
+        for attempt in range(1, 6):
+            try:
+                print("TRIED")#DEBUG
+                with requests.get(url, stream=True) as response:
+                    response.raise_for_status()
+                    with open(self.dbfile, "wb") as dbfile:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            dbfile.write(chunk)
+                break
+            except Exception as e:
+                log(f"Attempt {attempt} failed: {e}")
+                print(attempt)#DEBUG
+                if attempt == 5:
+                    self.show_error_warning('error', "Failed to download image catalog.")
+                    print("ERROR: Failed 5 times to download file.")
+                    raise
+
+    def parse_image_catalog(self, *args):
+        current_id = self.version_cb.get_active_id()
+        if not self.dbfile.is_file():
+            try:
+                self.fetch_image_catalog()
+            except:
+                return False
+        with open (self.dbfile, 'r') as db:
+            self.catalog = json.load(db)
+        if self.only_supported_versions_checkbox.get_active():
+            supported_versions = self.catalog['supported_versions']
+            versions = self.catalog['versions']
+            trimmed_versions = []
+            for version in versions:
+                if version in supported_versions:
+                    trimmed_versions.append(version)
+            self.catalog['versions'] = trimmed_versions
+        versions = list(reversed(self.catalog['versions']))
+        self.version_cb.remove_all()
+        for version in versions:
+            codename = self.catalog['codenames'][version]
+            self.version_cb.append(version, f"Shock OS {version} {codename}")
+        if current_id in versions:
+            set_id = current_id
+        else:
+            set_id = versions[0]
+        self.version_cb.set_active_id(set_id)
+
+    def on_version_changed(self, *args):
+        version = self.version_cb.get_active_id()
+        editions = self.catalog.get('editions', {}).get(version, None)
+        self.edition_cb.remove_all()
+        if editions is None:
+            self.edition_cb.append('0', '(None)')
+        else:
+            counter = 0
+            for edition in editions:
+                self.edition_cb.append(str(counter), edition)
+                counter = counter + 1
+        self.edition_cb.set_active_id('0')
+        archs = self.catalog.get('archs', {}).get(version, None)
+        self.arch_cb.remove_all()
+        if archs is None:
+            self.arch_cb.append('64', '64-bit')
+        else:
+            archs = list(reversed(archs))
+            for arch in archs:
+                if '64' in arch:
+                    num = '64'
+                else:
+                    num = '32'
+                self.arch_cb.append(num, arch)
+        self.arch_cb.set_active_id('64')
+
+    def show_error_warning(self, ew, msg):
+        if ew == 'error' or ew == 'warning':
+            icon = f"dialog_{ew}"
+            self.error_warning_img.set_icon_from_name(icon)
+            self.error_warning_lbl.set_text(ew.capitalize())
+            self.error_warning_msg.set_text(msg)
+            self.stack.set_visible_child_name('error_warning')
+            self.loop.run()
+        else:
+            raise ValueError("Must provide either 'error' or 'warning' as first argument.")
+            
+
+app = App(application_id=f"net.shockos.Imager", flags=Gio.ApplicationFlags.NON_UNIQUE)
+app.run()

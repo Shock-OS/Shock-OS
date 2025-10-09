@@ -1,6 +1,8 @@
 [Unit]
 Description=Slideshow background daemon
 After=default.target
+StartLimitIntervalSec=0
+StartLimitBurst=0
 
 [Service]
 Type=simple

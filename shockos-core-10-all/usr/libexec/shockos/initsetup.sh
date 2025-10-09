@@ -23,16 +23,15 @@ username=""
 full_name=""
 
 /usr/libexec/shockos/set-audio-out-to-hdmi.sh
-if [[ "$SHOCKOS_DESKENV" == 'GNOME' ]]
-then
-    wpctl set-volume @DEFAULT_AUDIO_SINK@ 1.0
-else
-    amixer -D pulse sset Master 100%
-fi #sets volume to 100% so the setup music can be heard
+wpctl set-volume @DEFAULT_AUDIO_SINK@ 1.0
 while true
 do
-    ffplay -nodisp -autoexit -loglevel panic /usr/share/shockos/initsetup/bgm.opus
+    cat /usr/share/shockos/initsetup/bgm.opus | ffplay -nodisp -loglevel panic -autoexit -i /dev/stdin
 done &
+if [[ "$SHOCKOS_DESKENV" == 'MATE' ]]
+then
+    gsettings set org.mate.NotificationDaemon do-not-disturb true
+fi
 #LOCALE CONFIGURATION
 function convert_unicode() {
     local input="$1"
@@ -291,7 +290,7 @@ fi
 
 #TIMEZONE CONFIGURATION
 function choose_timezone() {
-timezone_folders=("Africa" "America" "Antarctica" "Arctic Ocean" "Asia" "Atlantic Ocean" "Australia" "Brazil" "Canada" "Chile" "Cuba" "Egypt" "Eire" "Europe" "GB" "GB-Eire" "Greenwich" "Hongkong" "Iceland" "Indian Ocean" "Iran" "Israel" "Jamaica" "Japan" "Kwajalein" "Libya" "Mexico" "Navajo" "NZ" "NZ-CHAT" "Pacific Ocean" "Poland" "Portugal" "Singapore" "Turkey" "US" "W-SU" "Zulu" "None of the above")
+timezone_folders=("Africa" "America" "Antarctica" "Arctic" "Asia" "Atlantic" "Australia" "Europe" "Indian" "Pacific" "None of the above")
 cd /usr/share/zoneinfo
 selected_timezone_folder=""
 until [[ -f "$selected_timezone_folder" ]] #go until chosen locale is a FILE, not a directory containing more locales

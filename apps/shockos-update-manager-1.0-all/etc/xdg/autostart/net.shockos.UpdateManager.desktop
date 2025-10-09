@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Update Manager
+Icon=software-update-available
+Comment=Periodically check for updates and display a notification when they are available
+Exec=/usr/libexec/shockos/update-manager/check-for-updates-wrapper.sh
+X-GNOME-Autostart-enabled=true

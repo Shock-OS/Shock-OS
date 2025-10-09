@@ -1,0 +1,273 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.96.1 -->
+<interface>
+  <!-- interface-name shockos-imager.ui -->
+  <requires lib="gtk" version="4.8"/>
+  <object class="GtkApplicationWindow" id="main_window">
+    <property name="child">
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkInfoBar" id="info_bar">
+            <property name="show-close-button">True</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStack" id="stack">
+            <property name="margin-bottom">10</property>
+            <property name="margin-end">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-top">10</property>
+            <property name="transition-type">slide-left-right</property>
+            <child>
+              <object class="GtkStackPage" id="loading_page">
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="halign">center</property>
+                    <property name="hexpand">True</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">5</property>
+                    <property name="valign">center</property>
+                    <property name="vexpand">True</property>
+                    <child>
+                      <object class="GtkSpinner" id="loading_spinner"/>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="loading_label">
+                        <property name="label">Loading...</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="name">loading</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStackPage" id="select_image_page">
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="label">Shock OS version:</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="version_cb"/>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="edition_label">
+                        <property name="halign">start</property>
+                        <property name="label">Edition (desktop environment):</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="edition_cb"/>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="label">Architecture:</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="arch_cb"/>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="flash_button">
+                        <property name="child">
+                          <object class="GtkBox">
+                            <property name="spacing">10</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Flash!</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="icon-name">go-next-symbolic</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                        <property name="halign">end</property>
+                        <property name="margin-top">10</property>
+                        <property name="valign">end</property>
+                        <property name="vexpand">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="name">select_image</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStackPage" id="flashing_page">
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">put_image_here</property>
+                        <property name="pixel-size">128</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="halign">center</property>
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkLabel"/>
+                        </child>
+                        <child>
+                          <object class="GtkSpinner" id="progress_bar_spinner"/>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkProgressBar" id="progress_bar"/>
+                    </child>
+                  </object>
+                </property>
+                <property name="name">flashing</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStackPage" id="error_warning_page">
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage" id="error_warning_img">
+                        <property name="icon-name">dialog-warning</property>
+                        <property name="pixel-size">128</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="error_warning_lbl">
+                        <property name="label">&lt;b&gt;&lt;big&gt;Warning&lt;/big&gt;&lt;/b&gt;</property>
+                        <property name="use-markup">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="error_warning_msg"/>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="error_warning_dismiss_button">
+                        <property name="child">
+                          <object class="GtkBox">
+                            <property name="spacing">5</property>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="icon-name">window-close-symbolic</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Dismiss</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                        <property name="halign">center</property>
+                        <property name="margin-top">10</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="name">error_warning</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="title">Shock OS Imager</property>
+    <property name="titlebar">
+      <object class="GtkHeaderBar">
+        <property name="title-widget">
+          <object class="GtkBox">
+            <property name="halign">center</property>
+            <property name="hexpand">True</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">&lt;b&gt;Shock OS Imager&lt;/b&gt;</property>
+                <property name="use-markup">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuButton" id="menu_button">
+                <property name="direction">none</property>
+                <property name="popover">
+                  <object class="GtkPopoverMenu">
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="margin-bottom">10</property>
+                        <property name="margin-end">10</property>
+                        <property name="margin-start">10</property>
+                        <property name="margin-top">10</property>
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkButton" id="refresh_button">
+                            <property name="child">
+                              <object class="GtkBox">
+                                <property name="halign">center</property>
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">view-refresh-symbolic</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="label">Refresh image catalog</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="delete_images_button">
+                            <property name="child">
+                              <object class="GtkBox">
+                                <property name="halign">center</property>
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">edit-delete-symbolic</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="label">Delete cached images</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton" id="only_supported_versions_checkbox">
+                            <property name="active">True</property>
+                            <property name="label">Only show supported versions</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </property>
+  </object>
+</interface>

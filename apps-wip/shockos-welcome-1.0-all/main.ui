@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.96.1 -->
+<interface>
+  <!-- interface-name shockos-welcome.ui -->
+  <requires lib="gtk" version="4.18"/>
+  <object class="GtkApplicationWindow" id="main_window">
+    <property name="child">
+      <object class="GtkBox">
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">5</property>
+            <property name="vexpand">True</property>
+            <child>
+              <object class="GtkStackSidebar">
+                <property name="stack">stack</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="child">
+                  <object class="GtkStack" id="stack">
+                    <property name="transition-type">slide-up-down</property>
+                    <child>
+                      <object class="GtkStackPage" id="welcome_page">
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label">Empty Page</property>
+                          </object>
+                        </property>
+                        <property name="name">welcome</property>
+                        <property name="title">Welcome</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage" id="apps_page">
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label">Empty Page</property>
+                          </object>
+                        </property>
+                        <property name="name">apps</property>
+                        <property name="title">Apps</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage" id="look_feel_page">
+                        <property name="child">
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">30</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="file">/usr/share/shockos/</property>
+                                    <property name="pixel-size">64</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="hexpand">True</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label">&lt;b&gt;&lt;big&gt;Desktop Layout&lt;/big&gt;&lt;/b&gt;</property>
+                                        <property name="use-markup">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="desktop_layout_lbl"/>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="desktop_layouts_btn">
+                                        <property name="child">
+                                          <object class="GtkBox">
+                                            <property name="spacing">5</property>
+                                            <child>
+                                              <object class="GtkImage">
+                                                <property name="icon-name">img</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="label">Launch Desktop Layout</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </property>
+                                        <property name="halign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="file">img</property>
+                                    <property name="pixel-size">64</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="hexpand">True</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label">&lt;b&gt;&lt;big&gt;Desktop Colors&lt;/big&gt;&lt;/b&gt;</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label">Use the Themes app to switch between light and dark mode and color your desktop to your liking.</property>
+                                        <property name="wrap">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="themes_btn">
+                                        <property name="child">
+                                          <object class="GtkBox">
+                                            <property name="spacing">5</property>
+                                            <child>
+                                              <object class="GtkImage">
+                                                <property name="icon-name">img</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="label">Launch Themes</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </property>
+                                        <property name="halign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                        <property name="name">look_feel</property>
+                        <property name="title">Look &amp; Feel</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage" id="updates_page">
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label">Empty Page</property>
+                          </object>
+                        </property>
+                        <property name="name">updates</property>
+                        <property name="title">Updates</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage" id="settings_page">
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label">Empty Page</property>
+                          </object>
+                        </property>
+                        <property name="name">settings</property>
+                        <property name="title">Settings</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage" id="help_page">
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label">Empty Page</property>
+                          </object>
+                        </property>
+                        <property name="name">help</property>
+                        <property name="title">Help</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="hexpand">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">5</property>
+            <property name="valign">end</property>
+            <child>
+              <object class="GtkCheckButton">
+                <property name="label">Show this Welcome screen when I log in</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="close_button">
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">window-close-symbolic</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Close</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="title">Welcome to Shock OS!</property>
+  </object>
+</interface>

@@ -29,6 +29,7 @@ class App(Gtk.Application):
         builder.add_from_file("/usr/share/shockos/optimizations/main.ui")
 
         # Obtain the widgets
+        # Swap page
         self.total_ram_label = builder.get_object("total_ram_label")
         self.free_space_label = builder.get_object("free_space_label")
         self.current_swap_label = builder.get_object("current_swap_label")
@@ -45,6 +46,17 @@ class App(Gtk.Application):
         self.ram_dirty_ratio_scale_adj = builder.get_object("ram_dirty_ratio_scale_adj")
         self.ram_dirty_background_ratio_scale_adj = builder.get_object("ram_dirty_background_ratio_scale_adj")
         self.ram_vfs_cache_pressure_scale_adj = builder.get_object("ram_vfs_cache_pressure_scale_adj")
+        # Kernel Options page
+        self.kernel_opts_page = builder.get_object("kernel_opts_page")
+        with open("/proc/device-tree/model") as f:
+            model = f.read().strip()
+            if "Raspberry Pi 5" in model:
+                self.kernel_compat_mode_switch = builder.get_object("kernel_compat_mode_switch")
+                self.kernel_compat_mode_switch.connect("switched", self.kernel_opts_changed)
+                self.kernel_opts_apply_button = builder.get_object("kernel_opts_apply_button")
+                self.kernel_opts_apply_button.connect("clicked", self.apply_kernel_opts)
+            else
+                self.kernel_opts_page.set_visible(False)
 
         self.adjs = [
             self.swap_scale_adj,
@@ -66,7 +78,7 @@ class App(Gtk.Application):
             "ram_vfs_cache_pressure": 0
         }
 
-        # Preloading swap page
+        # Preloading Swap page
         # Get total RAM
         possible_ram_configs = [0.512, 1, 2, 4, 8, 16]
         total_ram = psutil.virtual_memory().total
@@ -86,8 +98,43 @@ class App(Gtk.Application):
         self.swap_scale.add_mark(self.recommended_swap_gb, Gtk.PositionType.BOTTOM, "Recommended")
         self.total_ram_label.set_text(f"Total RAM: {self.total_ram_gb} GB")
         self.recommended_swap_label.set_text(f"Recommended swap space: {self.recommended_swap_gb} GB")
-        self.on_swap_page()
-        self.ram_overcommit_mode_changed()
+        # Get free space
+        disk = psutil.disk_usage('/')
+        self.free_space_gb = int(f"{disk.free / (1024 ** 3):.0f}")
+        # Ger current swap space
+        swap = psutil.swap_memory()
+        if (swap.total / (1024 ** 2)) < 512:
+            self.current_swap_gb = float(f"{swap.total / (1000 ** 2):.1f}")
+            self.current_swap_label.set_text(f"Current swap space: {self.current_swap_gb} MB")
+            self.swap_scale_adj.set_value(1)
+        else:
+            self.current_swap_gb = int(f"{swap.total / (1000 ** 3):.0f}")
+            self.current_swap_label.set_text(f"Current swap space: {self.current_swap_gb} GB")
+            self.swap_scale_adj.set_value(int(f"{self.current_swap_gb:.0f}"))
+        self.free_space_label.set_text(f"Free disk space: {self.free_space_gb} GB")
+        # Advanced swap options
+        self.adv_swap_scales = {}
+        def set_scale(file, var, adj):
+            with open (f"/proc/sys/vm/{file}", "r") as f:
+                self.adv_swap_scales[var] = int(f.read().strip())
+            adj.set_value(self.adv_swap_scales[var])
+        set_scale("swappiness", "swappiness", self.swappiness_scale_adj)
+        set_scale("overcommit_ratio", "ram_overcommit_ratio", self.ram_overcommit_ratio_scale_adj)
+        set_scale("dirty_ratio", "ram_dirty_ratio", self.ram_dirty_ratio_scale_adj)
+        set_scale("dirty_background_ratio", "ram_dirty_background_ratio", self.ram_dirty_background_ratio_scale_adj)
+        set_scale("vfs_cache_pressure", "ram_vfs_cache_pressure", self.ram_vfs_cache_pressure_scale_adj)
+        with open ("/proc/sys/vm/overcommit_memory", "r") as f:
+            ram_overcommit_mode = f.read().strip()
+        self.adv_swap_scales["ram_overcommit_mode"] = ram_overcommit_mode
+        self.ram_overcommit_cb.set_active_id(ram_overcommit_mode)
+
+        # Preloading Kernel Options page
+        if os.sysconf("SC_PAGE_SIZE") == 4096:
+            self.kernel_compat_mode_switch.set_active(False)
+        else:
+            self.kernel_compat_mode_switch.set_active(True)
+        self.kernel_opts_apply_button.set_sensitive(False)
+            
 
         # Obtain and show the main window
         self.main_window = builder.get_object("main_window")
@@ -109,44 +156,27 @@ class App(Gtk.Application):
             else:
                 self.swap_apply_button.set_sensitive(False)
 
-    def on_swap_page(self): # put in with bigger function connected to page change notify
-        # Get free space
-        disk = psutil.disk_usage('/')
-        self.free_space_gb = int(f"{disk.free / (1024 ** 3):.0f}")
-        # Ger current swap space
-        swap = psutil.swap_memory()
-        if (swap.total / (1024 ** 2)) < 512:
-            self.current_swap_gb = float(f"{swap.total / (1000 ** 2):.1f}")
-            self.current_swap_label.set_text(f"Current swap space: {self.current_swap_gb} MB")
-            self.swap_scale_adj.set_value(1)
-        else:
-            self.current_swap_gb = int(f"{swap.total / (1000 ** 3):.0f}")
-            self.current_swap_label.set_text(f"Current swap space: {self.current_swap_gb} GB")
-            self.swap_scale_adj.set_value(int(f"{self.current_swap_gb:.0f}"))
-        self.free_space_label.set_text(f"Free disk space: {self.free_space_gb} GB")
-        # Advanced SWAP options
-        self.adv_swap_scales = {}
-        def set_scale(file, var, adj):
-            with open (f"/proc/sys/vm/{file}", "r") as f:
-                self.adv_swap_scales[var] = int(f.read().strip())
-            adj.set_value(self.adv_swap_scales[var])
-        set_scale("swappiness", "swappiness", self.swappiness_scale_adj)
-        set_scale("overcommit_ratio", "ram_overcommit_ratio", self.ram_overcommit_ratio_scale_adj)
-        set_scale("dirty_ratio", "ram_dirty_ratio", self.ram_dirty_ratio_scale_adj)
-        set_scale("dirty_background_ratio", "ram_dirty_background_ratio", self.ram_dirty_background_ratio_scale_adj)
-        set_scale("vfs_cache_pressure", "ram_vfs_cache_pressure", self.ram_vfs_cache_pressure_scale_adj)
-        with open ("/proc/sys/vm/overcommit_memory", "r") as f:
-            ram_overcommit_mode = f.read().strip()
-        self.adv_swap_scales["ram_overcommit_mode"] = ram_overcommit_mode
-        self.ram_overcommit_cb.set_active_id(ram_overcommit_mode)
-
     def ram_overcommit_mode_changed(self, *args):
         mode = self.ram_overcommit_cb.get_active_id()
         if mode == "2":
             self.ram_overcommit_ratio_box.set_sensitive(True)
         else:
             self.ram_overcommit_ratio_box.set_sensitive(False)
-        
+
+    def kernel_opts_changed(self, *args):
+        page_size = os.sysconf("SC_PAGE_SIZE")
+        active = self.kernel_compat_mode_switch.get_active()
+        if page_size == 4096:
+            if active:
+                state = True
+            else:
+                state = False
+        else:
+            if active:
+                state = False
+            else:
+                state = True
+        self.kernel_opts_apply_button.set_sensitive(state)
 
     def apply_swap(self, _):
         for index, var in enumerate(self.swap_opts):
@@ -162,6 +192,12 @@ class App(Gtk.Application):
                         self.swap_opts["ram_dirty_background_ratio"],
                         self.swap_opts["ram_vfs_cache_pressure"]
                         ])
+
+    def apply_kernel_opts(self, args*):
+        if self.kernel_compat_mode_switch.get_active():
+            subprocess.run(["pkexec", "sed", "-i.bak", "1i kernel=kernel8.img", "/boot/firmware/config.txt"], check=True)
+        else:
+            subprocess.run(["pkexec", "sed", "-i.bak", "/kernel=kernel8.img/d", "/boot/firmware/config.txt"], check=True)
 
 app = App(application_id=f"net.shockos.Optimizations", flags=Gio.ApplicationFlags.NON_UNIQUE)
 app.run()
