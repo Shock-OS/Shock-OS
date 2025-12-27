@@ -99,6 +99,13 @@ class App(Gtk.Application):
         if self.total_updates > 0:
             if self.apt_updates > 0 and self.flatpak_updates > 0:
                 self.apt_and_flatpak_updates = True
+                self.apt_ratio = self.apt_updates / self.total_updates
+                self.flatpak_ratio = self.flatpak_updates / self.total_updates
+                print(f"TOTAL_UPDATES: {self.total_updates}")
+                print(f"APT_UPDATES: {self.apt_updates}")
+                print(f"FLATPAK_UPDATES: {self.flatpak_updates}")
+                print(f"APT_RATIO: {self.apt_ratio}")
+                print(f"FLATPAK_RATIO: {self.flatpak_ratio}")
             else:
                 self.apt_and_flatpak_updates = False
             if self.total_updates == 1:
@@ -127,8 +134,8 @@ class App(Gtk.Application):
                 line = line.strip()
                 if line.endswith('%') and not 'Reading database' in line: # The 'Reading database' part here is a bit janky
                     percent = line.strip('%')
-                    percent = float(int(percent) / 100) #TEST
-                    GLib.idle_add(self.update_progress_bar, percent, 'apt')
+                    fraction = float(int(percent) / 100) #TEST
+                    GLib.idle_add(self.update_progress_bar, fraction, 'apt')
             process.stdout.close()
             returncode = process.wait()
             self.prevent_close = False
@@ -143,7 +150,7 @@ class App(Gtk.Application):
             elif returncode != 0:
                 self.error('Unknown error, exited with status {returncode}')
                 return False
-            GLib.idle_add(self.update_progress_bar, 100, 'apt')
+            GLib.idle_add(self.update_progress_bar, 1.0, 'apt')
             self.loop.quit()
         def install_flatpak_updates():
             self.prevent_close = True
@@ -161,10 +168,10 @@ class App(Gtk.Application):
                         step = int(step)
                         total_steps = int(total_steps)
                         step_percent = int(re.search(r'\b\d+(?:\.\d+)?%', line).group().strip('%'))
-                        percent = (step - 1 + step_percent / 100) / total_steps #* 100 (remove after testing if not needed)
-                        percent = round(percent)
-                        GLib.idle_add(self.update_progress_bar, percent, 'flatpak')
-            GLib.idle_add(self.update_progress_bar, 100, 'flatpak')
+                        fraction = (step - 1 + step_percent / 100) / total_steps #* 100 (remove after testing if not needed)
+                        fraction = round(fraction)
+                        GLib.idle_add(self.update_progress_bar, fraction, 'flatpak')
+            GLib.idle_add(self.update_progress_bar, 1.0, 'flatpak')
             process.wait()
             self.prevent_close = False
             self.loop.quit()
@@ -185,13 +192,23 @@ class App(Gtk.Application):
 
     def update_progress_bar(self, fraction, package_manager):
         fraction = float(fraction)
+        print(f"FRACTION: {fraction}")
         if self.apt_and_flatpak_updates:
             if package_manager == 'apt':
-                step = 1
+                fraction = fraction * self.apt_ratio
+                self.apt_fraction = fraction
+                self.flatpak_fraction = 0
             elif package_manager == 'flatpak':
-                step = 2
-            fraction = (step - 1 + fraction / 100) / 2
+                fraction = self.apt_ratio + (fraction * self.flatpak_ratio)
+                self.flatpak_fraction = fraction
+            #fraction = (self.apt_ratio * self.apt_fraction) + (self.flatpak_ratio * self.flatpak_fraction)
+            apt_ratio = (self.apt_ratio * self.apt_fraction)
+            flatpak_ratio = (self.flatpak_ratio * self.flatpak_fraction)
+            print(f"APT HALF: {apt_ratio}")
+            print(f"FLATPAK HALF: {flatpak_ratio}")
+            print(f"FINAL FRACTION: {fraction}")
         percent = f"{round(fraction * 100):.0f}"
+        print(f"PERCENT: {percent}")
         self.progress_bar.set_fraction(fraction)
         self.progress_bar_label.set_label(f"Installing updates... ({percent}%)")
 

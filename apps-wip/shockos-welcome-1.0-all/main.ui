@@ -29,8 +29,26 @@
                     <child>
                       <object class="GtkStackPage" id="welcome_page">
                         <property name="child">
-                          <object class="GtkLabel">
-                            <property name="label">Empty Page</property>
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">5</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">&lt;b&gt;&lt;big&gt;Welcome to Shock OS!&lt;/big&gt;&lt;/b&gt;</property>
+                                <property name="use-markup">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="file">/usr/share/shockos/welcome/logo.png</property>
+                                <property name="pixel-size">256</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Welcome to your new operating system!</property>
+                              </object>
+                            </child>
                           </object>
                         </property>
                         <property name="name">welcome</property>
@@ -40,8 +58,160 @@
                     <child>
                       <object class="GtkStackPage" id="apps_page">
                         <property name="child">
-                          <object class="GtkLabel">
-                            <property name="label">Empty Page</property>
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">15</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">chromium</property>
+                                    <property name="pixel-size">64</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label">&lt;b&gt;&lt;big&gt;Web - Chromium Web Browser&lt;/big&gt;&lt;/b&gt;</property>
+                                        <property name="use-markup">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="justify">center</property>
+                                        <property name="label">Surf the internet, read articles, watch videos, play games, and more online with Chromium Web Browser. It's fast and capable; all your favorite websites should work well.</property>
+                                        <property name="wrap">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="chromium_btn">
+                                        <property name="child">
+                                          <object class="GtkBox">
+                                            <property name="spacing">5</property>
+                                            <child>
+                                              <object class="GtkImage">
+                                                <property name="icon-name">chromium</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="label">Launch Chromium Web Browser</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </property>
+                                        <property name="halign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">folder</property>
+                                    <property name="pixel-size">64</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="hexpand">True</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label">&lt;b&gt;&lt;big&gt;File Management - Files&lt;/big&gt;&lt;/b&gt;</property>
+                                        <property name="use-markup">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label">Manage all your local downloads, documents, music, pictures, videos, and other files using the Files app.</property>
+                                        <property name="wrap">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="files_btn">
+                                        <property name="child">
+                                          <object class="GtkBox">
+                                            <property name="spacing">5</property>
+                                            <child>
+                                              <object class="GtkImage">
+                                                <property name="icon-name">folder</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="label">Launch Files</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </property>
+                                        <property name="halign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">libreoffice-writer</property>
+                                    <property name="pixel-size">64</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label">&lt;b&gt;&lt;big&gt;Documents, Spreadsheets, Presentations, and More - LibreOffice&lt;/big&gt;&lt;/b&gt;</property>
+                                        <property name="use-markup">True</property>
+                                        <property name="wrap">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="justify">center</property>
+                                        <property name="label">Here for all your office needs, LibreOffice can help you create essays, reports, slideshows, and more for work, school, or your own personal needs. It even supports viewing and editing Microsoft Word, Excel, and PowerPoint files.</property>
+                                        <property name="wrap">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="libreoffice_btn">
+                                        <property name="child">
+                                          <object class="GtkBox">
+                                            <property name="spacing">5</property>
+                                            <child>
+                                              <object class="GtkImage">
+                                                <property name="icon-name">libreoffice-writer</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="label">Launch LibreOffice</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </property>
+                                        <property name="halign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
                           </object>
                         </property>
                         <property name="name">apps</property>
@@ -59,7 +229,54 @@
                                 <property name="spacing">5</property>
                                 <child>
                                   <object class="GtkImage">
-                                    <property name="file">/usr/share/shockos/</property>
+                                    <property name="icon-name">preferences-desktop-theme</property>
+                                    <property name="pixel-size">64</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="hexpand">True</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label">&lt;b&gt;&lt;big&gt;Desktop Background&lt;/big&gt;&lt;/b&gt;</property>
+                                        <property name="use-markup">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="desktop_bg_lbl"/>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="desktop_bg_btn">
+                                        <property name="child">
+                                          <object class="GtkBox">
+                                            <property name="spacing">5</property>
+                                            <child>
+                                              <object class="GtkImage">
+                                                <property name="icon-name">preferences-desktop-theme</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="label">Set Desktop Background</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </property>
+                                        <property name="halign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="file">/usr/share/shockos/welcome/layouts.svg</property>
                                     <property name="pixel-size">64</property>
                                   </object>
                                 </child>
@@ -84,7 +301,7 @@
                                             <property name="spacing">5</property>
                                             <child>
                                               <object class="GtkImage">
-                                                <property name="icon-name">img</property>
+                                                <property name="file">/usr/share/shockos/welcome/layouts.svg</property>
                                               </object>
                                             </child>
                                             <child>
@@ -106,7 +323,7 @@
                                 <property name="spacing">5</property>
                                 <child>
                                   <object class="GtkImage">
-                                    <property name="file">img</property>
+                                    <property name="icon-name">gnome-settings-theme</property>
                                     <property name="pixel-size">64</property>
                                   </object>
                                 </child>
@@ -117,7 +334,8 @@
                                     <property name="spacing">5</property>
                                     <child>
                                       <object class="GtkLabel">
-                                        <property name="label">&lt;b&gt;&lt;big&gt;Desktop Colors&lt;/big&gt;&lt;/b&gt;</property>
+                                        <property name="label">&lt;b&gt;&lt;big&gt;Color Scheme&lt;/big&gt;&lt;/b&gt;</property>
+                                        <property name="use-markup">True</property>
                                       </object>
                                     </child>
                                     <child>
@@ -133,12 +351,61 @@
                                             <property name="spacing">5</property>
                                             <child>
                                               <object class="GtkImage">
-                                                <property name="icon-name">img</property>
+                                                <property name="icon-name">gnome-settings-theme</property>
                                               </object>
                                             </child>
                                             <child>
                                               <object class="GtkLabel">
                                                 <property name="label">Launch Themes</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </property>
+                                        <property name="halign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">gnome-settings-font</property>
+                                    <property name="pixel-size">64</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="fonts_btn">
+                                    <property name="hexpand">True</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label">&lt;b&gt;&lt;big&gt;Fonts&lt;/big&gt;&lt;/b&gt;</property>
+                                        <property name="use-markup">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label">Set the vibe by changing the way text appears on the screen.</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton">
+                                        <property name="child">
+                                          <object class="GtkBox">
+                                            <property name="spacing">5</property>
+                                            <child>
+                                              <object class="GtkImage">
+                                                <property name="icon-name">gnome-settings-font</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="label">Launch Fonts</property>
                                               </object>
                                             </child>
                                           </object>
@@ -159,8 +426,48 @@
                     <child>
                       <object class="GtkStackPage" id="updates_page">
                         <property name="child">
-                          <object class="GtkLabel">
-                            <property name="label">Empty Page</property>
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">5</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">&lt;big&gt;&lt;b&gt;Update Manager&lt;/b&gt;&lt;/big&gt;</property>
+                                <property name="use-markup">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="icon-name">software-update-available</property>
+                                <property name="pixel-size">128</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="justify">center</property>
+                                <property name="label">Keep your system up-to-date with all the latest security patches, bug fixes, and new features. You will be periodically notified when updates are available, or you can launch the Update Manager to check manually.</property>
+                                <property name="wrap">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="update_manager_btn">
+                                <property name="child">
+                                  <object class="GtkBox">
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkImage">
+                                        <property name="icon-name">software-update-available</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label">Launch Update Manager</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </property>
+                                <property name="halign">center</property>
+                              </object>
+                            </child>
                           </object>
                         </property>
                         <property name="name">updates</property>
@@ -170,8 +477,46 @@
                     <child>
                       <object class="GtkStackPage" id="settings_page">
                         <property name="child">
-                          <object class="GtkLabel">
-                            <property name="label">Empty Page</property>
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">5</property>
+                            <child>
+                              <object class="GtkLabel" id="settings_lbl">
+                                <property name="label">&lt;b&gt;&lt;big&gt;System Settings&lt;/big&gt;&lt;/b&gt;</property>
+                                <property name="use-markup">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImage" id="settings_icon">
+                                <property name="icon-name">preferences-desktop</property>
+                                <property name="pixel-size">128</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Adjust various aspects about your system to your liking. Manage devices, services, plugins, and more in the Settings app anytime.</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="child">
+                                  <object class="GtkBox">
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkImage" id="settings_button_icon">
+                                        <property name="icon-name">preferences-desktop</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="settings_btn_lbl">
+                                        <property name="label">Launch Settings</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </property>
+                                <property name="halign">center</property>
+                              </object>
+                            </child>
                           </object>
                         </property>
                         <property name="name">settings</property>
@@ -230,6 +575,6 @@
         </child>
       </object>
     </property>
-    <property name="title">Welcome to Shock OS!</property>
+    <property name="title">Welcome</property>
   </object>
 </interface>

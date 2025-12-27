@@ -25,7 +25,7 @@ show-delete-permanently=true
 
 [org/gnome/shell]
 disable-user-extensions=false
-enabled-extensions=['arcmenu@arcmenu.com', 'dash-to-panel@jderose9.github.com', 'ding@rastersoft.com', 'panel-osd@berend.de.schouwer.gmail.com', 'ubuntu-appindicators@ubuntu.com', 'user-theme@gnome-shell-extensions.gcampax.github.com']
+enabled-extensions=['arcmenu@arcmenu.com', 'blur-my-shell@aunetx', 'dash-to-panel@jderose9.github.com', 'ding@rastersoft.com', 'no-overview@fthx', 'panel-osd@berend.de.schouwer.gmail.com', 'ubuntu-appindicators@ubuntu.com', 'user-theme@gnome-shell-extensions.gcampax.github.com']
 favorite-apps=['chromium.desktop', 'org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'org.gnome.Terminal.desktop']
 
 [org/gnome/shell/extensions/arcmenu]
@@ -35,6 +35,24 @@ custom-menu-button-text=' Menu'
 menu-button-appearance='Icon_Text'
 menu-button-icon='Custom_Icon'
 menu-layout='Elementary'
+
+[org/gnome/shell/extensions/blur-my-shell]
+hacks-level=0
+
+[org/gnome/shell/extensions/blur-my-shell/coverflow-alt-tab]
+blur=false
+
+[org/gnome/shell/extensions/blur-my-shell/dash-to-dock]
+blur=false
+
+[org/gnome/shell/extensions/blur-my-shell/lockscreen]
+blur=false
+
+[org/gnome/shell/extensions/blur-my-shell/screenshot]
+blur=false
+
+[org/gnome/shell/extensions/blur-my-shell/window-list]
+blur=false
 
 [org/gnome/shell/extensions/dash-to-dock]
 isolate-workspaces=true

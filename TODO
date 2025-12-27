@@ -1,3 +1,4 @@
+ - Fix Dark Orange theme not applying correctly from Themes app in GNOME Edition
  - [DONE] shockos-package-installer: Fix/properly implemenet "open with" context menu option
  - shockos-package-installer: Set Android app operations to not run if a Waydroid session is not running
  - `gi.require_version('Gio', '2.0') is *probably* not required when Gio is imported (can likely be removed from scripts that have that line)
@@ -52,3 +53,5 @@
  - Consider simply using font-manager instead of homegrown Shock OS app (probably not the best, though, because it doesn't support all fonts on MATE and doesn't make it easy to remove fonts. maybe try fixing the fonts app? And adding the ability to install/remove fonts?)
  - Add ZRAM to shockos-optimizations
  - Program Update Manager to do combined APT and Flatpak progress by using the ratio of the total number of APT/Flatpak updates to total combined updates, instead of just 50% for APT and 50% for Flatpak (DO THIS NOW, IT CURRENTLY DOESN'T WORK ANYWAY)
+ - shockos-update-manager: use systemd to inhibit restarting/powering off during updates (instead of just desktop environment)
+ - Add 'visual pop mode' that sets xgamma to 0.9 instead of 1

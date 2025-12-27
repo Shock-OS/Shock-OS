@@ -76,6 +76,7 @@ class MyApp(Gtk.Application):
             subprocess.run(['gnome-extensions', 'enable', 'arcmenu@arcmenu.com'])
             subprocess.run(['gnome-extensions', 'enable', 'ding@rastersoft.com'])
             subprocess.run(['gnome-extensions', 'enable', 'panel-osd@berend.de.schouwer.gmail.com'])
+            subprocess.run(['gnome-extensions', 'enable', 'no-overview@fthx'])
 
     def dock_mode_toggled(self, button):
         if self.dock_mode_button.get_active():
@@ -86,6 +87,7 @@ class MyApp(Gtk.Application):
             subprocess.run(['gnome-extensions', 'disable', 'dash-to-panel@jderose9.github.com'])
             subprocess.run(['gnome-extensions', 'disable', 'panel-osd@berend.de.schouwer.gmail.com'])
             subprocess.run(['gnome-extensions', 'enable', 'dash-to-dock@micxgx.gmail.com'])
+            subprocess.run(['gnome-extensions', 'enable', 'no-overview@fthx'])
 
     def vanilla_mode_toggled(self, button):
         if self.vanilla_mode_button.get_active():
@@ -96,6 +98,7 @@ class MyApp(Gtk.Application):
             subprocess.run(['gnome-extensions', 'disable', 'dash-to-panel@jderose9.github.com'])
             subprocess.run(['gnome-extensions', 'disable', 'panel-osd@berend.de.schouwer.gmail.com'])
             subprocess.run(['gnome-extensions', 'disable', 'dash-to-dock@micxgx.gmail.com'])
+            subprocess.run(['gnome-extensions', 'disable', 'no-overview@fthx'])
 
     def reset(self, button):
         subprocess.run(['gsettings', 'reset-recursively', 'org.gnome.shell.extensions.dash-to-panel'])
